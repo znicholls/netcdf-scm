@@ -1,22 +1,22 @@
-name: netcdf-scm
 channels:
   - default
   - conda-forge
 dependencies:
   # tidy up all this later and move relevant bits into setup.py
   # for now this is just a list of things I think we'll need
-  # - iris
-  # - netcdftime
-  # - pandas
+  - iris
+  - netcdftime
+  - pandas
+  - numpy
   - pip
   - pip:
     - versioneer
     - pytest
-    # - "git+https://github.com/thedataincubator/expectexception.git@master"
-    # - nbval
-    # - "git+https://github.com/openclimatedata/pymagicc.git@master"
-    # - matplotlib
-    # - nbresuse
+    - "git+https://github.com/thedataincubator/expectexception.git@master"
+    - nbval
+    - "git+https://github.com/openclimatedata/pymagicc.git@master"
+    - matplotlib
+    - nbresuse
     # - progressbar2
     # - tables
     # - jupyter_contrib_nbextensions
