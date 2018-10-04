@@ -32,7 +32,7 @@ install:
     CONDA_ENV_FILE=environment-minimal.yaml;
     ENV_NAME='netcdfscm-test-environment';
     cat ${CONDA_ENV_FILE};
-    conda create --quiet -n $ENV_NAME python=$TRAVIS_PYTHON_VERSION -f ${CONDA_ENV_FILE};
+    conda env create --quiet -n $ENV_NAME python=$TRAVIS_PYTHON_VERSION -f ${CONDA_ENV_FILE};
     source activate $ENV_NAME;
 
   # Install package and required testing packages
