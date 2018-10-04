@@ -19,5 +19,12 @@ class SCMCube(object):
         raise NotImplementedError()
 
 
+    def _get_data_name(self):
+        """
+
+        """
+        raise NotImplementedError()
+
+
 class MarbleCMIP5Cube(SCMCube):
     pass
