@@ -123,3 +123,7 @@ class TestSCMCube(object):
     def test_get_data_name(self, test_cube):
         with pytest.raises(NotImplementedError):
             test_cube._get_data_name()
+
+    def test_get_metadata_cube_info(self, test_cube):
+        with pytest.raises(NotImplementedError):
+            test_cube._get_metadata_cube_info()
