@@ -43,12 +43,15 @@
 <img src="https://img.shields.io/github/contributors/znicholls/netcdf-scm.svg"
      alt="# contributors" /></a>
 <a href="https://travis-ci.org/znicholls/netcdf-scm/branches">
-<img src="https://api.travis-ci.org/repositories/znicholls/netcdf-scm.svg?branch=master"
+<img src="https://api.travis-ci.org/znicholls/netcdf-scm.svg?branch=master"
      alt="Travis-CI" /></a>
 <!-- DOI -->
 <!-- <a href="https://zenodo.org/badge/latestdoi/5312648">
 <img src="https://zenodo.org/badge/5312648.svg"
      alt="zenodo" /></a> -->
+<a href="https://github.com/znicholls/netcdf-scm/blob/master/LICENSE">
+<img src="https://img.shields.io/pypi/l/netcdf-scm.svg"
+     alt="license" /></a>
 </p>
 <br>
 
