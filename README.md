@@ -37,6 +37,9 @@
 <img src="https://img.shields.io/github/tag/znicholls/netcdf-scm.svg"
      alt="Latest version"/></a>
 <a href="https://github.com/znicholls/netcdf-scm/commits/master">
+<img src="https://img.shields.io/github/last-commit/znicholls/netcdf-scm.svg"
+     alt="Last commit"/></a>
+<a href="https://github.com/znicholls/netcdf-scm/commits/master">
 <img src="https://img.shields.io/github/commits-since/znicholls/netcdf-scm/latest.svg"
      alt="Commits since last release" /></a>
 <a href="https://github.com/znicholls/netcdf-scm/graphs/contributors">
