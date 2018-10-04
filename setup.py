@@ -7,15 +7,17 @@ from setuptools.command.test import test as TestCommand
 
 PACKAGE_NAME = "netcdf-scm"
 AUTHOR = "Zebedee Nicholls"
-EMAIL= "zebedee.nicholls@climate-energy-college.org"
+EMAIL = "zebedee.nicholls@climate-energy-college.org"
 URL = "https://github.com/znicholls/netcdf-scm"
 
-DESCRIPTION = "Python wrapper for processing netCDF files for use with simple cliamte models"
+DESCRIPTION = (
+    "Python wrapper for processing netCDF files for use with simple cliamte models"
+)
 README = "README.md"
 
-SOURCE_DIR = 'src'
+SOURCE_DIR = "src"
 
-with open(README, 'r') as readme_file:
+with open(README, "r") as readme_file:
     README_TEXT = readme_file.read()
 
 
@@ -54,11 +56,15 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     keywords=[
-        'netcdf', 'python', 'climate', 'atmosphere', 'simple climate model',
-        'reduced complexity climate model',
+        "netcdf",
+        "python",
+        "climate",
+        "atmosphere",
+        "simple climate model",
+        "reduced complexity climate model",
     ],
     packages=find_packages(SOURCE_DIR, exclude=["tests"]),
-    package_dir={'': SOURCE_DIR},
+    package_dir={"": SOURCE_DIR},
     # package_data={
     #     "": ["*.csv"],
     #     "pymagicc": [
