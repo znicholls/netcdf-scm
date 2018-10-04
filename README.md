@@ -53,7 +53,7 @@
 <img src="https://zenodo.org/badge/5312648.svg"
      alt="zenodo" /></a> -->
 <a href="https://github.com/znicholls/netcdf-scm/blob/master/LICENSE">
-<img src="https://img.shields.io/pypi/l/netcdf-scm.svg"
+<img src="https://img.shields.io/github/license/znicholls/netcdf-scm.svg"
      alt="license" /></a>
 </p>
 <br>
