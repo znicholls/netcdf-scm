@@ -24,6 +24,12 @@ class SCMCube(object):
         """
         raise NotImplementedError()
 
+    def _get_metadata_cube_info(self):
+        """
+
+        """
+        raise NotImplementedError()
+
 
 class MarbleCMIP5Cube(SCMCube):
     pass
