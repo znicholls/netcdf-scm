@@ -1,3 +1,9 @@
+<h1 align="center">
+  <a href="https://github.com/znicholls/netcdf-scm" style="display: block; margin: 0 auto;">
+   <img src="https://raw.githubusercontent.com/znicholls/netcdf-scm/master/docs_to_update/imgs/magicc_logo.png"
+        style="max-width: 40%;" alt="MAGICC logo"></a><br>
+</h1>
+
 # NetCDF SCM
 
 **Warning: `netcdf_scm` is still under heavy development so things are likely to change fast**
