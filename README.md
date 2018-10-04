@@ -1,7 +1,7 @@
 <h1 align="center">
   <a href="https://github.com/znicholls/netcdf-scm" style="display: block; margin: 0 auto;">
    <img src="https://raw.githubusercontent.com/znicholls/netcdf-scm/master/docs_to_update/imgs/magicc_logo.png"
-        style="max-width: 20%;" alt="MAGICC logo"></a><br>
+        style="max-width: 5%;" alt="MAGICC logo"></a><br>
 </h1>
 
 # NetCDF SCM
@@ -43,7 +43,7 @@
 <img src="https://img.shields.io/github/contributors/znicholls/netcdf-scm.svg"
      alt="# contributors" /></a>
 <a href="https://travis-ci.org/znicholls/netcdf-scm/branches">
-<img src="https://api.travis-ci.org/znicholls/netcdf-scm.svg?branch=master"
+<img src="https://travis-ci.org/znicholls/netcdf-scm.svg?branch=master"
      alt="Travis-CI" /></a>
 <!-- DOI -->
 <!-- <a href="https://zenodo.org/badge/latestdoi/5312648">
