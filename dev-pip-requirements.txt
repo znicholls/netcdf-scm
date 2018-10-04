@@ -1,0 +1,8 @@
+versioneer
+pytest
+pytest-cov
+codecov
+git+https://github.com/thedataincubator/expectexception.git@master
+nbval
+matplotlib
+nbresuse
