@@ -1,0 +1,52 @@
+# thanks to pymagicc (https://github.com/openclimatedata/pymagicc/blob/master/.travis.yml)
+# and iris (https://github.com/SciTools/iris/blob/master/.travis.yml)
+# for the inspiration for this file
+language: python
+dist: trusty
+sudo: required
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7-dev"
+before_install:
+  - sudo apt-get update
+install:
+  # Install miniconda
+  # -----------------
+  - >
+    echo 'Installing miniconda';
+    export CONDA_BASE=https://repo.continuum.io/miniconda/Miniconda;
+    wget --quiet ${CONDA_BASE}3-latest-Linux-x86_64.sh -O miniconda.sh;
+    bash miniconda.sh -b -p $HOME/miniconda;
+    export PATH="$HOME/miniconda/bin:$PATH";
+
+  # Create the basic testing environment
+  # ------------------------------------
+  # Explicitly add defaults channel, see https://github.com/conda/conda/issues/2675
+  - >
+    echo 'Configure conda and create an environment';
+    conda config --set always_yes yes --set changeps1 no;
+    conda config --set show_channel_urls True;
+    conda config --add channels conda-forge;
+    conda update --quiet conda;
+    ENV_NAME='netcdfscm-test-environment';
+    conda create --quiet -n $ENV_NAME python=$TRAVIS_PYTHON_VERSION pip;
+    source activate $ENV_NAME;
+
+  # Customise the testing environment
+  # ---------------------------------
+  - >
+    echo 'Install minimal working environment';
+    CONDA_ENV_FILE=environment-minimal.yaml;
+    cat ${CONDA_ENV_FILE};
+    conda install --quiet -n $ENV_NAME --file ${CONDA_ENV_FILE};
+
+  - PREFIX=$HOME/miniconda/envs/$ENV_NAME
+  - pip install pytest pytest-cov codecov
+  - pip install -e .
+
+script:
+  - pytest --cov -rfsxEX
+
+after_success:
+  - codecov
