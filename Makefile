@@ -26,6 +26,21 @@ test:
 	$(call activate_conda_env,); \
 		pytest
 
+.PHONY: flake8
+flake8:
+	$(call activate_conda_env,); \
+		flake8 src
+
+.PHONY: black
+black:
+	@status=$$(git status --porcelain pymagicc tests); \
+	if test "x$${status}" = x; then \
+		$(call activate_conda_env,); \
+		black --exclude _version.py --py36 setup.py src tests; \
+	else \
+		echo Not trying any formatting. Working directory is dirty ... >&2; \
+	fi;
+
 .PHONY: new_release
 new_release:
 	@echo 'For a new release on PyPI:'
