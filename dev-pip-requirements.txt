@@ -6,3 +6,5 @@ git+https://github.com/thedataincubator/expectexception.git@master
 nbval
 matplotlib
 nbresuse
+black
+flake8
