@@ -24,24 +24,20 @@ install:
   # ------------------------------------
   # Explicitly add defaults channel, see https://github.com/conda/conda/issues/2675
   - >
-    echo 'Configure conda and create an environment';
+    echo 'Configure conda and install minimal working environment';
     conda config --set always_yes yes --set changeps1 no;
     conda config --set show_channel_urls True;
     conda config --add channels conda-forge;
     conda update --quiet conda;
+    CONDA_ENV_FILE=environment-minimal.yaml;
     ENV_NAME='netcdfscm-test-environment';
-    conda create --quiet -n $ENV_NAME python=$TRAVIS_PYTHON_VERSION pip;
+    cat ${CONDA_ENV_FILE};
+    conda create --quiet -n $ENV_NAME python=$TRAVIS_PYTHON_VERSION -f ${CONDA_ENV_FILE};
     source activate $ENV_NAME;
 
-  # Customise the testing environment
-  # ---------------------------------
+  # Install package and required testing packages
+  # ---------------------------------------------
   - >
-    echo 'Install minimal working environment';
-    CONDA_ENV_FILE=environment-minimal.yaml;
-    cat ${CONDA_ENV_FILE};
-    conda install --quiet -n $ENV_NAME --file ${CONDA_ENV_FILE};
-
-  - PREFIX=$HOME/miniconda/envs/$ENV_NAME
   - pip install pytest pytest-cov codecov
   - pip install -e .
 
