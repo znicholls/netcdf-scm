@@ -3,7 +3,10 @@ SHELL=/bin/bash
 
 CONDA_ENV_NAME=netcdf-scm
 CONDA_ENV_PATH=$(MINICONDA_PATH)/envs/$(CONDA_ENV_NAME)
-CONDA_ENV_YML=$(PWD)/environment-dev.yaml
+CONDA_ENV_YML=$(PWD)/environment-minimal.yaml
+CONDA_ENV_DEV_YML=$(PWD)/environment-dev.yaml
+
+PIP_DEV_REQUIREMENTS=dev-pip-requirements.txt
 
 define activate_conda
 	[ ! -f $(HOME)/.bash_profile ] || . $(HOME)/.bash_profile; \
@@ -36,15 +39,22 @@ setup_versioneer:
 
 .PHONY: conda_env_update
 conda_env_update:
-	$(call activate_conda_env,); \
-		conda deactivate; \
-		conda env update --name $(CONDA_ENV_NAME) --file $(CONDA_ENV_YML); \
-		$(call activate_conda_env,)
+	@echo "Updating the environment requires this command"
+	@echo "conda env update --name env-name --file env-file"
+	@echo "You have to decide for yourself which file to update from and how "
+	@echo "to ensure that the dev and minimal environments don't conflict, we "
+	@echo "haven't worked out how to automate that."
 
 .PHONY: conda_env
 conda_env:
+	# thanks https://stackoverflow.com/a/38609653 for the conda install from
+	# dev file solution
 	$(call activate_conda,); \
-		conda env create -f $(CONDA_ENV_YML); \
+		conda env create -n $(CONDA_ENV_NAME) -f $(CONDA_ENV_YML); \
+		conda activate $(CONDA_ENV_NAME); \
+		pip install --upgrade pip; \
+		while read requirement; do conda install --yes $requirement; done < $(CONDA_ENV_DEV_YML); \
+		pip install -Ur $(PIP_DEV_REQUIREMENTS); \
 		pip install -e .
 
 .PHONY: variables
@@ -56,3 +66,5 @@ variables:
 	@echo CONDA_ENV_NAME: $(CONDA_ENV_NAME)
 	@echo CONDA_ENV_PATH: $(CONDA_ENV_PATH)
 	@echo CONDA_ENV_YML: $(CONDA_ENV_YML)
+
+	@echo PIP_DEV_REQUIREMENTS: $(PIP_DEV_REQUIREMENTS)
