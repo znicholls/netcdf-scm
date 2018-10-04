@@ -29,6 +29,13 @@ setup_versioneer:
 	$(call activate_conda_env,); \
 		versioneer install
 
+.PHONY: conda_env_update
+conda_env_update:
+	$(call activate_conda_env,); \
+		conda deactivate; \
+		conda env update --name $(CONDA_ENV_NAME) --file $(CONDA_ENV_YML); \
+		$(call activate_conda_env,)
+
 .PHONY: conda_env
 conda_env:
 	$(call activate_conda,); \

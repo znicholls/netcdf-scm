@@ -11,6 +11,7 @@ dependencies:
   - pip
   - pip:
     - versioneer
+    - pytest
     # - "git+https://github.com/thedataincubator/expectexception.git@master"
     # - nbval
     # - "git+https://github.com/openclimatedata/pymagicc.git@master"
