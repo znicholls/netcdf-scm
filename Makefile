@@ -1,7 +1,7 @@
 OS=`uname`
 SHELL=/bin/bash
 
-CONDA_ENV_NAME=CCCM-ERTH90026
+CONDA_ENV_NAME=netcdf-scm
 CONDA_ENV_PATH=$(MINICONDA_PATH)/envs/$(CONDA_ENV_NAME)
 CONDA_ENV_YML=$(PWD)/environment-dev.yaml
 
@@ -17,6 +17,11 @@ define activate_conda_env
 	echo 'If this fails, install your environment with make conda_env'; \
 	conda activate $(CONDA_ENV_NAME)
 endef
+
+.PHONY: test
+test:
+	$(call activate_conda_env,); \
+		pytest
 
 .PHONY: new_release
 new_release:
@@ -39,7 +44,8 @@ conda_env_update:
 .PHONY: conda_env
 conda_env:
 	$(call activate_conda,); \
-		conda env create -f $(CONDA_ENV_YML)
+		conda env create -f $(CONDA_ENV_YML); \
+		pip install -e .
 
 .PHONY: variables
 variables:

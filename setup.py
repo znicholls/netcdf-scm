@@ -5,7 +5,18 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 
-path = os.path.abspath(os.path.dirname(__file__))
+PACKAGE_NAME = "netcdf-scm"
+AUTHOR = "Zebedee Nicholls"
+EMAIL= "zebedee.nicholls@climate-energy-college.org"
+URL = "https://github.com/znicholls/netcdf-scm"
+
+DESCRIPTION = "Python wrapper for processing netCDF files for use with simple cliamte models"
+README = "README.md"
+
+SOURCE_DIR = 'src'
+
+with open(README, 'r') as readme_file:
+    README_TEXT = readme_file.read()
 
 
 class NetCDFSCM(TestCommand):
@@ -20,24 +31,20 @@ class NetCDFSCM(TestCommand):
         pytest.main(self.test_args)
 
 
-with open(os.path.join(path, "README.md"), "r") as f:
-    readme = f.read()
-
-
 cmdclass = versioneer.get_cmdclass()
 cmdclass.update({"test": NetCDFSCM})
 
+
 setup(
-    name="netcdf-scm",
+    name=PACKAGE_NAME,
     version=versioneer.get_version(),
-    description="Python wrapper for processing netCDF files for use with simple cliamte models",
-    long_description=readme,
+    description=DESCRIPTION,
+    long_description=README_TEXT,
     long_description_content_type="text/markdown",
-    author="Zebedee Nicholls",
-    author_email="zebedee.nicholls@climate-energy-college.org",
-    url="https://github.com/znicholls/netcdf-scm",
+    author=AUTHOR,
+    author_email=EMAIL,
+    url=URL,
     license=" ",
-    keywords=[],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -46,7 +53,12 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=find_packages(exclude=["tests"]),
+    keywords=[
+        'netcdf', 'python', 'climate', 'atmosphere', 'simple climate model',
+        'reduced complexity climate model',
+    ],
+    packages=find_packages(SOURCE_DIR, exclude=["tests"]),
+    package_dir={'': SOURCE_DIR},
     # package_data={
     #     "": ["*.csv"],
     #     "pymagicc": [
@@ -60,7 +72,7 @@ setup(
     #         "MAGICC6/run/*.SCEN",
     #     ],
     # },
-    # include_package_data=True,
+    include_package_data=True,
     # install_requires=["pandas", "f90nml"],
     tests_require=["pytest"],
     cmdclass=cmdclass,
