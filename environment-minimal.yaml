@@ -2,8 +2,6 @@ channels:
   - default
   - conda-forge
 dependencies:
-  # tidy up all this later and move relevant bits into setup.py
-  # for now this is just a list of things I think we'll need
   - iris
   - netcdftime
   - pandas
@@ -12,6 +10,7 @@ dependencies:
   - pip:
     - "git+https://github.com/openclimatedata/pymagicc.git@master"
     - matplotlib
+    # things we may need later
     # - progressbar2
     # - tables
     # - jupyter_contrib_nbextensions
