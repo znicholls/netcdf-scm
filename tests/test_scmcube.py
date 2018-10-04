@@ -139,3 +139,7 @@ class TestSCMCube(object):
     def test_get_data_path(self, test_cube):
         with pytest.raises(NotImplementedError):
             test_cube._get_data_path()
+
+    def test_get_data_name(self, test_cube):
+        with pytest.raises(NotImplementedError):
+            test_cube._get_data_name()
