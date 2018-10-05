@@ -124,6 +124,21 @@ class TestSCMCube(object):
         with pytest.raises(NotImplementedError):
             test_cube._get_data_name()
 
-    def test_get_metadata_filename(self, test_cube):
+    def test_get_metadata_load_arguments(self, test_cube):
         with pytest.raises(NotImplementedError):
-            test_cube._get_metadata_filename("junk name")
+            test_cube._get_metadata_load_arguments("junk name")
+
+    @patch.object(tclass, 'load_data')
+    def test_get_metadata_cube(self, mock_load_data, test_cube):
+        tvar = "tmdata_var"
+        tload_arg_dict = {"Arg 1": 12, "Arg 2": "Val 2"}
+
+        test_cube._get_metadata_load_arguments = MagicMock(return_value=tload_arg_dict)
+
+        result = test_cube.get_metadata_cube(tvar)
+
+        assert type(result) == type(test_cube)
+
+        test_cube._get_metadata_load_arguments.assert_called_with(tvar)
+        mock_load_data.assert_called_with(**tload_arg_dict)
+
