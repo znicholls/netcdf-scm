@@ -20,6 +20,16 @@ from netcdf_scm.iris_cube_wrappers import _SCMCube, MarbleCMIP5Cube
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test_data")
 TEST_DATA_MARBLE_CMIP5_DIR = join(TEST_DATA_ROOT_DIR, "marble_cmip5")
+TEST_TAS_FILE = join(
+    TEST_DATA_MARBLE_CMIP5_DIR,
+    "cmip5",
+    "1pctCO2",
+    "Amon",
+    "tas",
+    "CanESM2",
+    "r1i1p1",
+    "tas_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
+)
 
 
 def get_test_cube_lon():
@@ -143,6 +153,20 @@ class TestSCMCube(object):
         )
         mock_iris_load_cube.assert_called_with(tfile, vcons)
         assert test_cube.cube == lcube_return
+
+    def test_load_missing_variable_error(self, test_cube):
+        tfile = TEST_TAS_FILE
+        test_cube._get_file_from_load_data_args = MagicMock(return_value=tfile)
+
+        bad_constraint = iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str("misnamed_var"))
+        )
+        test_cube._get_variable_constraint_from_load_data_args = MagicMock(
+            return_value=bad_constraint
+        )
+
+        with raises(ConstraintMismatchError, match="no cubes found"):
+            test_cube.load_data(mocked_out="mocked")
 
     def test_get_file_from_load_data_args(self, test_cube):
         with pytest.raises(NotImplementedError):
