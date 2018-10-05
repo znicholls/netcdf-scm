@@ -99,25 +99,6 @@ class _SCMCube(object):
         """
         raise NotImplementedError()
 
-    def _get_metadata_load_arguments(self, metadata_variable):
-        """
-        Get the name of a metadata file from self's attributes.
-
-        This can take multiple forms, it may just return a previously set
-        metada_filename attribute or it could combine a number of different
-        metadata elements (e.g. model name, experiment name) to create the
-        metadata filename.
-
-        # Parameters
-        metadata_variable (str): the name of the metadata variable to get, as
-            it appears in the filename.
-
-        # Returns
-        load_args (dict): dictionary containing all the arguments to pass to
-            `self.load_data` required to load the desired metadata cube.
-        """
-        raise NotImplementedError()
-
     def get_metadata_cube(self, metadata_variable):
         """
         Load a metadata cube from self's attributes.
@@ -137,6 +118,64 @@ class _SCMCube(object):
 
         return metadata_cube
 
+    def _get_metadata_load_arguments(self, metadata_variable):
+        """
+        Get the name of a metadata file from self's attributes.
+
+        This can take multiple forms, it may just return a previously set
+        metada_filename attribute or it could combine a number of different
+        metadata elements (e.g. model name, experiment name) to create the
+        metadata filename.
+
+        # Parameters
+        metadata_variable (str): the name of the metadata variable to get, as
+            it appears in the filename.
+
+        # Returns
+        load_args (dict): dictionary containing all the arguments to pass to
+            `self.load_data` required to load the desired metadata cube.
+        """
+        raise NotImplementedError()
+
+    def get_scm_timeseries(
+        self, sftlf_cube=None, land_mask_threshold=50, areacella_cube=None
+    ):
+        scm_timeseries_cubes = self.get_scm_timeseries_cubes(
+            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, areacella_cube=areacella_cube
+        )
+        # TODO: actually use openscm DataFrame as return value
+        return self._convert_scm_timeseries_cubes_to_OpenSCMData(scm_timeseries_cubes)
+
+    def get_scm_timeseries_cubes(
+        self, sftlf_cube=None, land_mask_threshold=50, areacella_cube=None
+    ):
+        def take_mean(in_cube, in_mask, in_weights):
+            out_cube = deepcopy(in_cube)
+            out_cube.data = np.ma.asarray(out_cube.data)
+            out_cube.data.mask = in_mask
+
+            return out_cube.collapsed(
+                ["latitude", "longitude"], iris.analysis.MEAN, weights=in_weights
+            )
+
+        scm_masks = self.get_scm_masks(
+            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
+        )
+        area_weights = self.get_area_weights(self, areacella_cube=areacella_cube)
+
+        return {
+            k: take_mean(self.cube, mask, area_weights) for k, mask in scm_masks.items()
+        }
+        pass
+
+    def get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
+        if sftlf_cube is None:
+            sftlf_cube = self.get_metadata_cube("sftlf")
+
+    def get_area_weights(self, areacella_cube=None):
+        if areacella_cube is None:
+            areacella_cube = self.get_metadata_cube("areacella")
+
 
 class MarbleCMIP5Cube(_SCMCube):
     """
@@ -145,5 +184,3 @@ class MarbleCMIP5Cube(_SCMCube):
     This directory structure is very similar, but not quite identical, to the
     recommended CMIP5 directory structure.
     """
-
-    pass
