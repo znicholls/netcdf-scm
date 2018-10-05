@@ -116,6 +116,49 @@ def test_sftlf_cube(request):
 class TestSCMCube(object):
     tclass = _SCMCube
 
+    @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
+    def test_load_data(self, mock_iris_load_cube, test_cube):
+        tfile = "hello_world_test.nc"
+        test_cube._get_file_from_load_data_args = MagicMock(return_value=tfile)
+
+        vcons = 12.195
+        test_cube._get_variable_constraint_from_load_data_args = MagicMock(
+            return_value=vcons
+        )
+
+        lcube_return = 9848
+        mock_iris_load_cube.return_value = lcube_return
+
+        tkwargs = {
+            "variable_name": "fco2antt",
+            "modeling_realm": "Amon",
+            "model": "CanESM2",
+            "experiment": "1pctCO2",
+        }
+        test_cube.load_data(**tkwargs)
+
+        test_cube._get_file_from_load_data_args.assert_called_with(**tkwargs)
+        test_cube._get_variable_constraint_from_load_data_args.assert_called_with(
+            **tkwargs
+        )
+        mock_iris_load_cube.assert_called_with(tfile, vcons)
+        assert test_cube.cube == lcube_return
+
+    def test_get_file_from_load_data_args(self, test_cube):
+        with pytest.raises(NotImplementedError):
+            test_cube._get_file_from_load_data_args(a="junk")
+
+    def test_get_variable_constraint_from_load_data_args(self, test_cube):
+        if isinstance(test_cube, _SCMCube):
+            with pytest.raises(NotImplementedError):
+                test_cube._get_variable_constraint_from_load_data_args(a="junk")
+        else:
+            assert False, (
+                "Overload this method in your subclass test to ensure that "
+                "the return value satisfies `isinstance(return_value, "
+                "iris.Constraint)`"
+            )
+
     def test_get_data_path(self, test_cube):
         with pytest.raises(NotImplementedError):
             test_cube._get_data_path()
@@ -128,7 +171,7 @@ class TestSCMCube(object):
         with pytest.raises(NotImplementedError):
             test_cube._get_metadata_load_arguments("junk name")
 
-    @patch.object(tclass, 'load_data')
+    @patch.object(tclass, "load_data")
     def test_get_metadata_cube(self, mock_load_data, test_cube):
         tvar = "tmdata_var"
         tload_arg_dict = {"Arg 1": 12, "Arg 2": "Val 2"}
@@ -141,4 +184,3 @@ class TestSCMCube(object):
 
         test_cube._get_metadata_load_arguments.assert_called_with(tvar)
         mock_load_data.assert_called_with(**tload_arg_dict)
-
