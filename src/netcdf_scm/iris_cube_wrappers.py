@@ -140,6 +140,9 @@ class _SCMCube(object):
     def get_scm_timeseries(
         self, sftlf_cube=None, land_mask_threshold=50, areacella_cube=None
     ):
+        """
+
+        """
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
             sftlf_cube=sftlf_cube,
             land_mask_threshold=land_mask_threshold,
@@ -151,6 +154,9 @@ class _SCMCube(object):
     def get_scm_timeseries_cubes(
         self, sftlf_cube=None, land_mask_threshold=50, areacella_cube=None
     ):
+        """
+
+        """
         def take_mean(in_cube, in_mask, in_weights):
             out_cube = deepcopy(in_cube)
             out_cube.data = np.ma.asarray(out_cube.data)
@@ -168,15 +174,29 @@ class _SCMCube(object):
         return {
             k: take_mean(self.cube, mask, area_weights) for k, mask in scm_masks.items()
         }
-        pass
+        raise NotImplementedError()
 
     def get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
+        """
+
+        """
         if sftlf_cube is None:
             sftlf_cube = self.get_metadata_cube("sftlf")
+        raise NotImplementedError()
 
     def get_area_weights(self, areacella_cube=None):
+        """
+
+        """
         if areacella_cube is None:
             areacella_cube = self.get_metadata_cube("areacella")
+        raise NotImplementedError()
+
+    def _convert_scm_timeseries_cubes_to_OpenSCMData(self, scm_timeseries_cubes):
+        """
+
+        """
+        raise NotImplementedError()
 
 
 class MarbleCMIP5Cube(_SCMCube):
