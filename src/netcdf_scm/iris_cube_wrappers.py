@@ -141,7 +141,9 @@ class _SCMCube(object):
         self, sftlf_cube=None, land_mask_threshold=50, areacella_cube=None
     ):
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
-            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, areacella_cube=areacella_cube
+            sftlf_cube=sftlf_cube,
+            land_mask_threshold=land_mask_threshold,
+            areacella_cube=areacella_cube,
         )
         # TODO: actually use openscm DataFrame as return value
         return self._convert_scm_timeseries_cubes_to_OpenSCMData(scm_timeseries_cubes)

@@ -29,7 +29,7 @@ test:
 .PHONY: flake8
 flake8:
 	$(call activate_conda_env,); \
-		flake8 src
+		flake8 src tests
 
 .PHONY: black
 black:
