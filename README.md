@@ -58,6 +58,10 @@
 </p>
 <br>
 
+
+Python wrappers for processing netCDF files for use with simple climate models.
+
+
 ## Why is there a `Makefile` in a pure Python repository?
 
 Whilst it's probably not good practice, a `Makefile` is a simple way to automate general setup (environment setup in particular).
