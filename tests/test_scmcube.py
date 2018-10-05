@@ -208,3 +208,106 @@ class TestSCMCube(object):
 
         test_cube._get_metadata_load_arguments.assert_called_with(tvar)
         mock_load_data.assert_called_with(**tload_arg_dict)
+
+    @pytest.mark.parametrize("input_format", ["nparray", "scmcube", None])
+    @pytest.mark.parametrize(
+        "test_threshold",
+        [(None), (0), (10), (30), (49), (49.9), (50), (50.1), (51), (60), (75), (100)],
+    )
+    def test_get_scm_timeseries(
+        self, test_threshold, input_format, test_sftlf_cube, test_cube
+    ):
+        # perhaps this should be multiple tests, not just one...
+        # setup
+        sftlf_var = "sftlf"
+        test_cube._sftlf_var_name = sftlf_var
+
+        test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
+
+        test_cubes_return = {"NH_OCEAN": 4, "SH_LAND": 12}
+        test_cube.get_scm_timeseries_cubes = MagicMock(return_value=test_cubes_return)
+
+        test_conversion_return = pd.DataFrame(data=np.array([1, 2, 3]))
+        test_cube._convert_scm_timeseries_cubes_to_OpenSCMData = MagicMock(
+            return_value=test_conversion_return
+        )
+
+        if input_format is "nparray":
+            test_land_fraction_input = test_sftlf_cube.cube.data
+        elif input_format is "scmcube":
+            test_land_fraction_input = test_sftlf_cube
+        else:
+            test_land_fraction_input = None
+
+        # run
+        if test_threshold is None:
+            result = test_cube.get_scm_timeseries(test_land_fraction_input)
+            # default land fraction is 50%
+            test_threshold = 50
+        else:
+            result = test_cube.get_scm_timeseries(
+                test_land_fraction_input, land_mask_threshold=test_threshold
+            )
+
+        # prep for assertions
+        # having got the result, we can now update test_land_fraction_input
+        # for our assertions
+        if test_land_fraction_input is None:
+            test_land_fraction_input = test_sftlf_cube
+
+        # assertions
+        if input_format is None:
+            test_cube.get_metadata_cube.assert_called_with(sftlf_var)
+        else:
+            test_cube.get_metadata_cube.assert_not_called()
+
+        if input_format is "nparray":
+            # assert called with fails if you give a numpy array, it complains
+            # about ambiguous values of truth arrays hence this is the best we
+            # can do
+            assert test_cube.get_scm_timeseries_cubes.call_count == 1
+        else:
+            test_cube.get_scm_timeseries_cubes.assert_called_with(
+                sftlf_cube=test_sftlf_cube, land_mask_threshold=test_threshold
+            )
+
+        test_cube._convert_scm_timeseries_cubes_to_OpenSCMData.assert_called_with(
+            test_cubes_return
+        )
+
+        assert_frame_equal(result, test_conversion_return)
+
+    def test_get_scm_timeseries_cubes(self, test_cube):
+        # get masks
+        # loop over masks, apply to cube, store
+        # then get_scm_masks does all the mask combinations
+        #
+
+        nh_mask_test = np.array([[False, False], [True, True]])
+        mock_get_nh_mask.return_value = nh_mask_test
+        land_mask_test = np.array([[False, True], [False, True]])
+        mock_get_land_mask.return_value = land_mask_test
+
+        nh_land_mask_expected = np.array([[False, True], [True, True]])
+        sh_land_mask_expected = np.array([[True, True], [False, True]])
+        nh_ocean_mask_expected = np.array([[True, False], [True, True]])
+        sh_ocean_mask_expected = np.array([[True, True], [True, False]])
+
+        expected = {
+            "nh_land": nh_land_mask_expected,
+            "sh_land": sh_land_mask_expected,
+            "nh_ocean": nh_ocean_mask_expected,
+            "sh_ocean": sh_ocean_mask_expected,
+        }
+
+        tlmt = 65
+        tsftlf_data = "mocked out"
+        result = test_cube._get_magicc_masks(
+            sftlf_data=tsftlf_data, land_mask_threshold=tlmt
+        )
+
+        assert mock_get_land_mask.called_with(tsftlf_data, threshold=tlmt)
+
+        assert isinstance(result, type(expected))
+        for k, v in expected.items():
+            assert (result[k] == v).all()
