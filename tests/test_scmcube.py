@@ -15,7 +15,7 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 
 
-from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
+from netcdf_scm.iris_cube_wrappers import _SCMCube, MarbleCMIP5Cube
 
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test_data")
@@ -114,7 +114,7 @@ def test_sftlf_cube(request):
 
 
 class TestSCMCube(object):
-    tclass = SCMCube
+    tclass = _SCMCube
 
     def test_get_data_path(self, test_cube):
         with pytest.raises(NotImplementedError):
@@ -124,6 +124,6 @@ class TestSCMCube(object):
         with pytest.raises(NotImplementedError):
             test_cube._get_data_name()
 
-    def test_get_metadata_cube_info(self, test_cube):
+    def test_get_metadata_filename(self, test_cube):
         with pytest.raises(NotImplementedError):
-            test_cube._get_metadata_cube_info()
+            test_cube._get_metadata_filename("junk name")
