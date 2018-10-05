@@ -19,7 +19,56 @@ class _SCMCube(object):
     utilise its power you must use a subclass of it, which defines the methods
     which raise `NotImplementedError`'s in this class.
     """
-    def load_data(self):
+
+    def load_data(self, **kwargs):
+        """
+        Load data from a netCDF file.
+
+        # Parameters
+        kwargs (dict): arguments which can then be processed by
+            `self._get_file_from_load_data_args` to determine the full
+            filepath of the file to load.
+
+        # Side Effects
+        - sets the `cube` attribute to the loaded iris cube.
+        """
+        # validate args, need to check if positional args can be switched for keyword in Python3
+        # set attributes
+        # deal with time period
+        # load cube
+        self.cube = iris.load_cube(
+            self._get_file_from_load_data_args(**kwargs),
+            self._get_variable_constraint_from_load_data_args(**kwargs),
+        )
+
+    def _get_file_from_load_data_args(self, **kwargs):
+        """
+        Get the full filepath of the data to load from the arguments passed to `self.load_data`.
+
+        This function should, in most cases, call `self._get_data_path` and
+        `self._get_data_name`.
+
+        # Parameters
+        kwargs (dict): arguments, initially passed to `self.load_data` from
+            which the full filepath of the file to load should be determined.
+
+        # Returns
+        fullpath (str): the full filepath (path and name) of the file to load.
+        """
+        raise NotImplementedError()
+
+    def _get_variable_constraint_from_load_data_args(self, **kwargs):
+        """
+        Get the iris variable constraint to use when loading data with `self.load_data`
+
+        # Parameters
+        kwargs (dict): arguments, initially passed to `self.load_data` from
+            which the full filepath of the file to load should be determined.
+
+        # Returns
+        var_constraint (iris.Constraint): constraint to use which ensures that
+            only the variable of interest is loaded.
+        """
         raise NotImplementedError()
 
     def _get_data_path(self):
@@ -29,6 +78,10 @@ class _SCMCube(object):
         This can take multiple forms, it may just return a previously set
         filepath attribute or it could combine a number of different metadata
         elements (e.g. model name, experiment name) to create the data path.
+
+        # Returns
+        data_path (str): path to the data file from which this cube has been/
+            will be loaded
         """
         raise NotImplementedError()
 
@@ -39,10 +92,14 @@ class _SCMCube(object):
         This can take multiple forms, it may just return a previously set
         filename attribute or it could combine a number of different metadata
         elements (e.g. model name, experiment name) to create the data name.
+
+        # Returns
+        data_name (str): name of the data file from which this cube has been/
+            will be loaded
         """
         raise NotImplementedError()
 
-    def _get_metadata_load_arguments(self, variable):
+    def _get_metadata_load_arguments(self, metadata_variable):
         """
         Get the name of a metadata file from self's attributes.
 
@@ -52,8 +109,8 @@ class _SCMCube(object):
         metadata filename.
 
         # Parameters
-        variable (str): the name of the metadata variable to get, as it
-            appears in the filename.
+        metadata_variable (str): the name of the metadata variable to get, as
+            it appears in the filename.
 
         # Returns
         load_args (dict): dictionary containing all the arguments to pass to
@@ -61,15 +118,19 @@ class _SCMCube(object):
         """
         raise NotImplementedError()
 
-    def get_metadata_cube(self, variable):
+    def get_metadata_cube(self, metadata_variable):
         """
         Load a metadata cube from self's attributes.
 
         # Parameters
-        variable (str): the name of the metadata variable to get, as it
-            appears in the filename.
+        metadata_variable (str): the name of the metadata variable to get, as
+            it appears in the filename.
+
+        # Returns
+        metadata_cube (type(self)): instance of self which has been loaded
+            from the file containing the metadata variable of interest
         """
-        load_args = self._get_metadata_load_arguments(variable)
+        load_args = self._get_metadata_load_arguments(metadata_variable)
 
         metadata_cube = type(self)()
         metadata_cube.load_data(**load_args)
@@ -84,4 +145,5 @@ class MarbleCMIP5Cube(_SCMCube):
     This directory structure is very similar, but not quite identical, to the
     recommended CMIP5 directory structure.
     """
+
     pass
