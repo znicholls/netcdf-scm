@@ -66,3 +66,9 @@ Python wrappers for processing netCDF files for use with simple climate models.
 
 Whilst it's probably not good practice, a `Makefile` is a simple way to automate general setup (environment setup in particular).
 Hence we have one here which basically acts as a notes file for how to do all those little jobs which we often forget e.g. setting up environments, running tests (and making sure we're in the right environment), building docs, setting up auxillary bits and pieces.
+
+## Why did we choose a BSD 2-Clause License?
+
+We want to ensure that our code can be used and shared as easily as possible.
+Whilst we love transparency, we didn't want to *force* all future users to also comply with a stronger license such as AGPL.
+Hence the choice we made.
