@@ -1,13 +1,15 @@
 from os import listdir
 from os.path import join, splitext, basename, isdir
 from datetime import datetime
-from copy import deepcopy
+import warnings
 
 
 import numpy as np
 import pandas as pd
 import re
 import iris
+from iris.util import broadcast_to_shape
+import iris.analysis.cartography
 from pymagicc.io import MAGICCData
 
 
@@ -21,6 +23,7 @@ class _SCMCube(object):
     """
 
     _sftlf_var = "sftlf"
+    _areacella_var = "areacella"
     _lat_name = "latitude"
     _lon_name = "longitude"
 
@@ -163,7 +166,7 @@ class _SCMCube(object):
         """
 
         def take_mean(in_cube, in_mask, in_weights):
-            out_cube = deepcopy(in_cube)
+            out_cube = in_cube.copy()
             out_cube.data = np.ma.asarray(out_cube.data)
             out_cube.data.mask = in_mask
 
@@ -214,32 +217,42 @@ class _SCMCube(object):
 
             sftlf_data = sftlf_cube
 
-        lon_length = len(self.cube.coord(self._lat_name).points)
-        lat_length = len(self.cube.coord(self._lon_name).points)
+        land_mask = np.where(
+            sftlf_data > land_mask_threshold,
+            False,  # where it's land, return False i.e. don't mask
+            True,  # otherwise True
+        )
 
-        if sftlf_data.shape != (lon_length, lat_length):
-            sftlf_data = np.transpose(sftlf_data)
+        return self._broadcast_onto_self_lat_lon_grid(land_mask)
+
+    def _broadcast_onto_self_lat_lon_grid(self, array_in):
+        lat_length = len(self._lat_dim.points)
+        lon_length = len(self._lon_dim.points)
+
+        dim_order = [self._lat_dim_number, self._lon_dim_number]
+        base_shape = (lat_length, lon_length)
+        if array_in.shape != base_shape:
+            array_in = np.transpose(array_in)
 
         shape_assert_msg = (
             "the sftlf_cube data must be the same shape as (or the transpose of) the "
             "cube's longitude-latitude grid"
         )
-        assert sftlf_data.shape == (lon_length, lat_length), shape_assert_msg
+        assert array_in.shape == base_shape, shape_assert_msg
 
-        return np.where(
-            sftlf_data > land_mask_threshold,
-            False,  # where it's land, return False i.e. don't mask
-            True,  # otherwise True
+        return broadcast_to_shape(
+            array_in,
+            self.cube.shape,
+            dim_order,
         )
 
     def _get_nh_mask(self):
         """
 
         """
-        mask_nh_lat = np.array([
-            cell < 0
-            for cell in self.cube.coord(self._lat_name).cells()
-        ])
+        mask_nh_lat = np.array(
+            [cell < 0 for cell in self.cube.coord(self._lat_name).cells()]
+        )
         mask_all_lon = np.full(self.cube.coord(self._lon_name).points.shape, False)
 
         # Here we make a grid which we can use as a mask. We have to use all
@@ -250,15 +263,55 @@ class _SCMCube(object):
         # back).
         mask_nh = ~np.outer(~mask_nh_lat, ~mask_all_lon)
 
-        return mask_nh
+        return self._broadcast_onto_self_lat_lon_grid(mask_nh)
 
     def _get_area_weights(self, areacella_cube=None):
         """
 
         """
+        use_self_area_weights = True
         if areacella_cube is None:
-            areacella_cube = self.get_metadata_cube("areacella")
-        raise NotImplementedError()
+            try:
+                areacella_cube = self.get_metadata_cube(self._areacella_var)
+                if not isinstance(areacella_cube.cube, iris.cube.Cube):
+                    warnings.warn("areacella cube which was found has cube attribute which isn't an iris cube")
+                    use_self_area_weights = False
+            except iris.exceptions.ConstraintMismatchError as exc:
+                warnings.warn(str(exc))
+                use_self_area_weights = False
+            except AttributeError as exc:
+                warnings.warn(str(exc))
+                use_self_area_weights = False
+
+        if use_self_area_weights:
+            try:
+                return self._broadcast_onto_self_lat_lon_grid(areacella_cube.cube.data)
+            except AssertionError as exc:
+                warnings.warn(str(exc))
+
+        warnings.warn(
+            "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+        )
+        return iris.analysis.cartography.area_weights(self.cube)
+
+
+    @property
+    def _lon_dim(self):
+        return self.cube.coord(self._lon_name)
+
+    @property
+    def _lon_dim_number(self):
+        return self.cube.coord_dims(self._lon_name)[0]
+
+    @property
+    def _lat_dim(self):
+        return self.cube.coord(self._lat_name)
+
+    @property
+    def _lat_dim_number(self):
+        return self.cube.coord_dims(self._lat_name)[0]
+
+
 
     def _convert_scm_timeseries_cubes_to_OpenSCMData(self, scm_timeseries_cubes):
         """
