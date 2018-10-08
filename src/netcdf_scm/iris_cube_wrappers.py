@@ -167,17 +167,17 @@ class _SCMCube(object):
                 ["latitude", "longitude"], iris.analysis.MEAN, weights=in_weights
             )
 
-        scm_masks = self.get_scm_masks(
+        scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
-        area_weights = self.get_area_weights(self, areacella_cube=areacella_cube)
+        area_weights = self._get_area_weights(self, areacella_cube=areacella_cube)
 
         return {
             k: take_mean(self.cube, mask, area_weights) for k, mask in scm_masks.items()
         }
         raise NotImplementedError()
 
-    def get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
+    def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
         """
 
         """
@@ -185,7 +185,7 @@ class _SCMCube(object):
             sftlf_cube = self.get_metadata_cube("sftlf")
         raise NotImplementedError()
 
-    def get_area_weights(self, areacella_cube=None):
+    def _get_area_weights(self, areacella_cube=None):
         """
 
         """
