@@ -339,6 +339,7 @@ class TestSCMCube(object):
         )
         test_cube._get_nh_mask.assert_called_with()
 
+    @pytest.mark.parametrize("transpose", [True, False])
     @pytest.mark.parametrize("input_format", ["nparray", "scmcube", None])
     @pytest.mark.parametrize("sftlf_var", ["sftlf", "sftlf_other"])
     @pytest.mark.parametrize(
@@ -346,13 +347,21 @@ class TestSCMCube(object):
         [(None), (0), (10), (30), (49), (49.9), (50), (50.1), (51), (60), (75), (100)],
     )
     def test_get_land_mask(
-        self, test_cube, test_sftlf_cube, test_threshold, input_format, sftlf_var
+        self,
+        test_cube,
+        test_sftlf_cube,
+        test_threshold,
+        input_format,
+        sftlf_var,
+        transpose,
     ):
         test_cube._sftlf_var = sftlf_var
         test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
 
         if input_format is "nparray":
             test_land_fraction_input = test_sftlf_cube.cube.data
+            if transpose:
+                test_land_fraction_input = np.transpose(test_land_fraction_input)
         elif input_format is "scmcube":
             test_land_fraction_input = test_sftlf_cube
         else:
@@ -383,4 +392,22 @@ class TestSCMCube(object):
         else:
             test_cube.get_metadata_cube.assert_not_called()
 
-    # def test_get_land_mask_errors(self, test_cube):
+    def test_get_land_mask_errors(self, test_cube, test_sftlf_cube):
+        error_msg = re.escape(
+            r"sftlf_cube must be a numpy.ndarray if it's not an _SCMCube instance"
+        )
+        with pytest.raises(AssertionError, match=error_msg):
+            test_cube._get_land_mask(sftlf_cube="fail string")
+
+        wrong_shape_data = np.array([[1, 2], [3, 4]])
+        error_msg = re.escape(
+            r"the sftlf_cube data must be the same shape as (or the transpose of) the "
+            r"cube's longitude-latitude grid"
+        )
+        with pytest.raises(AssertionError, match=error_msg):
+            test_cube._get_land_mask(sftlf_cube=wrong_shape_data)
+
+        test_sftlf_cube.cube = iris.cube.Cube(data=wrong_shape_data)
+        test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
+        with pytest.raises(AssertionError, match=error_msg):
+            test_cube._get_land_mask(sftlf_cube=wrong_shape_data)
