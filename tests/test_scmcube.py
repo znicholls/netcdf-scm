@@ -209,10 +209,7 @@ class TestSCMCube(object):
         test_cube._get_metadata_load_arguments.assert_called_with(tvar)
         mock_load_data.assert_called_with(**tload_arg_dict)
 
-
-    def test_get_scm_timeseries(
-        self, test_sftlf_cube, test_cube
-    ):
+    def test_get_scm_timeseries(self, test_sftlf_cube, test_cube):
         tsftlf_cube = "mocked 124"
         tland_mask_threshold = "mocked 51"
         tareacella_cube = "mocked 4389"
@@ -242,41 +239,54 @@ class TestSCMCube(object):
 
         assert_frame_equal(result, test_conversion_return)
 
-    # def test_get_scm_timeseries_cubes(self, test_cube):
-    #     # get masks
-    #     # loop over masks, apply to cube, store
-    #     # then get_scm_masks does all the mask combinations
-    #     #
+    def test_get_scm_timeseries_cubes(self, test_cube):
+        tsftlf_cube = "mocked 124"
+        tland_mask_threshold = "mocked 51"
+        tareacella_cube = "mocked 4389"
 
-    #     nh_mask_test = np.array([[False, False], [True, True]])
-    #     mock_get_nh_mask.return_value = nh_mask_test
-    #     land_mask_test = np.array([[False, True], [False, True]])
-    #     mock_get_land_mask.return_value = land_mask_test
+        land_mask = np.array(
+            [
+                [False, True, True, False],
+                [False, True, False, True],
+                [False, False, True, False],
+            ]
+        )
+        nh_mask = np.array(
+            [
+                [False, False, False, False],
+                [False, False, False, False],
+                [True, True, True, True],
+            ]
+        )
 
-    #     nh_land_mask_expected = np.array([[False, True], [True, True]])
-    #     sh_land_mask_expected = np.array([[True, True], [False, True]])
-    #     nh_ocean_mask_expected = np.array([[True, False], [True, True]])
-    #     sh_ocean_mask_expected = np.array([[True, True], [True, False]])
+        mocked_masks = {
+            "GLOBAL": np.full(nh_mask.shape, False),
+            "NH_LAND": np.logical_or(nh_mask, land_mask),
+            "SH_LAND": np.logical_or(~nh_mask, land_mask),
+            "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
+            "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
+        }
+        test_cube.get_scm_masks = MagicMock(return_value=mocked_masks)
 
-    #     expected = {
-    #         "nh_land": nh_land_mask_expected,
-    #         "sh_land": sh_land_mask_expected,
-    #         "nh_ocean": nh_ocean_mask_expected,
-    #         "sh_ocean": sh_ocean_mask_expected,
-    #     }
+        mocked_weights = np.tile(
+            np.array([[1, 2, 3, 4], [1, 4, 8, 9], [0, 4, 1, 9]]),
+            (len(test_cube.cube.coord("time").points), 1, 1),
+        )
+        test_cube.get_area_weights = MagicMock(return_value=mocked_weights)
 
-    #     tlmt = 65
-    #     tsftlf_data = "mocked out"
-    #     result = test_cube._get_magicc_masks(
-    #         sftlf_data=tsftlf_data, land_mask_threshold=tlmt
-    #     )
+        expected = {}
+        for label, mask in mocked_masks.items():
+            rcube = test_cube.cube.copy()
+            rcube.data.mask = mask
+            expected[label] = rcube.collapsed(
+                ["latitude", "longitude"], iris.analysis.MEAN, weights=mocked_weights
+            )
 
-    #     assert mock_get_land_mask.called_with(tsftlf_data, threshold=tlmt)
+        result = test_cube.get_scm_timeseries_cubes(
+            tsftlf_cube, tland_mask_threshold, tareacella_cube
+        )
 
-    #     assert isinstance(result, type(expected))
-    #     for k, v in expected.items():
-    #         assert (result[k] == v).all()
-
+        assert result == expected
 
     # @pytest.mark.parametrize("input_format", ["nparray", "scmcube", None])
     # @pytest.mark.parametrize(
@@ -284,41 +294,38 @@ class TestSCMCube(object):
     #     [(None), (0), (10), (30), (49), (49.9), (50), (50.1), (51), (60), (75), (100)],
     # )
 
-
     # perhaps this should be multiple tests, not just one...
-        # setup
-        # sftlf_var = "sftlf"
-        # test_cube._sftlf_var_name = sftlf_var
+    # setup
+    # sftlf_var = "sftlf"
+    # test_cube._sftlf_var_name = sftlf_var
 
-        # test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
+    # test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
 
+    # if input_format is "nparray":
+    #     test_land_fraction_input = test_sftlf_cube.cube.data
+    # elif input_format is "scmcube":
+    #     test_land_fraction_input = test_sftlf_cube
+    # else:
+    #     test_land_fraction_input = None
 
+    # # run
+    # if test_threshold is None:
+    #     result = test_cube.get_scm_timeseries(test_land_fraction_input)
+    #     # default land fraction is 50%
+    #     test_threshold = 50
+    # else:
 
-        # if input_format is "nparray":
-        #     test_land_fraction_input = test_sftlf_cube.cube.data
-        # elif input_format is "scmcube":
-        #     test_land_fraction_input = test_sftlf_cube
-        # else:
-        #     test_land_fraction_input = None
+    # # prep for assertions
+    # # having got the result, we can now update test_land_fraction_input
+    # # for our assertions
+    # if test_land_fraction_input is None:
+    #     test_land_fraction_input = test_sftlf_cube
 
-        # # run
-        # if test_threshold is None:
-        #     result = test_cube.get_scm_timeseries(test_land_fraction_input)
-        #     # default land fraction is 50%
-        #     test_threshold = 50
-        # else:
-
-        # # prep for assertions
-        # # having got the result, we can now update test_land_fraction_input
-        # # for our assertions
-        # if test_land_fraction_input is None:
-        #     test_land_fraction_input = test_sftlf_cube
-
-        # # assertions
-        # if input_format is None:
-        #     test_cube.get_metadata_cube.assert_called_with(sftlf_var)
-        # else:
-        #     test_cube.get_metadata_cube.assert_not_called()
+    # # assertions
+    # if input_format is None:
+    #     test_cube.get_metadata_cube.assert_called_with(sftlf_var)
+    # else:
+    #     test_cube.get_metadata_cube.assert_not_called()
 
     # if input_format is "nparray":
     #         # assert called with fails if you give a numpy array, it complains
