@@ -1,5 +1,6 @@
 from os.path import join, isdir, isfile, splitext, dirname, abspath
 from unittest.mock import patch, MagicMock
+import warnings
 
 
 import pytest
@@ -10,6 +11,7 @@ import iris
 from iris.exceptions import ConstraintMismatchError
 from iris.analysis.cartography import DEFAULT_SPHERICAL_EARTH_RADIUS
 from iris.util import broadcast_to_shape
+import cf_units
 import cf_units as unit
 from pymagicc.io import MAGICCData
 import pandas as pd
@@ -269,8 +271,8 @@ class TestSCMCube(object):
         }
         test_cube._get_scm_masks = MagicMock(return_value=mocked_masks)
 
-        lon_dim = test_cube.cube.coord_dims('longitude')[0]
-        lat_dim = test_cube.cube.coord_dims('latitude')[0]
+        lon_dim = test_cube.cube.coord_dims("longitude")[0]
+        lat_dim = test_cube.cube.coord_dims("latitude")[0]
         mocked_weights = broadcast_to_shape(
             np.array([[1, 2, 3, 4], [1, 4, 8, 9], [0, 4, 1, 9]]),
             test_cube.cube.shape,
@@ -292,6 +294,10 @@ class TestSCMCube(object):
         )
 
         assert result == expected
+        test_cube._get_scm_masks.assert_called_with(
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+        )
+        test_cube._get_area_weights.assert_called_with(areacella_cube=tareacella_cube)
 
     def test_get_scm_masks(self, test_cube):
         tsftlf_cube = "mocked 124"
@@ -440,7 +446,9 @@ class TestSCMCube(object):
 
     @pytest.mark.parametrize("transpose", [True, False])
     @pytest.mark.parametrize("input_format", ["scmcube", None])
-    @pytest.mark.parametrize("valid_areacella", ["valid", "not a cube", "iris_error", "misshaped"])
+    @pytest.mark.parametrize(
+        "valid_areacella", ["valid", "not a cube", "iris_error", "misshaped"]
+    )
     @pytest.mark.parametrize("areacella_var", ["areacella", "area_other"])
     def test_get_area_weights(
         self,
@@ -452,15 +460,34 @@ class TestSCMCube(object):
         transpose,
     ):
         test_cube._areacella_var = areacella_var
+
+        if valid_areacella == "valid":
+            expected = broadcast_to_shape(
+                test_sftlf_cube.cube.data,
+                test_cube.cube.shape,
+                [test_cube._lat_dim_number, test_cube._lon_dim_number],
+            )
+        else:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                expected = iris.analysis.cartography.area_weights(test_cube.cube)
+
         # we can use test_sftlf_cube here as all we need is an array of the
         # right shape
         if valid_areacella == "iris_error":
-            test_cube.get_metadata_cube = MagicMock(side_effect=ConstraintMismatchError)
+            iris_error_msg = "no cube found"
+            test_cube.get_metadata_cube = MagicMock(
+                side_effect=ConstraintMismatchError(iris_error_msg)
+            )
         elif valid_areacella == "misshaped":
             misshaped_cube = _SCMCube
-            misshaped_cube.cube = iris.cube.Cube(data=np.array([1,2]))
+            misshaped_cube.cube = iris.cube.Cube(data=np.array([1, 2]))
             test_cube.get_metadata_cube = MagicMock(return_value=misshaped_cube)
         elif valid_areacella == "valid":
+            if transpose:
+                test_sftlf_cube.cube = iris.cube.Cube(
+                    data=np.transpose(test_sftlf_cube.cube.data)
+                )
             test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
         else:
             test_cube.get_metadata_cube = MagicMock(return_value=valid_areacella)
@@ -471,45 +498,74 @@ class TestSCMCube(object):
             test_areacella_input = None
 
         if valid_areacella == "valid":
-            expected = broadcast_to_shape(
-                test_sftlf_cube.cube.data,
-                test_cube.cube.shape,
-                [test_cube._lat_dim_number, test_cube._lon_dim_number],
-            )
-        else:
-            expected = iris.analysis.cartography.area_weights(test_cube.cube)
-
-        if valid_areacella == "valid":
             result = test_cube._get_area_weights(areacella_cube=test_areacella_input)
             if input_format is None:
                 test_cube.get_metadata_cube.assert_called_with(areacella_var)
         else:
-            expected_warn = re.escape(
+            with pytest.warns(None) as record:
+                result = test_cube._get_area_weights()
+            test_cube.get_metadata_cube.assert_called_with(areacella_var)
+
+            fallback_warn = re.escape(
                 "Couldn't find/use areacella_cube, falling back to "
                 "iris.analysis.cartography.area_weights"
             )
             radius_warn = re.escape("Using DEFAULT_SPHERICAL_EARTH_RADIUS.")
-            with pytest.warns(Warning, match=expected_warn):
-                with pytest.warns(Warning, match=radius_warn):
-                    if valid_areacella == "iris_error":
-                        specific_warn = re.escape(
-                            "the sftlf_cube data must be the same shape as (or the "
-                            "transpose of) the cube's longitude-latitude grid"
-                        )
-                        with pytest.warns(Warning, match=specific_warn):
-                            result = test_cube._get_area_weights()
-                    elif valid_areacella == "misshaped":
-                        specific_warn = re.escape(
-                            "the sftlf_cube data must be the same shape as (or the "
-                            "transpose of) the cube's longitude-latitude grid"
-                        )
-                        with pytest.warns(Warning, match=specific_warn):
-                            result = test_cube._get_area_weights()
-                    else:
-                        specific_warn = re.escape("'str' object has no attribute 'cube'")
-                        with pytest.warns(Warning, match=specific_warn):
-                            result = test_cube._get_area_weights()
+            if valid_areacella == "iris_error":
+                specific_warn = re.escape(iris_error_msg)
+            elif valid_areacella == "misshaped":
+                specific_warn = re.escape(
+                    "the sftlf_cube data must be the same shape as (or the "
+                    "transpose of) the cube's longitude-latitude grid"
+                )
+            else:
+                specific_warn = re.escape("'str' object has no attribute 'cube'")
 
-            test_cube.get_metadata_cube.assert_called_with(areacella_var)
+            assert len(record) == 3
+            assert re.match(radius_warn, str(record[2].message))
+            assert re.match(fallback_warn, str(record[1].message))
+            assert re.match(specific_warn, str(record[0].message))
 
         np.testing.assert_array_equal(result, expected)
+
+    def test_convert_scm_timeseries_cubes_to_OpenSCMData(self, test_cube):
+        # TODO: test switches and errors
+        expected_calendar = "gregorian"
+
+        global_cube = type(test_cube)()
+        global_cube.cube = test_cube.cube.copy()
+        global_cube.cube.data = 2 * global_cube.cube.data
+        global_cube.cube = global_cube.cube.collapsed(
+            ["longitude", "latitude"], iris.analysis.MEAN
+        )
+
+        sh_ocean_cube = type(test_cube)()
+        sh_ocean_cube.cube = test_cube.cube.copy()
+        sh_ocean_cube.cube.data = 0.5 * sh_ocean_cube.cube.data
+        sh_ocean_cube.cube = sh_ocean_cube.cube.collapsed(
+            ["longitude", "latitude"], iris.analysis.MEAN
+        )
+
+        test_timeseries_cubes = {"GLOBAL": global_cube, "SH_OCEAN": sh_ocean_cube}
+
+        result = test_cube._convert_scm_timeseries_cubes_to_OpenSCMData(test_timeseries_cubes)
+
+        time = sh_ocean_cube.cube.dim_coords[0]
+        datetimes = cf_units.num2date(time.points, time.units.name, expected_calendar)
+        time_index = pd.Index(datetimes, dtype='object', name="Time")
+
+        expected_df = pd.DataFrame({"GLOBAL": global_cube.cube.data, "SH_OCEAN": sh_ocean_cube.cube.data}, index=time_index)
+
+        expected_df.columns = pd.MultiIndex.from_product(
+            [[test_cube.cube.standard_name], [test_cube.cube.units.name], expected_df.columns.tolist()],
+            names=["VARIABLE", "UNITS", "REGION"]
+        )
+        import pdb
+        pdb.set_trace()
+
+        expected = MAGICCData()
+        expected.df = expected_df
+        expected.metadata = {"calendar": expected_calendar}
+
+        assert result.metadata == expected.metadata
+        pd.testing.assert_frame_equal(result.df, expected.df)
