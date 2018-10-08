@@ -19,6 +19,7 @@ class _SCMCube(object):
     utilise its power you must use a subclass of it, which defines the methods
     which raise `NotImplementedError`'s in this class.
     """
+    _sftlf_var = "sftlf"
 
     def load_data(self, **kwargs):
         """
@@ -199,7 +200,7 @@ class _SCMCube(object):
 
         """
         if sftlf_cube is None:
-            sftlf_cube = self.get_metadata_cube("sftlf")
+            sftlf_cube = self.get_metadata_cube(self._sftlf_var)
 
         if isinstance(sftlf_cube, _SCMCube):
             sftlf_data = sftlf_cube.cube.data
@@ -208,7 +209,12 @@ class _SCMCube(object):
                 sftlf_cube, np.ndarray
             ), "sftlf_cube must be a numpy.ndarray if it's not an _SCMCube instance"
             sftlf_data = sftlf_cube
-        raise NotImplementedError()
+
+        return np.where(
+            sftlf_data > land_mask_threshold,
+            False,  # where it's land, return False i.e. don't mask
+            True,  # otherwise True
+        )
 
     def _get_nh_mask(self):
         """
