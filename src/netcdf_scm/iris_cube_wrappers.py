@@ -236,7 +236,21 @@ class _SCMCube(object):
         """
 
         """
-        raise NotImplementedError()
+        mask_nh_lat = np.array([
+            cell < 0
+            for cell in self.cube.coord(self._lat_name).cells()
+        ])
+        mask_all_lon = np.full(self.cube.coord(self._lon_name).points.shape, False)
+
+        # Here we make a grid which we can use as a mask. We have to use all
+        # of these nots so that our product (which uses AND logic) gives us
+        # False in the NH and True in the SH (another way to think of this is
+        # that we have to flip everything so False goes to True and True goes
+        # to False, do all our operations with AND logic, then flip everything
+        # back).
+        mask_nh = ~np.outer(~mask_nh_lat, ~mask_all_lon)
+
+        return mask_nh
 
     def _get_area_weights(self, areacella_cube=None):
         """

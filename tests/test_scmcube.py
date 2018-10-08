@@ -411,3 +411,18 @@ class TestSCMCube(object):
         test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
         with pytest.raises(AssertionError, match=error_msg):
             test_cube._get_land_mask(sftlf_cube=wrong_shape_data)
+
+    def test_get_nh_mask(
+        self,
+        test_cube,
+    ):
+        result = test_cube._get_nh_mask()
+        expected = np.array(
+            [
+                [False, False, False, False],
+                [False, False, False, False],
+                [True, True, True, True],
+            ]
+        )
+
+        np.testing.assert_array_equal(result, expected)
