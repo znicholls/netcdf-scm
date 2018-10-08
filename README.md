@@ -59,7 +59,7 @@
 <br>
 
 
-Python wrappers for processing netCDF files for use with simple climate models.
+Python wrappers for processing netCDF files for use with simple climate models, built on top of the [Iris](https://github.com/SciTools/iris) package.
 
 
 ## Why is there a `Makefile` in a pure Python repository?
