@@ -9,6 +9,9 @@
 **Warning: `netcdf_scm` is still under heavy development so things are likely to change fast**
 
 <p align="center">
+<a href="https://travis-ci.org/znicholls/netcdf-scm/branches">
+<img src="https://travis-ci.org/znicholls/netcdf-scm.svg?branch=master"
+     alt="Travis-CI" /></a>
 <a href="https://codecov.io/gh/znicholls/netcdf-scm">
 <img src="https://img.shields.io/codecov/c/github/znicholls/netcdf-scm.svg"
      alt="Code coverage"/></a>
@@ -45,9 +48,6 @@
 <a href="https://github.com/znicholls/netcdf-scm/graphs/contributors">
 <img src="https://img.shields.io/github/contributors/znicholls/netcdf-scm.svg"
      alt="# contributors" /></a>
-<a href="https://travis-ci.org/znicholls/netcdf-scm/branches">
-<img src="https://travis-ci.org/znicholls/netcdf-scm.svg?branch=master"
-     alt="Travis-CI" /></a>
 <!-- DOI -->
 <!-- <a href="https://zenodo.org/badge/latestdoi/5312648">
 <img src="https://zenodo.org/badge/5312648.svg"
