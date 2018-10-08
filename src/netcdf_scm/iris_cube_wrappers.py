@@ -10,6 +10,7 @@ import re
 import iris
 from iris.util import broadcast_to_shape
 import iris.analysis.cartography
+import cf_units
 from pymagicc.io import MAGICCData
 
 
@@ -155,7 +156,7 @@ class _SCMCube(object):
             land_mask_threshold=land_mask_threshold,
             areacella_cube=areacella_cube,
         )
-        # TODO: actually use openscm DataFrame as return value
+
         return self._convert_scm_timeseries_cubes_to_OpenSCMData(scm_timeseries_cubes)
 
     def get_scm_timeseries_cubes(
@@ -177,7 +178,7 @@ class _SCMCube(object):
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
-        area_weights = self._get_area_weights(self, areacella_cube=areacella_cube)
+        area_weights = self._get_area_weights(areacella_cube=areacella_cube)
 
         return {
             k: take_mean(self.cube, mask, area_weights) for k, mask in scm_masks.items()
@@ -240,11 +241,7 @@ class _SCMCube(object):
         )
         assert array_in.shape == base_shape, shape_assert_msg
 
-        return broadcast_to_shape(
-            array_in,
-            self.cube.shape,
-            dim_order,
-        )
+        return broadcast_to_shape(array_in, self.cube.shape, dim_order)
 
     def _get_nh_mask(self):
         """
@@ -274,12 +271,18 @@ class _SCMCube(object):
             try:
                 areacella_cube = self.get_metadata_cube(self._areacella_var)
                 if not isinstance(areacella_cube.cube, iris.cube.Cube):
-                    warnings.warn("areacella cube which was found has cube attribute which isn't an iris cube")
+                    warnings.warn(
+                        "areacella cube which was found has cube attribute which isn't an iris cube"
+                    )
                     use_self_area_weights = False
             except iris.exceptions.ConstraintMismatchError as exc:
+                # import pdb
+                # pdb.set_trace()
                 warnings.warn(str(exc))
                 use_self_area_weights = False
             except AttributeError as exc:
+                # import pdb
+                # pdb.set_trace()
                 warnings.warn(str(exc))
                 use_self_area_weights = False
 
@@ -293,7 +296,6 @@ class _SCMCube(object):
             "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
         )
         return iris.analysis.cartography.area_weights(self.cube)
-
 
     @property
     def _lon_dim(self):
@@ -311,13 +313,52 @@ class _SCMCube(object):
     def _lat_dim_number(self):
         return self.cube.coord_dims(self._lat_name)[0]
 
-
-
-    def _convert_scm_timeseries_cubes_to_OpenSCMData(self, scm_timeseries_cubes):
+    def _convert_scm_timeseries_cubes_to_OpenSCMData(self, scm_timeseries_cubes,
+            out_calendar = "gregorian"):
         """
 
         """
-        raise NotImplementedError()
+
+        def assert_only_time(cube):
+            assert_msg = "Should only have time coordinate here"
+            assert len(cube.dim_coords) == 1, assert_msg
+            assert cube.dim_coords[0].standard_name == "time"
+
+        def get_timeseries_data(scm_cube):
+            cube = scm_cube.cube
+            assert_only_time(cube)
+
+            return cube.data
+
+        def get_time_axis(scm_cube, calendar):
+            cube = scm_cube.cube
+            assert_only_time(cube)
+            time = cube.dim_coords[0]
+
+            return cf_units.num2date(time.points, time.units.name, calendar)
+
+        data = {k: get_timeseries_data(v) for k, v in scm_timeseries_cubes.items()}
+
+        time_axes = [
+            get_time_axis(scm_cube, out_calendar)
+            for k, scm_cube in scm_timeseries_cubes.items()
+        ]
+        # As we sometimes have to deal with long timeseries, we force the index to be
+        # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
+        # pandas limitation, see
+        # http://pandas-docs.github.io/pandas-docs-travis/timeseries.html#timestamp-limitations
+        time_index = pd.Index(time_axes[0], dtype='object', name="Time")
+        for time_axis_to_check in time_axes:
+            assert_msg = "all the time axes should be the same"
+            np.testing.assert_array_equal(time_axis_to_check, time_index.values), assert_msg
+
+        output = MAGICCData()
+        output.df = pd.DataFrame(
+            data,
+            index=time_index
+        )
+        output.metadata["calendar"] = out_calendar
+        return output
 
 
 class MarbleCMIP5Cube(_SCMCube):
