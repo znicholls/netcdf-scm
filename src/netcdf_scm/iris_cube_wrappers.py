@@ -19,7 +19,10 @@ class _SCMCube(object):
     utilise its power you must use a subclass of it, which defines the methods
     which raise `NotImplementedError`'s in this class.
     """
+
     _sftlf_var = "sftlf"
+    _lat_name = "latitude"
+    _lon_name = "longitude"
 
     def load_data(self, **kwargs):
         """
@@ -165,7 +168,7 @@ class _SCMCube(object):
             out_cube.data.mask = in_mask
 
             return out_cube.collapsed(
-                ["latitude", "longitude"], iris.analysis.MEAN, weights=in_weights
+                [self._lat_name, self._lon_name], iris.analysis.MEAN, weights=in_weights
             )
 
         scm_masks = self._get_scm_masks(
@@ -208,7 +211,20 @@ class _SCMCube(object):
             assert isinstance(
                 sftlf_cube, np.ndarray
             ), "sftlf_cube must be a numpy.ndarray if it's not an _SCMCube instance"
+
             sftlf_data = sftlf_cube
+
+        lon_length = len(self.cube.coord(self._lat_name).points)
+        lat_length = len(self.cube.coord(self._lon_name).points)
+
+        if sftlf_data.shape != (lon_length, lat_length):
+            sftlf_data = np.transpose(sftlf_data)
+
+        shape_assert_msg = (
+            "the sftlf_cube data must be the same shape as (or the transpose of) the "
+            "cube's longitude-latitude grid"
+        )
+        assert sftlf_data.shape == (lon_length, lat_length), shape_assert_msg
 
         return np.where(
             sftlf_data > land_mask_threshold,
