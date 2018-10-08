@@ -289,4 +289,124 @@ class TestSCMCube(object):
         assert result == expected
 
     def test_get_scm_masks(self, test_cube):
-        assert False
+        tsftlf_cube = "mocked 124"
+        tland_mask_threshold = "mocked 51"
+
+        land_mask = np.array(
+            [
+                [False, True, True, False],
+                [False, True, False, True],
+                [False, False, True, False],
+            ]
+        )
+        nh_mask = np.array(
+            [
+                [False, False, False, False],
+                [False, False, False, False],
+                [True, True, True, True],
+            ]
+        )
+
+        test_cube._get_land_mask = MagicMock(return_value=land_mask)
+        test_cube._get_nh_mask = MagicMock(return_value=nh_mask)
+
+        nh_land_mask = np.array(
+            [
+                [False, True, True, False],
+                [False, True, False, True],
+                [True, True, True, True],
+            ]
+        )
+        # check our logic while we're here
+        np.testing.assert_array_equal(nh_land_mask, np.logical_or(nh_mask, land_mask))
+
+        expected = {
+            "GLOBAL": np.full(nh_mask.shape, False),
+            "NH_LAND": nh_land_mask,
+            "SH_LAND": np.logical_or(~nh_mask, land_mask),
+            "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
+            "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
+        }
+
+        result = test_cube._get_scm_masks(
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+        )
+
+        for label, array in result.items():
+            np.testing.assert_array_equal(array, expected[label])
+        test_cube._get_land_mask.assert_called_with(
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+        )
+        test_cube._get_nh_mask.assert_called_with()
+
+    # # TODO: test error raising too
+    # @pytest.mark.parametrize("input_format", ["nparray", "scmcube", None])
+    # @pytest.mark.parametrize(
+    #     "test_threshold",
+    #     [(None), (0), (10), (30), (49), (49.9), (50), (50.1), (51), (60), (75), (100)],
+    # )
+    # def test_get_scm_masks(self, test_cube, test_threshold, input_format):
+    #     assert False
+    #     sftlf_var = "sftlf"
+    #     test_cube._sftlf_var_name = sftlf_var
+
+    #     test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
+
+    #     if input_format is "nparray":
+    #         test_land_fraction_input = test_sftlf_cube.cube.data
+    #     elif input_format is "scmcube":
+    #         test_land_fraction_input = test_sftlf_cube
+    #     else:
+    #         test_land_fraction_input = None
+
+    #     land_mask = np.array(
+    #         [
+    #             [False, True, True, False],
+    #             [False, True, False, True],
+    #             [False, False, True, False],
+    #         ]
+    #     )
+    #     nh_mask = np.array(
+    #         [
+    #             [False, False, False, False],
+    #             [False, False, False, False],
+    #             [True, True, True, True],
+    #         ]
+    #     )
+
+    #     expected = {
+    #         "GLOBAL": np.full(nh_mask.shape, False),
+    #         "NH_LAND": np.logical_or(nh_mask, land_mask),
+    #         "SH_LAND": np.logical_or(~nh_mask, land_mask),
+    #         "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
+    #         "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
+    #     }
+
+    #     if test_threshold is None:
+    #         result = test_cube.get_scm_timeseries(test_land_fraction_input)
+    #         # default land fraction is 50%
+    #         test_threshold = 50
+    #     else:
+    #         result = test_cube.get_scm_timeseries(test_land_fraction_input)
+
+    #     # having got the result, we can now update test_land_fraction_input
+    #     # for our assertions
+    #     if test_land_fraction_input is None:
+    #         test_land_fraction_input = test_sftlf_cube
+
+    #     if input_format is None:
+    #         test_cube.get_metadata_cube.assert_called_with(sftlf_var)
+    #     else:
+    #         test_cube.get_metadata_cube.assert_not_called()
+
+    #     if input_format is "nparray":
+    #         # assert called with fails if you give a numpy array, it complains
+    #         # about ambiguous values of truth arrays hence this is the best we
+    #         # can do
+    #         assert test_cube.get_scm_timeseries_cubes.call_count == 1
+    #     else:
+    #         test_cube.get_scm_timeseries_cubes.assert_called_with(
+    #             sftlf_cube=test_sftlf_cube, land_mask_threshold=test_threshold
+    #         )
+
+    #     assert result == expected
