@@ -157,6 +157,7 @@ class _SCMCube(object):
         """
 
         """
+
         def take_mean(in_cube, in_mask, in_weights):
             out_cube = deepcopy(in_cube)
             out_cube.data = np.ma.asarray(out_cube.data)
