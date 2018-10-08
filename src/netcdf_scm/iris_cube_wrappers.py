@@ -181,8 +181,39 @@ class _SCMCube(object):
         """
 
         """
+        land_mask = self._get_land_mask(
+            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
+        )
+        nh_mask = self._get_nh_mask()
+
+        return {
+            "GLOBAL": np.full(nh_mask.shape, False),
+            "NH_LAND": np.logical_or(nh_mask, land_mask),
+            "SH_LAND": np.logical_or(~nh_mask, land_mask),
+            "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
+            "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
+        }
+
+    def _get_land_mask(self, sftlf_cube=None, land_mask_threshold=50):
+        """
+
+        """
         if sftlf_cube is None:
             sftlf_cube = self.get_metadata_cube("sftlf")
+
+        if isinstance(sftlf_cube, _SCMCube):
+            sftlf_data = sftlf_cube.cube.data
+        else:
+            assert isinstance(
+                sftlf_cube, np.ndarray
+            ), "sftlf_cube must be a numpy.ndarray if it's not an _SCMCube instance"
+            sftlf_data = sftlf_cube
+        raise NotImplementedError()
+
+    def _get_nh_mask(self):
+        """
+
+        """
         raise NotImplementedError()
 
     def _get_area_weights(self, areacella_cube=None):
