@@ -139,6 +139,15 @@ def test_sftlf_cube(request):
 class TestSCMCube(object):
     tclass = SCMCube
 
+    def run_test_of_method_to_overload(
+        self, test_cube, method_to_overload, junk_args={}
+    ):
+        if type(test_cube) is SCMCube:
+            with pytest.raises(NotImplementedError):
+                getattr(test_cube, method_to_overload)(**junk_args)
+        else:
+            assert False, "Overload {} in your subclass".format(method_to_overload)
+
     @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
     def test_load_data(self, mock_iris_load_cube, test_cube):
         tfile = "hello_world_test.nc"
@@ -182,9 +191,9 @@ class TestSCMCube(object):
             return_value=test_constraint
         )
 
-        test_cube.get_metadata_cube = MagicMock(
-            return_value=iris.load_cube(TEST_AREACELLA_FILE)
-        )
+        tmdata_scmcube = type(test_cube)()
+        tmdata_scmcube.cube = iris.load_cube(TEST_AREACELLA_FILE)
+        test_cube.get_metadata_cube = MagicMock(return_value=tmdata_scmcube)
 
         tkwargs = {
             "variable_name": "fco2antt",
@@ -224,31 +233,25 @@ class TestSCMCube(object):
             test_cube.load_data(mocked_out="mocked")
 
     def test_get_file_from_load_data_args(self, test_cube):
-        with pytest.raises(NotImplementedError):
-            test_cube.get_file_from_load_data_args(a="junk")
+        self.run_test_of_method_to_overload(test_cube, "get_file_from_load_data_args")
 
     def test_get_variable_constraint_from_load_data_args(self, test_cube):
-        if isinstance(test_cube, SCMCube):
-            with pytest.raises(NotImplementedError):
-                test_cube.get_variable_constraint_from_load_data_args(a="junk")
-        else:
-            assert False, (
-                "Overload this method in your subclass test to ensure that "
-                "the return value satisfies `isinstance(return_value, "
-                "iris.Constraint)`"
-            )
+        self.run_test_of_method_to_overload(
+            test_cube, "get_variable_constraint_from_load_data_args"
+        )
 
     def test_get_data_path(self, test_cube):
-        with pytest.raises(NotImplementedError):
-            test_cube._get_data_path()
+        self.run_test_of_method_to_overload(test_cube, "_get_data_path")
 
     def test_get_data_name(self, test_cube):
-        with pytest.raises(NotImplementedError):
-            test_cube._get_data_name()
+        self.run_test_of_method_to_overload(test_cube, "_get_data_name")
 
     def test_get_metadata_load_arguments(self, test_cube):
-        with pytest.raises(NotImplementedError):
-            test_cube._get_metadata_load_arguments("junk name")
+        self.run_test_of_method_to_overload(
+            test_cube,
+            "_get_metadata_load_arguments",
+            junk_args={"metadata_variable": "mdata_var"},
+        )
 
     @patch.object(tclass, "load_data")
     def test_get_metadata_cube(self, mock_load_data, test_cube):
@@ -267,7 +270,7 @@ class TestSCMCube(object):
     def test_get_scm_timeseries(self, test_sftlf_cube, test_cube):
         tsftlf_cube = "mocked 124"
         tland_mask_threshold = "mocked 51"
-        tareacella_cube = "mocked 4389"
+        tareacella_scmcube = "mocked 4389"
 
         test_cubes_return = {"NH_OCEAN": 4, "SH_LAND": 12}
         test_cube.get_scm_timeseries_cubes = MagicMock(return_value=test_cubes_return)
@@ -280,13 +283,13 @@ class TestSCMCube(object):
         result = test_cube.get_scm_timeseries(
             sftlf_cube=tsftlf_cube,
             land_mask_threshold=tland_mask_threshold,
-            areacella_cube=tareacella_cube,
+            areacella_scmcube=tareacella_scmcube,
         )
 
         test_cube.get_scm_timeseries_cubes.assert_called_with(
             sftlf_cube=tsftlf_cube,
             land_mask_threshold=tland_mask_threshold,
-            areacella_cube=tareacella_cube,
+            areacella_scmcube=tareacella_scmcube,
         )
         test_cube._convert_scm_timeseries_cubes_to_OpenSCMData.assert_called_with(
             test_cubes_return
@@ -297,7 +300,7 @@ class TestSCMCube(object):
     def test_get_scm_timeseries_cubes(self, test_cube):
         tsftlf_cube = "mocked 124"
         tland_mask_threshold = "mocked 51"
-        tareacella_cube = "mocked 4389"
+        tareacella_scmcube = "mocked 4389"
 
         land_mask = np.array(
             [
@@ -335,21 +338,28 @@ class TestSCMCube(object):
 
         expected = {}
         for label, mask in mocked_masks.items():
+            exp_cube = type(test_cube)()
+
             rcube = test_cube.cube.copy()
             rcube.data.mask = mask
-            expected[label] = rcube.collapsed(
+            exp_cube.cube = rcube.collapsed(
                 ["latitude", "longitude"], iris.analysis.MEAN, weights=mocked_weights
             )
+            expected[label] = exp_cube
 
         result = test_cube.get_scm_timeseries_cubes(
-            tsftlf_cube, tland_mask_threshold, tareacella_cube
+            tsftlf_cube, tland_mask_threshold, tareacella_scmcube
         )
 
-        assert result == expected
+        for label, cube in result.items():
+            assert cube.cube == expected[label].cube
+
         test_cube._get_scm_masks.assert_called_with(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
         )
-        test_cube._get_area_weights.assert_called_with(areacella_cube=tareacella_cube)
+        test_cube._get_area_weights.assert_called_with(
+            areacella_scmcube=tareacella_scmcube
+        )
 
     def test_get_scm_masks(self, test_cube):
         tsftlf_cube = "mocked 124"
@@ -550,7 +560,7 @@ class TestSCMCube(object):
             test_areacella_input = None
 
         if valid_areacella == "valid":
-            result = test_cube._get_area_weights(areacella_cube=test_areacella_input)
+            result = test_cube._get_area_weights(areacella_scmcube=test_areacella_input)
             if input_format is None:
                 test_cube.get_metadata_cube.assert_called_with(areacella_var)
         else:
@@ -582,7 +592,7 @@ class TestSCMCube(object):
 
     def test_convert_scm_timeseries_cubes_to_OpenSCMData(self, test_cube):
         # TODO: test switches and errors
-        expected_calendar = "gregorian"
+        expected_calendar = test_cube.cube.coords("time")[0].units.calendar
 
         global_cube = type(test_cube)()
         global_cube.cube = test_cube.cube.copy()
@@ -646,6 +656,41 @@ class TestMarbleCMIP5Cube(TestSCMCube):
     ttime_period = "185001-198912"
     tfile_ext = ".nc"
 
+    def test_get_file_from_load_data_args(self, test_cube):
+        tkwargs_list = [
+            "root_dir",
+            "activity",
+            "experiment",
+            "modeling_realm",
+            "variable_name",
+            "model",
+            "ensemble_member",
+            "time_period",
+            "file_ext",
+        ]
+        tkwargs = {k: getattr(self, "t" + k) for k in tkwargs_list}
+
+        mock_data_path = "here/there/everywhere"
+        test_cube._get_data_path = MagicMock(return_value=mock_data_path)
+
+        mock_data_name = "here_there_file.nc"
+        test_cube._get_data_name = MagicMock(return_value=mock_data_name)
+
+        for kwarg in tkwargs_list:
+            with pytest.raises(AttributeError):
+                getattr(test_cube, kwarg)
+
+        result = test_cube.get_file_from_load_data_args(**tkwargs)
+        expected = join(mock_data_path, mock_data_name)
+
+        assert result == expected
+
+        for kwarg in tkwargs_list:
+            assert getattr(test_cube, kwarg) == tkwargs[kwarg]
+
+        test_cube._get_data_path.assert_called_once()
+        test_cube._get_data_name.assert_called_once()
+
     def test_get_data_path(self, test_cube):
         expected = join(
             self.troot_dir,
@@ -674,16 +719,18 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         assert result == expected
 
     def test_get_data_name(self, test_cube):
-        expected = "_".join(
-            [
-                self.tvariable_name,
-                self.tmodeling_realm,
-                self.tmodel,
-                self.texperiment,
-                self.tensemble_member,
-                self.ttime_period,
-                self.tfile_ext,
-            ]
+        expected = (
+            "_".join(
+                [
+                    self.tvariable_name,
+                    self.tmodeling_realm,
+                    self.tmodel,
+                    self.texperiment,
+                    self.tensemble_member,
+                    self.ttime_period,
+                ]
+            )
+            + self.tfile_ext
         )
 
         atts_to_set = [
@@ -699,5 +746,61 @@ class TestMarbleCMIP5Cube(TestSCMCube):
             setattr(test_cube, att, getattr(self, "t" + att))
 
         result = test_cube._get_data_name()
+
+        assert result == expected
+
+    def test_get_variable_constraint_from_load_data_args(self, test_cube):
+        tkwargs_list = [
+            "root_dir",
+            "activity",
+            "experiment",
+            "modeling_realm",
+            "variable_name",
+            "model",
+            "ensemble_member",
+            "time_period",
+            "file_ext",
+        ]
+        tkwargs = {k: getattr(self, "t" + k) for k in tkwargs_list}
+
+        result = test_cube.get_variable_constraint_from_load_data_args(**tkwargs)
+        assert isinstance(result, iris.Constraint)
+
+        # impossible to do other tests as far as I can tell because you have to pass a
+        # local function in both the test and the argument, help welcome. expected is
+        # here.
+        expected = iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str(tkwargs_list["variable_name"]))
+        )
+
+    def test_get_metadata_load_arguments(self, test_cube):
+        tmetadata_var = "mdata_var"
+        atts_to_set = [
+            "root_dir",
+            "activity",
+            "experiment",
+            "modeling_realm",
+            "variable_name",
+            "model",
+            "ensemble_member",
+            "time_period",
+            "file_ext",
+        ]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        expected = {
+            "root_dir": test_cube.root_dir,
+            "activity": test_cube.activity,
+            "experiment": test_cube.experiment,
+            "modeling_realm": "fx",
+            "variable_name": tmetadata_var,
+            "model": test_cube.model,
+            "ensemble_member": "r0i0p0",
+            "time_period": None,
+            "file_ext": test_cube.file_ext,
+        }
+
+        result = test_cube._get_metadata_load_arguments(tmetadata_var)
 
         assert result == expected

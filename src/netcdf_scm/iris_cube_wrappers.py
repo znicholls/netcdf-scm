@@ -2,8 +2,7 @@ from os import listdir
 from os.path import join, splitext, basename, isdir
 from datetime import datetime
 import warnings
-from contextlib import redirect_stderr
-import io
+import traceback
 
 import numpy as np
 import pandas as pd
@@ -56,7 +55,8 @@ class SCMCube(object):
             for warn in w:
                 if area_cell_warn in str(warn.message):
                     try:
-                        areacella_cube = self.get_metadata_cube(self._areacella_var)
+                        areacella_scmcube = self.get_metadata_cube(self._areacella_var)
+                        areacella_cube = areacella_scmcube.cube
                         areacella_measure = iris.coords.CellMeasure(
                             areacella_cube.data,
                             standard_name=areacella_cube.standard_name,
@@ -70,8 +70,12 @@ class SCMCube(object):
                             areacella_measure,
                             data_dims=[self._lat_dim_number, self._lon_dim_number],
                         )
-                    except:
-                        warnings.warn(warn.message)
+                    except Exception as exc:
+                        custom_warn = "Tried to find areacella cube, failed as shown:\n"
+                        warnings.warn(custom_warn)
+                        traceback.print_exc()
+                        warn_message = "\n\nareacella warning:\n" + str(warn.message)
+                        warnings.warn(warn_message)
                 else:
                     warnings.warn(warn.message)
 
@@ -154,7 +158,7 @@ class SCMCube(object):
 
     def _get_metadata_load_arguments(self, metadata_variable):
         """
-        Get the name of a metadata file from self's attributes.
+        Get the arguments to load a metadata file from self's attributes.
 
         This can take multiple forms, it may just return a previously set
         metada_filename attribute or it could combine a number of different
@@ -172,7 +176,7 @@ class SCMCube(object):
         raise NotImplementedError()
 
     def get_scm_timeseries(
-        self, sftlf_cube=None, land_mask_threshold=50, areacella_cube=None
+        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
     ):
         """
 
@@ -180,35 +184,35 @@ class SCMCube(object):
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
             sftlf_cube=sftlf_cube,
             land_mask_threshold=land_mask_threshold,
-            areacella_cube=areacella_cube,
+            areacella_scmcube=areacella_scmcube,
         )
 
         return self._convert_scm_timeseries_cubes_to_OpenSCMData(scm_timeseries_cubes)
 
     def get_scm_timeseries_cubes(
-        self, sftlf_cube=None, land_mask_threshold=50, areacella_cube=None
+        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
     ):
         """
-
+        Returns SCMCubes
         """
 
-        def take_mean(in_cube, in_mask, in_weights):
-            out_cube = in_cube.copy()
-            out_cube.data = np.ma.asarray(out_cube.data)
-            out_cube.data.mask = in_mask
+        def take_mean(in_scmcube, in_mask, in_weights):
+            out_cube = type(in_scmcube)()
+            out_cube.cube = in_scmcube.cube.copy()
+            out_cube.cube.data = np.ma.asarray(out_cube.cube.data)
+            out_cube.cube.data.mask = in_mask
 
-            return out_cube.collapsed(
+            out_cube.cube = out_cube.cube.collapsed(
                 [self._lat_name, self._lon_name], iris.analysis.MEAN, weights=in_weights
             )
+            return out_cube
 
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
-        area_weights = self._get_area_weights(areacella_cube=areacella_cube)
+        area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
 
-        return {
-            k: take_mean(self.cube, mask, area_weights) for k, mask in scm_masks.items()
-        }
+        return {k: take_mean(self, mask, area_weights) for k, mask in scm_masks.items()}
         raise NotImplementedError()
 
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
@@ -288,15 +292,15 @@ class SCMCube(object):
 
         return self._broadcast_onto_self_lat_lon_grid(mask_nh)
 
-    def _get_area_weights(self, areacella_cube=None):
+    def _get_area_weights(self, areacella_scmcube=None):
         """
 
         """
         use_self_area_weights = True
-        if areacella_cube is None:
+        if areacella_scmcube is None:
             try:
-                areacella_cube = self.get_metadata_cube(self._areacella_var)
-                if not isinstance(areacella_cube.cube, iris.cube.Cube):
+                areacella_scmcube = self.get_metadata_cube(self._areacella_var)
+                if not isinstance(areacella_scmcube.cube, iris.cube.Cube):
                     warnings.warn(
                         "areacella cube which was found has cube attribute which isn't an iris cube"
                     )
@@ -314,7 +318,8 @@ class SCMCube(object):
 
         if use_self_area_weights:
             try:
-                return self._broadcast_onto_self_lat_lon_grid(areacella_cube.cube.data)
+                areacella_cube = areacella_scmcube.cube
+                return self._broadcast_onto_self_lat_lon_grid(areacella_cube.data)
             except AssertionError as exc:
                 warnings.warn(str(exc))
 
@@ -340,29 +345,28 @@ class SCMCube(object):
         return self.cube.coord_dims(self._lat_name)[0]
 
     def _convert_scm_timeseries_cubes_to_OpenSCMData(
-        self, scm_timeseries_cubes, out_calendar="gregorian"
+        self, scm_timeseries_cubes, out_calendar=None
     ):
         """
 
         """
 
-        def assert_only_time(cube):
+        def assert_only_time(scm_cube):
             assert_msg = "Should only have time coordinate here"
-            assert len(cube.dim_coords) == 1, assert_msg
-            assert cube.dim_coords[0].standard_name == "time"
+            assert len(scm_cube.cube.dim_coords) == 1, assert_msg
+            assert scm_cube.cube.dim_coords[0].standard_name == "time"
 
         def get_timeseries_data(scm_cube):
-            cube = scm_cube.cube
-            assert_only_time(cube)
-
-            return cube.data
+            assert_only_time(scm_cube)
+            return scm_cube.cube.data
 
         def get_time_axis(scm_cube, calendar):
-            cube = scm_cube.cube
-            assert_only_time(cube)
-            time = cube.dim_coords[0]
-
+            assert_only_time(scm_cube)
+            time = scm_cube.cube.dim_coords[0]
             return cf_units.num2date(time.points, time.units.name, calendar)
+
+        if out_calendar is None:
+            out_calendar = self.cube.coords("time")[0].units.calendar
 
         data = {k: get_timeseries_data(v) for k, v in scm_timeseries_cubes.items()}
 
@@ -415,13 +419,14 @@ class MarbleCMIP5Cube(SCMCube):
         variable_name="tas",
         model="CanESM2",
         ensemble_member="r1i1p1",
+        time_period=None,
+        file_ext=None,
     ):
         """
         Get the full filepath of the data to load from the arguments passed to `self.load_data`.
 
-        This function should, in most cases, call `self._get_data_path` and
-        `self._get_data_name`.
-
+        TODO: implement fancy stuff like working out time period and file extension
+        TODO: rewrite Parameters
         # Parameters
         kwargs (dict): arguments, initially passed to `self.load_data` from
             which the full filepath of the file to load should be determined.
@@ -429,6 +434,14 @@ class MarbleCMIP5Cube(SCMCube):
         # Returns
         fullpath (str): the full filepath (path and name) of the file to load.
         """
+        # if this ever gets more complicated, use the solution here
+        # http://kbyanc.blogspot.com/2007/07/python-aggregating-function-arguments.html
+        inargs = locals()
+        del inargs["self"]
+
+        for name, value in inargs.items():
+            setattr(self, name, value)
+
         return join(self._get_data_path(), self._get_data_name())
 
     def _get_data_path(self):
@@ -457,14 +470,65 @@ class MarbleCMIP5Cube(SCMCube):
         data_name (str): name of the data file from which this cube has been/
             will be loaded
         """
-        return "_".join(
-            [
-                self.variable_name,
-                self.modeling_realm,
-                self.model,
-                self.experiment,
-                self.ensemble_member,
-                self.time_period,
-                self.file_ext,
-            ]
+        bits_to_join = [
+            self.variable_name,
+            self.modeling_realm,
+            self.model,
+            self.experiment,
+            self.ensemble_member,
+        ]
+        # TODO: test this switch
+        if self.time_period is not None:
+            bits_to_join.append(self.time_period)
+
+        return "_".join(bits_to_join) + self.file_ext
+
+    def get_variable_constraint_from_load_data_args(
+        self, variable_name="tas", **kwargs
+    ):
+        """
+        Get the iris variable constraint to use when loading data with `self.load_data`
+
+        TODO: rewrite Parameters
+        # Parameters
+        kwargs (dict): arguments, initially passed to `self.load_data` from
+            which the full filepath of the file to load should be determined.
+
+        # Returns
+        var_constraint (iris.Constraint): constraint to use which ensures that
+            only the variable of interest is loaded.
+        """
+        # thank you Duncan!!
+        # https://github.com/SciTools/iris/issues/2107#issuecomment-246644471
+        return iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str(variable_name))
         )
+
+    def _get_metadata_load_arguments(self, metadata_variable):
+        """
+        Get the arguments to load a metadata file from self's attributes.
+
+        This can take multiple forms, it may just return a previously set
+        metada_filename attribute or it could combine a number of different
+        metadata elements (e.g. model name, experiment name) to create the
+        metadata filename.
+
+        # Parameters
+        metadata_variable (str): the name of the metadata variable to get, as
+            it appears in the filename.
+
+        # Returns
+        load_args (dict): dictionary containing all the arguments to pass to
+            `self.load_data` required to load the desired metadata cube.
+        """
+        return {
+            "root_dir": self.root_dir,
+            "activity": self.activity,
+            "experiment": self.experiment,
+            "modeling_realm": "fx",
+            "variable_name": metadata_variable,
+            "model": self.model,
+            "ensemble_member": "r0i0p0",
+            "time_period": None,
+            "file_ext": self.file_ext,
+        }
