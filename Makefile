@@ -24,7 +24,7 @@ endef
 .PHONY: test
 test:
 	$(call activate_conda_env,); \
-		pytest
+		pytest --cov -rfsxEX
 
 .PHONY: flake8
 flake8:
