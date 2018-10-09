@@ -548,20 +548,27 @@ class TestSCMCube(object):
 
         test_timeseries_cubes = {"GLOBAL": global_cube, "SH_OCEAN": sh_ocean_cube}
 
-        result = test_cube._convert_scm_timeseries_cubes_to_OpenSCMData(test_timeseries_cubes)
+        result = test_cube._convert_scm_timeseries_cubes_to_OpenSCMData(
+            test_timeseries_cubes
+        )
 
         time = sh_ocean_cube.cube.dim_coords[0]
         datetimes = cf_units.num2date(time.points, time.units.name, expected_calendar)
-        time_index = pd.Index(datetimes, dtype='object', name="Time")
+        time_index = pd.Index(datetimes, dtype="object", name="Time")
 
-        expected_df = pd.DataFrame({"GLOBAL": global_cube.cube.data, "SH_OCEAN": sh_ocean_cube.cube.data}, index=time_index)
+        expected_df = pd.DataFrame(
+            {"GLOBAL": global_cube.cube.data, "SH_OCEAN": sh_ocean_cube.cube.data},
+            index=time_index,
+        )
 
         expected_df.columns = pd.MultiIndex.from_product(
-            [[test_cube.cube.standard_name], [test_cube.cube.units.name], expected_df.columns.tolist()],
-            names=["VARIABLE", "UNITS", "REGION"]
+            [
+                [test_cube.cube.standard_name],
+                [test_cube.cube.units.name],
+                expected_df.columns.tolist(),
+            ],
+            names=["VARIABLE", "UNITS", "REGION"],
         )
-        import pdb
-        pdb.set_trace()
 
         expected = MAGICCData()
         expected.df = expected_df
