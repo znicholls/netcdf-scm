@@ -643,7 +643,8 @@ class TestMarbleCMIP5Cube(TestSCMCube):
     tvariable_name = "tas"
     tmodel = "CanESM2"
     tensemble_member = "r1i1p1"
-    texpected_time_period = "185001-198912"
+    ttime_period = "185001-198912"
+    tfile_ext = ".nc"
 
     def test_get_data_path(self, test_cube):
         expected = join(
@@ -672,4 +673,31 @@ class TestMarbleCMIP5Cube(TestSCMCube):
 
         assert result == expected
 
-    # test error too
+    def test_get_data_name(self, test_cube):
+        expected = "_".join(
+            [
+                self.tvariable_name,
+                self.tmodeling_realm,
+                self.tmodel,
+                self.texperiment,
+                self.tensemble_member,
+                self.ttime_period,
+                self.tfile_ext,
+            ]
+        )
+
+        atts_to_set = [
+            "experiment",
+            "modeling_realm",
+            "variable_name",
+            "model",
+            "ensemble_member",
+            "time_period",
+            "file_ext",
+        ]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        result = test_cube._get_data_name()
+
+        assert result == expected
