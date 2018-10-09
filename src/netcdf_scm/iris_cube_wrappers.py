@@ -313,8 +313,9 @@ class _SCMCube(object):
     def _lat_dim_number(self):
         return self.cube.coord_dims(self._lat_name)[0]
 
-    def _convert_scm_timeseries_cubes_to_OpenSCMData(self, scm_timeseries_cubes,
-            out_calendar = "gregorian"):
+    def _convert_scm_timeseries_cubes_to_OpenSCMData(
+        self, scm_timeseries_cubes, out_calendar="gregorian"
+    ):
         """
 
         """
@@ -347,16 +348,24 @@ class _SCMCube(object):
         # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
         # pandas limitation, see
         # http://pandas-docs.github.io/pandas-docs-travis/timeseries.html#timestamp-limitations
-        time_index = pd.Index(time_axes[0], dtype='object', name="Time")
+        time_index = pd.Index(time_axes[0], dtype="object", name="Time")
         for time_axis_to_check in time_axes:
             assert_msg = "all the time axes should be the same"
-            np.testing.assert_array_equal(time_axis_to_check, time_index.values), assert_msg
+            np.testing.assert_array_equal(
+                time_axis_to_check, time_index.values
+            ), assert_msg
 
         output = MAGICCData()
-        output.df = pd.DataFrame(
-            data,
-            index=time_index
+        output.df = pd.DataFrame(data, index=time_index)
+        output.df.columns = pd.MultiIndex.from_product(
+            [
+                [self.cube.standard_name],
+                [self.cube.units.name],
+                output.df.columns.tolist(),
+            ],
+            names=["VARIABLE", "UNITS", "REGION"],
         )
+
         output.metadata["calendar"] = out_calendar
         return output
 
