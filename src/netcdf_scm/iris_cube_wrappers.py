@@ -432,6 +432,13 @@ class MarbleCMIP5Cube(SCMCube):
         return join(self._get_data_path(), self._get_data_name())
 
     def _get_data_path(self):
+        """
+        Get the path to a data file from self's attributes.
+
+        # Returns
+        data_path (str): path to the data file from which this cube has been/
+            will be loaded
+        """
         return join(
             self.root_dir,
             self.activity,
@@ -440,4 +447,24 @@ class MarbleCMIP5Cube(SCMCube):
             self.variable_name,
             self.model,
             self.ensemble_member,
+        )
+
+    def _get_data_name(self):
+        """
+        Get the name of a data file from self's attributes.
+
+        # Returns
+        data_name (str): name of the data file from which this cube has been/
+            will be loaded
+        """
+        return "_".join(
+            [
+                self.variable_name,
+                self.modeling_realm,
+                self.model,
+                self.experiment,
+                self.ensemble_member,
+                self.time_period,
+                self.file_ext,
+            ]
         )
