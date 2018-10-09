@@ -18,7 +18,7 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 
 
-from netcdf_scm.iris_cube_wrappers import _SCMCube, MarbleCMIP5Cube
+from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
 
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test_data")
@@ -137,15 +137,15 @@ def test_sftlf_cube(request):
 
 
 class TestSCMCube(object):
-    tclass = _SCMCube
+    tclass = SCMCube
 
     @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
     def test_load_data(self, mock_iris_load_cube, test_cube):
         tfile = "hello_world_test.nc"
-        test_cube._get_file_from_load_data_args = MagicMock(return_value=tfile)
+        test_cube.get_file_from_load_data_args = MagicMock(return_value=tfile)
 
         vcons = 12.195
-        test_cube._get_variable_constraint_from_load_data_args = MagicMock(
+        test_cube.get_variable_constraint_from_load_data_args = MagicMock(
             return_value=vcons
         )
 
@@ -162,8 +162,8 @@ class TestSCMCube(object):
         }
         test_cube.load_data(**tkwargs)
 
-        test_cube._get_file_from_load_data_args.assert_called_with(**tkwargs)
-        test_cube._get_variable_constraint_from_load_data_args.assert_called_with(
+        test_cube.get_file_from_load_data_args.assert_called_with(**tkwargs)
+        test_cube.get_variable_constraint_from_load_data_args.assert_called_with(
             **tkwargs
         )
         mock_iris_load_cube.assert_called_with(tfile, vcons)
@@ -173,12 +173,12 @@ class TestSCMCube(object):
     # this is really an integration test, maybe should be moved/split...
     def test_load_data_and_areacella(self, test_cube):
         tfile = TEST_TAS_FILE
-        test_cube._get_file_from_load_data_args = MagicMock(return_value=tfile)
+        test_cube.get_file_from_load_data_args = MagicMock(return_value=tfile)
 
         test_constraint = iris.Constraint(
             cube_func=(lambda c: c.var_name == np.str("tas"))
         )
-        test_cube._get_variable_constraint_from_load_data_args = MagicMock(
+        test_cube.get_variable_constraint_from_load_data_args = MagicMock(
             return_value=test_constraint
         )
 
@@ -199,8 +199,8 @@ class TestSCMCube(object):
         # as that bug will be fixed
         assert len(record) == 6
 
-        test_cube._get_file_from_load_data_args.assert_called_with(**tkwargs)
-        test_cube._get_variable_constraint_from_load_data_args.assert_called_with(
+        test_cube.get_file_from_load_data_args.assert_called_with(**tkwargs)
+        test_cube.get_variable_constraint_from_load_data_args.assert_called_with(
             **tkwargs
         )
         test_cube.get_metadata_cube.assert_called_with(test_cube._areacella_var)
@@ -211,12 +211,12 @@ class TestSCMCube(object):
 
     def test_load_missing_variable_error(self, test_cube):
         tfile = TEST_TAS_FILE
-        test_cube._get_file_from_load_data_args = MagicMock(return_value=tfile)
+        test_cube.get_file_from_load_data_args = MagicMock(return_value=tfile)
 
         bad_constraint = iris.Constraint(
             cube_func=(lambda c: c.var_name == np.str("misnamed_var"))
         )
-        test_cube._get_variable_constraint_from_load_data_args = MagicMock(
+        test_cube.get_variable_constraint_from_load_data_args = MagicMock(
             return_value=bad_constraint
         )
 
@@ -225,12 +225,12 @@ class TestSCMCube(object):
 
     def test_get_file_from_load_data_args(self, test_cube):
         with pytest.raises(NotImplementedError):
-            test_cube._get_file_from_load_data_args(a="junk")
+            test_cube.get_file_from_load_data_args(a="junk")
 
     def test_get_variable_constraint_from_load_data_args(self, test_cube):
-        if isinstance(test_cube, _SCMCube):
+        if isinstance(test_cube, SCMCube):
             with pytest.raises(NotImplementedError):
-                test_cube._get_variable_constraint_from_load_data_args(a="junk")
+                test_cube.get_variable_constraint_from_load_data_args(a="junk")
         else:
             assert False, (
                 "Overload this method in your subclass test to ensure that "
@@ -461,7 +461,7 @@ class TestSCMCube(object):
 
     def test_get_land_mask_errors(self, test_cube, test_sftlf_cube):
         error_msg = re.escape(
-            r"sftlf_cube must be a numpy.ndarray if it's not an _SCMCube instance"
+            r"sftlf_cube must be a numpy.ndarray if it's not an SCMCube instance"
         )
         with pytest.raises(AssertionError, match=error_msg):
             test_cube._get_land_mask(sftlf_cube="fail string")
@@ -532,7 +532,7 @@ class TestSCMCube(object):
                 side_effect=ConstraintMismatchError(iris_error_msg)
             )
         elif valid_areacella == "misshaped":
-            misshaped_cube = _SCMCube
+            misshaped_cube = SCMCube
             misshaped_cube.cube = iris.cube.Cube(data=np.array([1, 2]))
             test_cube.get_metadata_cube = MagicMock(return_value=misshaped_cube)
         elif valid_areacella == "valid":
@@ -632,3 +632,44 @@ class TestSCMCube(object):
 
         assert result.metadata == expected.metadata
         pd.testing.assert_frame_equal(result.df, expected.df)
+
+
+class TestMarbleCMIP5Cube(TestSCMCube):
+    tclass = MarbleCMIP5Cube
+    troot_dir = TEST_DATA_MARBLE_CMIP5_DIR
+    tactivity = "cmip5"
+    texperiment = "1pctCO2"
+    tmodeling_realm = "Amon"
+    tvariable_name = "tas"
+    tmodel = "CanESM2"
+    tensemble_member = "r1i1p1"
+    texpected_time_period = "185001-198912"
+
+    def test_get_data_path(self, test_cube):
+        expected = join(
+            self.troot_dir,
+            self.tactivity,
+            self.texperiment,
+            self.tmodeling_realm,
+            self.tvariable_name,
+            self.tmodel,
+            self.tensemble_member,
+        )
+
+        atts_to_set = [
+            "root_dir",
+            "activity",
+            "experiment",
+            "modeling_realm",
+            "variable_name",
+            "model",
+            "ensemble_member",
+        ]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        result = test_cube._get_data_path()
+
+        assert result == expected
+
+    # test error too

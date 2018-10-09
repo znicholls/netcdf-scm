@@ -15,7 +15,7 @@ import cf_units
 from pymagicc.io import MAGICCData
 
 
-class _SCMCube(object):
+class SCMCube(object):
     """
     Provides the ability to process netCDF files for use in simple climate models.
 
@@ -35,7 +35,7 @@ class _SCMCube(object):
 
         # Parameters
         kwargs (dict): arguments which can then be processed by
-            `self._get_file_from_load_data_args` to determine the full
+            `self.get_file_from_load_data_args` to determine the full
             filepath of the file to load.
 
         # Side Effects
@@ -47,8 +47,8 @@ class _SCMCube(object):
         # load cube
         with warnings.catch_warnings(record=True) as w:
             self.cube = iris.load_cube(
-                self._get_file_from_load_data_args(**kwargs),
-                self._get_variable_constraint_from_load_data_args(**kwargs),
+                self.get_file_from_load_data_args(**kwargs),
+                self.get_variable_constraint_from_load_data_args(**kwargs),
             )
 
         if w:
@@ -75,7 +75,7 @@ class _SCMCube(object):
                 else:
                     warnings.warn(warn.message)
 
-    def _get_file_from_load_data_args(self, **kwargs):
+    def get_file_from_load_data_args(self, **kwargs):
         """
         Get the full filepath of the data to load from the arguments passed to `self.load_data`.
 
@@ -91,7 +91,7 @@ class _SCMCube(object):
         """
         raise NotImplementedError()
 
-    def _get_variable_constraint_from_load_data_args(self, **kwargs):
+    def get_variable_constraint_from_load_data_args(self, **kwargs):
         """
         Get the iris variable constraint to use when loading data with `self.load_data`
 
@@ -235,12 +235,12 @@ class _SCMCube(object):
         if sftlf_cube is None:
             sftlf_cube = self.get_metadata_cube(self._sftlf_var)
 
-        if isinstance(sftlf_cube, _SCMCube):
+        if isinstance(sftlf_cube, SCMCube):
             sftlf_data = sftlf_cube.cube.data
         else:
             assert isinstance(
                 sftlf_cube, np.ndarray
-            ), "sftlf_cube must be a numpy.ndarray if it's not an _SCMCube instance"
+            ), "sftlf_cube must be a numpy.ndarray if it's not an SCMCube instance"
 
             sftlf_data = sftlf_cube
 
@@ -396,10 +396,48 @@ class _SCMCube(object):
         return output
 
 
-class MarbleCMIP5Cube(_SCMCube):
+class MarbleCMIP5Cube(SCMCube):
     """
-    Subclass of `_SCMCube` which can be used with the `cmip5` directory on marble
+    Subclass of `SCMCube` which can be used with the `cmip5` directory on marble
 
     This directory structure is very similar, but not quite identical, to the
-    recommended CMIP5 directory structure.
+    recommended CMIP5 directory structure described in section 3.1 of the [CMIP5 Data
+    Reference Syntax]
+    (https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf)
     """
+
+    def get_file_from_load_data_args(
+        self,
+        root_dir=".",
+        activity="cmip5",
+        experiment="1pctCO2",
+        modeling_realm="Amon",
+        variable_name="tas",
+        model="CanESM2",
+        ensemble_member="r1i1p1",
+    ):
+        """
+        Get the full filepath of the data to load from the arguments passed to `self.load_data`.
+
+        This function should, in most cases, call `self._get_data_path` and
+        `self._get_data_name`.
+
+        # Parameters
+        kwargs (dict): arguments, initially passed to `self.load_data` from
+            which the full filepath of the file to load should be determined.
+
+        # Returns
+        fullpath (str): the full filepath (path and name) of the file to load.
+        """
+        return join(self._get_data_path(), self._get_data_name())
+
+    def _get_data_path(self):
+        return join(
+            self.root_dir,
+            self.activity,
+            self.experiment,
+            self.modeling_realm,
+            self.variable_name,
+            self.model,
+            self.ensemble_member,
+        )
