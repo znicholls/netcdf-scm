@@ -2,7 +2,8 @@ from os import listdir
 from os.path import join, splitext, basename, isdir
 from datetime import datetime
 import warnings
-
+from contextlib import redirect_stderr
+import io
 
 import numpy as np
 import pandas as pd
@@ -44,10 +45,35 @@ class _SCMCube(object):
         # set attributes
         # deal with time period
         # load cube
-        self.cube = iris.load_cube(
-            self._get_file_from_load_data_args(**kwargs),
-            self._get_variable_constraint_from_load_data_args(**kwargs),
-        )
+        with warnings.catch_warnings(record=True) as w:
+            self.cube = iris.load_cube(
+                self._get_file_from_load_data_args(**kwargs),
+                self._get_variable_constraint_from_load_data_args(**kwargs),
+            )
+
+        if w:
+            area_cell_warn = "Missing CF-netCDF measure variable 'areacella'"
+            for warn in w:
+                if area_cell_warn in str(warn.message):
+                    try:
+                        areacella_cube = self.get_metadata_cube(self._areacella_var)
+                        areacella_measure = iris.coords.CellMeasure(
+                            areacella_cube.data,
+                            standard_name=areacella_cube.standard_name,
+                            long_name=areacella_cube.long_name,
+                            var_name=areacella_cube.var_name,
+                            units=areacella_cube.units,
+                            attributes=areacella_cube.attributes,
+                            measure="area",
+                        )
+                        self.cube.add_cell_measure(
+                            areacella_measure,
+                            data_dims=[self._lat_dim_number, self._lon_dim_number],
+                        )
+                    except:
+                        warnings.warn(warn.message)
+                else:
+                    warnings.warn(warn.message)
 
     def _get_file_from_load_data_args(self, **kwargs):
         """
