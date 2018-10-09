@@ -33,6 +33,16 @@ TEST_TAS_FILE = join(
     "r1i1p1",
     "tas_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
 )
+TEST_AREACELLA_FILE = join(
+    TEST_DATA_MARBLE_CMIP5_DIR,
+    "cmip5",
+    "1pctCO2",
+    "fx",
+    "areacella",
+    "CanESM2",
+    "r0i0p0",
+    "areacella_fx_CanESM2_1pctCO2_r0i0p0.nc",
+)
 
 
 def get_test_cube_lon():
@@ -139,6 +149,8 @@ class TestSCMCube(object):
             return_value=vcons
         )
 
+        test_cube.get_metadata_cube = MagicMock()
+
         lcube_return = 9848
         mock_iris_load_cube.return_value = lcube_return
 
@@ -155,7 +167,47 @@ class TestSCMCube(object):
             **tkwargs
         )
         mock_iris_load_cube.assert_called_with(tfile, vcons)
+        test_cube.get_metadata_cube.assert_not_called()
         assert test_cube.cube == lcube_return
+
+    # this is really an integration test, maybe should be moved/split...
+    def test_load_data_and_areacella(self, test_cube):
+        tfile = TEST_TAS_FILE
+        test_cube._get_file_from_load_data_args = MagicMock(return_value=tfile)
+
+        test_constraint = iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str("tas"))
+        )
+        test_cube._get_variable_constraint_from_load_data_args = MagicMock(
+            return_value=test_constraint
+        )
+
+        test_cube.get_metadata_cube = MagicMock(
+            return_value=iris.load_cube(TEST_AREACELLA_FILE)
+        )
+
+        tkwargs = {
+            "variable_name": "fco2antt",
+            "modeling_realm": "Amon",
+            "model": "CanESM2",
+            "experiment": "1pctCO2",
+        }
+
+        with pytest.warns(None) as record:
+            test_cube.load_data(**tkwargs)
+        # Gracefully filling warnings, when we move to iris v2.2.0, change this to zero
+        # as that bug will be fixed
+        assert len(record) == 6
+
+        test_cube._get_file_from_load_data_args.assert_called_with(**tkwargs)
+        test_cube._get_variable_constraint_from_load_data_args.assert_called_with(
+            **tkwargs
+        )
+        test_cube.get_metadata_cube.assert_called_with(test_cube._areacella_var)
+
+        cell_measures = test_cube.cube.cell_measures()
+        assert len(cell_measures) == 1
+        assert cell_measures[0].standard_name == "cell_area"
 
     def test_load_missing_variable_error(self, test_cube):
         tfile = TEST_TAS_FILE
@@ -469,7 +521,7 @@ class TestSCMCube(object):
             )
         else:
             with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
+                warnings.filterwarnings("ignore", ".*Using DEFAULT_SPHERICAL.*")
                 expected = iris.analysis.cartography.area_weights(test_cube.cube)
 
         # we can use test_sftlf_cube here as all we need is an array of the
@@ -535,16 +587,20 @@ class TestSCMCube(object):
         global_cube = type(test_cube)()
         global_cube.cube = test_cube.cube.copy()
         global_cube.cube.data = 2 * global_cube.cube.data
-        global_cube.cube = global_cube.cube.collapsed(
-            ["longitude", "latitude"], iris.analysis.MEAN
-        )
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", ".*without weighting*")
+            global_cube.cube = global_cube.cube.collapsed(
+                ["longitude", "latitude"], iris.analysis.MEAN
+            )
 
         sh_ocean_cube = type(test_cube)()
         sh_ocean_cube.cube = test_cube.cube.copy()
         sh_ocean_cube.cube.data = 0.5 * sh_ocean_cube.cube.data
-        sh_ocean_cube.cube = sh_ocean_cube.cube.collapsed(
-            ["longitude", "latitude"], iris.analysis.MEAN
-        )
+        with warnings.catch_warnings(record=True):
+            warnings.filterwarnings("ignore", ".*without weighting*")
+            sh_ocean_cube.cube = sh_ocean_cube.cube.collapsed(
+                ["longitude", "latitude"], iris.analysis.MEAN
+            )
 
         test_timeseries_cubes = {"GLOBAL": global_cube, "SH_OCEAN": sh_ocean_cube}
 
