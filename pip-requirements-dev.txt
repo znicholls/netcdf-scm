@@ -1,0 +1,8 @@
+versioneer
+pytest
+pytest-cov
+codecov
+nbval
+nbresuse
+black
+flake8

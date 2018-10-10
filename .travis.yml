@@ -5,12 +5,12 @@ language: python
 dist: trusty
 sudo: required
 python:
-  - "3.5"
-  - "3.6"
-  - "3.7-dev"
+  - 3.5
+  - 3.6
+  - 3.7-dev
+
 before_install:
   - sudo apt-get update
-  - sudo apt-get install build-essential
 install:
   # Install miniconda
   # -----------------
@@ -24,27 +24,46 @@ install:
   # Create the basic testing environment
   # ------------------------------------
   # Explicitly add defaults channel, see https://github.com/conda/conda/issues/2675
+  # Thanks https://stackoverflow.com/a/38609653 for the conda install from file
+  # solution
   - >
     echo 'Configure conda and install minimal working environment';
-    conda config --set always_yes yes --set changeps1 no;
+    CONDA_ENV_FILE=conda-environment-minimal.yaml;
+    PIP_ENV_FILE=pip-requirements-minimal.txt;
+    ENV_NAME='netcdfscm-test-environment';
+    conda config --set always_yes yes;
     conda config --set show_channel_urls True;
     conda config --add channels conda-forge;
     conda update --quiet conda;
-    CONDA_ENV_FILE=environment-minimal.yaml;
-    ENV_NAME='netcdfscm-test-environment';
-    cat ${CONDA_ENV_FILE};
-    conda env create --quiet -n $ENV_NAME python=$TRAVIS_PYTHON_VERSION -f ${CONDA_ENV_FILE};
-    source activate $ENV_NAME;
+    conda create -y -n ${ENV_NAME} python=${TRAVIS_PYTHON_VERSION} pip;
+    source activate ${ENV_NAME};
+    conda install -y --file ${CONDA_ENV_FILE};
+    pip install --upgrade pip;
+    pip install -Ur ${PIP_ENV_FILE};
 
   # Install package and required testing packages
   # ---------------------------------------------
   - >
-    conda install notebook;
-    pip install pytest pytest-cov codecov;
-    pip install -e .
+    pip install pytest pytest-cov codecov nbval;
+    pip install -e .;
+
+  # Check config before running tests
+  # ---------------------------------
+  - >
+    conda info --envs;
+    python --version;
+    conda list -n $ENV_NAME;
+    conda list -n $ENV_NAME --explicit;
+    conda info -a;
+    pip list;
+
 
 script:
-  - make test_all
+  - pytest --cov -rfsxEX
+  - pytest -rfsxEX --nbval ./notebooks --sanitize ./notebooks/tests_sanitize.cfg
+  # # Only test notebooks on my local Python version otherwise there's too many html
+  # # errors etc.
+  # - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; ; fi
 
 after_success:
   - codecov

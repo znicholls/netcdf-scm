@@ -3,10 +3,10 @@ SHELL=/bin/bash
 
 CONDA_ENV_NAME=netcdf-scm
 CONDA_ENV_PATH=$(MINICONDA_PATH)/envs/$(CONDA_ENV_NAME)
-CONDA_ENV_YML=$(PWD)/environment-minimal.yaml
-CONDA_ENV_DEV_YML=$(PWD)/environment-dev.yaml
+CONDA_ENV_YML=$(PWD)/conda-environment-minimal.yaml
 
-PIP_DEV_REQUIREMENTS=dev-pip-requirements.txt
+PIP_REQUIREMENTS_MINIMAL=$(PWD)/pip-requirements-minimal.txt
+PIP_REQUIREMENTS_DEV=$(PWD)/pip-requirements-dev.txt
 
 NOTEBOOKS_DIR=./notebooks
 NOTEBOOKS_SANITIZE_FILE=$(NOTEBOOKS_DIR)/tests_sanitize.cfg
@@ -77,14 +77,22 @@ conda_env_update:
 .PHONY: conda_env
 conda_env:
 	# thanks https://stackoverflow.com/a/38609653 for the conda install from
-	# dev file solution
+	# file solution
 	$(call activate_conda,); \
-		conda env create -n $(CONDA_ENV_NAME) -f $(CONDA_ENV_YML); \
+		conda config --add channels conda-forge; \
+		conda create -y -n $(CONDA_ENV_NAME); \
 		conda activate $(CONDA_ENV_NAME); \
+		conda install -y --file $(CONDA_ENV_YML); \
 		pip install --upgrade pip; \
-		while read requirement; do conda install --yes $requirement; done < $(CONDA_ENV_DEV_YML); \
-		pip install -Ur $(PIP_DEV_REQUIREMENTS); \
+		pip install -Ur $(PIP_REQUIREMENTS_MINIMAL); \
+		pip install -Ur $(PIP_REQUIREMENTS_DEV); \
 		pip install -e .
+
+.PHONY: clean
+clean:
+	$(call activate_conda,); \
+		conda deactivate; \
+		conda remove --name $(CONDA_ENV_NAME) --all -y
 
 .PHONY: variables
 variables:
@@ -96,7 +104,8 @@ variables:
 	@echo CONDA_ENV_PATH: $(CONDA_ENV_PATH)
 	@echo CONDA_ENV_YML: $(CONDA_ENV_YML)
 
-	@echo PIP_DEV_REQUIREMENTS: $(PIP_DEV_REQUIREMENTS)
+	@echo PIP_REQUIREMENTS_MINIMAL: $(PIP_REQUIREMENTS_MINIMAL)
+	@echo PIP_REQUIREMENTS_DEV: $(PIP_REQUIREMENTS_DEV)
 
 	@echo NOTEBOOKS_DIR: $(NOTEBOOKS_DIR)
 	@echo NOTEBOOKS_SANITIZE_FILE: $(NOTEBOOKS_SANITIZE_FILE)
