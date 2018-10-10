@@ -8,6 +8,10 @@ CONDA_ENV_DEV_YML=$(PWD)/environment-dev.yaml
 
 PIP_DEV_REQUIREMENTS=dev-pip-requirements.txt
 
+NOTEBOOKS_DIR=./notebooks
+NOTEBOOKS_SANITIZE_FILE=$(NOTEBOOKS_DIR)/tests_sanitize.cfg
+
+
 define activate_conda
 	[ ! -f $(HOME)/.bash_profile ] || . $(HOME)/.bash_profile; \
 	[ ! -f $(HOME)/.bashrc ] || . $(HOME)/.bashrc; \
@@ -21,10 +25,20 @@ define activate_conda_env
 	conda activate $(CONDA_ENV_NAME)
 endef
 
+.PHONY: test_all
+test_all:
+	make test
+	make test_notebooks
+
 .PHONY: test
 test:
 	$(call activate_conda_env,); \
 		pytest --cov -rfsxEX
+
+.PHONY: test_notebooks
+test_notebooks:
+	$(call activate_conda_env,); \
+		pytest -rfsxEX --nbval $(NOTEBOOKS_DIR) --sanitize $(NOTEBOOKS_SANITIZE_FILE)
 
 .PHONY: flake8
 flake8:
@@ -83,3 +97,6 @@ variables:
 	@echo CONDA_ENV_YML: $(CONDA_ENV_YML)
 
 	@echo PIP_DEV_REQUIREMENTS: $(PIP_DEV_REQUIREMENTS)
+
+	@echo NOTEBOOKS_DIR: $(NOTEBOOKS_DIR)
+	@echo NOTEBOOKS_SANITIZE_FILE: $(NOTEBOOKS_SANITIZE_FILE)

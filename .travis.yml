@@ -10,6 +10,7 @@ python:
   - "3.7-dev"
 before_install:
   - sudo apt-get update
+  - sudo apt-get install build-essential
 install:
   # Install miniconda
   # -----------------
@@ -38,11 +39,12 @@ install:
   # Install package and required testing packages
   # ---------------------------------------------
   - >
-  - pip install pytest pytest-cov codecov
-  - pip install -e .
+    conda install notebook;
+    pip install pytest pytest-cov codecov;
+    pip install -e .
 
 script:
-  - pytest --cov -rfsxEX
+  - make test_all
 
 after_success:
   - codecov
