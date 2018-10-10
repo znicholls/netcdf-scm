@@ -7,7 +7,7 @@ sudo: required
 python:
   - 3.5
   - 3.6
-  - 3.7-dev
+  # - 3.7
 
 before_install:
   - sudo apt-get update
@@ -37,7 +37,7 @@ install:
     conda update --quiet conda;
     conda create -y -n ${ENV_NAME} python=${TRAVIS_PYTHON_VERSION} pip;
     source activate ${ENV_NAME};
-    conda install -y --file ${CONDA_ENV_FILE};
+    conda install -y --file ${CONDA_ENV_FILE} -n ${ENV_NAME};
     pip install --upgrade pip;
     pip install -Ur ${PIP_ENV_FILE};
 
@@ -60,10 +60,12 @@ install:
 
 script:
   - pytest --cov -rfsxEX
-  - pytest -rfsxEX --nbval ./notebooks --sanitize ./notebooks/tests_sanitize.cfg
-  # # Only test notebooks on my local Python version otherwise there's too many html
+  # # Only test notebooks closely on Python 3.6 and 3.7 otherwise there's too many html
   # # errors etc.
-  # - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; ; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.5 ]]; then pytest -rfsxEX --nbval ./notebooks --sanitize ./notebooks/tests_sanitize.cfg; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then pytest -rfsxEX --nbval-lax ./notebooks --sanitize ./notebooks/tests_sanitize.cfg; fi
+
+
 
 after_success:
   - codecov
