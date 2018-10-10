@@ -688,8 +688,8 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         for kwarg in tkwargs_list:
             assert getattr(test_cube, kwarg) == tkwargs[kwarg]
 
-        test_cube._get_data_path.assert_called_once()
-        test_cube._get_data_name.assert_called_once()
+        assert test_cube._get_data_path.call_count == 1
+        assert test_cube._get_data_name.call_count == 1
 
     def test_get_data_path(self, test_cube):
         expected = join(
