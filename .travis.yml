@@ -30,7 +30,7 @@ install:
     echo 'Configure conda and install minimal working environment';
     CONDA_ENV_FILE=conda-environment-minimal.yaml;
     PIP_ENV_FILE=pip-requirements-minimal.txt;
-    ENV_NAME='netcdfscm-test-environment';
+    ENV_NAME='netcdf-scm-test-environment';
     conda config --set always_yes yes;
     conda config --set show_channel_urls True;
     conda config --add channels conda-forge;
