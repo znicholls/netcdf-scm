@@ -1,6 +1,7 @@
 from os.path import join
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 import warnings
+import itertools
 
 
 import pytest
@@ -17,7 +18,7 @@ from pandas.testing import assert_frame_equal
 
 
 from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
-from conftest import TEST_DATA_MARBLE_CMIP5_DIR, TEST_TAS_FILE
+from conftest import TEST_DATA_MARBLE_CMIP5_DIR, TEST_TAS_FILE, TEST_AREACELLA_FILE
 
 
 class TestSCMCube(object):
@@ -98,6 +99,22 @@ class TestSCMCube(object):
             mock_warn_area_result[3].message
         )
 
+    def test_add_areacella_measure(self, test_cube):
+        # can safely ignore warnings here
+        with warnings.catch_warnings():
+            test_cube.cube = iris.load_cube(TEST_TAS_FILE)
+
+        tareacellacube = type(test_cube)()
+        tareacellacube.cube = iris.load_cube(TEST_AREACELLA_FILE)
+        test_cube.get_metadata_cube = MagicMock(return_value=tareacellacube)
+
+        test_cube._add_areacella_measure()
+
+        assert any(["area" in cm.measure for cm in test_cube.cube.cell_measures()])
+        assert any(
+            ["cell_area" in cm.standard_name for cm in test_cube.cube.cell_measures()]
+        )
+
     def test_load_missing_variable_error(self, test_cube):
         tfile = TEST_TAS_FILE
         test_cube.get_file_from_load_data_args = MagicMock(return_value=tfile)
@@ -126,13 +143,6 @@ class TestSCMCube(object):
     def test_get_data_name(self, test_cube):
         self.run_test_of_method_to_overload(test_cube, "_get_data_name")
 
-    def test_get_metadata_load_arguments(self, test_cube):
-        self.run_test_of_method_to_overload(
-            test_cube,
-            "_get_metadata_load_arguments",
-            junk_args={"metadata_variable": "mdata_var"},
-        )
-
     @patch.object(tclass, "load_data")
     def test_get_metadata_cube(self, mock_load_data, test_cube):
         tvar = "tmdata_var"
@@ -146,6 +156,13 @@ class TestSCMCube(object):
 
         test_cube._get_metadata_load_arguments.assert_called_with(tvar)
         mock_load_data.assert_called_with(**tload_arg_dict)
+
+    def test_get_metadata_load_arguments(self, test_cube):
+        self.run_test_of_method_to_overload(
+            test_cube,
+            "_get_metadata_load_arguments",
+            junk_args={"metadata_variable": "mdata_var"},
+        )
 
     def test_get_scm_timeseries(self, test_sftlf_cube, test_cube):
         tsftlf_cube = "mocked 124"
@@ -178,66 +195,81 @@ class TestSCMCube(object):
         assert_frame_equal(result, test_conversion_return)
 
     def test_get_scm_timeseries_cubes(self, test_cube):
-        tsftlf_cube = "mocked 124"
-        tland_mask_threshold = "mocked 51"
-        tareacella_scmcube = "mocked 4389"
+        tsftlf_cube = "mocked out"
+        tland_mask_threshold = 48
+        tareacella_scmcube = "mocked out again"
 
-        land_mask = np.array(
-            [
-                [False, True, True, False],
-                [False, True, False, True],
-                [False, False, True, False],
-            ]
-        )
-        nh_mask = np.array(
-            [
-                [False, False, False, False],
-                [False, False, False, False],
-                [True, True, True, True],
-            ]
-        )
+        tarea_weights = 145
+        test_cube._get_area_weights = MagicMock(return_value=tarea_weights)
 
-        mocked_masks = {
-            "GLOBAL": np.full(nh_mask.shape, False),
-            "NH_LAND": np.logical_or(nh_mask, land_mask),
-            "SH_LAND": np.logical_or(~nh_mask, land_mask),
-            "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
-            "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
-        }
-        test_cube._get_scm_masks = MagicMock(return_value=mocked_masks)
+        tscm_cubes = {"mock 1": 213, "mock 2": 5893}
+        test_cube.get_scm_cubes = MagicMock(return_value=tscm_cubes)
 
-        mocked_weights = broadcast_to_shape(
-            np.array([[1, 2, 3, 4], [1, 4, 8, 9], [0, 4, 1, 9]]),
-            test_cube.cube.shape,
-            [test_cube._lat_dim_number, test_cube._lon_dim_number],
-        )
+        tlat_lon_mean = "hello mock"
+        test_cube.take_lat_lon_mean = MagicMock(return_value=tlat_lon_mean)
 
-        test_cube._get_area_weights = MagicMock(return_value=mocked_weights)
-
-        expected = {}
-        for label, mask in mocked_masks.items():
-            exp_cube = type(test_cube)()
-
-            rcube = test_cube.cube.copy()
-            rcube.data.mask = mask
-            exp_cube.cube = rcube.collapsed(
-                ["latitude", "longitude"], iris.analysis.MEAN, weights=mocked_weights
-            )
-            expected[label] = exp_cube
-
+        expected = {k: tlat_lon_mean for k in tscm_cubes}
         result = test_cube.get_scm_timeseries_cubes(
             tsftlf_cube, tland_mask_threshold, tareacella_scmcube
         )
 
-        for label, cube in result.items():
-            assert cube.cube == expected[label].cube
+        assert result == expected
 
-        test_cube._get_scm_masks.assert_called_with(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
-        )
         test_cube._get_area_weights.assert_called_with(
             areacella_scmcube=tareacella_scmcube
         )
+        test_cube.get_scm_cubes.assert_called_with(
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+        )
+        assert test_cube.take_lat_lon_mean.call_count == len(tscm_cubes)
+
+        expected_calls = itertools.product(tscm_cubes.values(), [tarea_weights])
+        test_cube.take_lat_lon_mean.assert_has_calls(
+            [call(*c) for c in expected_calls], any_order=True
+        )
+
+    def test_take_lat_lon_mean(self, test_cube):
+        tweights = iris.analysis.cartography.area_weights(test_cube.cube)
+
+        assert len(test_cube.cube.dim_coords) == 3
+
+        result = test_cube.take_lat_lon_mean(test_cube, tweights)
+
+        assert len(result.cube.dim_coords) == 1
+        assert result.cube.cell_methods[0].method == "mean"
+        assert result.cube.cell_methods[0].coord_names == ("latitude", "longitude")
+
+    def test_get_scm_cubes(self, test_cube):
+        tsftlf_cube = "mocked out"
+        tland_mask_threshold = 48
+
+        tscm_masks = {"mask 1": 12, "mask 2": 83}
+        test_cube._get_scm_masks = MagicMock(return_value=tscm_masks)
+
+        tapply_mask = 3.14
+        test_cube.apply_mask = MagicMock(return_value=tapply_mask)
+
+        expected = {k: tapply_mask for k in tscm_masks}
+        result = test_cube.get_scm_cubes(
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+        )
+
+        assert result == expected
+        test_cube._get_scm_masks.assert_called_with(
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+        )
+
+        assert test_cube.apply_mask.call_count == len(tscm_masks)
+        test_cube.apply_mask.assert_has_calls(
+            [call(test_cube, c) for c in tscm_masks.values()], any_order=True
+        )
+
+    def test_apply_mask(self, test_cube):
+        tmask = np.full(test_cube.cube.shape, True)
+
+        np.testing.assert_equal(test_cube.cube.data.mask, ~tmask)
+        result = test_cube.apply_mask(test_cube, tmask)
+        np.testing.assert_equal(result.cube.data.mask, tmask)
 
     def test_get_scm_masks(self, test_cube):
         tsftlf_cube = "mocked 124"
@@ -290,30 +322,19 @@ class TestSCMCube(object):
         )
         test_cube._get_nh_mask.assert_called_with()
 
-    @pytest.mark.parametrize("transpose", [True, False])
-    @pytest.mark.parametrize("input_format", ["nparray", "scmcube", None])
+    @pytest.mark.parametrize("input_format", ["scmcube", None])
     @pytest.mark.parametrize("sftlf_var", ["sftlf", "sftlf_other"])
     @pytest.mark.parametrize(
         "test_threshold",
         [(None), (0), (10), (30), (49), (49.9), (50), (50.1), (51), (60), (75), (100)],
     )
     def test_get_land_mask(
-        self,
-        test_cube,
-        test_sftlf_cube,
-        test_threshold,
-        input_format,
-        sftlf_var,
-        transpose,
+        self, test_cube, test_sftlf_cube, test_threshold, input_format, sftlf_var
     ):
         test_cube._sftlf_var = sftlf_var
         test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
 
-        if input_format is "nparray":
-            test_land_fraction_input = test_sftlf_cube.cube.data
-            if transpose:
-                test_land_fraction_input = np.transpose(test_land_fraction_input)
-        elif input_format is "scmcube":
+        if input_format is "scmcube":
             test_land_fraction_input = test_sftlf_cube
         else:
             test_land_fraction_input = None
@@ -348,24 +369,26 @@ class TestSCMCube(object):
             test_cube.get_metadata_cube.assert_not_called()
 
     def test_get_land_mask_errors(self, test_cube, test_sftlf_cube):
-        error_msg = re.escape(
-            r"sftlf_cube must be a numpy.ndarray if it's not an SCMCube instance"
-        )
-        with pytest.raises(AssertionError, match=error_msg):
+        error_msg = re.escape(r"sftlf_cube must be an SCMCube instance")
+        with pytest.raises(TypeError, match=error_msg):
             test_cube._get_land_mask(sftlf_cube="fail string")
+
+        numpy_array = np.array([[1, 2], [3, 4]])
+        with pytest.raises(TypeError, match=error_msg):
+            test_cube._get_land_mask(sftlf_cube=numpy_array)
 
         wrong_shape_data = np.array([[1, 2], [3, 4]])
         error_msg = re.escape(
-            r"the sftlf_cube data must be the same shape as (or the transpose of) the "
+            r"the sftlf_cube data must be the same shape as the "
             r"cube's longitude-latitude grid"
         )
-        with pytest.raises(AssertionError, match=error_msg):
-            test_cube._get_land_mask(sftlf_cube=wrong_shape_data)
-
         test_sftlf_cube.cube = iris.cube.Cube(data=wrong_shape_data)
+        with pytest.raises(AssertionError, match=error_msg):
+            test_cube._get_land_mask(sftlf_cube=test_sftlf_cube)
+
         test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
         with pytest.raises(AssertionError, match=error_msg):
-            test_cube._get_land_mask(sftlf_cube=wrong_shape_data)
+            test_cube._get_land_mask(sftlf_cube=None)
 
     def test_get_nh_mask(self, test_cube):
         result = test_cube._get_nh_mask()
@@ -455,8 +478,8 @@ class TestSCMCube(object):
                 specific_warn = re.escape(iris_error_msg)
             elif valid_areacella == "misshaped":
                 specific_warn = re.escape(
-                    "the sftlf_cube data must be the same shape as (or the "
-                    "transpose of) the cube's longitude-latitude grid"
+                    "the sftlf_cube data must be the same shape as the cube's "
+                    "longitude-latitude grid"
                 )
             else:
                 specific_warn = re.escape("'str' object has no attribute 'cube'")
