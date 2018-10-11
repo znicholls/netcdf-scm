@@ -193,27 +193,39 @@ class SCMCube(object):
         self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
     ):
         """
-        Returns SCMCubes
-        """
 
-        def take_mean(in_scmcube, in_mask, in_weights):
+        """
+        def take_mean(in_scmcube, in_weights):
             out_cube = type(in_scmcube)()
             out_cube.cube = in_scmcube.cube.copy()
-            out_cube.cube.data = np.ma.asarray(out_cube.cube.data)
-            out_cube.cube.data.mask = in_mask
-
             out_cube.cube = out_cube.cube.collapsed(
                 [self._lat_name, self._lon_name], iris.analysis.MEAN, weights=in_weights
             )
             return out_cube
 
+        area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
+        scm_cubes = self.get_scm_cubes(sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, areacella_scmcube=areacella_scmcube)
+        return {k: take_mean(cube, area_weights) for k, cube in scm_cubes.items()}
+
+    def get_scm_cubes(
+        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
+    ):
+        """
+        Returns SCMCubes
+        """
+        def apply_mask(in_scmcube, in_mask):
+            out_cube = type(in_scmcube)()
+            out_cube.cube = in_scmcube.cube.copy()
+            out_cube.cube.data = np.ma.asarray(out_cube.cube.data)
+            out_cube.cube.data.mask = in_mask
+
+            return out_cube
+
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
-        area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
 
-        return {k: take_mean(self, mask, area_weights) for k, mask in scm_masks.items()}
-        raise NotImplementedError()
+        return {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
 
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
         """
