@@ -44,10 +44,10 @@ class TestSCMCube(object):
             return_value=vcons
         )
 
-        test_cube.get_metadata_cube = MagicMock()
-
         lcube_return = 9848
         mock_iris_load_cube.return_value = lcube_return
+
+        test_cube._process_load_data_warnings = MagicMock()
 
         tkwargs = {
             "variable_name": "fco2antt",
@@ -57,13 +57,42 @@ class TestSCMCube(object):
         }
         test_cube.load_data(**tkwargs)
 
+        assert test_cube.cube == lcube_return
         test_cube.get_file_from_load_data_args.assert_called_with(**tkwargs)
         test_cube.get_variable_constraint_from_load_data_args.assert_called_with(
             **tkwargs
         )
         mock_iris_load_cube.assert_called_with(tfile, vcons)
-        test_cube.get_metadata_cube.assert_not_called()
-        assert test_cube.cube == lcube_return
+        test_cube._process_load_data_warnings.assert_not_called()
+
+    def test_process_load_data_warnings(self, test_cube):
+        warn_1 = "warning 1"
+        warn_2 = "warning 2"
+        warn_area = "PATH-STAMP Missing CF-netCDF measure variable 'areacella' other stuff"
+        with warnings.catch_warnings(record=True) as mock_warn_no_area:
+            warnings.warn(warn_1)
+            warnings.warn(warn_2)
+
+        with warnings.catch_warnings(record=True) as mock_warn_no_area_result:
+            test_cube._process_load_data_warnings(mock_warn_no_area)
+
+        assert len(mock_warn_no_area_result) == 2  # just rethrow warnings
+        assert str(mock_warn_no_area_result[0].message) == warn_1
+        assert str(mock_warn_no_area_result[1].message) == warn_2
+
+        with warnings.catch_warnings(record=True) as mock_warn_area:
+            warnings.warn(warn_1)
+            warnings.warn(warn_2)
+            warnings.warn(warn_area)
+
+        with warnings.catch_warnings(record=True) as mock_warn_area_result:
+            test_cube._process_load_data_warnings(mock_warn_area)
+
+        assert len(mock_warn_area_result) == 4  # warnings plus extra one
+        assert str(mock_warn_area_result[0].message) == warn_1
+        assert str(mock_warn_area_result[1].message) == warn_2
+        assert "Tried to add areacella cube, failed" in str(mock_warn_area_result[2].message)
+        assert "Missing CF-netCDF measure variable" in str(mock_warn_area_result[3].message)
 
     def test_load_missing_variable_error(self, test_cube):
         tfile = TEST_TAS_FILE
