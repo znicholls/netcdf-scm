@@ -51,33 +51,38 @@ class SCMCube(object):
             )
 
         if w:
-            area_cell_warn = "Missing CF-netCDF measure variable 'areacella'"
-            for warn in w:
-                if area_cell_warn in str(warn.message):
-                    try:
-                        areacella_scmcube = self.get_metadata_cube(self._areacella_var)
-                        areacella_cube = areacella_scmcube.cube
-                        areacella_measure = iris.coords.CellMeasure(
-                            areacella_cube.data,
-                            standard_name=areacella_cube.standard_name,
-                            long_name=areacella_cube.long_name,
-                            var_name=areacella_cube.var_name,
-                            units=areacella_cube.units,
-                            attributes=areacella_cube.attributes,
-                            measure="area",
-                        )
-                        self.cube.add_cell_measure(
-                            areacella_measure,
-                            data_dims=[self._lat_dim_number, self._lon_dim_number],
-                        )
-                    except Exception as exc:
-                        custom_warn = "Tried to find areacella cube, failed as shown:\n"
-                        warnings.warn(custom_warn)
-                        traceback.print_exc()
-                        warn_message = "\n\nareacella warning:\n" + str(warn.message)
-                        warnings.warn(warn_message)
-                else:
-                    warnings.warn(warn.message)
+            self._process_load_data_warnings(w)
+
+    def _process_load_data_warnings(self, w):
+        area_cell_warn = "Missing CF-netCDF measure variable 'areacella'"
+        for warn in w:
+            if area_cell_warn in str(warn.message):
+                try:
+                    self._add_areacella_measure()
+                except Exception as exc:
+                    custom_warn = "Tried to add areacella cube, failed as shown:\n"
+                    warnings.warn(custom_warn)
+                    traceback.print_exc()
+                    warn_message = "\n\nareacella warning:\n" + str(warn.message)
+                    warnings.warn(warn_message)
+            else:
+                warnings.warn(warn.message)
+
+    def _add_areacella_measure(self):
+        areacella_cube = self.get_metadata_cube(self._areacella_var).cube
+        areacella_measure = iris.coords.CellMeasure(
+            areacella_cube.data,
+            standard_name=areacella_cube.standard_name,
+            long_name=areacella_cube.long_name,
+            var_name=areacella_cube.var_name,
+            units=areacella_cube.units,
+            attributes=areacella_cube.attributes,
+            measure="area",
+        )
+        self.cube.add_cell_measure(
+            areacella_measure,
+            data_dims=[self._lat_dim_number, self._lon_dim_number],
+        )
 
     def get_file_from_load_data_args(self, **kwargs):
         """
@@ -195,17 +200,20 @@ class SCMCube(object):
         """
 
         """
-        def take_mean(in_scmcube, in_weights):
-            out_cube = type(in_scmcube)()
-            out_cube.cube = in_scmcube.cube.copy()
-            out_cube.cube = out_cube.cube.collapsed(
-                [self._lat_name, self._lon_name], iris.analysis.MEAN, weights=in_weights
-            )
-            return out_cube
-
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
         scm_cubes = self.get_scm_cubes(sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, areacella_scmcube=areacella_scmcube)
-        return {k: take_mean(cube, area_weights) for k, cube in scm_cubes.items()}
+        return {k: self.take_lat_lon_mean(cube, area_weights) for k, cube in scm_cubes.items()}
+
+    def take_lat_lon_mean(self, in_scmcube, in_weights):
+        """
+        move to utils
+        """
+        out_cube = type(in_scmcube)()
+        out_cube.cube = in_scmcube.cube.copy()
+        out_cube.cube = out_cube.cube.collapsed(
+            [self._lat_name, self._lon_name], iris.analysis.MEAN, weights=in_weights
+        )
+        return out_cube
 
     def get_scm_cubes(
         self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
@@ -213,19 +221,22 @@ class SCMCube(object):
         """
         Returns SCMCubes
         """
-        def apply_mask(in_scmcube, in_mask):
-            out_cube = type(in_scmcube)()
-            out_cube.cube = in_scmcube.cube.copy()
-            out_cube.cube.data = np.ma.asarray(out_cube.cube.data)
-            out_cube.cube.data.mask = in_mask
-
-            return out_cube
-
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
 
-        return {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
+        return {k: self.apply_mask(self, mask) for k, mask in scm_masks.items()}
+
+    def apply_mask(self, in_scmcube, in_mask):
+        """
+        move to utils
+        """
+        out_cube = type(in_scmcube)()
+        out_cube.cube = in_scmcube.cube.copy()
+        out_cube.cube.data = np.ma.asarray(out_cube.cube.data)
+        out_cube.cube.data.mask = in_mask
+
+        return out_cube
 
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
         """
@@ -310,23 +321,12 @@ class SCMCube(object):
         """
         use_self_area_weights = True
         if areacella_scmcube is None:
-            try:
-                areacella_scmcube = self.get_metadata_cube(self._areacella_var)
-                if not isinstance(areacella_scmcube.cube, iris.cube.Cube):
-                    warnings.warn(
-                        "areacella cube which was found has cube attribute which isn't an iris cube"
-                    )
-                    use_self_area_weights = False
-            except iris.exceptions.ConstraintMismatchError as exc:
-                # import pdb
-                # pdb.set_trace()
-                warnings.warn(str(exc))
+            with warnings.catch_warnings(record=True) as w:
+                areacella_scmcube = self._get_areacella_scmcube()
+            if w:
                 use_self_area_weights = False
-            except AttributeError as exc:
-                # import pdb
-                # pdb.set_trace()
-                warnings.warn(str(exc))
-                use_self_area_weights = False
+                for warn in w:
+                    warnings.warn(warn.message)
 
         if use_self_area_weights:
             try:
@@ -339,6 +339,21 @@ class SCMCube(object):
             "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
         )
         return iris.analysis.cartography.area_weights(self.cube)
+
+    def _get_areacella_scmcube(self):
+        try:
+            areacella_scmcube = self.get_metadata_cube(self._areacella_var)
+            if not isinstance(areacella_scmcube.cube, iris.cube.Cube):
+                warnings.warn(
+                    "areacella cube which was found has cube attribute which isn't an iris cube"
+                )
+
+            else:
+                return areacella_scmcube
+        except iris.exceptions.ConstraintMismatchError as exc:
+            warnings.warn(str(exc))
+        except AttributeError as exc:
+            warnings.warn(str(exc))
 
     @property
     def _lon_dim(self):
@@ -362,40 +377,22 @@ class SCMCube(object):
         """
 
         """
-
-        def assert_only_time(scm_cube):
-            assert_msg = "Should only have time coordinate here"
-            assert len(scm_cube.cube.dim_coords) == 1, assert_msg
-            assert scm_cube.cube.dim_coords[0].standard_name == "time"
-
-        def get_timeseries_data(scm_cube):
-            assert_only_time(scm_cube)
-            return scm_cube.cube.data
-
-        def get_time_axis(scm_cube, calendar):
-            assert_only_time(scm_cube)
-            time = scm_cube.cube.dim_coords[0]
-            return cf_units.num2date(time.points, time.units.name, calendar)
-
         if out_calendar is None:
             out_calendar = self.cube.coords("time")[0].units.calendar
 
-        data = {k: get_timeseries_data(v) for k, v in scm_timeseries_cubes.items()}
+        data = {k: self.get_timeseries_data(v) for k, v in scm_timeseries_cubes.items()}
 
         time_axes = [
-            get_time_axis(scm_cube, out_calendar)
+            self.get_time_axis_in_calendar(scm_cube, out_calendar)
             for k, scm_cube in scm_timeseries_cubes.items()
         ]
+        self._assert_all_time_axes_same(time_axes)
+
         # As we sometimes have to deal with long timeseries, we force the index to be
         # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
         # pandas limitation, see
         # http://pandas-docs.github.io/pandas-docs-travis/timeseries.html#timestamp-limitations
         time_index = pd.Index(time_axes[0], dtype="object", name="Time")
-        for time_axis_to_check in time_axes:
-            assert_msg = "all the time axes should be the same"
-            np.testing.assert_array_equal(
-                time_axis_to_check, time_index.values
-            ), assert_msg
 
         output = MAGICCData()
         output.df = pd.DataFrame(data, index=time_index)
@@ -410,6 +407,39 @@ class SCMCube(object):
 
         output.metadata["calendar"] = out_calendar
         return output
+
+    def assert_only_time(self, scm_cube):
+        """
+        move to utils
+        """
+        assert_msg = "Should only have time coordinate here"
+        assert len(scm_cube.cube.dim_coords) == 1, assert_msg
+        assert scm_cube.cube.dim_coords[0].standard_name == "time"
+
+    def get_timeseries_data(self, scm_cube):
+        """
+        move to utils
+        """
+        self.assert_only_time(scm_cube)
+        return scm_cube.cube.data
+
+    def get_time_axis_in_calendar(self, scm_cube, calendar):
+        """
+        move to utils
+        """
+        self.assert_only_time(scm_cube)
+        time = scm_cube.cube.dim_coords[0]
+        return cf_units.num2date(time.points, time.units.name, calendar)
+
+    def _assert_all_time_axes_same(self, time_axes):
+        """
+        move to utils
+        """
+        for time_axis_to_check in time_axes:
+            assert_msg = "all the time axes should be the same"
+            np.testing.assert_array_equal(
+                time_axis_to_check, time_axes[0]
+            ), assert_msg
 
 
 class MarbleCMIP5Cube(SCMCube):
