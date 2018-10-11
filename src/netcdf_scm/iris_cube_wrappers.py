@@ -190,7 +190,7 @@ class SCMCube(object):
             areacella_scmcube=areacella_scmcube,
         )
 
-        return self._convert_scm_timeseries_cubes_to_OpenSCMData(scm_timeseries_cubes)
+        return self._convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
     def get_scm_timeseries_cubes(
         self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
@@ -368,28 +368,17 @@ class SCMCube(object):
     def _lat_dim_number(self):
         return self.cube.coord_dims(self._lat_name)[0]
 
-    def _convert_scm_timeseries_cubes_to_OpenSCMData(
+    def _convert_scm_timeseries_cubes_to_openscmdata(
         self, scm_timeseries_cubes, out_calendar=None
     ):
         """
 
         """
-        if out_calendar is None:
-            out_calendar = self.cube.coords("time")[0].units.calendar
-
         data = {k: self.get_timeseries_data(v) for k, v in scm_timeseries_cubes.items()}
 
-        time_axes = [
-            self.get_time_axis_in_calendar(scm_cube, out_calendar)
-            for k, scm_cube in scm_timeseries_cubes.items()
-        ]
-        self._assert_all_time_axes_same(time_axes)
-
-        # As we sometimes have to deal with long timeseries, we force the index to be
-        # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
-        # pandas limitation, see
-        # http://pandas-docs.github.io/pandas-docs-travis/timeseries.html#timestamp-limitations
-        time_index = pd.Index(time_axes[0], dtype="object", name="Time")
+        time_index, out_calendar = self._get_openscmdata_time_axis_and_calendar(
+            scm_timeseries_cubes, out_calendar=out_calendar
+        )
 
         output = MAGICCData()
         output.df = pd.DataFrame(data, index=time_index)
@@ -404,6 +393,24 @@ class SCMCube(object):
 
         output.metadata["calendar"] = out_calendar
         return output
+
+    def _get_openscmdata_time_axis_and_calendar(
+        self, scm_timeseries_cubes, out_calendar
+    ):
+        if out_calendar is None:
+            out_calendar = self.cube.coords("time")[0].units.calendar
+
+        time_axes = [
+            self.get_time_axis_in_calendar(scm_cube, out_calendar)
+            for scm_cube in scm_timeseries_cubes.values()
+        ]
+        self._assert_all_time_axes_same(time_axes)
+
+        # As we sometimes have to deal with long timeseries, we force the index to be
+        # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
+        # pandas limitation, see
+        # http://pandas-docs.github.io/pandas-docs-travis/timeseries.html#timestamp-limitations
+        return pd.Index(time_axes[0], dtype="object", name="Time"), out_calendar
 
     def assert_only_time(self, scm_cube):
         """
