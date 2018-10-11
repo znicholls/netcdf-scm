@@ -1,12 +1,9 @@
-from os import listdir
-from os.path import join, splitext, basename, isdir
-from datetime import datetime
+from os.path import join
 import warnings
 import traceback
 
 import numpy as np
 import pandas as pd
-import re
 import iris
 from iris.util import broadcast_to_shape
 import iris.analysis.cartography
@@ -59,8 +56,11 @@ class SCMCube(object):
             if area_cell_warn in str(warn.message):
                 try:
                     self._add_areacella_measure()
-                except Exception as exc:
-                    custom_warn = "Tried to add areacella cube, failed as shown:\n" + traceback.format_exc()
+                except Exception:
+                    custom_warn = (
+                        "Tried to add areacella cube, failed as shown:\n"
+                        + traceback.format_exc()
+                    )
                     warnings.warn(custom_warn)
                     warn_message = "\n\nareacella warning:\n" + str(warn.message)
                     warnings.warn(warn_message)
@@ -79,8 +79,7 @@ class SCMCube(object):
             measure="area",
         )
         self.cube.add_cell_measure(
-            areacella_measure,
-            data_dims=[self._lat_dim_number, self._lon_dim_number],
+            areacella_measure, data_dims=[self._lat_dim_number, self._lon_dim_number]
         )
 
     def get_file_from_load_data_args(self, **kwargs):
@@ -200,8 +199,15 @@ class SCMCube(object):
 
         """
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
-        scm_cubes = self.get_scm_cubes(sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, areacella_scmcube=areacella_scmcube)
-        return {k: self.take_lat_lon_mean(cube, area_weights) for k, cube in scm_cubes.items()}
+        scm_cubes = self.get_scm_cubes(
+            sftlf_cube=sftlf_cube,
+            land_mask_threshold=land_mask_threshold,
+            areacella_scmcube=areacella_scmcube,
+        )
+        return {
+            k: self.take_lat_lon_mean(cube, area_weights)
+            for k, cube in scm_cubes.items()
+        }
 
     def take_lat_lon_mean(self, in_scmcube, in_weights):
         """
@@ -436,9 +442,7 @@ class SCMCube(object):
         """
         for time_axis_to_check in time_axes:
             assert_msg = "all the time axes should be the same"
-            np.testing.assert_array_equal(
-                time_axis_to_check, time_axes[0]
-            ), assert_msg
+            np.testing.assert_array_equal(time_axis_to_check, time_axes[0]), assert_msg
 
 
 class MarbleCMIP5Cube(SCMCube):
