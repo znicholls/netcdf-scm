@@ -60,9 +60,8 @@ class SCMCube(object):
                 try:
                     self._add_areacella_measure()
                 except Exception as exc:
-                    custom_warn = "Tried to add areacella cube, failed as shown:\n"
+                    custom_warn = "Tried to add areacella cube, failed as shown:\n" + traceback.format_exc()
                     warnings.warn(custom_warn)
-                    traceback.print_exc()
                     warn_message = "\n\nareacella warning:\n" + str(warn.message)
                     warnings.warn(warn_message)
             else:
