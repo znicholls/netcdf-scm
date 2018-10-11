@@ -1,9 +1,14 @@
 from unittest.mock import MagicMock
+import warnings
 
 import pytest
 import numpy as np
+import pandas as pd
+from pandas.testing import assert_frame_equal
 import iris
 from iris.util import broadcast_to_shape
+import cf_units
+from pymagicc.io import MAGICCData
 
 
 from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
@@ -112,6 +117,65 @@ class TestSCMCubeIntegration(object):
         test_cube._get_area_weights.assert_called_with(
             areacella_scmcube=tareacella_scmcube
         )
+
+    @pytest.mark.parametrize("out_calendar", [None, "gregorian", "365_day"])
+    def test_convert_scm_timeseries_cubes_to_openscmdata(self, test_cube, out_calendar):
+        expected_calendar = (
+            test_cube.cube.coords("time")[0].units.calendar
+            if out_calendar is None
+            else out_calendar
+        )
+
+        global_cube = type(test_cube)()
+        global_cube.cube = test_cube.cube.copy()
+        global_cube.cube.data = 2 * global_cube.cube.data
+
+        # can safely ignore warnings here
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", ".*without weighting*")
+            global_cube.cube = global_cube.cube.collapsed(
+                ["longitude", "latitude"], iris.analysis.MEAN
+            )
+
+        sh_ocean_cube = type(test_cube)()
+        sh_ocean_cube.cube = test_cube.cube.copy()
+        sh_ocean_cube.cube.data = 0.5 * sh_ocean_cube.cube.data
+        with warnings.catch_warnings(record=True):
+            warnings.filterwarnings("ignore", ".*without weighting*")
+            sh_ocean_cube.cube = sh_ocean_cube.cube.collapsed(
+                ["longitude", "latitude"], iris.analysis.MEAN
+            )
+
+        test_timeseries_cubes = {"GLOBAL": global_cube, "SH_OCEAN": sh_ocean_cube}
+
+        result = test_cube._convert_scm_timeseries_cubes_to_openscmdata(
+            test_timeseries_cubes, out_calendar=out_calendar
+        )
+
+        time = sh_ocean_cube.cube.dim_coords[0]
+        datetimes = cf_units.num2date(time.points, time.units.name, expected_calendar)
+        time_index = pd.Index(datetimes, dtype="object", name="Time")
+
+        expected_df = pd.DataFrame(
+            {"GLOBAL": global_cube.cube.data, "SH_OCEAN": sh_ocean_cube.cube.data},
+            index=time_index,
+        )
+
+        expected_df.columns = pd.MultiIndex.from_product(
+            [
+                [test_cube.cube.standard_name],
+                [test_cube.cube.units.name],
+                expected_df.columns.tolist(),
+            ],
+            names=["VARIABLE", "UNITS", "REGION"],
+        )
+
+        expected = MAGICCData()
+        expected.df = expected_df
+        expected.metadata = {"calendar": expected_calendar}
+
+        assert result.metadata == expected.metadata
+        assert_frame_equal(result.df, expected.df)
 
 
 class TestMarbleCMIP5Cube(TestSCMCubeIntegration):
