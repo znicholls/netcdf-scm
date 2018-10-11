@@ -6,7 +6,8 @@ import iris
 
 
 from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
-from conftest import TEST_DATA_MARBLE_CMIP5_DIR, TEST_TAS_FILE, TEST_AREACELLA_FILE
+from conftest import TEST_TAS_FILE, TEST_AREACELLA_FILE
+
 
 class TestSCMCubeIntegration(object):
     tclass = SCMCube
@@ -48,6 +49,7 @@ class TestSCMCubeIntegration(object):
         cell_measures = test_cube.cube.cell_measures()
         assert len(cell_measures) == 1
         assert cell_measures[0].standard_name == "cell_area"
+
 
 class TestMarbleCMIP5Cube(TestSCMCubeIntegration):
     tclass = MarbleCMIP5Cube
