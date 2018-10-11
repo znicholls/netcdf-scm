@@ -1,4 +1,4 @@
-from os.path import join, isdir, isfile, splitext, dirname, abspath
+from os.path import join
 from unittest.mock import patch, MagicMock
 import warnings
 
@@ -9,17 +9,15 @@ import numpy as np
 import re
 import iris
 from iris.exceptions import ConstraintMismatchError
-from iris.analysis.cartography import DEFAULT_SPHERICAL_EARTH_RADIUS
 from iris.util import broadcast_to_shape
 import cf_units
-import cf_units as unit
 from pymagicc.io import MAGICCData
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
 
 from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
-from conftest import TEST_DATA_MARBLE_CMIP5_DIR, TEST_TAS_FILE, TEST_AREACELLA_FILE
+from conftest import TEST_DATA_MARBLE_CMIP5_DIR, TEST_TAS_FILE
 
 
 class TestSCMCube(object):
@@ -68,7 +66,9 @@ class TestSCMCube(object):
     def test_process_load_data_warnings(self, test_cube):
         warn_1 = "warning 1"
         warn_2 = "warning 2"
-        warn_area = "PATH-STAMP Missing CF-netCDF measure variable 'areacella' other stuff"
+        warn_area = (
+            "PATH-STAMP Missing CF-netCDF measure variable 'areacella' other stuff"
+        )
         with warnings.catch_warnings(record=True) as mock_warn_no_area:
             warnings.warn(warn_1)
             warnings.warn(warn_2)
@@ -91,8 +91,12 @@ class TestSCMCube(object):
         assert len(mock_warn_area_result) == 4  # warnings plus extra one
         assert str(mock_warn_area_result[0].message) == warn_1
         assert str(mock_warn_area_result[1].message) == warn_2
-        assert "Tried to add areacella cube, failed" in str(mock_warn_area_result[2].message)
-        assert "Missing CF-netCDF measure variable" in str(mock_warn_area_result[3].message)
+        assert "Tried to add areacella cube, failed" in str(
+            mock_warn_area_result[2].message
+        )
+        assert "Missing CF-netCDF measure variable" in str(
+            mock_warn_area_result[3].message
+        )
 
     def test_load_missing_variable_error(self, test_cube):
         tfile = TEST_TAS_FILE
@@ -202,8 +206,6 @@ class TestSCMCube(object):
         }
         test_cube._get_scm_masks = MagicMock(return_value=mocked_masks)
 
-        lon_dim = test_cube.cube.coord_dims("longitude")[0]
-        lat_dim = test_cube.cube.coord_dims("latitude")[0]
         mocked_weights = broadcast_to_shape(
             np.array([[1, 2, 3, 4], [1, 4, 8, 9], [0, 4, 1, 9]]),
             test_cube.cube.shape,
@@ -645,9 +647,11 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         # impossible to do other tests as far as I can tell because you have to pass a
         # local function in both the test and the argument, help welcome. expected is
         # here.
+        """
         expected = iris.Constraint(
             cube_func=(lambda c: c.var_name == np.str(tkwargs_list["variable_name"]))
         )
+        """
 
     def test_get_metadata_load_arguments(self, test_cube):
         tmetadata_var = "mdata_var"
