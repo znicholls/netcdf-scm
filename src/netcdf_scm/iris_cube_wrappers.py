@@ -200,9 +200,7 @@ class SCMCube(object):
         """
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
         scm_cubes = self.get_scm_cubes(
-            sftlf_cube=sftlf_cube,
-            land_mask_threshold=land_mask_threshold,
-            areacella_scmcube=areacella_scmcube,
+            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
         return {
             k: self.take_lat_lon_mean(cube, area_weights)
@@ -220,9 +218,7 @@ class SCMCube(object):
         )
         return out_cube
 
-    def get_scm_cubes(
-        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
-    ):
+    def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50):
         """
         Returns SCMCubes
         """
@@ -267,14 +263,10 @@ class SCMCube(object):
         if sftlf_cube is None:
             sftlf_cube = self.get_metadata_cube(self._sftlf_var)
 
-        if isinstance(sftlf_cube, SCMCube):
-            sftlf_data = sftlf_cube.cube.data
-        else:
-            assert isinstance(
-                sftlf_cube, np.ndarray
-            ), "sftlf_cube must be a numpy.ndarray if it's not an SCMCube instance"
+        if not isinstance(sftlf_cube, SCMCube):
+            raise TypeError("sftlf_cube must be an SCMCube instance")
 
-            sftlf_data = sftlf_cube
+        sftlf_data = sftlf_cube.cube.data
 
         land_mask = np.where(
             sftlf_data > land_mask_threshold,
@@ -294,7 +286,7 @@ class SCMCube(object):
             array_in = np.transpose(array_in)
 
         shape_assert_msg = (
-            "the sftlf_cube data must be the same shape as (or the transpose of) the "
+            "the sftlf_cube data must be the same shape as the "
             "cube's longitude-latitude grid"
         )
         assert array_in.shape == base_shape, shape_assert_msg

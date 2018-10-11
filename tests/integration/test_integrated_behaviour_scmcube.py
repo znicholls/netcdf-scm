@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 import numpy as np
 import iris
+from iris.util import broadcast_to_shape
 
 
 from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
@@ -49,6 +50,68 @@ class TestSCMCubeIntegration(object):
         cell_measures = test_cube.cube.cell_measures()
         assert len(cell_measures) == 1
         assert cell_measures[0].standard_name == "cell_area"
+
+    def test_get_scm_timeseries_cubes(self, test_cube):
+        tsftlf_cube = "mocked 124"
+        tland_mask_threshold = "mocked 51"
+        tareacella_scmcube = "mocked 4389"
+
+        land_mask = np.array(
+            [
+                [False, True, True, False],
+                [False, True, False, True],
+                [False, False, True, False],
+            ]
+        )
+        nh_mask = np.array(
+            [
+                [False, False, False, False],
+                [False, False, False, False],
+                [True, True, True, True],
+            ]
+        )
+
+        mocked_masks = {
+            "GLOBAL": np.full(nh_mask.shape, False),
+            "NH_LAND": np.logical_or(nh_mask, land_mask),
+            "SH_LAND": np.logical_or(~nh_mask, land_mask),
+            "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
+            "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
+        }
+        test_cube._get_scm_masks = MagicMock(return_value=mocked_masks)
+
+        mocked_weights = broadcast_to_shape(
+            np.array([[1, 2, 3, 4], [1, 4, 8, 9], [0, 4, 1, 9]]),
+            test_cube.cube.shape,
+            [test_cube._lat_dim_number, test_cube._lon_dim_number],
+        )
+
+        test_cube._get_area_weights = MagicMock(return_value=mocked_weights)
+
+        expected = {}
+        for label, mask in mocked_masks.items():
+            exp_cube = type(test_cube)()
+
+            rcube = test_cube.cube.copy()
+            rcube.data.mask = mask
+            exp_cube.cube = rcube.collapsed(
+                ["latitude", "longitude"], iris.analysis.MEAN, weights=mocked_weights
+            )
+            expected[label] = exp_cube
+
+        result = test_cube.get_scm_timeseries_cubes(
+            tsftlf_cube, tland_mask_threshold, tareacella_scmcube
+        )
+
+        for label, cube in result.items():
+            assert cube.cube == expected[label].cube
+
+        test_cube._get_scm_masks.assert_called_with(
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+        )
+        test_cube._get_area_weights.assert_called_with(
+            areacella_scmcube=tareacella_scmcube
+        )
 
 
 class TestMarbleCMIP5Cube(TestSCMCubeIntegration):
