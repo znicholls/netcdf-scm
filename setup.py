@@ -13,7 +13,7 @@ URL = "https://github.com/znicholls/netcdf-scm"
 DESCRIPTION = (
     "Python wrapper for processing netCDF files for use with simple cliamte models"
 )
-README = "README.md"
+README = "README.rst"
 
 SOURCE_DIR = "src"
 
