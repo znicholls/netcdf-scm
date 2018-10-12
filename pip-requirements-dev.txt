@@ -6,3 +6,5 @@ nbval
 nbresuse
 black
 flake8
+sphinx
+sphinx_rtd_theme
