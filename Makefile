@@ -33,7 +33,7 @@ test_all:
 .PHONY: test
 test:
 	$(call activate_conda_env,); \
-		pytest --cov -rfsxEX
+		pytest --cov -rfsxEX --cov-report term-missing
 
 .PHONY: test_notebooks
 test_notebooks:

@@ -446,7 +446,9 @@ class TestSCMCube(object):
 
         np.testing.assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("areacella", ["not a cube", "iris_error", "misshaped"])
+    @pytest.mark.parametrize(
+        "areacella", ["not a cube", "cube attr not a cube", "iris_error", "misshaped"]
+    )
     @pytest.mark.parametrize("areacella_var", ["areacella", "area_other"])
     def test_get_area_weights_workarounds(
         self, test_cube, test_sftlf_cube, areacella_var, areacella
@@ -471,6 +473,10 @@ class TestSCMCube(object):
             test_cube.get_metadata_cube = MagicMock(return_value=misshaped_cube)
         elif areacella == "not a cube":
             test_cube.get_metadata_cube = MagicMock(return_value=areacella)
+        elif areacella == "cube attr not a cube":
+            weird_ob = MagicMock()
+            weird_ob.cube = 23
+            test_cube.get_metadata_cube = MagicMock(return_value=weird_ob)
 
         with pytest.warns(None) as record:
             result = test_cube._get_area_weights()
@@ -490,6 +496,10 @@ class TestSCMCube(object):
             )
         elif areacella == "not a cube":
             specific_warn = re.escape("'str' object has no attribute 'cube'")
+        elif areacella == "cube attr not a cube":
+            specific_warn = re.escape(
+                "areacella cube which was found has cube attribute which isn't an iris cube"
+            )
 
         assert len(record) == 3
         assert re.match(radius_warn, str(record[2].message))
