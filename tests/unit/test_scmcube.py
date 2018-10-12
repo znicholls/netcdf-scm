@@ -99,9 +99,11 @@ class TestSCMCube(object):
     def test_add_areacella_measure(self, test_cube):
         # can safely ignore warnings here
         with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", ".*Missing CF-netCDF measure.*")
             test_cube.cube = iris.load_cube(TEST_TAS_FILE)
 
         tareacellacube = type(test_cube)()
+
         tareacellacube.cube = iris.load_cube(TEST_AREACELLA_FILE)
         test_cube.get_metadata_cube = MagicMock(return_value=tareacellacube)
 
@@ -226,7 +228,9 @@ class TestSCMCube(object):
         )
 
     def test_take_lat_lon_mean(self, test_cube):
-        tweights = iris.analysis.cartography.area_weights(test_cube.cube)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", ".*Using DEFAULT_SPHERICAL.*")
+            tweights = iris.analysis.cartography.area_weights(test_cube.cube)
 
         assert len(test_cube.cube.dim_coords) == 3
 
