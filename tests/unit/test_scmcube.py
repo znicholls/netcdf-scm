@@ -498,8 +498,16 @@ class TestSCMCube(object):
 
         np.testing.assert_array_equal(result, expected)
 
+    @patch("netcdf_scm.iris_cube_wrappers.assert_all_time_axes_same")
+    @patch("netcdf_scm.iris_cube_wrappers.get_scm_cube_time_axis_in_calendar")
     @pytest.mark.parametrize("out_calendar", [None, "gregorian", "365_day"])
-    def test_get_openscmdata_time_axis_and_calendar(self, test_cube, out_calendar):
+    def test_get_openscmdata_time_axis_and_calendar(
+        self,
+        mock_get_time_axis_in_calendar,
+        mock_assert_all_time_axes_same,
+        test_cube,
+        out_calendar,
+    ):
         expected_calendar = (
             test_cube.cube.coords("time")[0].units.calendar
             if out_calendar is None
@@ -509,20 +517,23 @@ class TestSCMCube(object):
         tscm_timeseries_cubes = {"mocked 1": 198, "mocked 2": 248}
 
         tget_time_axis = np.array([1, 2, 3])
-        test_cube.get_time_axis_in_calendar = MagicMock(return_value=tget_time_axis)
-
-        test_cube._assert_all_time_axes_same = MagicMock()
+        mock_get_time_axis_in_calendar.return_value = tget_time_axis
 
         expected_idx = pd.Index(tget_time_axis, dtype="object", name="Time")
-        result_idx, result_calendar = test_cube._get_openscmdata_time_axis_and_calendar(tscm_timeseries_cubes, out_calendar)
+        result_idx, result_calendar = test_cube._get_openscmdata_time_axis_and_calendar(
+            tscm_timeseries_cubes, out_calendar
+        )
 
         assert_index_equal(result_idx, expected_idx)
         assert result_calendar == expected_calendar
 
-        test_cube.get_time_axis_in_calendar.assert_has_calls(
-            [call(c, expected_calendar) for c in tscm_timeseries_cubes.values()], any_order=True
+        mock_get_time_axis_in_calendar.assert_has_calls(
+            [call(c, expected_calendar) for c in tscm_timeseries_cubes.values()],
+            any_order=True,
         )
-        test_cube._assert_all_time_axes_same.assert_called_with([tget_time_axis]*len(tscm_timeseries_cubes))
+        mock_assert_all_time_axes_same.assert_called_with(
+            [tget_time_axis] * len(tscm_timeseries_cubes)
+        )
 
 
 class TestMarbleCMIP5Cube(TestSCMCube):

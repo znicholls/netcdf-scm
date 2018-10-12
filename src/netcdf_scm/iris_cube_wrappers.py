@@ -7,8 +7,13 @@ import pandas as pd
 import iris
 from iris.util import broadcast_to_shape
 import iris.analysis.cartography
-import cf_units
 from pymagicc.io import MAGICCData
+
+from .utils import (
+    get_cube_timeseries_data,
+    get_scm_cube_time_axis_in_calendar,
+    assert_all_time_axes_same,
+)
 
 
 class SCMCube(object):
@@ -374,7 +379,7 @@ class SCMCube(object):
         """
 
         """
-        data = {k: self.get_timeseries_data(v) for k, v in scm_timeseries_cubes.items()}
+        data = {k: get_cube_timeseries_data(v) for k, v in scm_timeseries_cubes.items()}
 
         time_index, out_calendar = self._get_openscmdata_time_axis_and_calendar(
             scm_timeseries_cubes, out_calendar=out_calendar
@@ -401,47 +406,16 @@ class SCMCube(object):
             out_calendar = self.cube.coords("time")[0].units.calendar
 
         time_axes = [
-            self.get_time_axis_in_calendar(scm_cube, out_calendar)
+            get_scm_cube_time_axis_in_calendar(scm_cube, out_calendar)
             for scm_cube in scm_timeseries_cubes.values()
         ]
-        self._assert_all_time_axes_same(time_axes)
+        assert_all_time_axes_same(time_axes)
 
         # As we sometimes have to deal with long timeseries, we force the index to be
         # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
         # pandas limitation, see
         # http://pandas-docs.github.io/pandas-docs-travis/timeseries.html#timestamp-limitations
         return pd.Index(time_axes[0], dtype="object", name="Time"), out_calendar
-
-    def assert_only_time(self, scm_cube):
-        """
-        move to utils
-        """
-        assert_msg = "Should only have time coordinate here"
-        assert len(scm_cube.cube.dim_coords) == 1, assert_msg
-        assert scm_cube.cube.dim_coords[0].standard_name == "time"
-
-    def get_timeseries_data(self, scm_cube):
-        """
-        move to utils
-        """
-        self.assert_only_time(scm_cube)
-        return scm_cube.cube.data
-
-    def get_time_axis_in_calendar(self, scm_cube, calendar):
-        """
-        move to utils
-        """
-        self.assert_only_time(scm_cube)
-        time = scm_cube.cube.dim_coords[0]
-        return cf_units.num2date(time.points, time.units.name, calendar)
-
-    def _assert_all_time_axes_same(self, time_axes):
-        """
-        move to utils
-        """
-        for time_axis_to_check in time_axes:
-            assert_msg = "all the time axes should be the same"
-            np.testing.assert_array_equal(time_axis_to_check, time_axes[0]), assert_msg
 
 
 class MarbleCMIP5Cube(SCMCube):
