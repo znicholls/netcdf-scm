@@ -42,9 +42,8 @@ class TestSCMCubeIntegration(object):
 
         with pytest.warns(None) as record:
             test_cube.load_data(**tkwargs)
-        # Gracefully filling warnings, when we move to iris v2.2.0, change this to zero
-        # as that bug will be fixed
-        assert len(record) == 6
+
+        assert len(record) == 0
 
         test_cube.get_file_from_load_data_args.assert_called_with(**tkwargs)
         test_cube.get_variable_constraint_from_load_data_args.assert_called_with(
