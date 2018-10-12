@@ -349,7 +349,6 @@ class SCMCube(object):
                 warnings.warn(
                     "areacella cube which was found has cube attribute which isn't an iris cube"
                 )
-
             else:
                 return areacella_scmcube
         except iris.exceptions.ConstraintMismatchError as exc:
