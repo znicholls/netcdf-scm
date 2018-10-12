@@ -1,0 +1,9 @@
+coverage:
+  status:
+    project:
+      target: 90%
+    patch:
+      target: 95%
+
+comment:
+  behaviour: new
