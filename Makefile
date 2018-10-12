@@ -11,6 +11,11 @@ PIP_REQUIREMENTS_DEV=$(PWD)/pip-requirements-dev.txt
 NOTEBOOKS_DIR=./notebooks
 NOTEBOOKS_SANITIZE_FILE=$(NOTEBOOKS_DIR)/tests_sanitize.cfg
 
+DOCS_DIR=$(PWD)/docs
+LATEX_BUILD_DIR=$(DOCS_DIR)/build/latex
+LATEX_BUILD_STATIC_DIR=$(LATEX_BUILD_DIR)/_static
+LATEX_LOGO=$(DOCS_DIR)/source/_static/logo.png
+
 
 define activate_conda
 	[ ! -f $(HOME)/.bash_profile ] || . $(HOME)/.bash_profile; \
@@ -24,6 +29,19 @@ define activate_conda_env
 	echo 'If this fails, install your environment with make conda_env'; \
 	conda activate $(CONDA_ENV_NAME)
 endef
+
+
+.PHONY: docs
+docs:
+	make $(DOCS_DIR)/build/html/index.html
+
+# Have to run build twice to get stuff in right place
+$(DOCS_DIR)/build/html/index.html: $(DOCS_DIR)/source/index.rst
+	mkdir -p $(LATEX_BUILD_STATIC_DIR)
+	cp $(LATEX_LOGO) $(LATEX_BUILD_STATIC_DIR)
+	$(call activate_conda_env,); \
+		cd $(DOCS_DIR); \
+		make html
 
 .PHONY: test_all
 test_all:
@@ -50,7 +68,7 @@ black:
 	@status=$$(git status --porcelain pymagicc tests); \
 	if test "x$${status}" = x; then \
 		$(call activate_conda_env,); \
-		black --exclude _version.py --py36 setup.py src tests; \
+		black --exclude _version.py --py36 setup.py src tests docs/source/conf.py; \
 	else \
 		echo Not trying any formatting. Working directory is dirty ... >&2; \
 	fi;
@@ -88,11 +106,16 @@ conda_env:
 		pip install -Ur $(PIP_REQUIREMENTS_DEV); \
 		pip install -e .
 
+.PHONY: clean_docs
+clean_docs:
+	rm -rf $(DOCS_DIR)/build
+
 .PHONY: clean
 clean:
 	$(call activate_conda,); \
 		conda deactivate; \
 		conda remove --name $(CONDA_ENV_NAME) --all -y
+	make clean_docs
 
 .PHONY: variables
 variables:
@@ -109,3 +132,6 @@ variables:
 
 	@echo NOTEBOOKS_DIR: $(NOTEBOOKS_DIR)
 	@echo NOTEBOOKS_SANITIZE_FILE: $(NOTEBOOKS_SANITIZE_FILE)
+
+	@echo DOCS_DIR: $(DOCS_DIR)
+	@echo LATEX_LOGO: $(LATEX_LOGO)
