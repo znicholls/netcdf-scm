@@ -1,9 +1,15 @@
 from os.path import join, dirname, abspath
+import warnings
+
 
 import pytest
 import numpy as np
 import iris
 import cf_units as unit
+
+
+from netcdf_scm.iris_cube_wrappers import SCMCube
+
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test_data")
 TEST_DATA_MARBLE_CMIP5_DIR = join(TEST_DATA_ROOT_DIR, "marble_cmip5")
@@ -118,3 +124,16 @@ def test_sftlf_cube(request):
     test_sftlf_cube.cube.add_dim_coord(get_test_cube_lon(), 1)
 
     return test_sftlf_cube
+
+
+@pytest.fixture(scope="function")
+def test_generic_tas_cube():
+    test_generic_tas_cube = SCMCube()
+    # can safely ignore these warnings here
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore", "Missing CF-netCDF measure variable 'areacella'"
+        )
+        test_generic_tas_cube.cube = iris.load_cube(TEST_TAS_FILE)
+
+    return test_generic_tas_cube
