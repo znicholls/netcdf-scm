@@ -64,6 +64,5 @@ script:
   - if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then pytest -rfsxEX --nbval-lax ./notebooks --sanitize ./notebooks/tests_sanitize.cfg; fi
 
 
-
 after_success:
   - codecov

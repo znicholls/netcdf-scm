@@ -26,46 +26,46 @@ NetCDF SCM is a package of Python wrappers for processing netCDF files for use w
 
 .. sec-end-index
 
+License
+-------
+
+.. sec-begin-license
+
+NetCDF-SCM is free software under a BSD 2-Clause License, see `LICENSE <./LICENSE>`_.
+(When it's written), if you make any use of NetCDF-SCM, please cite `The Journal of Open Source Software (JOSS) <http://joss.theoj.org/>`_ paper [insert reference here]:
+
+.. sec-end-license
+
+.. sec-begin-installation
+
+Installation
+------------
+
+[To be written and tested after merge. Gist is can install with pip but iris dependencies are hard so better to use conda].
+
+The easiest way to install NetCDF-SCM is with `conda <https://conda.io/miniconda.html>`_
+
+::
+
+    conda install -c conda-forge netcdf-scm
+
+It is also possible to install it with `pip <https://pypi.org/project/pip/>`_
+
+::
+
+  pip install netcdf-scm
+
+However installing with pip requires installing all of Iris_'s dependencies yourself which is not trivial.
+
+.. _Iris: https://github.com/SciTools/iris
+
+.. sec-end-installation
+
 Documentation
 -------------
 
 Documentation can be found at `Read the Docs<https://netcdf-scm.readthedocs.io/en/latest/>`_.
 
-
-Contributing to the docs
-------------------------
-
-For our docstrings we use numpy style docstrings.
-For more information on these, `here is the full guide <https://numpydoc.readthedocs.io/en/latest/format.html>`_ and `the quick reference we also use <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html>`_.
-
-For documentation we use `Sphinx <http://www.sphinx-doc.org/en/master/>`_.
-To get ourselves started with Sphinx, we started with `this example <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`_ then used `Sphinx's getting started guide <http://www.sphinx-doc.org/en/master/usage/quickstart.html>`_.
-
-Gotchas
-~~~~~~~
-
-To get this to work completely, you require `Latexmk <https://mg.readthedocs.io/latexmk.html>`_.
-On a Mac this can be installed with ``sudo tlmgr install latexmk``.
-You will most likely also need to install some other packages (if you don't have the full distribution).
-You can check which package contains any missing files with ``tlmgr search --global --file [filename]``.
-You can then install the packages with ``sudo tlmgr install [package]``.
-
-
-Why is there a `Makefile` in a pure Python repository?
-------------------------------------------------------
-
-Whilst it's probably not good practice, a ``Makefile`` is a simple way to automate general setup (environment setup in particular).
-Hence we have one here which basically acts as a notes file for how to do all those little jobs which we often forget e.g. setting up environments, running tests (and making sure we're in the right environment), building docs, setting up auxillary bits and pieces.
-
-
-Why did we choose a BSD 2-Clause License?
------------------------------------------
-
-We want to ensure that our code can be used and shared as easily as possible.
-Whilst we love transparency, we didn't want to **force** all future users to also comply with a stronger license such as AGPL.
-Hence the choice we made.
-
-We recommend [Morin et al. 2012]_ for more information for scientists about open-source software licenses.
 
 .. |Build Status| image:: https://travis-ci.org/znicholls/netcdf-scm.svg?branch=master
     :target: https://travis-ci.org/znicholls/netcdf-scm
