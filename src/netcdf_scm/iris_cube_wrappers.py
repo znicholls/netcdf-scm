@@ -16,6 +16,8 @@ from .utils import (
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
     assert_all_time_axes_same,
+    take_lat_lon_mean,
+    apply_mask,
 )
 
 
@@ -203,19 +205,9 @@ class SCMCube(object):
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
         return {
-            k: self.take_lat_lon_mean(cube, area_weights)
-            for k, cube in scm_cubes.items()
+            k: take_lat_lon_mean(scm_cube, area_weights)
+            for k, scm_cube in scm_cubes.items()
         }
-
-    def take_lat_lon_mean(self, in_scmcube, in_weights):
-        """move to utils
-        """
-        out_cube = type(in_scmcube)()
-        out_cube.cube = in_scmcube.cube.copy()
-        out_cube.cube = out_cube.cube.collapsed(
-            [self._lat_name, self._lon_name], iris.analysis.MEAN, weights=in_weights
-        )
-        return out_cube
 
     def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50):
         """Returns SCMCubes
@@ -224,17 +216,7 @@ class SCMCube(object):
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
 
-        return {k: self.apply_mask(self, mask) for k, mask in scm_masks.items()}
-
-    def apply_mask(self, in_scmcube, in_mask):
-        """move to utils
-        """
-        out_cube = type(in_scmcube)()
-        out_cube.cube = in_scmcube.cube.copy()
-        out_cube.cube.data = np.ma.asarray(out_cube.cube.data)
-        out_cube.cube.data.mask = in_mask
-
-        return out_cube
+        return {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
 
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
         """

@@ -15,6 +15,8 @@ from netcdf_scm.utils import (
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
     assert_all_time_axes_same,
+    take_lat_lon_mean,
+    apply_mask,
 )
 
 
@@ -81,3 +83,25 @@ def test_assert_all_time_axes_same(test_generic_tas_cube):
     error_msg = re.escape("all the time axes should be the same")
     with pytest.raises(AssertionError, match=error_msg):
         assert_all_time_axes_same([otime_axis, ttime_axis])
+
+
+def test_take_lat_lon_mean(test_generic_tas_cube):
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", ".*Using DEFAULT_SPHERICAL.*")
+        tweights = iris.analysis.cartography.area_weights(test_generic_tas_cube.cube)
+
+    assert len(test_generic_tas_cube.cube.dim_coords) == 3
+
+    result = take_lat_lon_mean(test_generic_tas_cube, tweights)
+
+    assert len(result.cube.dim_coords) == 1
+    assert result.cube.cell_methods[0].method == "mean"
+    assert result.cube.cell_methods[0].coord_names == ("time",)
+
+
+def test_apply_mask(test_generic_tas_cube):
+    tmask = np.full(test_generic_tas_cube.cube.shape, True)
+
+    np.testing.assert_equal(test_generic_tas_cube.cube.data.mask, ~tmask)
+    result = apply_mask(test_generic_tas_cube, tmask)
+    np.testing.assert_equal(result.cube.data.mask, tmask)
