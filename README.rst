@@ -29,7 +29,13 @@ NetCDF SCM is a package of Python wrappers for processing netCDF files for use w
 Documentation
 -------------
 
-Documentation can be found at [add link here]. For our docstrings we use numpy style docstrings.
+Documentation can be found at `Read the Docs<https://netcdf-scm.readthedocs.io/en/latest/>`_.
+
+
+Contributing to the docs
+------------------------
+
+For our docstrings we use numpy style docstrings.
 For more information on these, `here is the full guide <https://numpydoc.readthedocs.io/en/latest/format.html>`_ and `the quick reference we also use <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html>`_.
 
 For documentation we use `Sphinx <http://www.sphinx-doc.org/en/master/>`_.
