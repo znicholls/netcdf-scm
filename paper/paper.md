@@ -24,16 +24,16 @@ output: pdf_document
 
 # Summary
 
-NetCDF-SCM is a simple package for processing netCDF files for use in simple climate models. It provides some basic functionality to read, average and plot such files and is built on top of the `iris` library [add iris reference].
+NetCDF-SCM is a simple package for processing netCDF files for use in simple climate models.
+It provides some basic functionality to read, average and plot such files and is built on top of the `iris` library [add iris reference].
 
 It is designed to be used as part of data processing for simple climate models such as MAGICC [@Meinshausen2011], OSCAR^[https://github.com/tgasser/OSCAR] (@Gasser2017), Pyhector^[https://github.com/openclimatedata/pyhector] (@Willner17, @Hartin2015), and FAIR^[https://github.com/OMS-NetZero/FAIR] (@Millar2017.).
 
 [Make this true and fix details]
 It can be installed using `pip` from the Python Package Index ^[<https://pypi.python.org/pypi/netcdf-scm>].
 
-
-Source code, documentation and issue tracker are available in NetCDF-SCM's GitHub
-repository^[<https://github.com/znicholls/netcdf-scm>].
+Source code, documentation, license and issue tracker are available in NetCDF-SCM's GitHub repository^[<https://github.com/znicholls/netcdf-scm>].
+For more information on open-source software licenses for scientists, see @Morin2012.
 
 
 ## Acknowledgements
