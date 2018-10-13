@@ -53,6 +53,7 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",  # pass numpy style docstrings
 ]
 
 autodoc_default_flags = [
