@@ -193,7 +193,8 @@ class TestSCMCube(object):
 
         assert_frame_equal(result, test_conversion_return)
 
-    def test_get_scm_timeseries_cubes(self, test_cube):
+    @patch("netcdf_scm.iris_cube_wrappers.take_lat_lon_mean")
+    def test_get_scm_timeseries_cubes(self, mock_take_lat_lon_mean, test_cube):
         tsftlf_cube = "mocked out"
         tland_mask_threshold = 48
         tareacella_scmcube = "mocked out again"
@@ -205,7 +206,7 @@ class TestSCMCube(object):
         test_cube.get_scm_cubes = MagicMock(return_value=tscm_cubes)
 
         tlat_lon_mean = "hello mock"
-        test_cube.take_lat_lon_mean = MagicMock(return_value=tlat_lon_mean)
+        mock_take_lat_lon_mean.return_value = tlat_lon_mean
 
         expected = {k: tlat_lon_mean for k in tscm_cubes}
         result = test_cube.get_scm_timeseries_cubes(
@@ -220,27 +221,15 @@ class TestSCMCube(object):
         test_cube.get_scm_cubes.assert_called_with(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
         )
-        assert test_cube.take_lat_lon_mean.call_count == len(tscm_cubes)
+        mock_take_lat_lon_mean.call_count == len(tscm_cubes)
 
         expected_calls = itertools.product(tscm_cubes.values(), [tarea_weights])
-        test_cube.take_lat_lon_mean.assert_has_calls(
+        mock_take_lat_lon_mean.assert_has_calls(
             [call(*c) for c in expected_calls], any_order=True
         )
 
-    def test_take_lat_lon_mean(self, test_cube):
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", ".*Using DEFAULT_SPHERICAL.*")
-            tweights = iris.analysis.cartography.area_weights(test_cube.cube)
-
-        assert len(test_cube.cube.dim_coords) == 3
-
-        result = test_cube.take_lat_lon_mean(test_cube, tweights)
-
-        assert len(result.cube.dim_coords) == 1
-        assert result.cube.cell_methods[0].method == "mean"
-        assert result.cube.cell_methods[0].coord_names == ("latitude", "longitude")
-
-    def test_get_scm_cubes(self, test_cube):
+    @patch("netcdf_scm.iris_cube_wrappers.apply_mask")
+    def test_get_scm_cubes(self, mock_apply_mask, test_cube):
         tsftlf_cube = "mocked out"
         tland_mask_threshold = 48
 
@@ -248,7 +237,7 @@ class TestSCMCube(object):
         test_cube._get_scm_masks = MagicMock(return_value=tscm_masks)
 
         tapply_mask = 3.14
-        test_cube.apply_mask = MagicMock(return_value=tapply_mask)
+        mock_apply_mask.return_value = tapply_mask
 
         expected = {k: tapply_mask for k in tscm_masks}
         result = test_cube.get_scm_cubes(
@@ -260,17 +249,10 @@ class TestSCMCube(object):
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
         )
 
-        assert test_cube.apply_mask.call_count == len(tscm_masks)
-        test_cube.apply_mask.assert_has_calls(
+        mock_apply_mask.call_count == len(tscm_masks)
+        mock_apply_mask.assert_has_calls(
             [call(test_cube, c) for c in tscm_masks.values()], any_order=True
         )
-
-    def test_apply_mask(self, test_cube):
-        tmask = np.full(test_cube.cube.shape, True)
-
-        np.testing.assert_equal(test_cube.cube.data.mask, ~tmask)
-        result = test_cube.apply_mask(test_cube, tmask)
-        np.testing.assert_equal(result.cube.data.mask, tmask)
 
     def test_get_scm_masks(self, test_cube):
         tsftlf_cube = "mocked 124"

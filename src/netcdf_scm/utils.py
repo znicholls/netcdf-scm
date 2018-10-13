@@ -3,6 +3,7 @@ The utils docstring goes here
 """
 
 import numpy as np
+import iris
 import cf_units
 
 
@@ -41,3 +42,28 @@ def assert_all_time_axes_same(time_axes):
         np.testing.assert_array_equal(
             time_axis_to_check, time_axes[0], err_msg=assert_msg
         )
+
+
+def take_lat_lon_mean(in_scmcube, in_weights):
+    """
+
+    """
+    out_cube = type(in_scmcube)()
+    out_cube.cube = in_scmcube.cube.copy()
+    out_cube.cube = out_cube.cube.collapsed(
+        [in_scmcube._lat_name, in_scmcube._lon_name],
+        iris.analysis.MEAN,
+        weights=in_weights,
+    )
+    return out_cube
+
+
+def apply_mask(in_scmcube, in_mask):
+    """move to utils
+    """
+    out_cube = type(in_scmcube)()
+    out_cube.cube = in_scmcube.cube.copy()
+    out_cube.cube.data = np.ma.asarray(out_cube.cube.data)
+    out_cube.cube.data.mask = in_mask
+
+    return out_cube
