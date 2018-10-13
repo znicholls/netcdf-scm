@@ -11,7 +11,7 @@ import cf_units
 
 
 from netcdf_scm.utils import (
-    assert_only_cube_dim_coord_is_time,
+    _assert_only_cube_dim_coord_is_time,
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
     assert_all_time_axes_same,
@@ -26,7 +26,7 @@ def test_assert_only_cube_dim_coord_is_time(test_generic_tas_cube):
     error_msg = re.escape("Should only have time coordinate here")
 
     with pytest.raises(AssertionError, match=error_msg):
-        assert_only_cube_dim_coord_is_time(test_generic_tas_cube)
+        _assert_only_cube_dim_coord_is_time(test_generic_tas_cube)
 
     # can safely ignore these warnings here
     with warnings.catch_warnings():
@@ -38,7 +38,7 @@ def test_assert_only_cube_dim_coord_is_time(test_generic_tas_cube):
         )
 
     with pytest.raises(AssertionError, match=error_msg):
-        assert_only_cube_dim_coord_is_time(test_generic_tas_cube)
+        _assert_only_cube_dim_coord_is_time(test_generic_tas_cube)
 
     # can safely ignore these warnings here
     with warnings.catch_warnings():
@@ -49,10 +49,10 @@ def test_assert_only_cube_dim_coord_is_time(test_generic_tas_cube):
             weights=iris.analysis.cartography.area_weights(original_cube),
         )
 
-    assert_only_cube_dim_coord_is_time(test_generic_tas_cube)
+    _assert_only_cube_dim_coord_is_time(test_generic_tas_cube)
 
 
-@patch("netcdf_scm.utils.assert_only_cube_dim_coord_is_time")
+@patch("netcdf_scm.utils._assert_only_cube_dim_coord_is_time")
 def test_get_cube_timeseries_data(mock_assert_only_time, test_generic_tas_cube):
     expected = test_generic_tas_cube.cube.data
     result = get_cube_timeseries_data(test_generic_tas_cube)
