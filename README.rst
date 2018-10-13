@@ -65,6 +65,8 @@ We want to ensure that our code can be used and shared as easily as possible.
 Whilst we love transparency, we didn't want to **force** all future users to also comply with a stronger license such as AGPL.
 Hence the choice we made.
 
+We recommend [Morin et al. 2012]_ for more information for scientists about open-source software licenses.
+
 .. |Build Status| image:: https://travis-ci.org/znicholls/netcdf-scm.svg?branch=master
     :target: https://travis-ci.org/znicholls/netcdf-scm
 .. |Docs| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
@@ -92,3 +94,4 @@ Hence the choice we made.
 .. |License| image:: https://img.shields.io/github/license/znicholls/netcdf-scm.svg
     :target: https://github.com/znicholls/netcdf-scm/blob/master/LICENSE
 
+.. [Morin et al. 2012]: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1002598
