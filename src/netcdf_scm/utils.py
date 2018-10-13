@@ -1,5 +1,6 @@
-"""
-The utils docstring goes here
+"""Utils contains a number of helpful functions for doing common cube operations.
+
+For example, applying masks to cubes, taking latitude-longitude means and getting timeseries from a cube as datetime values.
 """
 
 import numpy as np
@@ -8,34 +9,62 @@ import cf_units
 
 
 def get_cube_timeseries_data(scm_cube):
-    """
+    """Get a timeseries from a cube.
 
+    This function only works on cubes which are on a time grid only i.e. have no other dimension coordinates.
+
+    Parameters
+    ----------
+    scm_cube : :obj:`SCMCube`
+        An ``SCMCube`` instance with only a 'time' dimension.
+
+    Returns
+    -------
+    np.ndarray
+        The cube's timeseries data.
     """
-    assert_only_cube_dim_coord_is_time(scm_cube)
+    _assert_only_cube_dim_coord_is_time(scm_cube)
     return scm_cube.cube.data
 
 
 def get_scm_cube_time_axis_in_calendar(scm_cube, calendar):
-    """
+    """Gets a cube's time axis in a given calendar
 
+    Parameters
+    ----------
+    scm_cube : :obj:`SCMCube`
+        An ``SCMCube`` instance.
+    calendar : str
+        The calendar to return the time axis in e.g. '365_day', 'gregorian'.
+
+    Returns
+    -------
+    np.ndarray
+        A numpy array of datetimes, containing the cube's calendar.
     """
     time_coord_number = scm_cube.cube.coord_dims("time")[0]
     time = scm_cube.cube.dim_coords[time_coord_number]
     return cf_units.num2date(time.points, time.units.name, calendar)
 
 
-def assert_only_cube_dim_coord_is_time(scm_cube):
-    """
-
-    """
+def _assert_only_cube_dim_coord_is_time(scm_cube):
     assert_msg = "Should only have time coordinate here"
     assert len(scm_cube.cube.dim_coords) == 1, assert_msg
     assert scm_cube.cube.dim_coords[0].standard_name == "time", assert_msg
 
 
 def assert_all_time_axes_same(time_axes):
-    """
+    """Assert all time axes in a set are the same.
 
+    Parameters
+    ----------
+    time_axes : :obj:`list` of :obj:`np.ndarray`
+        List of time axes to compare.
+
+    Raises
+    ------
+    AssertionError
+        If not all time axes are the same.
     """
     for time_axis_to_check in time_axes:
         assert_msg = "all the time axes should be the same"

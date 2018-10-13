@@ -19,6 +19,7 @@ NetCDF-SCM
     :maxdepth: 2
     :caption: API reference
 
+    utils
     iris-cube-wrappers
 
 
