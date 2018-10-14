@@ -64,7 +64,7 @@ However installing with pip requires installing all of Iris_'s dependencies your
 Documentation
 -------------
 
-Documentation can be found at `Read the Docs<https://netcdf-scm.readthedocs.io/en/latest/>`_.
+Documentation can be found at `Read the Docs <https://netcdf-scm.readthedocs.io/en/latest/>`_.
 
 
 .. |Build Status| image:: https://travis-ci.org/znicholls/netcdf-scm.svg?branch=master

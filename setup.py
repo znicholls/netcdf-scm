@@ -11,7 +11,7 @@ EMAIL = "zebedee.nicholls@climate-energy-college.org"
 URL = "https://github.com/znicholls/netcdf-scm"
 
 DESCRIPTION = (
-    "Python wrapper for processing netCDF files for use with simple cliamte models"
+    "Python wrapper for processing netCDF files for use with simple climate models"
 )
 README = "README.rst"
 
@@ -36,19 +36,19 @@ class NetCDFSCM(TestCommand):
 cmdclass = versioneer.get_cmdclass()
 cmdclass.update({"test": NetCDFSCM})
 
-
 setup(
     name=PACKAGE_NAME,
     version=versioneer.get_version(),
     description=DESCRIPTION,
     long_description=README_TEXT,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     author=AUTHOR,
     author_email=EMAIL,
     url=URL,
-    license=" ",
+    license="BSD 2-Clause License",
     classifiers=[
         "Development Status :: 4 - Beta",
+        "License :: OSI Approved :: BSD License",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.5",
@@ -63,7 +63,7 @@ setup(
         "simple climate model",
         "reduced complexity climate model",
     ],
-    packages=find_packages(SOURCE_DIR, exclude=["tests"]),
+    packages=find_packages(SOURCE_DIR),
     package_dir={"": SOURCE_DIR},
     # package_data={
     #     "": ["*.csv"],
@@ -78,7 +78,7 @@ setup(
     #         "MAGICC6/run/*.SCEN",
     #     ],
     # },
-    include_package_data=True,
+    # include_package_data=True,
     # install_requires=["pandas", "f90nml"],
     tests_require=["pytest"],
     cmdclass=cmdclass,
