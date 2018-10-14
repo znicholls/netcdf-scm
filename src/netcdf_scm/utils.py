@@ -74,8 +74,23 @@ def assert_all_time_axes_same(time_axes):
 
 
 def take_lat_lon_mean(in_scmcube, in_weights):
-    """
+    """Take the latitude longitude mean of a cube with given weights
 
+    Parameters
+    ----------
+    in_scmcube : :obj:`SCMCube`
+        An ``SCMCube`` instance.
+
+    in_weights : `np.ndarray`
+        Weights to use when taking the mean. If you don't have another source, these
+        can be generated using
+        ``iris.analysis.cartography.area_weights(iris_cube_instance)``
+
+    Returns
+    -------
+    :obj:`SCMCube`
+        A copy of the input cube in which the data is now the latitude-longitude mean
+        of the input cube's data
     """
     out_cube = type(in_scmcube)()
     out_cube.cube = in_scmcube.cube.copy()
@@ -88,7 +103,20 @@ def take_lat_lon_mean(in_scmcube, in_weights):
 
 
 def apply_mask(in_scmcube, in_mask):
-    """move to utils
+    """Apply a mask to an scm cube's data
+
+    Parameters
+    ----------
+    in_scmcube : :obj:`SCMCube`
+        An ``SCMCube`` instance.
+
+    in_mask : boolean `np.ndarray`
+        The mask to apply
+
+    Returns
+    -------
+    :obj:`SCMCube`
+        A copy of the input cube with the mask applied to its data
     """
     out_cube = type(in_scmcube)()
     out_cube.cube = in_scmcube.cube.copy()
