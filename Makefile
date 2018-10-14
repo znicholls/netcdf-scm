@@ -3,7 +3,7 @@ SHELL=/bin/bash
 
 CONDA_ENV_NAME=netcdf-scm
 CONDA_ENV_PATH=$(MINICONDA_PATH)/envs/$(CONDA_ENV_NAME)
-CONDA_ENV_YML=$(PWD)/conda-environment-minimal.yaml
+CONDA_ENV_MINIMAL_YML=$(PWD)/conda-environment-minimal.yaml
 
 PIP_REQUIREMENTS_MINIMAL=$(PWD)/pip-requirements-minimal.txt
 PIP_REQUIREMENTS_DEV=$(PWD)/pip-requirements-dev.txt
@@ -100,7 +100,7 @@ conda_env:
 		conda config --add channels conda-forge; \
 		conda create -y -n $(CONDA_ENV_NAME); \
 		conda activate $(CONDA_ENV_NAME); \
-		conda install -y --file $(CONDA_ENV_YML); \
+		conda install -y --file $(CONDA_ENV_MINIMAL_YML); \
 		pip install --upgrade pip; \
 		pip install -Ur $(PIP_REQUIREMENTS_MINIMAL); \
 		pip install -Ur $(PIP_REQUIREMENTS_DEV); \
@@ -125,7 +125,7 @@ variables:
 
 	@echo CONDA_ENV_NAME: $(CONDA_ENV_NAME)
 	@echo CONDA_ENV_PATH: $(CONDA_ENV_PATH)
-	@echo CONDA_ENV_YML: $(CONDA_ENV_YML)
+	@echo CONDA_ENV_MINIMAL_YML: $(CONDA_ENV_MINIMAL_YML)
 
 	@echo PIP_REQUIREMENTS_MINIMAL: $(PIP_REQUIREMENTS_MINIMAL)
 	@echo PIP_REQUIREMENTS_DEV: $(PIP_REQUIREMENTS_DEV)

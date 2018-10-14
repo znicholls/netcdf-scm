@@ -8,20 +8,53 @@ This section of the docs details how to get setup to contribute and how best to 
 Contributing
 ------------
 
-[To be written]
+All contributions are welcome, some possible suggestions include:
+
+- tutorials (or support questions which, once solved, result in a new tutorial :D)
+- blog posts
+- improving the documentation
+- bug reports
+- feature requests
+- pull requests
+
+Please report issues or discuss feature requests in the `NetCDF-SCM issue tracker`_.
+If your issue is a feature request or a bug, please use the templates available, otherwise, simply open a normal issue :)
+
+As a contributor, please follow a couple of conventions:
+
+- Create issues in the `NetCDF-SCM issue tracker`_ for changes and enhancements, this ensures that everyone in the community has a chance to comment
+- Be welcoming to newcomers and encourage diverse new contributors from all backgrounds: see the `Python Community Code of Conduct <https://www.python.org/psf/codeofconduct/>`_
 
 
 Getting setup
 -------------
 
-[To be written]
+To get setup as a developer, we recommend the following steps (if any of these tools are unfamiliar, please see the resources we recommend in `Development tools`_):
+
+#. Install conda and make
+#. Run ``make conda_env``, if that fails you can try doing it manually
+
+    #. Create a conda virtual environment to use with NetCDF-SCM
+    #. Activate your virtual environment
+    #. Install the conda minimal dependencies with ``conda install --file conda-environment-minimal.yaml -n your-environment-name``
+    #. Upgrade pip ``pip install --upgrade pip``
+    #. Install pip minimal dependencies ``pip install -Ur pip-requirements-minimal.txt``
+    #. Install pip development dependencies ``pip install -Ur pip-requirements-dev.txt``
+    #. Change your current directory to NetCDF-SCM's root directory (i.e. the one which contains ``README.rst``), ``cd netcdf-scm``
+    #. Install an editable version of NetCDF-SCM, ``pip install -e .``
+
+#. Make sure the tests pass by running ``make test_all``, if that files the commands are
+
+    #. Activate your virtual environment
+    #. Run the unit and integration tests ``pytest --cov -rfsxEX --cov-report term-missing``
+    #. Test the notebooks ``pytest -rfsxEX --nbval ./notebooks --sanitize ./notebooks/tests_sanitize.cfg``
 
 
 Getting help
 ~~~~~~~~~~~~
 
 Whilst developing, unexpected things can go wrong (that's why it's called 'developing', if we knew what we were doing, it would already be 'developed').
-Normally, the fastest way to solve an issue is to contact us via the `issue tracker <https://github.com/znicholls/netcdf-scm/issues>`_ (if your issue is a feature request or a bug, please use the templates available, otherwise, simply open a normal issue).
+Normally, the fastest way to solve an issue is to contact us via the `issue tracker <https://github.com/znicholls/netcdf-scm/issues>`_.
 The other option is to debug yourself.
 For this purpose, we provide a list of the tools we use during our development as starting points for your search to find what has gone wrong.
 
@@ -47,10 +80,22 @@ We include links with each of these tools to starting points that we think are u
 - Sphinx_
 
 
+Formatting
+----------
+
+To help us focus on what the code does, not how it looks, we use a couple of automatic formatting tools.
+These automatically format the code for us and tell use where the errors are.
+To use them, after setting yourself up (see `Getting setup`_), simply run ``make black`` and ``make flake8``.
+Note that ``make black`` can only be run if you have committed all your work i.e. your working directory is 'clean'.
+This restriction is made to ensure that you don't format code without being able to undo it, just in case something goes wrong.
+
+
 Buiding the docs
 ----------------
 
-[To be written]
+After setting yourself up (see `Getting setup`_), building the docs is as simple as running ``make docs`` (note, run ``make -B docs`` to force the docs to rebuild and ignore make when it says '... index.html is up to date').
+This will build the docs for you.
+You can preview them by opening ``docs/build/html/index.html`` in a browser.
 
 For documentation we use Sphinx_.
 To get ourselves started with Sphinx, we started with `this example <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`_ then used `Sphinx's getting started guide <http://www.sphinx-doc.org/en/master/usage/quickstart.html>`_.
@@ -76,7 +121,7 @@ For more information on these, `here is the full guide <https://numpydoc.readthe
 Releasing
 ---------
 
-[To be written]
+[To be written, once I've done it]
 
 
 Why is there a ``Makefile`` in a pure Python repository?
@@ -97,3 +142,4 @@ We recommend [Morin et al. 2012]_ for more information for scientists about open
 
 
 .. _Sphinx: http://www.sphinx-doc.org/en/master/
+.. _NetCDF-SCM issue tracker: https://github.com/znicholls/netcdf-scm/issues
