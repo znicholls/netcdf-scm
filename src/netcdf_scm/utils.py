@@ -40,7 +40,7 @@ def get_scm_cube_time_axis_in_calendar(scm_cube, calendar):
     Returns
     -------
     np.ndarray
-        A numpy array of datetimes, containing the cube's calendar.
+        Array of datetimes, containing the cube's calendar.
     """
     time_coord_number = scm_cube.cube.coord_dims("time")[0]
     time = scm_cube.cube.dim_coords[time_coord_number]
@@ -58,7 +58,7 @@ def assert_all_time_axes_same(time_axes):
 
     Parameters
     ----------
-    time_axes : :obj:`list` of :obj:`np.ndarray`
+    time_axes : list_like of array_like
         List of time axes to compare.
 
     Raises
@@ -81,7 +81,7 @@ def take_lat_lon_mean(in_scmcube, in_weights):
     in_scmcube : :obj:`SCMCube`
         An ``SCMCube`` instance.
 
-    in_weights : `np.ndarray`
+    in_weights : np.ndarray
         Weights to use when taking the mean. If you don't have another source, these
         can be generated using
         ``iris.analysis.cartography.area_weights(iris_cube_instance)``
@@ -110,7 +110,7 @@ def apply_mask(in_scmcube, in_mask):
     in_scmcube : :obj:`SCMCube`
         An ``SCMCube`` instance.
 
-    in_mask : boolean `np.ndarray`
+    in_mask : boolean np.ndarray
         The mask to apply
 
     Returns
