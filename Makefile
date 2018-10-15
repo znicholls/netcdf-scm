@@ -4,6 +4,7 @@ SHELL=/bin/bash
 CONDA_ENV_NAME=netcdf-scm
 CONDA_ENV_PATH=$(MINICONDA_PATH)/envs/$(CONDA_ENV_NAME)
 CONDA_ENV_MINIMAL_YML=$(PWD)/conda-environment-minimal.yaml
+CONDA_ENV_DEV_YML=$(PWD)/conda-environment-dev.yaml
 
 PIP_REQUIREMENTS_MINIMAL=$(PWD)/pip-requirements-minimal.txt
 PIP_REQUIREMENTS_DEV=$(PWD)/pip-requirements-dev.txt
@@ -79,6 +80,11 @@ new_release:
 	@echo 'git tag vX.Y.Z'
 	@echo 'make publish-on-pypi'
 
+.PHONY: release-on-conda
+release-on-conda:
+	@echo 'For now, this is all very manual'
+	@echo 'I think you even have to bump version numbers manually?'
+
 # first time setup, follow this https://blog.jetbrains.com/pycharm/2017/05/how-to-publish-your-package-on-pypi/
 # then this works
 .PHONY: publish-on-testpypi
@@ -87,7 +93,7 @@ publish-on-testpypi:
 	@status=$$(git status --porcelain); \
 	if test "x$${status}" = x; then \
 		$(call activate_conda_env,); \
-			python setup.py bdist_wheel --universal; \
+			python setup.py sdist bdist_wheel --universal; \
 			twine upload -r testpypi dist/*; \
 	else \
 		echo Working directory is dirty >&2; \
@@ -99,7 +105,7 @@ publish-on-pypi:
 	@status=$$(git status --porcelain); \
 	if test "x$${status}" = x; then \
 		$(call activate_conda_env,); \
-			python setup.py bdist_wheel --universal; \
+			python setup.py sdist bdist_wheel --universal; \
 			twine upload dist/*; \
 	else \
 		echo Working directory is dirty >&2; \
@@ -127,6 +133,7 @@ conda_env:
 		conda create -y -n $(CONDA_ENV_NAME); \
 		conda activate $(CONDA_ENV_NAME); \
 		conda install -y --file $(CONDA_ENV_MINIMAL_YML); \
+		conda install -y --file $(CONDA_ENV_DEV_YML); \
 		pip install --upgrade pip; \
 		pip install -Ur $(PIP_REQUIREMENTS_MINIMAL); \
 		pip install -Ur $(PIP_REQUIREMENTS_DEV); \
@@ -152,6 +159,7 @@ variables:
 	@echo CONDA_ENV_NAME: $(CONDA_ENV_NAME)
 	@echo CONDA_ENV_PATH: $(CONDA_ENV_PATH)
 	@echo CONDA_ENV_MINIMAL_YML: $(CONDA_ENV_MINIMAL_YML)
+	@echo CONDA_ENV_DEV_YML: $(CONDA_ENV_DEV_YML)
 
 	@echo PIP_REQUIREMENTS_MINIMAL: $(PIP_REQUIREMENTS_MINIMAL)
 	@echo PIP_REQUIREMENTS_DEV: $(PIP_REQUIREMENTS_DEV)

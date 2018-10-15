@@ -45,7 +45,7 @@ setup(
     author=AUTHOR,
     author_email=EMAIL,
     url=URL,
-    license="BSD 2-Clause License",
+    license="2-Clause BSD License",
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: BSD License",

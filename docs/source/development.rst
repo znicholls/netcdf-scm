@@ -37,6 +37,7 @@ To get setup as a developer, we recommend the following steps (if any of these t
     #. Create a conda virtual environment to use with NetCDF-SCM
     #. Activate your virtual environment
     #. Install the conda minimal dependencies with ``conda install --file conda-environment-minimal.yaml -n your-environment-name``
+    #. Install the conda development dependencies with ``conda install --file conda-environment-dev.yaml -n your-environment-name``
     #. Upgrade pip ``pip install --upgrade pip``
     #. Install pip minimal dependencies ``pip install -Ur pip-requirements-minimal.txt``
     #. Install pip development dependencies ``pip install -Ur pip-requirements-dev.txt``
