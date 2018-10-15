@@ -1,2 +1,6 @@
+include README.rst
+include LICENSE
+include CHANGELOG.rst
+
 include versioneer.py
 include src/netcdf_scm/_version.py
