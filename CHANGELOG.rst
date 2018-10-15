@@ -5,7 +5,7 @@ master
 ------
 
 
-v0.2.3
+v0.2.4
 ------
 
 - Include simple tests in package
