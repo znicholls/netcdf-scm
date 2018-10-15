@@ -15,7 +15,7 @@ from iris.util import broadcast_to_shape
 
 
 from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
-from conftest import TEST_DATA_MARBLE_CMIP5_DIR, TEST_TAS_FILE, TEST_AREACELLA_FILE
+from conftest import TEST_DATA_MARBLE_CMIP5_DIR, TEST_TAS_FILE, TEST_AREACELLA_FILE, tdata_required
 
 
 class TestSCMCube(object):
@@ -96,6 +96,7 @@ class TestSCMCube(object):
             mock_warn_area_result[3].message
         )
 
+    @tdata_required
     def test_add_areacella_measure(self, test_cube):
         # can safely ignore warnings here
         with warnings.catch_warnings():
@@ -114,6 +115,7 @@ class TestSCMCube(object):
             ["cell_area" in cm.standard_name for cm in test_cube.cube.cell_measures()]
         )
 
+    @tdata_required
     def test_load_missing_variable_error(self, test_cube):
         tfile = TEST_TAS_FILE
         test_cube.get_file_from_load_data_args = MagicMock(return_value=tfile)
