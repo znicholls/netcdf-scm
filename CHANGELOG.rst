@@ -4,29 +4,33 @@ Changelog
 master
 ------
 
+
+v0.2.3
+------
+
 - Include simple tests in package
 
 
-0.2.3
------
+v0.2.3
+------
 
 - Include LICENSE in package
 
 
-0.2.2
------
+v0.2.2
+------
 
 - Add conda dev environment details
 
 
-0.2.1
------
+v0.2.1
+------
 
 - Update setup.py to reflect actual supported python versions
 
 
-0.2.0
------
+v0.2.0
+------
 
 - (`#4 <https://github.com/znicholls/netcdf-scm/pull/4>`_) Add work done elsewhere previously
     - ``SCMCube`` base class for handling netCDF files
@@ -39,13 +43,13 @@ master
     - automatic documentation with Sphinx
 
 
-0.0.1
------
+v0.0.1
+------
 
 - initial release
 
 
-0.0
----
+v0.0
+----
 
 - dummy release
