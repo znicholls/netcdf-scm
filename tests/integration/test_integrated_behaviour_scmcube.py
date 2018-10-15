@@ -12,12 +12,13 @@ from pymagicc.io import MAGICCData
 
 
 from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
-from conftest import TEST_TAS_FILE, TEST_AREACELLA_FILE
+from conftest import TEST_TAS_FILE, TEST_AREACELLA_FILE, tdata_required
 
 
 class TestSCMCubeIntegration(object):
     tclass = SCMCube
 
+    @tdata_required
     def test_load_data_and_areacella(self, test_cube):
         tfile = TEST_TAS_FILE
         test_cube.get_file_from_load_data_args = MagicMock(return_value=tfile)

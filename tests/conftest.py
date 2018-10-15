@@ -1,4 +1,4 @@
-from os.path import join, dirname, abspath
+from os.path import join, dirname, abspath, isdir
 import warnings
 
 
@@ -33,6 +33,9 @@ TEST_AREACELLA_FILE = join(
     "r0i0p0",
     "areacella_fx_CanESM2_1pctCO2_r0i0p0.nc",
 )
+
+
+tdata_required = pytest.mark.skipif(not isdir(TEST_DATA_ROOT_DIR), reason="test data required")
 
 
 def get_test_cube_lon():
