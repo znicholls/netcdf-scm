@@ -61,7 +61,7 @@ setup(
         "simple climate model",
         "reduced complexity climate model",
     ],
-    packages=find_packages(SOURCE_DIR),
+    packages=find_packages(SOURCE_DIR),  # no tests/docs in `src` so don't need exclude
     package_dir={"": SOURCE_DIR},
     # package_data={
     #     "": ["*.csv"],

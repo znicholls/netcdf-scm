@@ -18,8 +18,10 @@ from netcdf_scm.utils import (
     take_lat_lon_mean,
     apply_mask,
 )
+from conftest import tdata_required
 
 
+@tdata_required
 def test_assert_only_cube_dim_coord_is_time(test_generic_tas_cube):
     original_cube = test_generic_tas_cube.cube
 
@@ -52,6 +54,7 @@ def test_assert_only_cube_dim_coord_is_time(test_generic_tas_cube):
     _assert_only_cube_dim_coord_is_time(test_generic_tas_cube)
 
 
+@tdata_required
 @patch("netcdf_scm.utils._assert_only_cube_dim_coord_is_time")
 def test_get_cube_timeseries_data(mock_assert_only_time, test_generic_tas_cube):
     expected = test_generic_tas_cube.cube.data
@@ -61,6 +64,7 @@ def test_get_cube_timeseries_data(mock_assert_only_time, test_generic_tas_cube):
     mock_assert_only_time.assert_called_with(test_generic_tas_cube)
 
 
+@tdata_required
 @pytest.mark.parametrize("out_calendar", ["gregorian", "julian", "365_day"])
 def test_get_cube_time_axis_in_calendar(test_generic_tas_cube, out_calendar):
     tcn = test_generic_tas_cube.cube.coord_dims("time")[0]
@@ -71,6 +75,7 @@ def test_get_cube_time_axis_in_calendar(test_generic_tas_cube, out_calendar):
     np.testing.assert_array_equal(result, expected)
 
 
+@tdata_required
 def test_assert_all_time_axes_same(test_generic_tas_cube):
     tcn = test_generic_tas_cube.cube.coord_dims("time")[0]
     ttime = test_generic_tas_cube.cube.dim_coords[tcn]
@@ -85,6 +90,7 @@ def test_assert_all_time_axes_same(test_generic_tas_cube):
         assert_all_time_axes_same([otime_axis, ttime_axis])
 
 
+@tdata_required
 def test_take_lat_lon_mean(test_generic_tas_cube):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", ".*Using DEFAULT_SPHERICAL.*")
@@ -99,6 +105,7 @@ def test_take_lat_lon_mean(test_generic_tas_cube):
     assert result.cube.cell_methods[0].coord_names == ("time",)
 
 
+@tdata_required
 def test_apply_mask(test_generic_tas_cube):
     tmask = np.full(test_generic_tas_cube.cube.shape, True)
 
