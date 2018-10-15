@@ -83,7 +83,11 @@ new_release:
 .PHONY: release-on-conda
 release-on-conda:
 	@echo 'For now, this is all very manual'
-	@echo 'I think you even have to bump version numbers manually?'
+	@echo 'Checklist:'
+	@echo '- version number'
+	@echo '- sha'
+	@echo '- README.rst badge'
+	@echo '- CHANGELOG.rst up to date'
 
 # first time setup, follow this https://blog.jetbrains.com/pycharm/2017/05/how-to-publish-your-package-on-pypi/
 # then this works
