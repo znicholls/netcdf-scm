@@ -4,6 +4,8 @@ Changelog
 master
 ------
 
+- Update ``netcdftime`` to ``cftime`` to track name change
+
 
 v0.2.4
 ------
