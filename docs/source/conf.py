@@ -55,6 +55,7 @@ release = get_versions()["version"]
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
@@ -107,6 +108,7 @@ pygments_style = "sphinx"
 #
 # html_theme = "alabaster"
 html_theme = "sphinx_rtd_theme"
+# html_theme = "classic"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
