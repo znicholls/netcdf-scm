@@ -37,7 +37,7 @@ docs:
 	make $(DOCS_DIR)/build/html/index.html
 
 # Have to run build twice to get stuff in right place
-$(DOCS_DIR)/build/html/index.html: $(DOCS_DIR)/source/index.rst
+$(DOCS_DIR)/build/html/index.html: $(DOCS_DIR)/source/*.py $(DOCS_DIR)/source/_templates/*.html $(DOCS_DIR)/source/*.rst src/netcdf_scm/*.py
 	mkdir -p $(LATEX_BUILD_STATIC_DIR)
 	cp $(LATEX_LOGO) $(LATEX_BUILD_STATIC_DIR)
 	$(call activate_conda_env,); \
