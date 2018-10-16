@@ -15,7 +15,12 @@ from iris.util import broadcast_to_shape
 
 
 from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
-from conftest import TEST_DATA_MARBLE_CMIP5_DIR, TEST_TAS_FILE, TEST_AREACELLA_FILE, tdata_required
+from conftest import (
+    TEST_DATA_MARBLE_CMIP5_DIR,
+    TEST_TAS_FILE,
+    TEST_AREACELLA_FILE,
+    tdata_required,
+)
 
 
 class TestSCMCube(object):

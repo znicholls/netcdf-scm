@@ -5,6 +5,7 @@ master
 ------
 
 - Update ``netcdftime`` to ``cftime`` to track name change
+- (`#10 <https://github.com/znicholls/netcdf-scm/pull/10>`_) Add land/ocean and hemisphere splits to ``_get_scm_masks`` outputs
 
 
 v0.2.4
