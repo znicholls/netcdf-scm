@@ -35,7 +35,9 @@ TEST_AREACELLA_FILE = join(
 )
 
 
-tdata_required = pytest.mark.skipif(not isdir(TEST_DATA_ROOT_DIR), reason="test data required")
+tdata_required = pytest.mark.skipif(
+    not isdir(TEST_DATA_ROOT_DIR), reason="test data required"
+)
 
 
 def get_test_cube_lon():
