@@ -32,7 +32,7 @@ License
 .. sec-begin-license
 
 NetCDF-SCM is free software under a BSD 2-Clause License, see `LICENSE <./LICENSE>`_.
-(When it's written), if you make any use of NetCDF-SCM, please cite `The Journal of Open Source Software (JOSS) <http://joss.theoj.org/>`_ paper [insert reference here]:
+If you make any use of NetCDF-SCM, please cite `The Journal of Open Source Software (JOSS) <http://joss.theoj.org/>`_ paper [insert reference here when written...]:
 
 .. sec-end-license
 
@@ -40,8 +40,6 @@ NetCDF-SCM is free software under a BSD 2-Clause License, see `LICENSE <./LICENS
 
 Installation
 ------------
-
-[To be written and tested after merge. Gist is can install with pip but iris dependencies are hard so better to use conda].
 
 The easiest way to install NetCDF-SCM is with `conda <https://conda.io/miniconda.html>`_
 
