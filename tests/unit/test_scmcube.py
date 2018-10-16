@@ -294,14 +294,18 @@ class TestSCMCube(object):
             "SH_LAND": np.logical_or(~nh_mask, land_mask),
             "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
             "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
+            "LAND": land_mask,
+            "OCEAN": ~land_mask,
+            "NH": nh_mask,
+            "SH": ~nh_mask,
         }
 
         result = test_cube._get_scm_masks(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
         )
 
-        for label, array in result.items():
-            np.testing.assert_array_equal(array, expected[label])
+        for label, array in expected.items():
+            np.testing.assert_array_equal(array, result[label])
         test_cube._get_land_mask.assert_called_with(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
         )
