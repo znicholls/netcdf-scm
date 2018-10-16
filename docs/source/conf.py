@@ -32,15 +32,16 @@ from netcdf_scm._version import get_versions
 
 project = "netcdf-scm"
 authors = ", ".join(["Zebedee Nicholls", "Robert Gieseke"])
-this_year = datetime.date.today().year
-copyright = "{}, {}".format(this_year, authors)
+# copyright_year = datetime.date.today().year
+copyright_year = "2018"
+copyright = "{}, {}".format(copyright_year, authors)
 author = authors
 
 
 # The short X.Y version
-version = netcdf_scm.__version__.split("+")[0]
+version = get_versions()["version"].split("+")[0]
 # The full version, including alpha/beta/rc tags
-release = netcdf_scm.__version__
+release = get_versions()["version"]
 
 
 # -- General configuration ---------------------------------------------------
@@ -93,10 +94,10 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ["build"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = "sphinx"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -127,6 +128,14 @@ html_static_path = ["_static"]
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
+
+html_context = {
+    "display_github": False,
+    "github_user": "znicholls",
+    "github_repo": "netcdf-scm",
+    "github_version": "master",
+    "conf_py_path": "/docs/source",
+}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -159,7 +168,7 @@ latex_documents = [
     (
         master_doc,
         "netcdf-scm.tex",
-        "netcdf-scm Documentation",
+        "NetCDF-SCM Documentation",
         "Zebedee Nicholls",
         "manual",
     )
@@ -170,7 +179,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "netcdf-scm", "netcdf-scm Documentation", [author], 1)]
+man_pages = [(master_doc, "netcdf-scm", "NetCDF-SCM Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -185,7 +194,7 @@ texinfo_documents = [
         "netcdf-scm Documentation",
         author,
         "netcdf-scm",
-        "One line description of project.",
+        "Python package for processing netCDF files for use with simple climate models (SCMs)",
         "Miscellaneous",
     )
 ]
