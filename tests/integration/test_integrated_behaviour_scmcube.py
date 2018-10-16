@@ -108,8 +108,8 @@ class TestSCMCubeIntegration(object):
             tsftlf_cube, tland_mask_threshold, tareacella_scmcube
         )
 
-        for label, cube in result.items():
-            assert cube.cube == expected[label].cube
+        for label, cube in expected.items():
+            assert cube.cube == result[label].cube
 
         test_cube._get_scm_masks.assert_called_with(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
