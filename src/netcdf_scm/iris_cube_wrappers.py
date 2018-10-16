@@ -308,6 +308,10 @@ class SCMCube(object):
             "SH_LAND": np.logical_or(~nh_mask, land_mask),
             "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
             "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
+            "LAND": land_mask,
+            "OCEAN": ~land_mask,
+            "NH": nh_mask,
+            "SH": ~nh_mask,
         }
 
     def _get_land_mask(self, sftlf_cube=None, land_mask_threshold=50):
