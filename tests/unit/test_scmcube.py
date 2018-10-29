@@ -630,7 +630,9 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         assert test_cube._get_data_directory.call_count == 1
         assert test_cube._get_data_filename.call_count == 1
 
-    def test_get_load_data_from_identifiers_args_from_filepath_with_time(self, test_cube):
+    def test_get_load_data_from_identifiers_args_from_filepath_with_time(
+        self, test_cube
+    ):
         tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/Amon/fco2antt/CanESM2/r1i1p1/fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc"
         expected = {
             "root_dir": "tests/test_data/marble_cmip5",
@@ -641,7 +643,7 @@ class TestMarbleCMIP5Cube(TestSCMCube):
             "model": "CanESM2",
             "ensemble_member": "r1i1p1",
             "time_period": "185001-198912",
-            "file_ext": ".nc"
+            "file_ext": ".nc",
         }
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
@@ -658,7 +660,7 @@ class TestMarbleCMIP5Cube(TestSCMCube):
             "model": "CanESM2",
             "ensemble_member": "r0i0p0",
             "time_period": None,
-            "file_ext": ".nc"
+            "file_ext": ".nc",
         }
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 

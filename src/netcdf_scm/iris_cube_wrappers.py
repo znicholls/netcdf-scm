@@ -60,7 +60,6 @@ class SCMCube(object):
         """
         self.cube = iris.load_cube(filepath)
 
-
     def load_data_from_identifiers(self, **kwargs):
         """Load data using key identifiers
 
@@ -78,7 +77,9 @@ class SCMCube(object):
         with warnings.catch_warnings(record=True) as w:
             self.cube = iris.load_cube(
                 self.get_filepath_from_load_data_from_identifiers_args(**kwargs),
-                self.get_variable_constraint_from_load_data_from_identifiers_args(**kwargs),
+                self.get_variable_constraint_from_load_data_from_identifiers_args(
+                    **kwargs
+                ),
             )
 
         if w:
@@ -476,7 +477,6 @@ class SCMCube(object):
             model = "unknown"
             scenario = "unknown"
 
-
         out_df = pd.DataFrame(data, index=time_index)
         out_df.columns = pd.MultiIndex.from_product(
             [
@@ -488,9 +488,7 @@ class SCMCube(object):
             ],
             names=["variable", "unit", "region", "model", "scenario"],
         )
-        out_df = out_df.unstack().reset_index().rename(
-            {0: "value"}, axis="columns"
-        )
+        out_df = out_df.unstack().reset_index().rename({0: "value"}, axis="columns")
 
         output = MAGICCData()
         output.df = out_df
@@ -533,11 +531,10 @@ class MarbleCMIP5Cube(SCMCube):
         filepath : str
             The filepath from which to load the data
         """
-        load_data_from_identifiers_args = (
-            self.get_load_data_from_identifiers_args_from_filepath(filepath)
+        load_data_from_identifiers_args = self.get_load_data_from_identifiers_args_from_filepath(
+            filepath
         )
         self.load_data_from_identifiers(**load_data_from_identifiers_args)
-
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
         """Get the set of identifiers to use to load data from a filepath
@@ -578,7 +575,6 @@ class MarbleCMIP5Cube(SCMCube):
             "time_period": time_period,
             "file_ext": file_ext,
         }
-
 
     def get_filepath_from_load_data_from_identifiers_args(
         self,
