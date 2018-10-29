@@ -5,7 +5,7 @@ For example, finding surface land fraction files, applying masks to data and ret
 """
 
 
-from os.path import join
+from os.path import join, dirname, basename
 import warnings
 import traceback
 
@@ -40,11 +40,28 @@ class SCMCube(object):
     _lat_name = "latitude"
     _lon_name = "longitude"
 
-    # def load_data_from_path(self, path):
-    #     """Load data from """
+    def load_data_from_path(self, filepath):
+        """Load data from a path
+
+        If you are using the ``SCMCube`` class directly, this method simply loads the
+        path into an iris cube which can be accessed through ``self.cube``.
+
+        If implemented on a subclass of ``SCMCube``, this method should:
+        - use ``self.get_load_data_from_identifiers_args_from_filepath`` determine the suitable set of arguments to pass to
+        ``self.load_data_from_identifiers`` from the filepath
+        - load the data using ``self.load_data_from_identifiers`` as this method
+        contains much better checks and helper components
+
+        Parameters
+        ----------
+        filepath : str
+            The filepath from which to load the data
+        """
+        self.cube = iris.load_cube(filepath)
+
 
     def load_data_from_identifiers(self, **kwargs):
-        """Load data from using key identifiers
+        """Load data using key identifiers
 
         The identifiers are used to determine the path of the file to load. The file
         is then loaded into an iris cube which can be accessed through ``self.cube``.
@@ -458,6 +475,7 @@ class SCMCube(object):
             model = "unknown"
             scenario = "unknown"
 
+
         out_df = pd.DataFrame(data, index=time_index)
         out_df.columns = pd.MultiIndex.from_product(
             [
@@ -469,7 +487,9 @@ class SCMCube(object):
             ],
             names=["variable", "unit", "region", "model", "scenario"],
         )
-        out_df = out_df.unstack().reset_index().rename({0: "value"}, axis="columns")
+        out_df = out_df.unstack().reset_index().rename(
+            {0: "value"}, axis="columns"
+        )
 
         output = MAGICCData()
         output.df = out_df
@@ -503,6 +523,36 @@ class MarbleCMIP5Cube(SCMCube):
     Reference Syntax
     <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
     """
+
+    def load_data_from_path(self, filepath):
+        """Load data from a path
+
+        Parameters
+        ----------
+        filepath : str
+            The filepath from which to load the data
+        """
+        load_data_from_identifiers_args = self.get_load_data_from_identifiers_args_from_filepath(filepath)
+        self.load_data_from_identifiers(**load_data_from_identifiers_args)
+        raise NotImplementedError
+
+    def get_load_data_from_identifiers_args_from_filepath(self, filepath):
+        """Get the set of identifiers to use to load data from a filepath
+
+        Here we use the categories given in the `CMIP5 Data Reference Syntax
+        <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
+        However the terminology and conventions aren't always exactly the same on
+        marble so we require our custom implementation on top.
+
+        Parameters
+        ----------
+        filepath : str
+            The filepath from which to load the data
+        """
+        dirpath = dirname(filepath)
+        filename = basename(filepath)
+        raise NotImplementedError
+
 
     def get_filepath_from_load_data_from_identifiers_args(
         self,
