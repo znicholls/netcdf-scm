@@ -31,7 +31,7 @@ class SCMCube(object):
     """Class for processing netCDF files for use in simple climate models.
 
     Common, shared operations are implemented here.
-    However, methods like ``_get_data_path`` raise ``NotImplementedError`` because these are always context dependent.
+    However, methods like ``_get_data_directory`` raise ``NotImplementedError`` because these are always context dependent.
     Hence to use this base class, you must use a subclass of it which defines these context specific methods.
     """
 
@@ -40,27 +40,33 @@ class SCMCube(object):
     _lat_name = "latitude"
     _lon_name = "longitude"
 
-    def load_data(self, **kwargs):
-        """Load data from a netCDF file into an iris cube and set ``self.cube`` to the loaded cube.
+    # def load_data_from_path(self, path):
+    #     """Load data from """
+
+    def load_data_from_identifiers(self, **kwargs):
+        """Load data from using key identifiers
+
+        The identifiers are used to determine the path of the file to load. The file
+        is then loaded into an iris cube which can be accessed through ``self.cube``.
 
         Parameters
         ----------
         **kwargs
             Arguments which can then be processed by
-            ``self.get_file_from_load_data_args`` and
-            ``self.get_variable_constraint_from_load_data_args`` to determine the full
+            ``self.get_filepath_from_load_data_from_identifiers_args`` and
+            ``self.get_variable_constraint_from_load_data_from_identifiers_args`` to determine the full
             filepath of the file to load and the variable constraint to use.
         """
         with warnings.catch_warnings(record=True) as w:
             self.cube = iris.load_cube(
-                self.get_file_from_load_data_args(**kwargs),
-                self.get_variable_constraint_from_load_data_args(**kwargs),
+                self.get_filepath_from_load_data_from_identifiers_args(**kwargs),
+                self.get_variable_constraint_from_load_data_from_identifiers_args(**kwargs),
             )
 
         if w:
-            self._process_load_data_warnings(w)
+            self._process_load_data_from_identifiers_warnings(w)
 
-    def _process_load_data_warnings(self, w):
+    def _process_load_data_from_identifiers_warnings(self, w):
         area_cell_warn = "Missing CF-netCDF measure variable 'areacella'"
         for warn in w:
             if area_cell_warn in str(warn.message):
@@ -92,16 +98,16 @@ class SCMCube(object):
             areacella_measure, data_dims=[self._lat_dim_number, self._lon_dim_number]
         )
 
-    def get_file_from_load_data_args(self, **kwargs):
-        """Get the full filepath of the data to load from the arguments passed to ``self.load_data``.
+    def get_filepath_from_load_data_from_identifiers_args(self, **kwargs):
+        """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
-        This function should, in most cases, call ``self._get_data_path`` and
-        ``self._get_data_name``.
+        This function should, in most cases, call ``self._get_data_directory`` and
+        ``self._get_data_filename``.
 
         Parameters
         ----------
         **kwargs
-            Arguments, initially passed to ``self.load_data`` from which the full
+            Arguments, initially passed to ``self.load_data_from_identifiers`` from which the full
             filepath of the file to load should be determined.
 
         Returns
@@ -111,13 +117,13 @@ class SCMCube(object):
         """
         raise NotImplementedError()
 
-    def get_variable_constraint_from_load_data_args(self, **kwargs):
-        """Get the iris variable constraint to use when loading data with ``self.load_data``
+    def get_variable_constraint_from_load_data_from_identifiers_args(self, **kwargs):
+        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``
 
         Parameters
         ----------
         **kwargs
-            Arguments, initially passed to ``self.load_data`` from which the full
+            Arguments, initially passed to ``self.load_data_from_identifiers`` from which the full
             filepath of the file to load should be determined.
 
         Returns
@@ -127,7 +133,7 @@ class SCMCube(object):
         """
         raise NotImplementedError()
 
-    def _get_data_path(self):
+    def _get_data_directory(self):
         """Get the path to a data file from self's attributes.
 
         This can take multiple forms, it may just return a previously set
@@ -141,7 +147,7 @@ class SCMCube(object):
         """
         raise NotImplementedError()
 
-    def _get_data_name(self):
+    def _get_data_filename(self):
         """Get the name of a data file from self's attributes.
 
         This can take multiple forms, it may just return a previously set
@@ -171,7 +177,7 @@ class SCMCube(object):
         load_args = self._get_metadata_load_arguments(metadata_variable)
 
         metadata_cube = type(self)()
-        metadata_cube.load_data(**load_args)
+        metadata_cube.load_data_from_identifiers(**load_args)
 
         return metadata_cube
 
@@ -191,7 +197,7 @@ class SCMCube(object):
         Returns
         -------
         dict
-            dictionary containing all the arguments to pass to ``self.load_data``
+            dictionary containing all the arguments to pass to ``self.load_data_from_identifiers``
             required to load the desired metadata cube.
         """
         raise NotImplementedError()
@@ -498,7 +504,7 @@ class MarbleCMIP5Cube(SCMCube):
     <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
     """
 
-    def get_file_from_load_data_args(
+    def get_filepath_from_load_data_from_identifiers_args(
         self,
         root_dir=".",
         activity="cmip5",
@@ -510,7 +516,7 @@ class MarbleCMIP5Cube(SCMCube):
         time_period=None,
         file_ext=None,
     ):
-        """Get the full filepath of the data to load from the arguments passed to ``self.load_data``.
+        """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
         Here we use the categories given in the `CMIP5 Data Reference Syntax
         <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
@@ -561,9 +567,9 @@ class MarbleCMIP5Cube(SCMCube):
         for name, value in inargs.items():
             setattr(self, name, value)
 
-        return join(self._get_data_path(), self._get_data_name())
+        return join(self._get_data_directory(), self._get_data_filename())
 
-    def _get_data_path(self):
+    def _get_data_directory(self):
         return join(
             self.root_dir,
             self.activity,
@@ -574,7 +580,7 @@ class MarbleCMIP5Cube(SCMCube):
             self.ensemble_member,
         )
 
-    def _get_data_name(self):
+    def _get_data_filename(self):
         bits_to_join = [
             self.variable_name,
             self.modeling_realm,
@@ -588,10 +594,10 @@ class MarbleCMIP5Cube(SCMCube):
 
         return "_".join(bits_to_join) + self.file_ext
 
-    def get_variable_constraint_from_load_data_args(
+    def get_variable_constraint_from_load_data_from_identifiers_args(
         self, variable_name="tas", **kwargs
     ):
-        """Get the iris variable constraint to use when loading data with ``self.load_data``
+        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``
 
         Parameters
         ----------
