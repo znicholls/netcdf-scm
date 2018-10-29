@@ -570,6 +570,17 @@ class TestMarbleCMIP5Cube(TestSCMCube):
     ttime_period = "185001-198912"
     tfile_ext = ".nc"
 
+    def test_load_data_from_path(self, test_cube):
+        tpath = "./somewhere/over/the/rainbow/test.nc"
+        tids = {"id1": "mocked", "id2": 123}
+
+        test_cube.get_load_data_from_identifiers_args_from_filepath = MagicMock(return_value=tids)
+        test_cube.load_data_from_identifiers = MagicMock()
+
+        test_cube.load_data_from_path(tpath)
+        test_cube.get_load_data_from_identifiers_args_from_filepath.assert_called_with(tpath)
+        test_cube.load_data_from_identifiers.assert_called_with(**tids)
+
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
         tkwargs_list = [
             "root_dir",
