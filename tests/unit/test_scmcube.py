@@ -175,7 +175,10 @@ class TestSCMCube(object):
         tland_mask_threshold = "mocked 51"
         tareacella_scmcube = "mocked 4389"
 
-        test_cubes_return = {"World|Northern Hemisphere|Ocean": 4, "World|Southern Hemisphere|Land": 12}
+        test_cubes_return = {
+            "World|Northern Hemisphere|Ocean": 4,
+            "World|Southern Hemisphere|Land": 12,
+        }
         test_cube.get_scm_timeseries_cubes = MagicMock(return_value=test_cubes_return)
 
         test_conversion_return = pd.DataFrame(data=np.array([1, 2, 3]))

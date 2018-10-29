@@ -146,7 +146,10 @@ class TestSCMCubeIntegration(object):
                 ["longitude", "latitude"], iris.analysis.MEAN
             )
 
-        test_timeseries_cubes = {"World": global_cube, "World|Southern Hemisphere|Ocean": sh_ocean_cube}
+        test_timeseries_cubes = {
+            "World": global_cube,
+            "World|Southern Hemisphere|Ocean": sh_ocean_cube,
+        }
         with warnings.catch_warnings(record=True):
             warnings.filterwarnings("ignore", ".*appropriate model scenario*")
             result = test_cube._convert_scm_timeseries_cubes_to_openscmdata(
@@ -158,7 +161,10 @@ class TestSCMCubeIntegration(object):
         time_index = pd.Index(datetimes, dtype="object", name="time")
 
         expected_df = pd.DataFrame(
-            {"World": global_cube.cube.data, "World|Southern Hemisphere|Ocean": sh_ocean_cube.cube.data},
+            {
+                "World": global_cube.cube.data,
+                "World|Southern Hemisphere|Ocean": sh_ocean_cube.cube.data,
+            },
             index=time_index,
         )
 
@@ -172,8 +178,8 @@ class TestSCMCubeIntegration(object):
             ],
             names=["variable", "unit", "region", "model", "scenario"],
         )
-        expected_df = expected_df.unstack().reset_index().rename(
-            {0: "value"}, axis="columns"
+        expected_df = (
+            expected_df.unstack().reset_index().rename({0: "value"}, axis="columns")
         )
 
         expected = MAGICCData()
