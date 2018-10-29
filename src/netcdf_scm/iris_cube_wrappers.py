@@ -5,7 +5,8 @@ For example, finding surface land fraction files, applying masks to data and ret
 """
 
 
-from os.path import join, dirname, basename
+import os
+from os.path import join, dirname, basename, splitext
 import warnings
 import traceback
 
@@ -532,7 +533,9 @@ class MarbleCMIP5Cube(SCMCube):
         filepath : str
             The filepath from which to load the data
         """
-        load_data_from_identifiers_args = self.get_load_data_from_identifiers_args_from_filepath(filepath)
+        load_data_from_identifiers_args = (
+            self.get_load_data_from_identifiers_args_from_filepath(filepath)
+        )
         self.load_data_from_identifiers(**load_data_from_identifiers_args)
 
 
@@ -549,9 +552,32 @@ class MarbleCMIP5Cube(SCMCube):
         filepath : str
             The filepath from which to load the data
         """
-        dirpath = dirname(filepath)
-        filename = basename(filepath)
-        raise NotImplementedError
+        dirpath_bits = dirname(filepath).split(os.sep)
+        root_dir = os.sep.join(dirpath_bits[:-6])
+        if not root_dir:
+            root_dir = "."
+
+        filename_bits = basename(filepath).split("_")
+        if len(filename_bits) == 6:
+            time_period, file_ext = splitext(filename_bits[-1])
+            ensemble_member = filename_bits[-2]
+        elif len(filename_bits) == 5:
+            time_period = None
+            ensemble_member, file_ext = splitext(filename_bits[-1])
+        else:
+            raise ValueError("Filepath does not look right: {}".format(filepath))
+
+        return {
+            "root_dir": root_dir,
+            "activity": dirpath_bits[-6],
+            "variable_name": filename_bits[0],
+            "modeling_realm": filename_bits[1],
+            "model": filename_bits[2],
+            "experiment": filename_bits[3],
+            "ensemble_member": ensemble_member,
+            "time_period": time_period,
+            "file_ext": file_ext,
+        }
 
 
     def get_filepath_from_load_data_from_identifiers_args(

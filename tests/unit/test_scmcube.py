@@ -41,7 +41,9 @@ class TestSCMCube(object):
     @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
     def test_load_data_from_identifiers(self, mock_iris_load_cube, test_cube):
         tfile = "hello_world_test.nc"
-        test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(return_value=tfile)
+        test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
+            return_value=tfile
+        )
 
         vcons = 12.195
         test_cube.get_variable_constraint_from_load_data_from_identifiers_args = MagicMock(
@@ -62,7 +64,9 @@ class TestSCMCube(object):
         test_cube.load_data_from_identifiers(**tkwargs)
 
         assert test_cube.cube == lcube_return
-        test_cube.get_filepath_from_load_data_from_identifiers_args.assert_called_with(**tkwargs)
+        test_cube.get_filepath_from_load_data_from_identifiers_args.assert_called_with(
+            **tkwargs
+        )
         test_cube.get_variable_constraint_from_load_data_from_identifiers_args.assert_called_with(
             **tkwargs
         )
@@ -126,7 +130,9 @@ class TestSCMCube(object):
     @tdata_required
     def test_load_missing_variable_error(self, test_cube):
         tfile = TEST_TAS_FILE
-        test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(return_value=tfile)
+        test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
+            return_value=tfile
+        )
 
         bad_constraint = iris.Constraint(
             cube_func=(lambda c: c.var_name == np.str("misnamed_var"))
@@ -148,9 +154,13 @@ class TestSCMCube(object):
             self.raise_overload_message("test_load_data")
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
-        self.run_test_of_method_to_overload(test_cube, "get_filepath_from_load_data_from_identifiers_args")
+        self.run_test_of_method_to_overload(
+            test_cube, "get_filepath_from_load_data_from_identifiers_args"
+        )
 
-    def test_get_variable_constraint_from_load_data_from_identifiers_args(self, test_cube):
+    def test_get_variable_constraint_from_load_data_from_identifiers_args(
+        self, test_cube
+    ):
         self.run_test_of_method_to_overload(
             test_cube, "get_variable_constraint_from_load_data_from_identifiers_args"
         )
@@ -574,11 +584,15 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         tpath = "./somewhere/over/the/rainbow/test.nc"
         tids = {"id1": "mocked", "id2": 123}
 
-        test_cube.get_load_data_from_identifiers_args_from_filepath = MagicMock(return_value=tids)
+        test_cube.get_load_data_from_identifiers_args_from_filepath = MagicMock(
+            return_value=tids
+        )
         test_cube.load_data_from_identifiers = MagicMock()
 
         test_cube.load_data_from_path(tpath)
-        test_cube.get_load_data_from_identifiers_args_from_filepath.assert_called_with(tpath)
+        test_cube.get_load_data_from_identifiers_args_from_filepath.assert_called_with(
+            tpath
+        )
         test_cube.load_data_from_identifiers.assert_called_with(**tids)
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
@@ -615,6 +629,40 @@ class TestMarbleCMIP5Cube(TestSCMCube):
 
         assert test_cube._get_data_directory.call_count == 1
         assert test_cube._get_data_filename.call_count == 1
+
+    def test_get_load_data_from_identifiers_args_from_filepath_with_time(self, test_cube):
+        tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/Amon/fco2antt/CanESM2/r1i1p1/fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc"
+        expected = {
+            "root_dir": "tests/test_data/marble_cmip5",
+            "activity": "cmip5",
+            "experiment": "1pctCO2",
+            "modeling_realm": "Amon",
+            "variable_name": "fco2antt",
+            "model": "CanESM2",
+            "ensemble_member": "r1i1p1",
+            "time_period": "185001-198912",
+            "file_ext": ".nc"
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    def test_get_load_data_from_identifiers_args_from_filepath_no_time(self, test_cube):
+        tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc"
+        expected = {
+            "root_dir": "tests/test_data/marble_cmip5",
+            "activity": "cmip5",
+            "experiment": "1pctCO2",
+            "modeling_realm": "fx",
+            "variable_name": "sftlf",
+            "model": "CanESM2",
+            "ensemble_member": "r0i0p0",
+            "time_period": None,
+            "file_ext": ".nc"
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
 
     def test_get_data_directory(self, test_cube):
         expected = join(
@@ -674,7 +722,9 @@ class TestMarbleCMIP5Cube(TestSCMCube):
 
         assert result == expected
 
-    def test_get_variable_constraint_from_load_data_from_identifiers_args(self, test_cube):
+    def test_get_variable_constraint_from_load_data_from_identifiers_args(
+        self, test_cube
+    ):
         tkwargs_list = [
             "root_dir",
             "activity",
@@ -697,7 +747,9 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         )
         """
 
-        result = test_cube.get_variable_constraint_from_load_data_from_identifiers_args(**tkwargs)
+        result = test_cube.get_variable_constraint_from_load_data_from_identifiers_args(
+            **tkwargs
+        )
         assert isinstance(result, iris.Constraint)
 
     def test_get_metadata_load_arguments(self, test_cube):
