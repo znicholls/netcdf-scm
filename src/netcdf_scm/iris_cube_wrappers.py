@@ -303,15 +303,15 @@ class SCMCube(object):
         nh_mask = self._get_nh_mask()
 
         return {
-            "GLOBAL": np.full(nh_mask.shape, False),
-            "NH_LAND": np.logical_or(nh_mask, land_mask),
-            "SH_LAND": np.logical_or(~nh_mask, land_mask),
-            "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
-            "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
-            "LAND": land_mask,
-            "OCEAN": ~land_mask,
-            "NH": nh_mask,
-            "SH": ~nh_mask,
+            "World": np.full(nh_mask.shape, False),
+            "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
+            "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
+            "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
+            "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
+            "World|Land": land_mask,
+            "World|Ocean": ~land_mask,
+            "World|Northern Hemisphere": nh_mask,
+            "World|Southern Hemisphere": ~nh_mask,
         }
 
     def _get_land_mask(self, sftlf_cube=None, land_mask_threshold=50):
@@ -440,17 +440,36 @@ class SCMCube(object):
             scm_timeseries_cubes, out_calendar=out_calendar
         )
 
-        output = MAGICCData()
-        output.df = pd.DataFrame(data, index=time_index)
-        output.df.columns = pd.MultiIndex.from_product(
+        try:
+            model = self.model
+            scenario = "_".join([self.activity, self.experiment, self.ensemble_member])
+        except AttributeError:
+            warn_msg = (
+                "Could not determine appropriate model scenario combination, filling "
+                "with 'unknown'"
+            )
+            warnings.warn(warn_msg)
+            model = "unknown"
+            scenario = "unknown"
+
+
+        out_df = pd.DataFrame(data, index=time_index)
+        out_df.columns = pd.MultiIndex.from_product(
             [
                 [self.cube.standard_name],
                 [self.cube.units.name],
-                output.df.columns.tolist(),
+                out_df.columns.tolist(),
+                [model],
+                [scenario],
             ],
-            names=["VARIABLE", "UNITS", "REGION"],
+            names=["variable", "unit", "region", "model", "scenario"],
+        )
+        out_df = out_df.unstack().reset_index().rename(
+            {0: "value"}, axis="columns"
         )
 
+        output = MAGICCData()
+        output.df = out_df
         output.metadata["calendar"] = out_calendar
         return output
 
@@ -470,7 +489,7 @@ class SCMCube(object):
         # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
         # pandas limitation, see
         # http://pandas-docs.github.io/pandas-docs-travis/timeseries.html#timestamp-limitations
-        return pd.Index(time_axes[0], dtype="object", name="Time"), out_calendar
+        return pd.Index(time_axes[0], dtype="object", name="time"), out_calendar
 
 
 class MarbleCMIP5Cube(SCMCube):

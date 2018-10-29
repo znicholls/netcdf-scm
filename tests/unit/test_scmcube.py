@@ -175,7 +175,7 @@ class TestSCMCube(object):
         tland_mask_threshold = "mocked 51"
         tareacella_scmcube = "mocked 4389"
 
-        test_cubes_return = {"NH_OCEAN": 4, "SH_LAND": 12}
+        test_cubes_return = {"World|Northern Hemisphere|Ocean": 4, "World|Southern Hemisphere|Land": 12}
         test_cube.get_scm_timeseries_cubes = MagicMock(return_value=test_cubes_return)
 
         test_conversion_return = pd.DataFrame(data=np.array([1, 2, 3]))
@@ -294,15 +294,15 @@ class TestSCMCube(object):
         np.testing.assert_array_equal(np.logical_or(nh_mask, land_mask), nh_land_mask)
 
         expected = {
-            "GLOBAL": np.full(nh_mask.shape, False),
-            "NH_LAND": nh_land_mask,
-            "SH_LAND": np.logical_or(~nh_mask, land_mask),
-            "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
-            "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
-            "LAND": land_mask,
-            "OCEAN": ~land_mask,
-            "NH": nh_mask,
-            "SH": ~nh_mask,
+            "World": np.full(nh_mask.shape, False),
+            "World|Northern Hemisphere|Land": nh_land_mask,
+            "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
+            "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
+            "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
+            "World|Land": land_mask,
+            "World|Ocean": ~land_mask,
+            "World|Northern Hemisphere": nh_mask,
+            "World|Southern Hemisphere": ~nh_mask,
         }
 
         result = test_cube._get_scm_masks(
@@ -526,7 +526,7 @@ class TestSCMCube(object):
         tget_time_axis = np.array([1, 2, 3])
         mock_get_time_axis_in_calendar.return_value = tget_time_axis
 
-        expected_idx = pd.Index(tget_time_axis, dtype="object", name="Time")
+        expected_idx = pd.Index(tget_time_axis, dtype="object", name="time")
         result_idx, result_calendar = test_cube._get_openscmdata_time_axis_and_calendar(
             tscm_timeseries_cubes, out_calendar
         )
