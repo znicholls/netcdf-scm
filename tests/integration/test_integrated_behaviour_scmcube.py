@@ -21,7 +21,9 @@ class TestSCMCubeIntegration(object):
     @tdata_required
     def test_load_data_from_identifiers_and_areacella(self, test_cube):
         tfile = TEST_TAS_FILE
-        test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(return_value=tfile)
+        test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
+            return_value=tfile
+        )
 
         test_constraint = iris.Constraint(
             cube_func=(lambda c: c.var_name == np.str("tas"))
@@ -46,7 +48,9 @@ class TestSCMCubeIntegration(object):
 
         assert len(record) == 0
 
-        test_cube.get_filepath_from_load_data_from_identifiers_args.assert_called_with(**tkwargs)
+        test_cube.get_filepath_from_load_data_from_identifiers_args.assert_called_with(
+            **tkwargs
+        )
         test_cube.get_variable_constraint_from_load_data_from_identifiers_args.assert_called_with(
             **tkwargs
         )
