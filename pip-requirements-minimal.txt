@@ -3,3 +3,4 @@ git+https://github.com/openclimatedata/pymagicc.git@master
 git+https://github.com/thedataincubator/expectexception.git@master
 pandas
 numpy
+progressbar2
