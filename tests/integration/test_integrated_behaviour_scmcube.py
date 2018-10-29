@@ -77,11 +77,11 @@ class TestSCMCubeIntegration(object):
         )
 
         mocked_masks = {
-            "GLOBAL": np.full(nh_mask.shape, False),
-            "NH_LAND": np.logical_or(nh_mask, land_mask),
-            "SH_LAND": np.logical_or(~nh_mask, land_mask),
-            "NH_OCEAN": np.logical_or(nh_mask, ~land_mask),
-            "SH_OCEAN": np.logical_or(~nh_mask, ~land_mask),
+            "World": np.full(nh_mask.shape, False),
+            "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
+            "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
+            "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
+            "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
         }
         test_cube._get_scm_masks = MagicMock(return_value=mocked_masks)
 
@@ -146,18 +146,19 @@ class TestSCMCubeIntegration(object):
                 ["longitude", "latitude"], iris.analysis.MEAN
             )
 
-        test_timeseries_cubes = {"GLOBAL": global_cube, "SH_OCEAN": sh_ocean_cube}
-
-        result = test_cube._convert_scm_timeseries_cubes_to_openscmdata(
-            test_timeseries_cubes, out_calendar=out_calendar
-        )
+        test_timeseries_cubes = {"World": global_cube, "World|Southern Hemisphere|Ocean": sh_ocean_cube}
+        with warnings.catch_warnings(record=True):
+            warnings.filterwarnings("ignore", ".*appropriate model scenario*")
+            result = test_cube._convert_scm_timeseries_cubes_to_openscmdata(
+                test_timeseries_cubes, out_calendar=out_calendar
+            )
 
         time = sh_ocean_cube.cube.dim_coords[0]
         datetimes = cf_units.num2date(time.points, time.units.name, expected_calendar)
-        time_index = pd.Index(datetimes, dtype="object", name="Time")
+        time_index = pd.Index(datetimes, dtype="object", name="time")
 
         expected_df = pd.DataFrame(
-            {"GLOBAL": global_cube.cube.data, "SH_OCEAN": sh_ocean_cube.cube.data},
+            {"World": global_cube.cube.data, "World|Southern Hemisphere|Ocean": sh_ocean_cube.cube.data},
             index=time_index,
         )
 
@@ -166,8 +167,13 @@ class TestSCMCubeIntegration(object):
                 [test_cube.cube.standard_name],
                 [test_cube.cube.units.name],
                 expected_df.columns.tolist(),
+                ["unknown"],
+                ["unknown"],
             ],
-            names=["VARIABLE", "UNITS", "REGION"],
+            names=["variable", "unit", "region", "model", "scenario"],
+        )
+        expected_df = expected_df.unstack().reset_index().rename(
+            {0: "value"}, axis="columns"
         )
 
         expected = MAGICCData()
