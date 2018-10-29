@@ -9,6 +9,7 @@ import os
 from os.path import join, dirname, basename, splitext
 import warnings
 import traceback
+from datetime import datetime
 
 
 import numpy as np
@@ -512,6 +513,50 @@ class SCMCube(object):
         # pandas limitation, see
         # http://pandas-docs.github.io/pandas-docs-travis/timeseries.html#timestamp-limitations
         return pd.Index(time_axes[0], dtype="object", name="time"), out_calendar
+
+    def _check_time_period_valid(self, time_period_str):
+        """Check that a time_period identifier string is valid
+
+        This checks the string against the CMIP standards where time strings must be
+        one of the following: YYYY, YYYYMM, YYYYMMDD, YYYYMMDDHH or one of the
+        previous combined with a hyphen e.g. YYYY-YYYY.
+
+        Parameters
+        ----------
+        time_period_str : str
+            Time period string to check
+
+        Raises
+        ------
+        ValueError
+            If the time period is not in a valid format
+        """
+        time_formats = {
+            4: '%Y',
+            6: '%Y%m',
+            8: '%Y%m%d',
+            10: '%Y%m%d%H',
+        }
+        if '-' in time_period_str:
+            dates = time_period_str.split('-')
+            if (len(dates) != 2) or (len(dates[0]) != len(dates[1])):
+                self._raise_time_period_invalid_error(time_period_str)
+        else:
+            dates = [time_period_str]
+
+        try:
+            time_format = time_formats[len(dates[0])]
+        except KeyError:
+            self._raise_time_period_invalid_error(time_period_str)
+        for date in dates:
+            try:
+                datetime.strptime(date, time_format)
+            except ValueError:
+                self._raise_time_period_invalid_error(time_period_str)
+
+    def _raise_time_period_invalid_error(self, time_period_str):
+        message = 'Your time_period indicator ({}) does not look right'.format(time_period_str)
+        raise ValueError(message)
 
 
 class MarbleCMIP5Cube(SCMCube):
