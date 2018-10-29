@@ -452,7 +452,6 @@ class SCMCube(object):
             model = "unknown"
             scenario = "unknown"
 
-
         out_df = pd.DataFrame(data, index=time_index)
         out_df.columns = pd.MultiIndex.from_product(
             [
@@ -464,9 +463,7 @@ class SCMCube(object):
             ],
             names=["variable", "unit", "region", "model", "scenario"],
         )
-        out_df = out_df.unstack().reset_index().rename(
-            {0: "value"}, axis="columns"
-        )
+        out_df = out_df.unstack().reset_index().rename({0: "value"}, axis="columns")
 
         output = MAGICCData()
         output.df = out_df
