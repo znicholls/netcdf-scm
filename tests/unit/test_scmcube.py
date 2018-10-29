@@ -33,7 +33,10 @@ class TestSCMCube(object):
             with pytest.raises(NotImplementedError):
                 getattr(test_cube, method_to_overload)(**junk_args)
         else:
-            assert False, "Overload {} in your subclass".format(method_to_overload)
+            self.raise_overload_message(method_to_overload)
+
+    def raise_overload_message(self, method_to_overload):
+        assert False, "Overload {} in your subclass".format(method_to_overload)
 
     @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
     def test_load_data_from_identifiers(self, mock_iris_load_cube, test_cube):
@@ -134,6 +137,15 @@ class TestSCMCube(object):
 
         with pytest.raises(ConstraintMismatchError, match="no cubes found"):
             test_cube.load_data_from_identifiers(mocked_out="mocked")
+
+    @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
+    def test_load_data_from_path(self, mock_iris_load_cube, test_cube):
+        if type(test_cube) is SCMCube:
+            tpath = "here/there/everywehre/test.nc"
+            test_cube.load_data_from_path(tpath)
+            mock_iris_load_cube.assert_called_with(tpath)
+        else:
+            self.raise_overload_message("test_load_data")
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
         self.run_test_of_method_to_overload(test_cube, "get_filepath_from_load_data_from_identifiers_args")
