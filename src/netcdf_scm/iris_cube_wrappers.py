@@ -534,7 +534,7 @@ class MarbleCMIP5Cube(SCMCube):
         """
         load_data_from_identifiers_args = self.get_load_data_from_identifiers_args_from_filepath(filepath)
         self.load_data_from_identifiers(**load_data_from_identifiers_args)
-        raise NotImplementedError
+
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
         """Get the set of identifiers to use to load data from a filepath
