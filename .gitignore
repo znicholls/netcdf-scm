@@ -1,3 +1,6 @@
+# Folder created using scripts/crunch_to_scm.py default setup
+crunched_files
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
