@@ -567,6 +567,31 @@ class TestSCMCube(object):
             [tget_time_axis] * len(tscm_timeseries_cubes)
         )
 
+    @pytest.mark.parametrize("valid_time_period_str", [
+        ('20150111'),
+        ('2015-2018'),
+        ('20150103-20181228'),
+        ('2015010311-2018122814'),
+    ])
+    def test_check_time_period_valid(self, valid_time_period_str, test_cube):
+        test_cube._check_time_period_valid(valid_time_period_str)
+
+    @pytest.mark.parametrize("invalid_time_period_str", [
+        ('2015011'),
+        ('2015-201812'),
+        ('20150103-201812'),
+        ('2015210311-2018122814'),
+        ('2015113311-2018122814'),
+        ('2015-2018-2019'),
+        ('2015210311_2018122814'),
+    ])
+    def test_check_time_period_invalid(self, invalid_time_period_str, test_cube):
+        expected_error_msg = re.escape(
+            'Your time_period indicator ({}) does not look right'.format(invalid_time_period_str)
+        )
+        with pytest.raises(ValueError, match=expected_error_msg):
+            test_cube._check_time_period_valid(invalid_time_period_str)
+
 
 class TestMarbleCMIP5Cube(TestSCMCube):
     tclass = MarbleCMIP5Cube
