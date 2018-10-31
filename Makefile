@@ -17,6 +17,8 @@ LATEX_BUILD_DIR=$(DOCS_DIR)/build/latex
 LATEX_BUILD_STATIC_DIR=$(LATEX_BUILD_DIR)/_static
 LATEX_LOGO=$(DOCS_DIR)/source/_static/logo.png
 
+FILES_TO_FORMAT_PYTHON=setup.py scripts src tests docs/source/conf.py
+
 
 define activate_conda
 	[ ! -f $(HOME)/.bash_profile ] || . $(HOME)/.bash_profile; \
@@ -62,14 +64,14 @@ test_notebooks:
 .PHONY: flake8
 flake8:
 	$(call activate_conda_env,); \
-		flake8 src tests
+		flake8 $(FILES_TO_FORMAT_PYTHON)
 
 .PHONY: black
 black:
 	@status=$$(git status --porcelain pymagicc tests); \
 	if test "x$${status}" = x; then \
 		$(call activate_conda_env,); \
-		black --exclude _version.py --py36 setup.py src tests docs/source/conf.py; \
+		black --exclude _version.py --py36 $(FILES_TO_FORMAT_PYTHON); \
 	else \
 		echo Not trying any formatting. Working directory is dirty ... >&2; \
 	fi;
@@ -173,3 +175,5 @@ variables:
 
 	@echo DOCS_DIR: $(DOCS_DIR)
 	@echo LATEX_LOGO: $(LATEX_LOGO)
+
+	@echo FILES_TO_FORMAT_PYTHON: $(FILES_TO_FORMAT_PYTHON)
