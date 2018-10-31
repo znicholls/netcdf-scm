@@ -4,7 +4,7 @@ Changelog
 master
 ------
 
-
+- (`#14 <https://github.com/znicholls/netcdf-scm/pull/14>`_) Streamline install process
 - (`#13 <https://github.com/znicholls/netcdf-scm/pull/13>`_) Add ``load_from_path`` method to ``SCMCube``
 - (`#12 <https://github.com/znicholls/netcdf-scm/pull/12>`_) Update to use output format that is compatible with pyam
 - Update ``netcdftime`` to ``cftime`` to track name change
