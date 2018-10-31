@@ -171,6 +171,11 @@ class TestSCMCube(object):
     def test_get_data_filename(self, test_cube):
         self.run_test_of_method_to_overload(test_cube, "_get_data_filename")
 
+    def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
+        self.run_test_of_method_to_overload(
+            test_cube, "get_load_data_from_identifiers_args_from_filepath"
+        )
+
     @patch.object(tclass, "load_data_from_identifiers")
     def test_get_metadata_cube(self, mock_load_data_from_identifiers, test_cube):
         tvar = "tmdata_var"
@@ -224,6 +229,33 @@ class TestSCMCube(object):
         )
 
         assert_frame_equal(result, test_conversion_return)
+
+    def test_get_model_scenario(self, test_cube):
+        warn_msg = (
+            "Could not determine appropriate model scenario combination, filling with "
+            "'unknown'"
+        )
+        with warnings.catch_warnings(record=True) as recorded_warnings:
+            model, scenario = test_cube._get_model_scenario()
+
+        assert model == "unknown"
+        assert scenario == "unknown"
+        assert len(recorded_warnings) == 1
+        assert str(recorded_warnings[0].message) == warn_msg
+
+        tmodel = "ABCD"
+        tactivity = "rcpmip"
+        texperiment = "oscvolcanicrf"
+        tensemble_member = "r1i3p10"
+        tscenario = "_".join([tactivity, texperiment, tensemble_member])
+        test_cube.model = tmodel
+        test_cube.activity = tactivity
+        test_cube.experiment = texperiment
+        test_cube.ensemble_member = tensemble_member
+
+        model, scenario = test_cube._get_model_scenario()
+        assert model == tmodel
+        assert scenario == tscenario
 
     @patch("netcdf_scm.iris_cube_wrappers.take_lat_lon_mean")
     def test_get_scm_timeseries_cubes(self, mock_take_lat_lon_mean, test_cube):
@@ -658,9 +690,7 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         assert test_cube._get_data_directory.call_count == 1
         assert test_cube._get_data_filename.call_count == 1
 
-    def test_get_load_data_from_identifiers_args_from_filepath_with_time(
-        self, test_cube
-    ):
+    def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/Amon/fco2antt/CanESM2/r1i1p1/fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc"
         expected = {
             "root_dir": "tests/test_data/marble_cmip5",
@@ -693,6 +723,41 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+
+    def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
+        self, test_cube
+    ):
+        tpath = (
+            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc"
+        )
+        expected = {
+            "root_dir": ".",
+            "activity": "cmip5",
+            "experiment": "1pctCO2",
+            "modeling_realm": "fx",
+            "variable_name": "sftlf",
+            "model": "CanESM2",
+            "ensemble_member": "r0i0p0",
+            "time_period": None,
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        "tpath",
+        [
+            "1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc",
+            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2-r0i0p0.nc",
+        ],
+    )
+    def test_get_load_data_from_identifiers_args_from_filepath_errors(
+        self, test_cube, tpath
+    ):
+        error_msg = re.escape("Filepath does not look right: {}".format(tpath))
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
     def test_get_data_directory(self, test_cube):
         expected = join(
@@ -747,6 +812,37 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         ]
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
+
+        result = test_cube._get_data_filename()
+
+        assert result == expected
+
+    def test_get_data_filename_no_time(self, test_cube):
+        expected = (
+            "_".join(
+                [
+                    self.tvariable_name,
+                    self.tmodeling_realm,
+                    self.tmodel,
+                    self.texperiment,
+                    self.tensemble_member,
+                ]
+            )
+            + self.tfile_ext
+        )
+
+        atts_to_set = [
+            "experiment",
+            "modeling_realm",
+            "variable_name",
+            "model",
+            "ensemble_member",
+            "file_ext",
+        ]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        test_cube.time_period = None
 
         result = test_cube._get_data_filename()
 
