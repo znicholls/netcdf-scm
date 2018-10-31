@@ -36,7 +36,9 @@ for (dirpath, dirnames, filenames) in progressbar(walk(INPUT_DIR)):
         try:
             scmcube = MarbleCMIP5Cube()
             if len(filenames) == 1:
-                out_filename = "scm_crunched_{}".format(filenames[0].replace(".nc", ".csv"))
+                out_filename = "scm_crunched_{}".format(
+                    filenames[0].replace(".nc", ".csv")
+                )
                 outfile = join(OUTPUT_DIR, out_filename)
                 if isfile(outfile):
                     continue
@@ -46,11 +48,17 @@ for (dirpath, dirnames, filenames) in progressbar(walk(INPUT_DIR)):
                 outfile = join(OUTPUT_DIR, out_filename)
                 if isfile(outfile):
                     continue
+
             magicc_df = scmcube.get_scm_timeseries(
                 land_mask_threshold=LAND_MASK_THRESHOLD
             )
+            magicc_df.df = magicc_df.df.pivot_table(
+                values="value",
+                index=["time"],
+                columns=["variable", "unit", "region", "model", "scenario"],
+            )
 
-            magicc_df.df.to_csv(outfile, index=False)
+            magicc_df.df.to_csv(outfile)
         except:
             failures.append("{}\n{}".format(dirpath, filenames))
             continue
