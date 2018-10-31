@@ -87,6 +87,7 @@ class SCMCube(object):
 
         - tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc
         - tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc
+        - tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc
 
         It is not intended to be used to load multiple different variables or
         non-continuous timeseries. These use cases could be added in future, but are
@@ -104,6 +105,9 @@ class SCMCube(object):
         """
         self._check_data_names_in_same_directory(directory)
         self._load_and_concatenate_files_in_directory(directory)
+
+    def _check_data_names_in_same_directory(self, directory):
+        os.listdir(directory)
 
     def load_data_from_identifiers(self, **kwargs):
         """Load data using key identifiers
