@@ -143,8 +143,7 @@ conda_env:
 		conda install -y --file $(CONDA_ENV_DEV_YML); \
 		pip install --upgrade pip; \
 		pip install -Ur $(PIP_REQUIREMENTS_MINIMAL); \
-		pip install -Ur $(PIP_REQUIREMENTS_DEV); \
-		pip install -e .
+		pip install -e .[test,docs,deploy]
 
 .PHONY: clean_docs
 clean_docs:
