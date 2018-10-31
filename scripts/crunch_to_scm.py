@@ -9,39 +9,50 @@ Improvements in future:
 
 from os import walk, makedirs
 from os import path
-from os.path import join
+from os.path import join, isfile
 
 
 from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
 from progressbar import progressbar
 
 
-INPUT_DIR = "/data/marble"
-OUTPUT_DIR = "/data/marble/sandbox/znicholls/cmip5_crunched_files"
+# INPUT_DIR = "/data/marble"
+INPUT_DIR = "./tests/test_data/marble_cmip5"
+# OUTPUT_DIR = "/data/marble/sandbox/znicholls/cmip5_crunched_files"
+OUTPUT_DIR = "./output_examples/crunched_files"
 LAND_MASK_THRESHOLD = 50
+VAR_TO_CRUNCH = "tas"
 
 
 if not path.exists(OUTPUT_DIR):
     makedirs(OUTPUT_DIR)
 
 
+failures = []
 for (dirpath, dirnames, filenames) in progressbar(walk(INPUT_DIR)):
-    if "fx" in dirnames:
-        dirnames.remove("fx")  # don't visit fx directories
-    elif "cmip5/" not in dirpath:
-        continue
-    elif not dirnames:
-        if not filenames[0].endswith(".nc"):
+    if not dirnames:
+        if VAR_TO_CRUNCH not in dirpath:
             continue
         try:
-            assert len(filenames) == 1
             scmcube = MarbleCMIP5Cube()
-            scmcube.load_data_from_path(join(dirpath, filenames[0]))
+            if len(filenames) == 1:
+                out_filename = "scm_crunched_{}".format(filenames[0].replace(".nc", ".csv"))
+                outfile = join(OUTPUT_DIR, out_filename)
+                if isfile(outfile):
+                    continue
+                scmcube.load_data_from_path(join(dirpath, filenames[0]))
+            else:
+                scmcube.load_data_in_directory(dirpath)
+                outfile = join(OUTPUT_DIR, out_filename)
+                if isfile(outfile):
+                    continue
             magicc_df = scmcube.get_scm_timeseries(
                 land_mask_threshold=LAND_MASK_THRESHOLD
             )
-            out_filename = "scm_crunched_{}".format(filenames[0].replace(".nc", ".csv"))
-            magicc_df.df.to_csv(join(OUTPUT_DIR, out_filename), index=False)
+
+            magicc_df.df.to_csv(outfile, index=False)
         except:
-            print("Failed: {}".format(filenames))
+            failures.append("{}\n{}".format(dirpath, filenames))
             continue
+
+print("Failures\n========\n{}".format("\n\n".join(failures)))
