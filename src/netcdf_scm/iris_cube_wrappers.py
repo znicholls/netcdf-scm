@@ -49,10 +49,9 @@ class SCMCube(object):
         path into an iris cube which can be accessed through ``self.cube``.
 
         If implemented on a subclass of ``SCMCube``, this method should:
-        - use ``self.get_load_data_from_identifiers_args_from_filepath`` determine the suitable set of arguments to pass to
-        ``self.load_data_from_identifiers`` from the filepath
-        - load the data using ``self.load_data_from_identifiers`` as this method
-        contains much better checks and helper components
+
+        - use ``self.get_load_data_from_identifiers_args_from_filepath`` to determine the suitable set of arguments to pass to ``self.load_data_from_identifiers`` from the filepath
+        - load the data using ``self.load_data_from_identifiers`` as this method contains much better checks and helper components
 
         Parameters
         ----------
@@ -531,14 +530,9 @@ class SCMCube(object):
         ValueError
             If the time period is not in a valid format
         """
-        time_formats = {
-            4: '%Y',
-            6: '%Y%m',
-            8: '%Y%m%d',
-            10: '%Y%m%d%H',
-        }
-        if '-' in time_period_str:
-            dates = time_period_str.split('-')
+        time_formats = {4: "%Y", 6: "%Y%m", 8: "%Y%m%d", 10: "%Y%m%d%H"}
+        if "-" in time_period_str:
+            dates = time_period_str.split("-")
             if (len(dates) != 2) or (len(dates[0]) != len(dates[1])):
                 self._raise_time_period_invalid_error(time_period_str)
         else:
@@ -555,7 +549,9 @@ class SCMCube(object):
                 self._raise_time_period_invalid_error(time_period_str)
 
     def _raise_time_period_invalid_error(self, time_period_str):
-        message = 'Your time_period indicator ({}) does not look right'.format(time_period_str)
+        message = "Your time_period indicator ({}) does not look right".format(
+            time_period_str
+        )
         raise ValueError(message)
 
 
