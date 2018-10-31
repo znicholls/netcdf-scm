@@ -195,10 +195,6 @@ class TestSCMCube(object):
         [
             [
                 "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
                 "pr_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
             ],
             [
@@ -227,7 +223,7 @@ class TestSCMCube(object):
             ],
             [
                 "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203412.nc",
+                "pr_Amon_HadCM3_rcp45_r1i1p1_203101-203412.nc",
                 "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
             ],
             [
@@ -243,21 +239,25 @@ class TestSCMCube(object):
             [
                 "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
                 "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p2_203601-203812.nc",
             ],
         ],
     )
-    def test_check_data_names_in_same_directory_errors(self, mock_listdir, bad_file_list, test_cube):
+    def test_check_data_names_in_same_directory_errors(
+        self, mock_listdir, bad_file_list, test_cube
+    ):
         tdir = "mocked"
 
         mock_listdir.return_value = bad_file_list
-        error_msg = re.escape((
-            "Cannot join files in:\n"
-            "{}\n"
-            "Files found:\n"
-            "- {}".format(tdir, "\n- ".join(bad_file_list))
-        ))
-        with pytest.raises(ValueError, match=error_msg):
+        error_msg = re.escape(
+            (
+                "Cannot join files in:\n"
+                "{}\n"
+                "Files found:\n"
+                "- {}".format(tdir, "\n- ".join(sorted(bad_file_list)))
+            )
+        )
+        with pytest.raises(AssertionError, match=error_msg):
             test_cube._check_data_names_in_same_directory(tdir)
 
     def test_get_data_directory(self, test_cube):

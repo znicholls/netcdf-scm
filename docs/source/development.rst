@@ -86,7 +86,7 @@ Other tools
 We also use some other tools which aren't necessarily the most familiar.
 Here we provide a list of these along with useful resources.
 
-- `Regular expressions <>`_ [add link to overview of regex]
+- `Regular expressions <https://www.oreilly.com/ideas/an-introduction-to-regular-expressions>`_
     - we use `regex101.com <regex101.com>`_ to help us write and check our regular expressions, make sure the language is set to Python to make your life easy!
 
 
