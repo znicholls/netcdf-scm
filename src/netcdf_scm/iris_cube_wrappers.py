@@ -102,8 +102,8 @@ class SCMCube(object):
         ValueError
             If the files in the directory are not from the same run (i.e. their filenames are not identical except for the timestamp) or if the files don't form a continuous timeseries.
         """
-        raise NotImplementedError()
-
+        self._check_data_names_in_same_directory(directory)
+        self._load_and_concatenate_files_in_directory(directory)
 
     def load_data_from_identifiers(self, **kwargs):
         """Load data using key identifiers
