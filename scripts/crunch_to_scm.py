@@ -26,10 +26,10 @@ if not path.exists(OUTPUT_DIR):
 
 
 for (dirpath, dirnames, filenames) in progressbar(walk(INPUT_DIR)):
-    if 'fx' in dirnames:
-        dirnames.remove('fx')  # don't visit fx directories
-    elif 'cmip5/' not in dirpath:
-        continue 
+    if "fx" in dirnames:
+        dirnames.remove("fx")  # don't visit fx directories
+    elif "cmip5/" not in dirpath:
+        continue
     elif not dirnames:
         if not filenames[0].endswith(".nc"):
             continue
@@ -37,7 +37,9 @@ for (dirpath, dirnames, filenames) in progressbar(walk(INPUT_DIR)):
             assert len(filenames) == 1
             scmcube = MarbleCMIP5Cube()
             scmcube.load_data_from_path(join(dirpath, filenames[0]))
-            magicc_df = scmcube.get_scm_timeseries(land_mask_threshold=LAND_MASK_THRESHOLD)
+            magicc_df = scmcube.get_scm_timeseries(
+                land_mask_threshold=LAND_MASK_THRESHOLD
+            )
             out_filename = "scm_crunched_{}".format(filenames[0].replace(".nc", ".csv"))
             magicc_df.df.to_csv(join(OUTPUT_DIR, out_filename), index=False)
         except:
