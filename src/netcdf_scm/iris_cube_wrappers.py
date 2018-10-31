@@ -60,6 +60,22 @@ class SCMCube(object):
         """
         self.cube = iris.load_cube(filepath)
 
+    def get_load_data_from_identifiers_args_from_filepath(self, filepath=None):
+        """Get the set of identifiers to use to load data from a filepath
+
+        Parameters
+        ----------
+        filepath : str
+            The filepath from which to load the data
+
+        Returns
+        -------
+        dict
+            Set of arguments which can be passed to
+            ``self.load_data_from_identifiers`` to load the data in the filepath
+        """
+        raise NotImplementedError()
+
     def load_data_from_identifiers(self, **kwargs):
         """Load data using key identifiers
 
@@ -465,17 +481,7 @@ class SCMCube(object):
             scm_timeseries_cubes, out_calendar=out_calendar
         )
 
-        try:
-            model = self.model
-            scenario = "_".join([self.activity, self.experiment, self.ensemble_member])
-        except AttributeError:
-            warn_msg = (
-                "Could not determine appropriate model scenario combination, filling "
-                "with 'unknown'"
-            )
-            warnings.warn(warn_msg)
-            model = "unknown"
-            scenario = "unknown"
+        model, scenario = self._get_model_scenario()
 
         out_df = pd.DataFrame(data, index=time_index)
         out_df.columns = pd.MultiIndex.from_product(
@@ -494,6 +500,21 @@ class SCMCube(object):
         output.df = out_df
         output.metadata["calendar"] = out_calendar
         return output
+
+    def _get_model_scenario(self):
+        try:
+            model = self.model
+            scenario = "_".join([self.activity, self.experiment, self.ensemble_member])
+        except AttributeError:
+            warn_msg = (
+                "Could not determine appropriate model scenario combination, filling "
+                "with 'unknown'"
+            )
+            warnings.warn(warn_msg)
+            model = "unknown"
+            scenario = "unknown"
+
+        return model, scenario
 
     def _get_openscmdata_time_axis_and_calendar(
         self, scm_timeseries_cubes, out_calendar
@@ -589,8 +610,17 @@ class MarbleCMIP5Cube(SCMCube):
         ----------
         filepath : str
             The filepath from which to load the data
+
+        Returns
+        -------
+        dict
+            Set of arguments which can be passed to
+            ``self.load_data_from_identifiers`` to load the data in the filepath
         """
         dirpath_bits = dirname(filepath).split(os.sep)
+        if len(dirpath_bits) < 6:
+            self._raise_filepath_error(filepath)
+
         root_dir = os.sep.join(dirpath_bits[:-6])
         if not root_dir:
             root_dir = "."
@@ -603,7 +633,7 @@ class MarbleCMIP5Cube(SCMCube):
             time_period = None
             ensemble_member, file_ext = splitext(filename_bits[-1])
         else:
-            raise ValueError("Filepath does not look right: {}".format(filepath))
+            self._raise_filepath_error(filepath)
 
         return {
             "root_dir": root_dir,
@@ -616,6 +646,9 @@ class MarbleCMIP5Cube(SCMCube):
             "time_period": time_period,
             "file_ext": file_ext,
         }
+
+    def _raise_filepath_error(self, filepath):
+        raise ValueError("Filepath does not look right: {}".format(filepath))
 
     def get_filepath_from_load_data_from_identifiers_args(
         self,
@@ -701,7 +734,6 @@ class MarbleCMIP5Cube(SCMCube):
             self.experiment,
             self.ensemble_member,
         ]
-        # TODO: test this switch
         if self.time_period is not None:
             bits_to_join.append(self.time_period)
 
