@@ -1,5 +1,5 @@
-# Folder created using scripts/crunch_to_scm.py default setup
-crunched_files
+# Example output folder
+output_examples
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
