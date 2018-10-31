@@ -134,6 +134,7 @@ conda_env_update:
 conda_env:
 	# thanks https://stackoverflow.com/a/38609653 for the conda install from
 	# file solution
+	# tidy up pip install once I get expect exception pip installable
 	$(call activate_conda,); \
 		conda config --add channels conda-forge; \
 		conda create -y -n $(CONDA_ENV_NAME); \
