@@ -63,21 +63,12 @@ setup(
     ],
     packages=find_packages(SOURCE_DIR),  # no tests/docs in `src` so don't need exclude
     package_dir={"": SOURCE_DIR},
-    # package_data={
-    #     "": ["*.csv"],
-    #     "pymagicc": [
-    #         "MAGICC6/*.txt",
-    #         "MAGICC6/out/.gitkeep",
-    #         "MAGICC6/run/*.CFG",
-    #         "MAGICC6/run/*.exe",
-    #         "MAGICC6/run/*.IN",
-    #         "MAGICC6/run/*.MON",
-    #         "MAGICC6/run/*.prn",
-    #         "MAGICC6/run/*.SCEN",
-    #     ],
-    # },
     # include_package_data=True,
     # install_requires=["pandas", "f90nml"],
-    tests_require=["pytest"],
+    extras_require={
+        "docs": ["sphinx", "sphinx_rtd_theme"],
+        "test": ["nbresuse", "nbval", "codecov", "pytest-cov", "pytest"],
+        "deploy": ["twine", "setuptools", "wheel", "flake8", "black", "versioneer"],
+    },
     cmdclass=cmdclass,
 )
