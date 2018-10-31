@@ -76,8 +76,18 @@ We include links with each of these tools to starting points that we think are u
 - `Continuous integration (CI) <https://docs.travis-ci.com/user/for-beginners/>`_
     - we use `Travis CI <https://travis-ci.com/>`_ for our CI but there are a number of good providers
 - `Jupyter Notebooks <https://medium.com/codingthesmartway-com-blog/getting-started-with-jupyter-notebook-for-python-4e7082bd5d46>`_
-    - we'd recommend simply installing via pip in your virtual environment
+    - we'd recommend simply ``jupyter`` installing via pip in your virtual environment
 - Sphinx_
+
+
+Other tools
++++++++++++
+
+We also use some other tools which aren't necessarily the most familiar.
+Here we provide a list of these along with useful resources.
+
+- `Regular expressions <>`_ [add link to overview of regex]
+    - we use `regex101.com <regex101.com>`_ to help us write and check our regular expressions, make sure the language is set to Python to make your life easy!
 
 
 Formatting
