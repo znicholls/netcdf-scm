@@ -43,8 +43,7 @@ install:
   # Install package and required testing packages
   # ---------------------------------------------
   - >
-    pip install pytest pytest-cov codecov nbval;
-    pip install -e .;
+    pip install -e .[test,docs,deploy];
 
   # Check config before running tests
   # ---------------------------------

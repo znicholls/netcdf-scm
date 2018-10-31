@@ -40,9 +40,8 @@ To get setup as a developer, we recommend the following steps (if any of these t
     #. Install the conda development dependencies with ``conda install --file conda-environment-dev.yaml -n your-environment-name``
     #. Upgrade pip ``pip install --upgrade pip``
     #. Install pip minimal dependencies ``pip install -Ur pip-requirements-minimal.txt``
-    #. Install pip development dependencies ``pip install -Ur pip-requirements-dev.txt``
     #. Change your current directory to NetCDF-SCM's root directory (i.e. the one which contains ``README.rst``), ``cd netcdf-scm``
-    #. Install an editable version of NetCDF-SCM, ``pip install -e .``
+    #. Install an editable version of NetCDF-SCM along with development dependencies, ``pip install -e .[test,docs,deploy]``
 
 #. Make sure the tests pass by running ``make test_all``, if that files the commands are
 
