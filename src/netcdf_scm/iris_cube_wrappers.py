@@ -76,6 +76,35 @@ class SCMCube(object):
         """
         raise NotImplementedError()
 
+    def load_data_in_directory(self, directory=None):
+        """Load data in a directory
+
+        The data is loaded into an iris cube which can be accessed through
+        ``self.cube``.
+
+        Initially, this method is intended to only be used to load data when it is
+        saved in a number of different timeslice files e.g.:
+
+        - tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc
+        - tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc
+
+        It is not intended to be used to load multiple different variables or
+        non-continuous timeseries. These use cases could be added in future, but are
+        not required yet so have not been included.
+
+        Parameters
+        ----------
+        directory : str
+            Directory from which to load the data
+
+        Raises
+        ------
+        ValueError
+            If the files in the directory are not from the same run (i.e. their filenames are not identical except for the timestamp) or if the files don't form a continuous timeseries.
+        """
+        raise NotImplementedError()
+
+
     def load_data_from_identifiers(self, **kwargs):
         """Load data using key identifiers
 
