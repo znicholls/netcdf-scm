@@ -165,6 +165,17 @@ class TestSCMCube(object):
             test_cube, "get_variable_constraint_from_load_data_from_identifiers_args"
         )
 
+    def test_load_data_in_directory(self, test_cube):
+        tdir = "mocked/out"
+
+        test_cube._check_data_names_in_same_directory = MagicMock()
+        test_cube._load_and_concatenate_files_in_directory = MagicMock()
+
+        test_cube.load_data_in_directory(tdir)
+
+        test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
+        test_cube._load_and_concatenate_files_in_directory.assert_called_with(tdir)
+
     def test_get_data_directory(self, test_cube):
         self.run_test_of_method_to_overload(test_cube, "_get_data_directory")
 
