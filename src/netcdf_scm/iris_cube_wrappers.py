@@ -7,9 +7,11 @@ For example, finding surface land fraction files, applying masks to data and ret
 
 import os
 from os.path import join, dirname, basename, splitext
+import re
 import warnings
 import traceback
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 import numpy as np
@@ -37,10 +39,49 @@ class SCMCube(object):
     Hence to use this base class, you must use a subclass of it which defines these context specific methods.
     """
 
+    # TODO: document attributes
+
     _sftlf_var = "sftlf"
     _areacella_var = "areacella"
     _lat_name = "latitude"
     _lon_name = "longitude"
+    _time_period_regex = r".*_((\d*)\-?(\d*)?).*"
+    _known_timestamps = {
+        4: {"datetime_str": "%Y", "expected_timestep": relativedelta(years=+1)},
+        6: {"datetime_str": "%Y%m", "expected_timestep": relativedelta(months=+1)},
+        8: {"datetime_str": "%Y%m%d", "expected_timestep": relativedelta(days=+1)},
+        10: {"datetime_str": "%Y%m%d%H", "expected_timestep": relativedelta(hours=+1)},
+    }
+    _timestamp_definitions = None
+
+    @property
+    def timestamp_definitions(self):
+        """dict: Key timestamp information
+
+        Each key is the length of the timestamp. From there, the available keys are:
+        - datetime_str: the string required to convert a timestamp of this length into a datetime using ``datetime.datetime.strptime``
+        - generic_regexp: a regular expression which will match timestamps in this format
+        - expected_timestep: a ``dateutil.relativedelta.relativedelta`` object which contains the expected timestep in files with this timestamp
+
+        Examples
+        --------
+        >>> self.timestamp_definitions[len("2012")]["datetime_str"]
+        "%Y"
+        """
+        if self._timestamp_definitions is None:
+            self._timestamp_definitions = {}
+            for key, value in self._known_timestamps.items():
+                self._timestamp_definitions[key] = value
+                generic_regexp = r"\d{" + "{}".format(key) + r"}"
+                self._timestamp_definitions[key]["generic_regexp"] = generic_regexp
+                hyphen_key = 2 * key + 1
+                self._timestamp_definitions[hyphen_key] = {
+                    "datetime_str": "{0}-{0}".format(value["datetime_str"]),
+                    "expected_timestep": value["expected_timestep"],
+                    "generic_regexp": "{0}-{0}".format(generic_regexp),
+                }
+
+        return self._timestamp_definitions
 
     def load_data_from_path(self, filepath):
         """Load data from a path
@@ -107,7 +148,67 @@ class SCMCube(object):
         self._load_and_concatenate_files_in_directory(directory)
 
     def _check_data_names_in_same_directory(self, directory):
-        os.listdir(directory)
+        found_files = sorted(os.listdir(directory))
+
+        assertion_error_msg = (
+            "Cannot join files in:\n"
+            "{}\n"
+            "Files found:\n"
+            "- {}".format(directory, "\n- ".join(found_files))
+        )
+
+        base_regexp = self._get_timestamp_regex_from_filename(found_files[0])
+        expected_timestep = self._get_expected_timestep_from_filename(found_files[0])
+
+        file_timestamp_bits_prev = self._get_timestamp_bits_from_filename(
+            found_files[0]
+        )
+        time_format = self.timestamp_definitions[
+            len(file_timestamp_bits_prev["timestart_str"])
+        ]["datetime_str"]
+        for found_file in found_files[1:]:
+            assert re.match(base_regexp, found_file), assertion_error_msg
+
+            file_timestamp_bits = self._get_timestamp_bits_from_filename(found_file)
+            end_time_prev = datetime.strptime(
+                file_timestamp_bits_prev["timeend_str"], time_format
+            )
+            start_time = datetime.strptime(
+                file_timestamp_bits["timestart_str"], time_format
+            )
+
+            assert (
+                relativedelta(start_time, end_time_prev) == expected_timestep
+            ), assertion_error_msg
+
+            file_timestamp_bits_prev = file_timestamp_bits
+
+    def _get_timestamp_regex_from_filename(self, filename):
+        timestamp_bits = self._get_timestamp_bits_from_filename(filename)
+        timestamp_str = timestamp_bits["timestamp_str"]
+        return filename.replace(
+            timestamp_str,
+            self.timestamp_definitions[len(timestamp_str)]["generic_regexp"],
+        )
+
+    def _get_expected_timestep_from_filename(self, filename):
+        timestamp_bits = self._get_timestamp_bits_from_filename(filename)
+        timestamp_str = timestamp_bits["timestamp_str"]
+        return self.timestamp_definitions[len(timestamp_str)]["expected_timestep"]
+
+    def _get_timestamp_bits_from_filename(self, filename):
+        regex_matches = re.match(self._time_period_regex, filename)
+        timestamp_str = regex_matches.group(1)
+        self._check_time_period_valid(timestamp_str)
+        start_time = regex_matches.group(2)
+        end_time = regex_matches.group(3)
+        timestep = self.timestamp_definitions[len(timestamp_str)]["expected_timestep"]
+        return {
+            "timestamp_str": timestamp_str,
+            "timestart_str": start_time,
+            "timeend_str": end_time,
+            "expected_timestep": timestep,
+        }
 
     def load_data_from_identifiers(self, **kwargs):
         """Load data using key identifiers
@@ -570,6 +671,7 @@ class SCMCube(object):
     def _check_time_period_valid(self, time_period_str):
         """Check that a time_period identifier string is valid
 
+        [Move this explanation next to the _timestamp_definitions attribute]
         This checks the string against the CMIP standards where time strings must be
         one of the following: YYYY, YYYYMM, YYYYMMDD, YYYYMMDDHH or one of the
         previous combined with a hyphen e.g. YYYY-YYYY.
@@ -584,7 +686,9 @@ class SCMCube(object):
         ValueError
             If the time period is not in a valid format
         """
-        time_formats = {4: "%Y", 6: "%Y%m", 8: "%Y%m%d", 10: "%Y%m%d%H"}
+        if "_" in time_period_str:
+            self._raise_time_period_invalid_error(time_period_str)
+
         if "-" in time_period_str:
             dates = time_period_str.split("-")
             if (len(dates) != 2) or (len(dates[0]) != len(dates[1])):
@@ -593,13 +697,19 @@ class SCMCube(object):
             dates = [time_period_str]
 
         try:
-            time_format = time_formats[len(dates[0])]
+            time_format = self.timestamp_definitions[len(dates[0])]["datetime_str"]
         except KeyError:
             self._raise_time_period_invalid_error(time_period_str)
         for date in dates:
             try:
                 datetime.strptime(date, time_format)
             except ValueError:
+                self._raise_time_period_invalid_error(time_period_str)
+
+        if len(dates) == 2:
+            start_date = datetime.strptime(dates[0], time_format)
+            end_date = datetime.strptime(dates[1], time_format)
+            if not start_date < end_date:
                 self._raise_time_period_invalid_error(time_period_str)
 
     def _raise_time_period_invalid_error(self, time_period_str):
