@@ -507,7 +507,7 @@ class TestSCMCube(object):
         np.testing.assert_array_equal(result, expected)
 
     @pytest.mark.parametrize(
-        "areacella", ["not a cube", "cube attr not a cube", "iris_error", "misshaped"]
+        "areacella", ["not a cube", "cube attr not a cube", "iris_error", "misshaped", "no file"]
     )
     @pytest.mark.parametrize("areacella_var", ["areacella", "area_other"])
     def test_get_area_weights_workarounds(
@@ -537,6 +537,9 @@ class TestSCMCube(object):
             weird_ob = MagicMock()
             weird_ob.cube = 23
             test_cube.get_metadata_cube = MagicMock(return_value=weird_ob)
+        elif areacella == "no file":
+            no_file_msg = "No file message here"
+            test_cube.get_metadata_cube = MagicMock(side_effect=OSError(no_file_msg))
 
         with pytest.warns(None) as record:
             result = test_cube._get_area_weights()
@@ -560,6 +563,8 @@ class TestSCMCube(object):
             specific_warn = re.escape(
                 "areacella cube which was found has cube attribute which isn't an iris cube"
             )
+        elif areacella == "no file":
+            specific_warn = re.escape(no_file_msg)
 
         assert len(record) == 3
         assert re.match(radius_warn, str(record[2].message))
