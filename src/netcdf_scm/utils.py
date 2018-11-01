@@ -160,5 +160,10 @@ def unify_lat_lon(cubes, rtol=10**-10):
             )
             raise ValueError(error_msg)
 
-        cube.coords("latitude")[0].points = ref_lats
-        cube.coords("longitude")[0].points = ref_lons
+        lat_dim_no = cube.coord_dims("latitude")[0]
+        cube.remove_coord("latitude")
+        cube.add_dim_coord(cubes[0].coords("latitude")[0], lat_dim_no)
+
+        lon_dim_no = cube.coord_dims("longitude")[0]
+        cube.remove_coord("longitude")
+        cube.add_dim_coord(cubes[0].coords("longitude")[0], lon_dim_no)

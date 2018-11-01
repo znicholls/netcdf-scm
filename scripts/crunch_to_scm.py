@@ -46,9 +46,12 @@ for (dirpath, dirnames, filenames) in progressbar(walk(INPUT_DIR)):
             else:
                 if "Nor" in dirpath:
                     import pdb
+
                     pdb.set_trace()
                 scmcube.load_data_in_directory(dirpath)
-                out_filename = "scm_crunched_{}".format(scmcube._get_data_filename().replace(".nc", ".csv"))
+                out_filename = "scm_crunched_{}".format(
+                    scmcube._get_data_filename().replace(".nc", ".csv")
+                )
                 outfile = join(OUTPUT_DIR, out_filename)
                 if isfile(outfile):
                     continue

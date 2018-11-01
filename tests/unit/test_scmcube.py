@@ -507,7 +507,8 @@ class TestSCMCube(object):
         np.testing.assert_array_equal(result, expected)
 
     @pytest.mark.parametrize(
-        "areacella", ["not a cube", "cube attr not a cube", "iris_error", "misshaped", "no file"]
+        "areacella",
+        ["not a cube", "cube attr not a cube", "iris_error", "misshaped", "no file"],
     )
     @pytest.mark.parametrize("areacella_var", ["areacella", "area_other"])
     def test_get_area_weights_workarounds(

@@ -29,6 +29,7 @@ from .utils import (
     assert_all_time_axes_same,
     take_lat_lon_mean,
     apply_mask,
+    unify_lat_lon,
 )
 
 
@@ -209,11 +210,11 @@ class SCMCube(object):
             loaded_cubes.append(self.cube)
 
         loaded_cubes = iris.cube.CubeList(loaded_cubes)
+
         unify_time_units(loaded_cubes)
+        unify_lat_lon(loaded_cubes)
         iris.experimental.equalise_cubes.equalise_attributes(loaded_cubes)
-        import pdb
-        pdb.set_trace()
-        # workaround here, effectively 'unify_lat_lon'
+
         self.cube = loaded_cubes.concatenate_cube()
 
     def _check_data_names_in_same_directory(self, directory):
