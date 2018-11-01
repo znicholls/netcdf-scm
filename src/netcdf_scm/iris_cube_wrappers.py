@@ -93,7 +93,9 @@ class SCMCube(object):
 
         if self._time_period_regex is None:
             self._time_period_regex = re.compile(
-                r".*_((\d*)" + re.escape(self.time_period_separator) + r"?(\d*)?).*"
+                r".*_((\d*)"
+                + re.escape(self.time_period_separator)
+                + r"?(\d*)?).*"
             )
         return self._time_period_regex
 
@@ -272,6 +274,7 @@ class SCMCube(object):
             "timeend_str": end_time,
             "expected_timestep": timestep,
         }
+
 
     def load_data_from_identifiers(self, **kwargs):
         """Load data using key identifiers
@@ -652,6 +655,8 @@ class SCMCube(object):
             warnings.warn(str(exc))
         except AttributeError as exc:
             warnings.warn(str(exc))
+        except OSError as exc:
+            warnings.warn(str(exc))
 
     @property
     def _lon_dim(self):
@@ -807,8 +812,8 @@ class MarbleCMIP5Cube(SCMCube):
     def _load_and_concatenate_files_in_directory(self, directory):
         super()._load_and_concatenate_files_in_directory(directory)
         loaded_files = os.listdir(directory)
-        strt = self._get_timestamp_bits_from_filename(loaded_files[0])["timestart_str"]
-        end = self._get_timestamp_bits_from_filename(loaded_files[-1])["timeend_str"]
+        strt = self._get_timestamp_bits_from_filename(loaded_files[0])['timestart_str']
+        end = self._get_timestamp_bits_from_filename(loaded_files[-1])['timeend_str']
         self.time_period = self.time_period_separator.join([strt, end])
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
