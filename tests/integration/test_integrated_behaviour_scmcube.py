@@ -332,10 +332,8 @@ class TestSCMCubeIntegration(object):
         obs_time = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
-        import pdb
-        pdb.set_trace()
-        assert obs_time[0] == cftime.Datetime360Day(2006, 1, 16, 0, 0, 0, 0, -1, 16)
-        assert obs_time[-1] == cftime.Datetime360Day(2035, 12, 16, 0, 0, 0, 0, -1, 346)
+        assert obs_time[0] == cftime.DatetimeNoLeap(2006, 1, 16, 12, 0, 0, 0, 0, 16)
+        assert obs_time[-1] == cftime.DatetimeNoLeap(2100, 12, 16, 12, 0, 0, 0, 1, 350)
 
         if type(test_cube) is not SCMCube:
             assert test_cube.time_period == "200601-210012"
