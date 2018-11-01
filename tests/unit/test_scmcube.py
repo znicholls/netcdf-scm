@@ -484,7 +484,7 @@ class TestSCMCube(object):
         sftlf_var,
         transpose,
     ):
-        test_cube._sftlf_var = sftlf_var
+        test_cube.sftlf_var = sftlf_var
         original_data = test_sftlf_cube.cube.data
 
         if transpose:
@@ -509,7 +509,7 @@ class TestSCMCube(object):
         # having got the result, we can now update test_land_fraction_input
         # for our assertions
         if test_land_fraction_input is None:
-            test_cube.get_metadata_cube.assert_called_with(test_cube._sftlf_var)
+            test_cube.get_metadata_cube.assert_called_with(test_cube.sftlf_var)
             test_land_fraction_input = test_sftlf_cube
 
         # where it's land return False, otherwise True to match with masking
@@ -571,7 +571,7 @@ class TestSCMCube(object):
     def test_get_area_weights(
         self, test_cube, test_sftlf_cube, areacella_var, input_format, transpose
     ):
-        test_cube._areacella_var = areacella_var
+        test_cube.areacella_var = areacella_var
 
         expected = broadcast_to_shape(
             test_sftlf_cube.cube.data,
@@ -602,7 +602,7 @@ class TestSCMCube(object):
     def test_get_area_weights_workarounds(
         self, test_cube, test_sftlf_cube, areacella_var, areacella
     ):
-        test_cube._areacella_var = areacella_var
+        test_cube.areacella_var = areacella_var
 
         # can safely ignore these warnings here
         with warnings.catch_warnings():
