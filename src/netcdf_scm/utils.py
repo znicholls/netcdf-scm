@@ -95,7 +95,7 @@ def take_lat_lon_mean(in_scmcube, in_weights):
     out_cube = type(in_scmcube)()
     out_cube.cube = in_scmcube.cube.copy()
     out_cube.cube = out_cube.cube.collapsed(
-        [in_scmcube._lat_name, in_scmcube._lon_name],
+        [in_scmcube.lat_name, in_scmcube.lon_name],
         iris.analysis.MEAN,
         weights=in_weights,
     )

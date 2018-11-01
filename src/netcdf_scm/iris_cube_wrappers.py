@@ -37,15 +37,31 @@ class SCMCube(object):
     Common, shared operations are implemented here.
     However, methods like ``_get_data_directory`` raise ``NotImplementedError`` because these are always context dependent.
     Hence to use this base class, you must use a subclass of it which defines these context specific methods.
+
+    Attributes
+    ----------
+    sftlf_var : str
+        The name of the variable associated with the land-surface fraction in each
+        gridbox. If required, this is used when looking for the land-surface fraction file which belongs to a given data file. For example, if our data file is ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then ``sftlf_var`` can be used to work out the name of the associated land-surface fraction file. In some cases, it might be as simple as replacing ``tas`` with the value of ``sftlf_var``.
+
+    areacella_var : str
+        The name of the variable associated with the area of each gridbox. If required, this is used to determine the area of each cell in a data file. For example, if our data file is ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then ``areacella_var`` can be used to work  out the name of the associated cell area file. In some cases, it might be as simple as replacing ``tas`` with the value of ``areacella_var``.
+
+    lat_name : str
+        The expected name of the latitude co-ordinate in data.
+
+    lon_name : str
+        The expected name of the longitude co-ordinate in data.
+
+    time_period_regex : :obj:`_sre.SRE_Pattern`
+        The regular expression which captures the timeseries identifier in input data files. For help on regular expressions, see :ref:`regular expressions <regular-expressions>`.
     """
 
-    # TODO: document attributes
-
-    _sftlf_var = "sftlf"
-    _areacella_var = "areacella"
-    _lat_name = "latitude"
-    _lon_name = "longitude"
-    _time_period_regex = r".*_((\d*)\-?(\d*)?).*"
+    sftlf_var = "sftlf"
+    areacella_var = "areacella"
+    lat_name = "latitude"
+    lon_name = "longitude"
+    time_period_regex = re.compile(r".*_((\d*)\-?(\d*)?).*")
     _known_timestamps = {
         4: {"datetime_str": "%Y", "expected_timestep": relativedelta(years=+1)},
         6: {"datetime_str": "%Y%m", "expected_timestep": relativedelta(months=+1)},
@@ -56,9 +72,11 @@ class SCMCube(object):
 
     @property
     def timestamp_definitions(self):
-        """dict: Key timestamp information
+        """dict: Definition of valid timestamp information and corresponding key values
 
-        Each key is the length of the timestamp. From there, the available keys are:
+        Each key is the length of the timestamp. Each value is itself a dictionary,
+        with keys:
+
         - datetime_str: the string required to convert a timestamp of this length into a datetime using ``datetime.datetime.strptime``
         - generic_regexp: a regular expression which will match timestamps in this format
         - expected_timestep: a ``dateutil.relativedelta.relativedelta`` object which contains the expected timestep in files with this timestamp
@@ -197,7 +215,7 @@ class SCMCube(object):
         return self.timestamp_definitions[len(timestamp_str)]["expected_timestep"]
 
     def _get_timestamp_bits_from_filename(self, filename):
-        regex_matches = re.match(self._time_period_regex, filename)
+        regex_matches = re.match(self.time_period_regex, filename)
         timestamp_str = regex_matches.group(1)
         self._check_time_period_valid(timestamp_str)
         start_time = regex_matches.group(2)
@@ -253,7 +271,7 @@ class SCMCube(object):
                 warnings.warn(warn.message)
 
     def _add_areacella_measure(self):
-        areacella_cube = self.get_metadata_cube(self._areacella_var).cube
+        areacella_cube = self.get_metadata_cube(self.areacella_var).cube
         areacella_measure = iris.coords.CellMeasure(
             areacella_cube.data,
             standard_name=areacella_cube.standard_name,
@@ -497,7 +515,7 @@ class SCMCube(object):
         np.ndarray
         """
         if sftlf_cube is None:
-            sftlf_cube = self.get_metadata_cube(self._sftlf_var)
+            sftlf_cube = self.get_metadata_cube(self.sftlf_var)
 
         if not isinstance(sftlf_cube, SCMCube):
             raise TypeError("sftlf_cube must be an SCMCube instance")
@@ -540,9 +558,9 @@ class SCMCube(object):
 
     def _get_nh_mask(self):
         mask_nh_lat = np.array(
-            [cell < 0 for cell in self.cube.coord(self._lat_name).cells()]
+            [cell < 0 for cell in self.cube.coord(self.lat_name).cells()]
         )
-        mask_all_lon = np.full(self.cube.coord(self._lon_name).points.shape, False)
+        mask_all_lon = np.full(self.cube.coord(self.lon_name).points.shape, False)
 
         # Here we make a grid which we can use as a mask. We have to use all
         # of these nots so that our product (which uses AND logic) gives us
@@ -578,7 +596,7 @@ class SCMCube(object):
 
     def _get_areacella_scmcube(self):
         try:
-            areacella_scmcube = self.get_metadata_cube(self._areacella_var)
+            areacella_scmcube = self.get_metadata_cube(self.areacella_var)
             if not isinstance(areacella_scmcube.cube, iris.cube.Cube):
                 warnings.warn(
                     "areacella cube which was found has cube attribute which isn't an iris cube"
@@ -592,19 +610,19 @@ class SCMCube(object):
 
     @property
     def _lon_dim(self):
-        return self.cube.coord(self._lon_name)
+        return self.cube.coord(self.lon_name)
 
     @property
     def _lon_dim_number(self):
-        return self.cube.coord_dims(self._lon_name)[0]
+        return self.cube.coord_dims(self.lon_name)[0]
 
     @property
     def _lat_dim(self):
-        return self.cube.coord(self._lat_name)
+        return self.cube.coord(self.lat_name)
 
     @property
     def _lat_dim_number(self):
-        return self.cube.coord_dims(self._lat_name)[0]
+        return self.cube.coord_dims(self.lat_name)[0]
 
     def _convert_scm_timeseries_cubes_to_openscmdata(
         self, scm_timeseries_cubes, out_calendar=None
