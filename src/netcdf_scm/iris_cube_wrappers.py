@@ -19,6 +19,7 @@ import pandas as pd
 import iris
 from iris.util import broadcast_to_shape
 import iris.analysis.cartography
+import iris.experimental.equalise_cubes
 from pymagicc.io import MAGICCData
 
 
@@ -35,33 +36,46 @@ class SCMCube(object):
     """Class for processing netCDF files for use in simple climate models.
 
     Common, shared operations are implemented here.
-    However, methods like ``_get_data_directory`` raise ``NotImplementedError`` because these are always context dependent.
-    Hence to use this base class, you must use a subclass of it which defines these context specific methods.
-
-    Attributes
-    ----------
-    sftlf_var : str
-        The name of the variable associated with the land-surface fraction in each
-        gridbox. If required, this is used when looking for the land-surface fraction file which belongs to a given data file. For example, if our data file is ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then ``sftlf_var`` can be used to work out the name of the associated land-surface fraction file. In some cases, it might be as simple as replacing ``tas`` with the value of ``sftlf_var``.
-
-    areacella_var : str
-        The name of the variable associated with the area of each gridbox. If required, this is used to determine the area of each cell in a data file. For example, if our data file is ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then ``areacella_var`` can be used to work  out the name of the associated cell area file. In some cases, it might be as simple as replacing ``tas`` with the value of ``areacella_var``.
-
-    lat_name : str
-        The expected name of the latitude co-ordinate in data.
-
-    lon_name : str
-        The expected name of the longitude co-ordinate in data.
-
-    time_period_regex : :obj:`_sre.SRE_Pattern`
-        The regular expression which captures the timeseries identifier in input data files. For help on regular expressions, see :ref:`regular expressions <regular-expressions>`.
+    However, methods like ``_get_data_directory`` raise ``NotImplementedError``
+    because these are always context dependent.
+    Hence to use this base class, you must use a subclass of it which defines these
+    context specific methods.
     """
 
     sftlf_var = "sftlf"
+    """str: The name of the variable associated with the land-surface fraction in each gridbox.
+
+    If required, this is used when looking for the land-surface fraction file which
+    belongs to a given data file. For example, if our data file is
+    ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then ``sftlf_var`` can be used to work
+    out the name of the associated land-surface fraction file. In some cases, it might
+    be as simple as replacing ``tas`` with the value of ``sftlf_var``.
+    """
+
     areacella_var = "areacella"
+    """str: The name of the variable associated with the area of each gridbox.
+
+    If required, this is used to determine the area of each cell in a data file. For
+    example, if our data file is ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then
+    ``areacella_var`` can be used to work  out the name of the associated cell area
+    file. In some cases, it might be as simple as replacing ``tas`` with the value of
+    ``areacella_var``.
+    """
+
     lat_name = "latitude"
+    """str: The expected name of the latitude co-ordinate in data."""
+
     lon_name = "longitude"
-    time_period_regex = re.compile(r".*_((\d*)\-?(\d*)?).*")
+    """str: The expected name of the longitude co-ordinate in data."""
+
+    time_period_separator = "-"
+    """str: Character used to separate time period strings in the time period indicator in filenames.
+
+    e.g. ``-`` is the 'time period separator' in "2015-2030".
+    """
+
+    _time_period_regex = None
+
     _known_timestamps = {
         4: {"datetime_str": "%Y", "expected_timestep": relativedelta(years=+1)},
         6: {"datetime_str": "%Y%m", "expected_timestep": relativedelta(months=+1)},
@@ -69,6 +83,19 @@ class SCMCube(object):
         10: {"datetime_str": "%Y%m%d%H", "expected_timestep": relativedelta(hours=+1)},
     }
     _timestamp_definitions = None
+
+    @property
+    def time_period_regex(self):
+        """:obj:`_sre.SRE_Pattern`: Regular expression which captures the timeseries identifier in input data files.
+
+        For help on regular expressions, see :ref:`regular expressions <regular-expressions>`.
+        """
+
+        if self._time_period_regex is None:
+            self._time_period_regex = re.compile(
+                r".*_((\d*)" + re.escape(self.time_period_separator) + r"?(\d*)?).*"
+            )
+        return self._time_period_regex
 
     @property
     def timestamp_definitions(self):
@@ -152,6 +179,11 @@ class SCMCube(object):
         non-continuous timeseries. These use cases could be added in future, but are
         not required yet so have not been included.
 
+        Note that this function removes any attributes which aren't common between the
+        loaded cubes. In general, we have found that this mainly means
+        ``creation_date``, ``tracking_id`` and ``history`` are deleted. If unsure,
+        please check.
+
         Parameters
         ----------
         directory : str
@@ -162,8 +194,21 @@ class SCMCube(object):
         ValueError
             If the files in the directory are not from the same run (i.e. their filenames are not identical except for the timestamp) or if the files don't form a continuous timeseries.
         """
-        self._check_data_names_in_same_directory(directory)
         self._load_and_concatenate_files_in_directory(directory)
+
+    def _load_and_concatenate_files_in_directory(self, directory):
+        self._check_data_names_in_same_directory(directory)
+
+        # we use a loop here to make the most of finding missing data like
+        # land-surface fraction and cellarea, something iris can't automatically do
+        loaded_cubes = []
+        for f in sorted(os.listdir(directory)):
+            self.load_data_from_path(join(directory, f))
+            loaded_cubes.append(self.cube)
+
+        loaded_cubes = iris.cube.CubeList(loaded_cubes)
+        iris.experimental.equalise_cubes.equalise_attributes(loaded_cubes)
+        self.cube = loaded_cubes.concatenate_cube()
 
     def _check_data_names_in_same_directory(self, directory):
         found_files = sorted(os.listdir(directory))
@@ -758,6 +803,13 @@ class MarbleCMIP5Cube(SCMCube):
             filepath
         )
         self.load_data_from_identifiers(**load_data_from_identifiers_args)
+
+    def _load_and_concatenate_files_in_directory(self, directory):
+        super()._load_and_concatenate_files_in_directory(directory)
+        loaded_files = os.listdir(directory)
+        strt = self._get_timestamp_bits_from_filename(loaded_files[0])["timestart_str"]
+        end = self._get_timestamp_bits_from_filename(loaded_files[-1])["timeend_str"]
+        self.time_period = self.time_period_separator.join([strt, end])
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
         """Get the set of identifiers to use to load data from a filepath
