@@ -63,11 +63,8 @@ for (dirpath, dirnames, filenames) in progressbar(walk(INPUT_DIR)):
 
             magicc_df.df.to_csv(outfile)
         except Exception as exc:
-            exc_string = (
-                  "Exception\n"
-                + "---------\n"
-                + str(exc)
-            )
+            header = "Exception"
+            exc_string = header + "\n" + "-" * len(header) + "\n" + str(exc)
 
             failures.append("{}\n{}\n{}".format(dirpath, filenames, exc_string))
             continue
