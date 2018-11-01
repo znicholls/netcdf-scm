@@ -285,7 +285,7 @@ class TestSCMCubeIntegration(object):
         with pytest.raises(AssertionError, match=error_msg):
             test_cube._check_data_names_in_same_directory(tdir)
 
-    def test_load_and_concatenate_files_in_directory(self, test_cube):
+    def test_load_and_concatenate_files_in_directory_same_time(self, test_cube):
         tdir = join(
             TEST_DATA_MARBLE_CMIP5_DIR,
             "cmip5",
@@ -309,6 +309,36 @@ class TestSCMCubeIntegration(object):
 
         if type(test_cube) is not SCMCube:
             assert test_cube.time_period == "200601-203512"
+
+        removed_attributes = ["creation_date", "tracking_id", "history"]
+        for removed_attribute in removed_attributes:
+            with pytest.raises(KeyError):
+                test_cube.cube.attributes[removed_attribute]
+
+    def test_load_and_concatenate_files_in_directory_different_time(self, test_cube):
+        tdir = join(
+            TEST_DATA_MARBLE_CMIP5_DIR,
+            "cmip5",
+            "rcp85",
+            "Amon",
+            "tas",
+            "NorESM1-ME",
+            "r1i1p1",
+        )
+
+        test_cube._load_and_concatenate_files_in_directory(tdir)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        obs_time = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+        import pdb
+        pdb.set_trace()
+        assert obs_time[0] == cftime.Datetime360Day(2006, 1, 16, 0, 0, 0, 0, -1, 16)
+        assert obs_time[-1] == cftime.Datetime360Day(2035, 12, 16, 0, 0, 0, 0, -1, 346)
+
+        if type(test_cube) is not SCMCube:
+            assert test_cube.time_period == "200601-210012"
 
         removed_attributes = ["creation_date", "tracking_id", "history"]
         for removed_attribute in removed_attributes:

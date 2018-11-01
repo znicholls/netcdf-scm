@@ -17,7 +17,7 @@ from dateutil.relativedelta import relativedelta
 import numpy as np
 import pandas as pd
 import iris
-from iris.util import broadcast_to_shape
+from iris.util import broadcast_to_shape, unify_time_units
 import iris.analysis.cartography
 import iris.experimental.equalise_cubes
 from pymagicc.io import MAGICCData
@@ -209,7 +209,10 @@ class SCMCube(object):
             loaded_cubes.append(self.cube)
 
         loaded_cubes = iris.cube.CubeList(loaded_cubes)
+        unify_time_units(loaded_cubes)
         iris.experimental.equalise_cubes.equalise_attributes(loaded_cubes)
+        import pdb
+        pdb.set_trace()
         self.cube = loaded_cubes.concatenate_cube()
 
     def _check_data_names_in_same_directory(self, directory):
