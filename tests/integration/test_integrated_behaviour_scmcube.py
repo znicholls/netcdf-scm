@@ -54,7 +54,7 @@ class TestSCMCubeIntegration(object):
         test_cube.get_variable_constraint_from_load_data_from_identifiers_args.assert_called_with(
             **tkwargs
         )
-        test_cube.get_metadata_cube.assert_called_with(test_cube._areacella_var)
+        test_cube.get_metadata_cube.assert_called_with(test_cube.areacella_var)
 
         cell_measures = test_cube.cube.cell_measures()
         assert len(cell_measures) == 1
