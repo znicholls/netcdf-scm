@@ -122,6 +122,10 @@ def test_unify_lat_lon(test_generic_tas_cube, ttol):
         base_cube = test_generic_tas_cube.cube.copy()
         other_cube = base_cube.copy()
         other_cube.coords("longitude")[0].points = scale * other_cube.coords("longitude")[0].points
+        other_cube.coords("latitude")[0].points = scale * other_cube.coords("latitude")[0].points
+
+        assert (other_cube.coords("longitude")[0].points == scale * base_cube.coords("longitude")[0].points).all()
+        assert (other_cube.coords("latitude")[0].points == scale * base_cube.coords("latitude")[0].points).all()
 
         return iris.cube.CubeList([base_cube, other_cube])
 
