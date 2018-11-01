@@ -326,7 +326,13 @@ class TestSCMCubeIntegration(object):
             "r1i1p1",
         )
 
-        test_cube._load_and_concatenate_files_in_directory(tdir)
+        if type(test_cube) is MarbleCMIP5Cube:
+            # expect no warnings
+            test_cube._load_and_concatenate_files_in_directory(tdir)
+        else:
+            # can ignore warnings safely here as tested elsewhere
+            with warnings.catch_warnings(record=True):
+                test_cube._load_and_concatenate_files_in_directory(tdir)
 
         obs_time = test_cube.cube.dim_coords[0]
         obs_time = cf_units.num2date(
