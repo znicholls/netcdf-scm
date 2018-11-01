@@ -213,6 +213,7 @@ class SCMCube(object):
         iris.experimental.equalise_cubes.equalise_attributes(loaded_cubes)
         import pdb
         pdb.set_trace()
+        # workaround here, effectively 'unify_lat_lon'
         self.cube = loaded_cubes.concatenate_cube()
 
     def _check_data_names_in_same_directory(self, directory):
