@@ -124,3 +124,41 @@ def apply_mask(in_scmcube, in_mask):
     out_cube.cube.data.mask = in_mask
 
     return out_cube
+
+def unify_lat_lon(cubes, rtol=10**-10):
+    """Unify latitude and longitude co-ordinates of cubes.
+
+    The co-ordinates will only be unified if they already match to within a given
+    tolerance.
+
+    Parameters
+    ----------
+    cubes : :obj:`iris.cube.CubeList`
+        List of iris cubes whose latitude and longitude co-ordinates should be unified.
+
+    rtol : float
+        Maximum relative difference which can be accepted between co-ordinate values.
+
+    Raises
+    ------
+    ValueError
+        If the co-ordinates differ by more than relative tolerance or are not
+        compatible (e.g. different shape).
+    """
+    ref_lats = cubes[0].coords("latitude")[0].points
+    ref_lons = cubes[0].coords("longitude")[0].points
+    for cube in cubes[1:]:
+        cube_lats = cube.coords("latitude")[0].points
+        cube_lons = cube.coords("longitude")[0].points
+        try:
+            np.testing.assert_allclose(ref_lats, cube_lats, rtol=rtol)
+            np.testing.assert_allclose(ref_lons, cube_lons, rtol=rtol)
+        except AssertionError:
+            error_msg = (
+                "Cannot unify latitude and longitude, relative difference in "
+                "co-ordinates is greater than {}".format(rtol)
+            )
+            raise ValueError(error_msg)
+
+        cube.coords("latitude")[0].points = ref_lats
+        cube.coords("longitude")[0].points = ref_lons
