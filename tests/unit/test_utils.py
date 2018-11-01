@@ -17,6 +17,7 @@ from netcdf_scm.utils import (
     assert_all_time_axes_same,
     take_lat_lon_mean,
     apply_mask,
+    unify_lat_lon,
 )
 from conftest import tdata_required
 
@@ -112,3 +113,37 @@ def test_apply_mask(test_generic_tas_cube):
     np.testing.assert_equal(test_generic_tas_cube.cube.data.mask, ~tmask)
     result = apply_mask(test_generic_tas_cube, tmask)
     np.testing.assert_equal(result.cube.data.mask, tmask)
+
+
+@tdata_required
+@pytest.mark.parametrize("ttol", [0.1, 10**-5, 10**-10, "default"])
+def test_unify_lat_lon(test_generic_tas_cube, ttol):
+    def get_starting_list(scale):
+        base_cube = test_generic_tas_cube.cube.copy()
+        other_cube = base_cube.copy()
+        other_cube.coords("longitude")[0].points = scale * other_cube.coords("longitude")[0].points
+
+        return iris.cube.CubeList([base_cube, other_cube])
+
+    default = False if ttol != "default" else True
+    ttol = ttol if ttol != "default" else 10**-10
+    for loop_ttol in [ttol*0.1, ttol*10**-5]:
+        tlist = get_starting_list(scale=1+loop_ttol)
+        if default:
+            unify_lat_lon(tlist)
+        else:
+            unify_lat_lon(tlist, rtol=ttol)
+
+        assert (tlist[0].coords("longitude")[0].points == tlist[1].coords("longitude")[0].points).all()
+        assert (tlist[0].coords("latitude")[0].points == tlist[1].coords("latitude")[0].points).all()
+
+    error_msg = re.escape(
+        "Cannot unify latitude and longitude, relative difference in co-ordinates "
+        "is greater than {}".format(ttol)
+    )
+    with pytest.raises(ValueError, match=error_msg):
+        tlist = get_starting_list(ttol*1.01)
+        if default:
+            unify_lat_lon(tlist)
+        else:
+            unify_lat_lon(tlist, rtol=ttol)
