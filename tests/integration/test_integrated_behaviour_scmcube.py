@@ -1,4 +1,6 @@
-from unittest.mock import MagicMock
+from os.path import join
+from unittest.mock import patch, MagicMock
+import re
 import warnings
 
 import pytest
@@ -8,11 +10,17 @@ from pandas.testing import assert_frame_equal
 import iris
 from iris.util import broadcast_to_shape
 import cf_units
+import cftime
 from pymagicc.io import MAGICCData
 
 
 from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
-from conftest import TEST_TAS_FILE, TEST_AREACELLA_FILE, tdata_required
+from conftest import (
+    TEST_TAS_FILE,
+    TEST_AREACELLA_FILE,
+    tdata_required,
+    TEST_DATA_MARBLE_CMIP5_DIR,
+)
 
 
 class TestSCMCubeIntegration(object):
@@ -192,6 +200,120 @@ class TestSCMCubeIntegration(object):
 
         assert result.metadata == expected.metadata
         assert_frame_equal(result.df, expected.df)
+
+    @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
+    def test_check_data_names_in_same_directory(self, mock_listdir, test_cube):
+        tdir = "mocked"
+
+        mock_listdir.return_value = [
+            "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+            "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
+            "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
+        ]
+
+        test_cube._check_data_names_in_same_directory(tdir)
+        mock_listdir.assert_called_with(tdir)
+
+    @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
+    @pytest.mark.parametrize(
+        "bad_file_list",
+        [
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "pr_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "tas_fx_HadCM3_rcp45_r1i1p1_203101-203512.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "tas_Amon_CSIRO_rcp45_r1i1p1_203101-203512.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "tas_Amon_HadCM3_rcp85_r1i1p1_203101-203512.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "tas_Amon_HadCM3_rcp45_r2i1p1_203101-203512.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p1_203201-203512.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p1_203012-203512.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "pr_Amon_HadCM3_rcp45_r1i1p1_203101-203412.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p1_203701-203812.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p1_203602-203812.nc",
+            ],
+            [
+                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
+                "tas_Amon_HadCM3_rcp45_r1i1p2_203601-203812.nc",
+            ],
+        ],
+    )
+    def test_check_data_names_in_same_directory_errors(
+        self, mock_listdir, bad_file_list, test_cube
+    ):
+        tdir = "mocked"
+
+        mock_listdir.return_value = bad_file_list
+        error_msg = re.escape(
+            (
+                "Cannot join files in:\n"
+                "{}\n"
+                "Files found:\n"
+                "- {}".format(tdir, "\n- ".join(sorted(bad_file_list)))
+            )
+        )
+        with pytest.raises(AssertionError, match=error_msg):
+            test_cube._check_data_names_in_same_directory(tdir)
+
+    def test_load_and_concatenate_files_in_directory(self, test_cube):
+        tdir = join(
+            TEST_DATA_MARBLE_CMIP5_DIR,
+            "cmip5",
+            "rcp45",
+            "Amon",
+            "tas",
+            "HadCM3",
+            "r1i1p1",
+        )
+
+        # can ignore warnings safely here as tested elsewhere
+        with warnings.catch_warnings(record=True):
+            test_cube._load_and_concatenate_files_in_directory(tdir)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        obs_time = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+        assert obs_time[0] == cftime.Datetime360Day(2006, 1, 16, 0, 0, 0, 0, -1, 16)
+        assert obs_time[-1] == cftime.Datetime360Day(2035, 12, 16, 0, 0, 0, 0, -1, 346)
+
+        if type(test_cube) is not SCMCube:
+            assert test_cube.time_period == "200601-203512"
+
+        removed_attributes = ["creation_date", "tracking_id", "history"]
+        for removed_attribute in removed_attributes:
+            with pytest.raises(KeyError):
+                test_cube.cube.attributes[removed_attribute]
 
 
 class TestMarbleCMIP5Cube(TestSCMCubeIntegration):

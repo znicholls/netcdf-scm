@@ -167,98 +167,9 @@ class TestSCMCube(object):
 
     def test_load_data_in_directory(self, test_cube):
         tdir = "mocked/out"
-
-        test_cube._check_data_names_in_same_directory = MagicMock()
         test_cube._load_and_concatenate_files_in_directory = MagicMock()
-
         test_cube.load_data_in_directory(tdir)
-
-        test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
         test_cube._load_and_concatenate_files_in_directory.assert_called_with(tdir)
-
-    @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
-    def test_check_data_names_in_same_directory(self, mock_listdir, test_cube):
-        tdir = "mocked"
-
-        mock_listdir.return_value = [
-            "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-            "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-            "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
-        ]
-
-        test_cube._check_data_names_in_same_directory(tdir)
-        mock_listdir.assert_called_with(tdir)
-
-    @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
-    @pytest.mark.parametrize(
-        "bad_file_list",
-        [
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "pr_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_fx_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_CSIRO_rcp45_r1i1p1_203101-203512.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp85_r1i1p1_203101-203512.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp45_r2i1p1_203101-203512.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203201-203512.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203012-203512.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "pr_Amon_HadCM3_rcp45_r1i1p1_203101-203412.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203701-203812.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203602-203812.nc",
-            ],
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p2_203601-203812.nc",
-            ],
-        ],
-    )
-    def test_check_data_names_in_same_directory_errors(
-        self, mock_listdir, bad_file_list, test_cube
-    ):
-        tdir = "mocked"
-
-        mock_listdir.return_value = bad_file_list
-        error_msg = re.escape(
-            (
-                "Cannot join files in:\n"
-                "{}\n"
-                "Files found:\n"
-                "- {}".format(tdir, "\n- ".join(sorted(bad_file_list)))
-            )
-        )
-        with pytest.raises(AssertionError, match=error_msg):
-            test_cube._check_data_names_in_same_directory(tdir)
 
     def test_get_data_directory(self, test_cube):
         self.run_test_of_method_to_overload(test_cube, "_get_data_directory")
