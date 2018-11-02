@@ -6,10 +6,8 @@ from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
 from progressbar import progressbar
 
 
-# INPUT_DIR = "./tests/test_data/marble_cmip5"
-INPUT_DIR = "/data/marble"
-# OUTPUT_DIR = "./output_examples/crunched_files"
-OUTPUT_DIR = "/data/marble/sandbox/znicholls/cmip5_crunched"
+INPUT_DIR = "./tests/test_data/marble_cmip5"
+OUTPUT_DIR = "./output_examples/crunched_files"
 LAND_MASK_THRESHOLD = 50
 VAR_TO_CRUNCH = "tas"
 
@@ -27,7 +25,8 @@ def crunch_data(
 ):
     """Crunch data in a directory structure to OpenSCM csvs
 
-    Crunched
+    Failures are written into a text file in the directory above
+    ``out_dir``
 
     Parameters
     ----------
