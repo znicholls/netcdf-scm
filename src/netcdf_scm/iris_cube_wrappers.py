@@ -574,22 +574,26 @@ class SCMCube(object):
         -------
         dict
         """
+        nh_mask = self._get_nh_mask()
+        hemisphere_masks = {
+            "World": np.full(nh_mask.shape, False),
+            "World|Northern Hemisphere": nh_mask,
+            "World|Southern Hemisphere": ~nh_mask,
+        }
+
         land_mask = self._get_land_mask(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
-        nh_mask = self._get_nh_mask()
-
-        return {
-            "World": np.full(nh_mask.shape, False),
+        land_masks = {
             "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
             "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
             "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
             "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
             "World|Land": land_mask,
             "World|Ocean": ~land_mask,
-            "World|Northern Hemisphere": nh_mask,
-            "World|Southern Hemisphere": ~nh_mask,
         }
+
+        return {**hemisphere_masks, **land_masks}
 
     def _get_land_mask(self, sftlf_cube=None, land_mask_threshold=50):
         """Get the land mask.
