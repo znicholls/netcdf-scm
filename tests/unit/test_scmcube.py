@@ -677,7 +677,7 @@ class TestMarbleCMIP5Cube(TestSCMCube):
                 "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
                 "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
             ],
-            "200601-203512",
+            "200601-203812",
         ),
         (
             [
@@ -696,7 +696,7 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         test_cube._add_time_period_from_files_in_directory(tdir)
 
         assert test_cube.time_period == expected_time_period
-        assert test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
+        test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
 
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):

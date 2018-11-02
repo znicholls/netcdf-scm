@@ -829,7 +829,9 @@ class MarbleCMIP5Cube(SCMCube):
         self._add_time_period_from_files_in_directory(directory)
 
     def _add_time_period_from_files_in_directory(self, directory):
-        loaded_files = os.listdir(directory)
+        self._check_data_names_in_same_directory(directory)
+
+        loaded_files = sorted(os.listdir(directory))
         strt = self._get_timestamp_bits_from_filename(loaded_files[0])["timestart_str"]
         end = self._get_timestamp_bits_from_filename(loaded_files[-1])["timeend_str"]
         self.time_period = self.time_period_separator.join([strt, end])
