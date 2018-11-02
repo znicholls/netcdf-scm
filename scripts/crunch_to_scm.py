@@ -6,9 +6,9 @@ from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
 from progressbar import progressbar
 
 
-# INPUT_DIR = "../tests/test_data/marble_cmip5"
+# INPUT_DIR = "./tests/test_data/marble_cmip5"
 INPUT_DIR = "/data/marble"
-# OUTPUT_DIR = "../output_examples/crunched_files"
+# OUTPUT_DIR = "./output_examples/crunched_files"
 OUTPUT_DIR = "/data/marble/sandbox/znicholls/cmip5_crunched"
 LAND_MASK_THRESHOLD = 50
 VAR_TO_CRUNCH = "tas"
@@ -91,10 +91,14 @@ def crunch_data(
                 header = "Exception"
                 exc_string = header + "\n" + "-" * len(header) + "\n" + str(exc)
 
+                # ideally would write to a logger here
                 failures.append("{}\n{}\n{}".format(dirpath, filenames, exc_string))
                 continue
 
-    print("Failures\n========\n{}".format("\n\n".join(failures)))
+    failures_string = "Failures\n========\n{}".format("\n\n".join(failures))
+    print(failures_string)
+    with open(join(OUTPUT_DIR, "..", "{}_failures.txt".format(output_prefix)), "w") as ef:
+        ef.write(failures_string)
 
 
 crunch_data(
