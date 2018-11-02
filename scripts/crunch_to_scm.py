@@ -96,7 +96,9 @@ def crunch_data(
 
     failures_string = "Failures\n========\n{}".format("\n\n".join(failures))
     print(failures_string)
-    with open(join(OUTPUT_DIR, "..", "{}_failures.txt".format(output_prefix)), "w") as ef:
+    with open(
+        join(OUTPUT_DIR, "..", "{}_failures.txt".format(output_prefix)), "w"
+    ) as ef:
         ef.write(failures_string)
 
 
