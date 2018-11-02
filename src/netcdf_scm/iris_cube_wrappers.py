@@ -604,7 +604,6 @@ class SCMCube(object):
             warnings.warn(warn_msg)
             return hemisphere_masks
 
-
     def _get_land_mask(self, sftlf_cube=None, land_mask_threshold=50):
         """Get the land mask.
 
