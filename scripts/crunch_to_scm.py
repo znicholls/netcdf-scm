@@ -9,8 +9,8 @@ from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
 import progressbar
 
 
-INPUT_DIR = "/data/marble/cmip5"
-OUTPUT_DIR = "/data/marble/sandbox/znicholls/cmip5_crunched"
+INPUT_DIR = "./tests/test_data/marble_cmip5"
+OUTPUT_DIR = "./output_examples/crunched_files"
 LAND_MASK_THRESHOLD = 50
 VAR_TO_CRUNCH = "tas"
 
