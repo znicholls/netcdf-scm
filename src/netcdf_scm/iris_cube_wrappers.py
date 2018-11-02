@@ -581,19 +581,29 @@ class SCMCube(object):
             "World|Southern Hemisphere": ~nh_mask,
         }
 
-        land_mask = self._get_land_mask(
-            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
-        )
-        land_masks = {
-            "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
-            "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
-            "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
-            "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
-            "World|Land": land_mask,
-            "World|Ocean": ~land_mask,
-        }
+        try:
+            land_mask = self._get_land_mask(
+                sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
+            )
+            land_masks = {
+                "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
+                "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
+                "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
+                "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
+                "World|Land": land_mask,
+                "World|Ocean": ~land_mask,
+            }
 
-        return {**hemisphere_masks, **land_masks}
+            return {**hemisphere_masks, **land_masks}
+
+        except OSError:
+            warn_msg = (
+                "Land surface fraction (sftlf) data not available, only returning "
+                "global and hemispheric masks."
+            )
+            warnings.warn(warn_msg)
+            return hemisphere_masks
+
 
     def _get_land_mask(self, sftlf_cube=None, land_mask_threshold=50):
         """Get the land mask.
