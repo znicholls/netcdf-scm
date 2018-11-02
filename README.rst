@@ -53,12 +53,14 @@ If you do install it this way, we think (but aren't yet completely sure) that yo
 ::
 
   # if you're using a conda environment, make sure you're in it
+  # and that pip is installed in the conda environment
   pip install -Ur pip-requirements-minimal.txt
 
 It is also possible to install it with `pip <https://pypi.org/project/pip/>`_
 
 ::
 
+  # if you're using a virtual environment, make sure you're in it
   pip install netcdf-scm
 
 However installing with pip requires installing all of Iris_'s dependencies yourself which is not trivial.
