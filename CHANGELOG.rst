@@ -4,6 +4,12 @@ Changelog
 master
 ------
 
+- (`#15 <https://github.com/znicholls/netcdf-scm/pull/15>`_) Add ability to load from a directory with data that is saved in multiple timeslice files, also adds:
+
+    - adds regular expressions section to development part of docs
+    - adds an example script of how to crunch netCDF files into SCM csvs
+    -
+
 - (`#14 <https://github.com/znicholls/netcdf-scm/pull/14>`_) Streamline install process
 - (`#13 <https://github.com/znicholls/netcdf-scm/pull/13>`_) Add ``load_from_path`` method to ``SCMCube``
 - (`#12 <https://github.com/znicholls/netcdf-scm/pull/12>`_) Update to use output format that is compatible with pyam

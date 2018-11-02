@@ -76,7 +76,7 @@ We include links with each of these tools to starting points that we think are u
 - `Continuous integration (CI) <https://docs.travis-ci.com/user/for-beginners/>`_
     - we use `Travis CI <https://travis-ci.com/>`_ for our CI but there are a number of good providers
 - `Jupyter Notebooks <https://medium.com/codingthesmartway-com-blog/getting-started-with-jupyter-notebook-for-python-4e7082bd5d46>`_
-    - we'd recommend simply ``jupyter`` installing via pip in your virtual environment
+    - we'd recommend simply installing ``jupyter`` via pip in your virtual environment
 - Sphinx_
 
 
