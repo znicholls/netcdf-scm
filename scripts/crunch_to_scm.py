@@ -68,7 +68,9 @@ def crunch_data(
         ).start()
         for i, (dirpath, dirnames, filenames) in enumerate(walk(in_dir)):
             if not dirnames:
-                if (var_to_crunch is not None) and (var_to_crunch + os.sep not in dirpath):
+                if (var_to_crunch is not None) and (
+                    var_to_crunch + os.sep not in dirpath
+                ):
                     continue
                 format_custom_text.update_mapping(curr_dir=dirpath)
                 bar.update(i)
