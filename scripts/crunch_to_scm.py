@@ -1,9 +1,11 @@
 from os import walk, makedirs, path
 from os.path import join, isfile
+import warnings
+import time
 
 
 from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
-from progressbar import progressbar
+import progressbar
 
 
 INPUT_DIR = "./tests/test_data/marble_cmip5"
@@ -50,56 +52,74 @@ def crunch_data(
         Prefix to attach to the input filenames when saving the
         crunched csvs.
     """
-    print("Crunching:\n{}\n\n".format(in_dir))
-    failures = []
-    for (dirpath, dirnames, filenames) in progressbar(walk(in_dir)):
-        if not dirnames:
-            if (var_to_crunch is not None) and (var_to_crunch not in dirpath):
-                continue
-            try:
-                scmcube = MarbleCMIP5Cube()
-                if len(filenames) == 1:
-                    out_filename = "{}_{}".format(
-                        output_prefix, filenames[0].replace(".nc", ".csv")
+    print("Crunching:\n{}\n\nto\n{}".format(in_dir, out_dir))
+    time.sleep(0.5)  # needed to get logging bar in right place...
+    # really should use a logger here
+    with warnings.catch_warnings(record=True) as recorded_warns:
+        failures = []
+        format_custom_text = progressbar.FormatCustomText(
+            "Current directory :: %(curr_dir)-400s",
+            {"curr_dir": "uninitialised"},
+        )
+        bar = progressbar.ProgressBar(
+            widgets=[progressbar.SimpleProgress(), ". ", format_custom_text],
+            max_value=len([w for w in walk(in_dir)]),
+            prefix="Visiting directory ",
+        ).start()
+        for i, (dirpath, dirnames, filenames) in enumerate(walk(in_dir)):
+            format_custom_text.update_mapping(curr_dir=dirpath)
+            bar.update(i)
+            if not dirnames:
+                if (var_to_crunch is not None) and (var_to_crunch not in dirpath):
+                    continue
+                try:
+                    scmcube = MarbleCMIP5Cube()
+                    if len(filenames) == 1:
+                        out_filename = "{}_{}".format(
+                            output_prefix, filenames[0].replace(".nc", ".csv")
+                        )
+                        outfile = join(out_dir, out_filename)
+                        if not force_regeneration and isfile(outfile):
+                            continue
+                        scmcube.load_data_from_path(join(dirpath, filenames[0]))
+                    else:
+                        scmcube.load_data_in_directory(dirpath)
+                        out_filename = "{}_{}".format(
+                            output_prefix,
+                            scmcube._get_data_filename().replace(".nc", ".csv"),
+                        )
+                        outfile = join(out_dir, out_filename)
+                        if not force_regeneration and isfile(outfile):
+                            continue
+
+                    magicc_df = scmcube.get_scm_timeseries(
+                        land_mask_threshold=land_mask_threshold
                     )
-                    outfile = join(out_dir, out_filename)
-                    if not force_regeneration and isfile(outfile):
-                        continue
-                    scmcube.load_data_from_path(join(dirpath, filenames[0]))
-                else:
-                    scmcube.load_data_in_directory(dirpath)
-                    out_filename = "{}_{}".format(
-                        output_prefix,
-                        scmcube._get_data_filename().replace(".nc", ".csv"),
+                    magicc_df.df = magicc_df.df.pivot_table(
+                        values="value",
+                        index=["time"],
+                        columns=["variable", "unit", "region", "model", "scenario"],
                     )
-                    outfile = join(out_dir, out_filename)
-                    if not force_regeneration and isfile(outfile):
-                        continue
 
-                magicc_df = scmcube.get_scm_timeseries(
-                    land_mask_threshold=land_mask_threshold
-                )
-                magicc_df.df = magicc_df.df.pivot_table(
-                    values="value",
-                    index=["time"],
-                    columns=["variable", "unit", "region", "model", "scenario"],
-                )
+                    magicc_df.df.to_csv(outfile)
+                except Exception as exc:
+                    header = "Exception"
+                    exc_string = header + "\n" + "-" * len(header) + "\n" + str(exc)
 
-                magicc_df.df.to_csv(outfile)
-            except Exception as exc:
-                header = "Exception"
-                exc_string = header + "\n" + "-" * len(header) + "\n" + str(exc)
+                    # ideally would write to a logger here
+                    failures.append("{}\n{}\n{}".format(dirpath, filenames, exc_string))
+                    continue
+        bar.finish()
 
-                # ideally would write to a logger here
-                failures.append("{}\n{}\n{}".format(dirpath, filenames, exc_string))
-                continue
-
-    failures_string = "Failures\n========\n{}".format("\n\n".join(failures))
-    print(failures_string)
-    with open(
-        join(OUTPUT_DIR, "..", "{}_failures.txt".format(output_prefix)), "w"
-    ) as ef:
-        ef.write(failures_string)
+    header_underline = "========"
+    msg_underline = "--------"
+    warnings_together = "\n\n{}\n\n".format(msg_underline).join([str(rw.message) for rw in recorded_warns])
+    warnings_string = "Warnings\n{}\n{}".format(header_underline, warnings_together)
+    failures_string = "Failures\n========\n{}".format(msg_underline.join(failures))
+    output_string = "{}\n\n{}".format(failures_string, warnings_string)
+    print(output_string)
+    with open(join(OUTPUT_DIR, "..", "{}_failures_and_warnings.txt".format(output_prefix)), "w") as ef:
+        ef.write(output_string)
 
 
 crunch_data(
