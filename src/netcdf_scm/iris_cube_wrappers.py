@@ -100,10 +100,14 @@ class SCMCube(object):
 
     @property
     def timestamp_definitions(self):
-        """dict: Definition of valid timestamp information and corresponding key values
+        """dict: Definition of valid timestamp information and corresponding key values.
 
-        Each key is the length of the timestamp. Each value is itself a dictionary,
-        with keys:
+        This follows the CMIP standards where time strings must be one of the
+        following: YYYY, YYYYMM, YYYYMMDD, YYYYMMDDHH or one of the previous combined
+        with a hyphen e.g. YYYY-YYYY.
+
+        Each key in the definitions dictionary is the length of the timestamp. Each
+        value is itself a dictionary, with keys:
 
         - datetime_str: the string required to convert a timestamp of this length into a datetime using ``datetime.datetime.strptime``
         - generic_regexp: a regular expression which will match timestamps in this format
@@ -129,8 +133,38 @@ class SCMCube(object):
 
         return self._timestamp_definitions
 
+    @property
+    def lon_dim(self):
+        """:obj:`iris.coords.DimCoord` The longitude dimension of the data.
+        """
+        return self.cube.coord(self.lon_name)
+
+    @property
+    def lon_dim_number(self):
+        """int: The index which corresponds to the longitude dimension.
+
+        e.g. if longitude is the third dimension of the data, then
+        ``self.lon_dim_number`` will be ``2`` (Python is zero-indexed).
+        """
+        return self.cube.coord_dims(self.lon_name)[0]
+
+    @property
+    def lat_dim(self):
+        """:obj:`iris.coords.DimCoord` The latitude dimension of the data.
+        """
+        return self.cube.coord(self.lat_name)
+
+    @property
+    def lat_dim_number(self):
+        """int: The index which corresponds to the latitude dimension.
+
+        e.g. if latitude is the first dimension of the data, then
+        ``self.lat_dim_number`` will be ``0`` (Python is zero-indexed).
+        """
+        return self.cube.coord_dims(self.lat_name)[0]
+
     def load_data_from_path(self, filepath):
-        """Load data from a path
+        """Load data from a path.
 
         If you are using the ``SCMCube`` class directly, this method simply loads the
         path into an iris cube which can be accessed through ``self.cube``.
@@ -143,28 +177,28 @@ class SCMCube(object):
         Parameters
         ----------
         filepath : str
-            The filepath from which to load the data
+            The filepath from which to load the data.
         """
         self.cube = iris.load_cube(filepath)
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath=None):
-        """Get the set of identifiers to use to load data from a filepath
+        """Get the set of identifiers to use to load data from a filepath.
 
         Parameters
         ----------
         filepath : str
-            The filepath from which to load the data
+            The filepath from which to load the data.
 
         Returns
         -------
         dict
             Set of arguments which can be passed to
-            ``self.load_data_from_identifiers`` to load the data in the filepath
+            ``self.load_data_from_identifiers`` to load the data in the filepath.
         """
         raise NotImplementedError()
 
     def load_data_in_directory(self, directory=None):
-        """Load data in a directory
+        """Load data in a directory.
 
         The data is loaded into an iris cube which can be accessed through
         ``self.cube``.
@@ -188,7 +222,7 @@ class SCMCube(object):
         Parameters
         ----------
         directory : str
-            Directory from which to load the data
+            Directory from which to load the data.
 
         Raises
         ------
@@ -279,7 +313,7 @@ class SCMCube(object):
         }
 
     def load_data_from_identifiers(self, **kwargs):
-        """Load data using key identifiers
+        """Load data using key identifiers.
 
         The identifiers are used to determine the path of the file to load. The file
         is then loaded into an iris cube which can be accessed through ``self.cube``.
@@ -332,7 +366,7 @@ class SCMCube(object):
             measure="area",
         )
         self.cube.add_cell_measure(
-            areacella_measure, data_dims=[self._lat_dim_number, self._lon_dim_number]
+            areacella_measure, data_dims=[self.lat_dim_number, self.lon_dim_number]
         )
 
     def get_filepath_from_load_data_from_identifiers_args(self, **kwargs):
@@ -355,7 +389,7 @@ class SCMCube(object):
         raise NotImplementedError()
 
     def get_variable_constraint_from_load_data_from_identifiers_args(self, **kwargs):
-        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``
+        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
 
         Parameters
         ----------
@@ -394,7 +428,7 @@ class SCMCube(object):
         Returns
         -------
         str
-            name of the data file from which this cube has been/will be loaded
+            name of the data file from which this cube has been/will be loaded.
         """
         raise NotImplementedError()
 
@@ -534,7 +568,7 @@ class SCMCube(object):
         return {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
 
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
-        """Get the scm masks
+        """Get the scm masks.
 
         Returns
         -------
@@ -558,7 +592,7 @@ class SCMCube(object):
         }
 
     def _get_land_mask(self, sftlf_cube=None, land_mask_threshold=50):
-        """Get the land mask
+        """Get the land mask.
 
         Returns
         -------
@@ -590,10 +624,10 @@ class SCMCube(object):
         broadcast this onto a 3x4x2 array where each slice in the broadcasted array's
         time dimension is identical to the input array.
         """
-        lat_length = len(self._lat_dim.points)
-        lon_length = len(self._lon_dim.points)
+        lat_length = len(self.lat_dim.points)
+        lon_length = len(self.lon_dim.points)
 
-        dim_order = [self._lat_dim_number, self._lon_dim_number]
+        dim_order = [self.lat_dim_number, self.lon_dim_number]
         base_shape = (lat_length, lon_length)
         if array_in.shape != base_shape:
             array_in = np.transpose(array_in)
@@ -660,22 +694,6 @@ class SCMCube(object):
         except OSError as exc:
             warnings.warn(str(exc))
 
-    @property
-    def _lon_dim(self):
-        return self.cube.coord(self.lon_name)
-
-    @property
-    def _lon_dim_number(self):
-        return self.cube.coord_dims(self.lon_name)[0]
-
-    @property
-    def _lat_dim(self):
-        return self.cube.coord(self.lat_name)
-
-    @property
-    def _lat_dim_number(self):
-        return self.cube.coord_dims(self.lat_name)[0]
-
     def _convert_scm_timeseries_cubes_to_openscmdata(
         self, scm_timeseries_cubes, out_calendar=None
     ):
@@ -739,22 +757,17 @@ class SCMCube(object):
         return pd.Index(time_axes[0], dtype="object", name="time"), out_calendar
 
     def _check_time_period_valid(self, time_period_str):
-        """Check that a time_period identifier string is valid
-
-        [Move this explanation next to the _timestamp_definitions attribute]
-        This checks the string against the CMIP standards where time strings must be
-        one of the following: YYYY, YYYYMM, YYYYMMDD, YYYYMMDDHH or one of the
-        previous combined with a hyphen e.g. YYYY-YYYY.
+        """Check that a time_period identifier string is valid.
 
         Parameters
         ----------
         time_period_str : str
-            Time period string to check
+            Time period string to check.
 
         Raises
         ------
         ValueError
-            If the time period is not in a valid format
+            If the time period is not in a valid format.
         """
         if "_" in time_period_str:
             self._raise_time_period_invalid_error(time_period_str)
@@ -790,7 +803,7 @@ class SCMCube(object):
 
 
 class MarbleCMIP5Cube(SCMCube):
-    """Subclass of `SCMCube` which can be used with the `cmip5` directory on marble
+    """Subclass of `SCMCube` which can be used with the `cmip5` directory on marble.
 
     This directory structure is very similar, but not quite identical, to the
     recommended CMIP5 directory structure described in section 3.1 of the `CMIP5 Data
@@ -799,12 +812,12 @@ class MarbleCMIP5Cube(SCMCube):
     """
 
     def load_data_from_path(self, filepath):
-        """Load data from a path
+        """Load data from a path.
 
         Parameters
         ----------
         filepath : str
-            The filepath from which to load the data
+            The filepath from which to load the data.
         """
         load_data_from_identifiers_args = self.get_load_data_from_identifiers_args_from_filepath(
             filepath
@@ -820,7 +833,7 @@ class MarbleCMIP5Cube(SCMCube):
         self.time_period = self.time_period_separator.join([strt, end])
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
-        """Get the set of identifiers to use to load data from a filepath
+        """Get the set of identifiers to use to load data from a filepath.
 
         Here we use the categories given in the `CMIP5 Data Reference Syntax
         <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
@@ -830,13 +843,13 @@ class MarbleCMIP5Cube(SCMCube):
         Parameters
         ----------
         filepath : str
-            The filepath from which to load the data
+            The filepath from which to load the data.
 
         Returns
         -------
         dict
             Set of arguments which can be passed to
-            ``self.load_data_from_identifiers`` to load the data in the filepath
+            ``self.load_data_from_identifiers`` to load the data in the filepath.
         """
         dirpath_bits = dirname(filepath).split(os.sep)
         if len(dirpath_bits) < 6:
@@ -963,7 +976,7 @@ class MarbleCMIP5Cube(SCMCube):
     def get_variable_constraint_from_load_data_from_identifiers_args(
         self, variable_name="tas", **kwargs
     ):
-        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``
+        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
 
         Parameters
         ----------
