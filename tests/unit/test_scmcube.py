@@ -396,8 +396,15 @@ class TestSCMCube(object):
             "World|Northern Hemisphere": nh_mask,
             "World|Southern Hemisphere": ~nh_mask,
         }
+        expected_warn = (
+            "Land surface fraction (sftlf) data not available, only returning "
+            "global and hemispheric masks."
+        )
+        with warnings.catch_warnings(record=True) as no_sftlf_warns:
+            result = test_cube._get_scm_masks()
 
-        result = test_cube._get_scm_masks()
+        assert len(no_sftlf_warns) == 1
+        assert str(no_sftlf_warns[0].message) == expected_warn
 
         for label, array in expected.items():
             np.testing.assert_array_equal(array, result[label])
