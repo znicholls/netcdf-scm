@@ -18,8 +18,11 @@ if not path.exists(OUTPUT_DIR):
 
 
 def crunch_data(
-    in_dir, out_dir, var_to_crunch=None,
-    land_mask_threshold=50, force_regeneration=False,
+    in_dir,
+    out_dir,
+    var_to_crunch=None,
+    land_mask_threshold=50,
+    force_regeneration=False,
     output_prefix="scm_crunched",
 ):
     """Crunch data in a directory structure to OpenSCM csvs
@@ -58,8 +61,7 @@ def crunch_data(
                 scmcube = MarbleCMIP5Cube()
                 if len(filenames) == 1:
                     out_filename = "{}_{}".format(
-                        output_prefix,
-                        filenames[0].replace(".nc", ".csv")
+                        output_prefix, filenames[0].replace(".nc", ".csv")
                     )
                     outfile = join(out_dir, out_filename)
                     if not force_regeneration and isfile(outfile):
@@ -69,7 +71,7 @@ def crunch_data(
                     scmcube.load_data_in_directory(dirpath)
                     out_filename = "{}_{}".format(
                         output_prefix,
-                        scmcube._get_data_filename().replace(".nc", ".csv")
+                        scmcube._get_data_filename().replace(".nc", ".csv"),
                     )
                     outfile = join(out_dir, out_filename)
                     if not force_regeneration and isfile(outfile):
@@ -96,7 +98,10 @@ def crunch_data(
 
 
 crunch_data(
-    INPUT_DIR, OUTPUT_DIR, var_to_crunch=VAR_TO_CRUNCH,
-    land_mask_threshold=LAND_MASK_THRESHOLD, force_regeneration=True,
+    INPUT_DIR,
+    OUTPUT_DIR,
+    var_to_crunch=VAR_TO_CRUNCH,
+    land_mask_threshold=LAND_MASK_THRESHOLD,
+    force_regeneration=True,
     output_prefix="scm_crunched",
 )
