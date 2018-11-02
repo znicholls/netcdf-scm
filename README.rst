@@ -44,6 +44,7 @@ Installation
 The easiest way to install NetCDF-SCM is with `conda <https://conda.io/miniconda.html>`_
 
 ::
+
     # if you're using a conda environment, make sure you're in it
     conda install -c conda-forge netcdf-scm
 
