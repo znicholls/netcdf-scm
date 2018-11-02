@@ -428,7 +428,7 @@ class TestSCMCube(object):
         expected = broadcast_to_shape(
             np.where(original_data > test_threshold, False, True),
             test_cube.cube.shape,
-            [test_cube._lat_dim_number, test_cube._lon_dim_number],
+            [test_cube.lat_dim_number, test_cube.lon_dim_number],
         )
         np.testing.assert_array_equal(result, expected)
 
@@ -471,7 +471,7 @@ class TestSCMCube(object):
         expected = broadcast_to_shape(
             expected_base,
             test_cube.cube.shape,
-            [test_cube._lat_dim_number, test_cube._lon_dim_number],
+            [test_cube.lat_dim_number, test_cube.lon_dim_number],
         )
 
         np.testing.assert_array_equal(result, expected)
@@ -487,7 +487,7 @@ class TestSCMCube(object):
         expected = broadcast_to_shape(
             test_sftlf_cube.cube.data,
             test_cube.cube.shape,
-            [test_cube._lat_dim_number, test_cube._lon_dim_number],
+            [test_cube.lat_dim_number, test_cube.lon_dim_number],
         )
 
         # we can use test_sftlf_cube here as all we need is an array of the
