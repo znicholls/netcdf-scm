@@ -100,7 +100,7 @@ class TestSCMCubeIntegration(object):
         mocked_weights = broadcast_to_shape(
             np.array([[1, 2, 3, 4], [1, 4, 8, 9], [0, 4, 1, 9]]),
             test_cube.cube.shape,
-            [test_cube._lat_dim_number, test_cube._lon_dim_number],
+            [test_cube.lat_dim_number, test_cube.lon_dim_number],
         )
 
         test_cube._get_area_weights = MagicMock(return_value=mocked_weights)
