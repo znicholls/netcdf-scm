@@ -700,27 +700,31 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         )
         test_cube.load_data_from_identifiers.assert_called_with(**tids)
 
-
     @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
-    @pytest.mark.parametrize("files_in_path, expected_time_period", [
-        (
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-            ],
-            "200601-203812",
-        ),
-        (
-            [
-                "tas_Amon_HadCM3_rcp45_r1i1p1_103601-103812.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_003101-103512.nc",
-                "tas_Amon_HadCM3_rcp45_r1i1p1_000601-003012.nc",
-            ],
-            "000601-103812",
-        ),
-    ])
-    def test_add_time_period_from_files_in_directory(self, mock_listdir, files_in_path, expected_time_period, test_cube):
+    @pytest.mark.parametrize(
+        "files_in_path, expected_time_period",
+        [
+            (
+                [
+                    "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
+                    "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                    "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
+                ],
+                "200601-203812",
+            ),
+            (
+                [
+                    "tas_Amon_HadCM3_rcp45_r1i1p1_103601-103812.nc",
+                    "tas_Amon_HadCM3_rcp45_r1i1p1_003101-103512.nc",
+                    "tas_Amon_HadCM3_rcp45_r1i1p1_000601-003012.nc",
+                ],
+                "000601-103812",
+            ),
+        ],
+    )
+    def test_add_time_period_from_files_in_directory(
+        self, mock_listdir, files_in_path, expected_time_period, test_cube
+    ):
         mock_listdir.return_value = files_in_path
         tdir = "mocked"
         test_cube._check_data_names_in_same_directory = MagicMock()
@@ -729,7 +733,6 @@ class TestMarbleCMIP5Cube(TestSCMCube):
 
         assert test_cube.time_period == expected_time_period
         test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
-
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
         tkwargs_list = [

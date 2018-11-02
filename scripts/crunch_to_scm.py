@@ -58,8 +58,7 @@ def crunch_data(
     with warnings.catch_warnings(record=True) as recorded_warns:
         failures = []
         format_custom_text = progressbar.FormatCustomText(
-            "Current directory :: %(curr_dir)-400s",
-            {"curr_dir": "uninitialised"},
+            "Current directory :: %(curr_dir)-400s", {"curr_dir": "uninitialised"}
         )
         bar = progressbar.ProgressBar(
             widgets=[progressbar.SimpleProgress(), ". ", format_custom_text],
@@ -113,12 +112,17 @@ def crunch_data(
 
     header_underline = "========"
     msg_underline = "--------"
-    warnings_together = "\n\n{}\n\n".format(msg_underline).join([str(rw.message) for rw in recorded_warns])
+    warnings_together = "\n\n{}\n\n".format(msg_underline).join(
+        [str(rw.message) for rw in recorded_warns]
+    )
     warnings_string = "Warnings\n{}\n{}".format(header_underline, warnings_together)
     failures_string = "Failures\n========\n{}".format(msg_underline.join(failures))
     output_string = "{}\n\n{}".format(failures_string, warnings_string)
     print(output_string)
-    with open(join(OUTPUT_DIR, "..", "{}_failures_and_warnings.txt".format(output_prefix)), "w") as ef:
+    with open(
+        join(OUTPUT_DIR, "..", "{}_failures_and_warnings.txt".format(output_prefix)),
+        "w",
+    ) as ef:
         ef.write(output_string)
 
 
