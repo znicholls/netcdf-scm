@@ -1,3 +1,4 @@
+import os
 from os import walk, makedirs, path
 from os.path import join, isfile
 import warnings
@@ -8,8 +9,8 @@ from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
 import progressbar
 
 
-INPUT_DIR = "./tests/test_data/marble_cmip5"
-OUTPUT_DIR = "./output_examples/crunched_files"
+INPUT_DIR = "/data/marble/cmip5"
+OUTPUT_DIR = "/data/marble/sandbox/znicholls/cmip5_crunched"
 LAND_MASK_THRESHOLD = 50
 VAR_TO_CRUNCH = "tas"
 
@@ -66,11 +67,11 @@ def crunch_data(
             prefix="Visiting directory ",
         ).start()
         for i, (dirpath, dirnames, filenames) in enumerate(walk(in_dir)):
-            format_custom_text.update_mapping(curr_dir=dirpath)
-            bar.update(i)
             if not dirnames:
-                if (var_to_crunch is not None) and (var_to_crunch not in dirpath):
+                if (var_to_crunch is not None) and (var_to_crunch + os.sep not in dirpath):
                     continue
+                format_custom_text.update_mapping(curr_dir=dirpath)
+                bar.update(i)
                 try:
                     scmcube = MarbleCMIP5Cube()
                     if len(filenames) == 1:
