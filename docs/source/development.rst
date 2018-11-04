@@ -76,7 +76,7 @@ We include links with each of these tools to starting points that we think are u
 - `Continuous integration (CI) <https://docs.travis-ci.com/user/for-beginners/>`_
     - we use `Travis CI <https://travis-ci.com/>`_ for our CI but there are a number of good providers
 - `Jupyter Notebooks <https://medium.com/codingthesmartway-com-blog/getting-started-with-jupyter-notebook-for-python-4e7082bd5d46>`_
-    - we'd recommend simply installing ``jupyter`` via pip in your virtual environment
+    - we'd recommend simply installing ``jupyter`` (``conda install jupyter``) in your virtual environment
 - Sphinx_
 
 
@@ -116,7 +116,7 @@ To get ourselves started with Sphinx, we started with `this example <https://pyt
 Gotchas
 ~~~~~~~
 
-To get Sphinx to work completely, you require `Latexmk <https://mg.readthedocs.io/latexmk.html>`_.
+To get Sphinx to generate pdfs (rarely worth the hassle), you require `Latexmk <https://mg.readthedocs.io/latexmk.html>`_.
 On a Mac this can be installed with ``sudo tlmgr install latexmk``.
 You will most likely also need to install some other packages (if you don't have the full distribution).
 You can check which package contains any missing files with ``tlmgr search --global --file [filename]``.
