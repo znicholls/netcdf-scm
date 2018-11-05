@@ -1,3 +1,5 @@
+.. development:
+
 Development
 ===========
 
@@ -154,7 +156,7 @@ PyPI
 #. ``make publish-on-testpypi``
 #. Go to `test PyPI <https://test.pypi.org/project/netcdf-scm/>`_ and check that the new release is as intended. If it isn't, stop and debug.
 #. ``make publish-on-pypi``
-#. Go to `PyPI <https://pypi.org/project/netcdf-scm/>`_ and check that the new release is as intended.
+#. Go to `NetCDF-SCM's PyPI`_ and check that the new release is as intended.
 
 
 Conda
@@ -166,23 +168,23 @@ Conda
 
     - version number in line 1 (don't include the 'v' in the version tag)
     - the build number to zero (you should only be here if releasing a new version)
+    - update ``sha256`` in line 9 (you can get the sha from `NetCDF-SCM's PyPI`_ by clicking on 'Download files' on the left and then clicking on 'SHA256' of the ``.tar.gz`` to copy it to the clipboard)
 
+#. ``git add .``
+#. ``git commit -m "Update to vX.Y.Z"``
+#. ``git push``
 #. Make a PR into the `NetCDF-SCM conda feedstock`_
 #. If the PR passes, merge
 #. Check https://anaconda.org/conda-forge/netcdf-scm to double check that the version has increased
 
+.. _`NetCDF-SCM's PyPI`: https://pypi.org/project/netcdf-scm/
 .. _`NetCDF-SCM conda feedstock`: https://github.com/conda-forge/netcdf-scm-feedstock
 
-
-    @echo 'Checklist:'
-    @echo '- version number'
-    @echo '- sha'
-    @echo '- README.rst badge'
-    @echo '- CHANGELOG.rst up to date'
 
 Last steps
 ~~~~~~~~~~
 
+#. If you want to archive this version, follow the `instructions here <https://help.github.com/articles/creating-releases/>`_
 #. Update any badges in ``README.rst`` that don't update automatically
 #. ``git add .``
 #. ``git commit -m "Update README badges"``
@@ -203,7 +205,7 @@ We want to ensure that our code can be used and shared as easily as possible.
 Whilst we love transparency, we didn't want to **force** all future users to also comply with a stronger license such as AGPL.
 Hence the choice we made.
 
-We recommend [Morin et al. 2012]_ for more information for scientists about open-source software licenses.
+We recommend `Morin et al. 2012 <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1002598>`_ for more information for scientists about open-source software licenses.
 
 
 .. _Sphinx: http://www.sphinx-doc.org/en/master/
