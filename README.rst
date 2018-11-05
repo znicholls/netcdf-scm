@@ -8,19 +8,30 @@
 NetCDF SCM
 ==========
 
-**Warning: `netcdf_scm` is still under heavy development so things are likely to change fast**
++--------+-------------------+-------------+-----------+--------+-----------------+
+| Basics | |Python Versions| | |Platforms| | |License| | |Docs| | |Conda install| |
++--------+-------------------+-------------+-----------+--------+-----------------+
 
-+----------------+-----------+--------+--------+-------------------+--------------+
-| |Build Status| | |Codecov| | |Docs| | |PyPI| | |Python Versions| | |JOSS paper| |
-+----------------+-----------+--------+--------+-------------------+--------------+
++-----------+--------------+----------+
+| Citations | |JOSS paper| | |Zenodo| |
++-----------+--------------+----------+
 
-+-------------+------------------+---------------+------------------------------+----------------+----------+-----------+
-| |Downloads| | |Latest Version| | |Last Commit| | |Commits Since Last Release| | |Contributors| | |Zenodo| | |License| |
-+-------------+------------------+---------------+------------------------------+----------------+----------+-----------+
++-------------------+----------------+-----------+
+| Repository health | |Build Status| | |Codecov| |
++-------------------+----------------+-----------+
+
++-----------------+------------+--------+------------------+-------------+
+| Latest releases | |Anaconda| | |PyPI| | |Latest Version| | |Downloads| |
++-----------------+------------+--------+------------------+-------------+
+
++-----------------+----------------+---------------+------------------------------+
+| Latest activity | |Contributors| | |Last Commit| | |Commits Since Last Release| |
++-----------------+----------------+---------------+------------------------------+
 
 .. sec-begin-index
 
-NetCDF SCM is a package of Python wrappers for processing netCDF files for use with simple climate models, built on top of the Iris_ package.
+NetCDF SCM is a Python package for processing netCDF files.
+It focusses on metrics which are relevant to simple climate models and is built on top of the Iris_ package.
 
 .. _Iris: https://github.com/SciTools/iris
 
@@ -32,7 +43,7 @@ License
 .. sec-begin-license
 
 NetCDF-SCM is free software under a BSD 2-Clause License, see `LICENSE <./LICENSE>`_.
-If you make any use of NetCDF-SCM, please cite `The Journal of Open Source Software (JOSS) <http://joss.theoj.org/>`_ paper [insert reference here when written...]:
+If you make any use of NetCDF-SCM, please cite `The Journal of Open Source Software (JOSS) <http://joss.theoj.org/>`_ paper [insert reference here when written...] as well as the relevant `Zenodo release <https://zenodo.org/search?page=1&size=20&q=netcdf-scm>`_.
 
 .. sec-end-license
 
@@ -75,6 +86,11 @@ Documentation
 Documentation can be found at `Read the Docs <https://netcdf-scm.readthedocs.io/en/latest/>`_.
 
 
+Contributing
+------------
+
+Please see the `Development section of the docs <https://netcdf-scm.readthedocs.io/en/latest/development.html>`_.
+
 .. |Build Status| image:: https://travis-ci.org/znicholls/netcdf-scm.svg?branch=master
     :target: https://travis-ci.org/znicholls/netcdf-scm
 .. |Docs| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
@@ -83,6 +99,12 @@ Documentation can be found at `Read the Docs <https://netcdf-scm.readthedocs.io/
     :target: https://codecov.io/gh/znicholls/netcdf-scm
 .. |PyPI| image:: https://img.shields.io/pypi/v/netcdf-scm.svg
     :target: https://pypi.org/project/netcdf-scm/
+.. |Anaconda| image:: https://anaconda.org/conda-forge/netcdf-scm/badges/version.svg
+    :target: https://anaconda.org/conda-forge/netcdf-scm
+.. |Platforms| image:: https://anaconda.org/conda-forge/netcdf-scm/badges/platforms.svg
+    :target: https://anaconda.org/conda-forge/netcdf-scm
+.. |Conda install| image:: https://anaconda.org/conda-forge/netcdf-scm/badges/installer/conda.svg
+    :target: https://conda.anaconda.org/conda-forge
 .. |Python Versions| image:: https://img.shields.io/pypi/pyversions/netcdf-scm.svg
     :target: https://pypi.org/project/netcdf-scm/
 .. |JOSS Paper| image:: https://joss.theoj.org/papers/paper-code/status.svg
@@ -97,8 +119,8 @@ Documentation can be found at `Read the Docs <https://netcdf-scm.readthedocs.io/
     :target: https://github.com/znicholls/netcdf-scm/commits/master
 .. |Contributors| image:: https://img.shields.io/github/contributors/znicholls/netcdf-scm.svg
     :target: https://github.com/znicholls/netcdf-scm/graphs/contributors
-.. |Zenodo| image:: https://zenodo.org/badge/doi-no.svg
-    :target: https://zenodo.org/badge/latestdoi/doi-no
+.. |Zenodo| image:: https://zenodo.org/badge/151593566.svg
+    :target: https://zenodo.org/badge/latestdoi/151593566
 .. |License| image:: https://img.shields.io/github/license/znicholls/netcdf-scm.svg
     :target: https://github.com/znicholls/netcdf-scm/blob/master/LICENSE
 
