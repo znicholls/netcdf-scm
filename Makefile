@@ -78,18 +78,11 @@ black:
 
 .PHONY: new_release
 new_release:
-	@echo 'For a new release on PyPI:'
-	@echo 'git tag vX.Y.Z'
-	@echo 'make publish-on-pypi'
+	@echo 'See instructions in the Releasing sub-section of the Development section of the docs'
 
 .PHONY: release-on-conda
 release-on-conda:
-	@echo 'For now, this is all very manual'
-	@echo 'Checklist:'
-	@echo '- version number'
-	@echo '- sha'
-	@echo '- README.rst badge'
-	@echo '- CHANGELOG.rst up to date'
+	@echo 'See instructions in the Releasing sub-section of the Development section of the docs'
 
 # first time setup, follow this https://blog.jetbrains.com/pycharm/2017/05/how-to-publish-your-package-on-pypi/
 # then this works

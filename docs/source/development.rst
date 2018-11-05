@@ -4,6 +4,7 @@ Development
 If you're interested in contributing to NetCDF-SCM, we'd love to have you on board!
 This section of the docs details how to get setup to contribute and how best to communicate.
 
+.. contents:: :local:
 
 Contributing
 ------------
@@ -133,7 +134,59 @@ For more information on these, `here is the full guide <https://numpydoc.readthe
 Releasing
 ---------
 
-[To be written, once I've done it]
+The steps to release a new version of NetCDF-SCM are shown below.
+Please do all the steps below and all the steps for both release platforms.
+
+#. Update ``CHANGELOG.rst``:
+
+    - add a header for the new version between ``master`` and the latest bullet point
+    - this should leave the section underneath the master header empty
+
+#. ``git add .``
+#. ``git commit -m "Prepare for release of vX.Y.Z"``
+#. ``git push``
+#. ``git tag vX.Y.Z``
+#. ``git push --tags``
+
+PyPI
+~~~~
+
+#. ``make publish-on-testpypi``
+#. Go to `test PyPI <https://test.pypi.org/project/netcdf-scm/>`_ and check that the new release is as intended. If it isn't, stop and debug.
+#. ``make publish-on-pypi``
+#. Go to `PyPI <https://pypi.org/project/netcdf-scm/>`_ and check that the new release is as intended.
+
+
+Conda
+~~~~~
+
+#. If you haven't already, fork the `NetCDF-SCM conda feedstock`_.
+#. Create a new branch in the feedstock for the version you want to bump to.
+#. Edit ``recipe/meta.yaml`` and update:
+
+    - version number in line 1 (don't include the 'v' in the version tag)
+    - the build number to zero (you should only be here if releasing a new version)
+
+#. Make a PR into the `NetCDF-SCM conda feedstock`_
+#. If the PR passes, merge
+#. Check https://anaconda.org/conda-forge/netcdf-scm to double check that the version has increased
+
+.. _`NetCDF-SCM conda feedstock`: https://github.com/conda-forge/netcdf-scm-feedstock
+
+
+    @echo 'Checklist:'
+    @echo '- version number'
+    @echo '- sha'
+    @echo '- README.rst badge'
+    @echo '- CHANGELOG.rst up to date'
+
+Last steps
+~~~~~~~~~~
+
+#. Update any badges in ``README.rst`` that don't update automatically
+#. ``git add .``
+#. ``git commit -m "Update README badges"``
+#. ``git push``
 
 
 Why is there a ``Makefile`` in a pure Python repository?

@@ -4,6 +4,10 @@ Changelog
 master
 ------
 
+
+v0.3.1
+------
+
 - (`#17 <https://github.com/znicholls/netcdf-scm/pull/17>`_) Update to crunch global and hemispheric means even if land-surface fraction data is missing
 - (`#16 <https://github.com/znicholls/netcdf-scm/pull/16>`_) Tidy up experimental crunching script
 - (`#15 <https://github.com/znicholls/netcdf-scm/pull/15>`_) Add ability to load from a directory with data that is saved in multiple timeslice files, also adds:
