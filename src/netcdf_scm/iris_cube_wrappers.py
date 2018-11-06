@@ -841,6 +841,9 @@ class _CMIPCube(SCMCube):
         end = self._get_timestamp_bits_from_filename(loaded_files[-1])["timeend_str"]
         self.time_period = self.time_period_separator.join([strt, end])
 
+    def _raise_filepath_error(self, filepath):
+        raise ValueError("Filepath does not look right: {}".format(filepath))
+
 
 class MarbleCMIP5Cube(_CMIPCube):
     """Subclass of `SCMCube` which can be used with the ``cmip5`` directory on marble.
@@ -852,11 +855,6 @@ class MarbleCMIP5Cube(_CMIPCube):
     """
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
         """Get the set of identifiers to use to load data from a filepath.
-
-        Here we use the categories given in the `CMIP5 Data Reference Syntax
-        <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
-        However the terminology and conventions aren't always exactly the same on
-        marble so we require our custom implementation on top.
 
         Parameters
         ----------
@@ -899,9 +897,6 @@ class MarbleCMIP5Cube(_CMIPCube):
             "file_ext": file_ext,
         }
 
-    def _raise_filepath_error(self, filepath):
-        raise ValueError("Filepath does not look right: {}".format(filepath))
-
     def get_filepath_from_load_data_from_identifiers_args(
         self,
         root_dir=".",
@@ -915,10 +910,6 @@ class MarbleCMIP5Cube(_CMIPCube):
         file_ext=None,
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
-
-        Here we use the categories given in the `CMIP5 Data Reference Syntax
-        <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
-        However the terminology isn't always exactly the same on marble.
 
         Parameters
         ----------
@@ -1058,7 +1049,137 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
     The data must match the CMIP6 Forcing Datasets Summary, specifically the `Forcing Dataset Specifications <http://goo.gl/r8up31>`_.
     """
-    pass
+    def get_filepath_from_load_data_from_identifiers_args(
+        self,
+        root_dir=".",
+        activity_id="input4MIPs",
+        mip_era="CMIP6",
+        target_mip="ScenarioMIP",
+        institution_id="UoM",
+        source_id="UoM-REMIND-MAGPIE-ssp585-1-2-0",
+        realm="atmos",
+        frequency="yr",
+        variable_id="mole-fraction-of-carbon-dioxide-in-air",
+        grid_label="gr1-GMNHSH",
+        version="1-2-0",
+        dataset_category="GHGConcentrations",
+        time_range=None,
+        file_ext=None,
+    ):
+        """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
+
+        Parameters
+        ----------
+        root_dir : str, optional
+            The root directory of the database i.e. where the cube should start its
+            path from e.g. ``/home/users/usertim/cmip5_25x25``.
+
+        activity_id : str, optional
+            The activity_id for which we want to load data. For these cubes, will
+            almost always be "input4MIPs".
+
+        mip_era : str, optional
+            The mip_era for which we want to load data.
+
+        target_mip : str, optional
+            The target_mip for which we want to load data.
+
+        institution_id : str, optional
+            The institution_id for which we want to load data.
+
+        source_id : str, optional
+            The source_id for which we want to load data.
+
+        realm : str, optional
+            The realm for which we want to load data.
+
+        frequency : str, optional
+            The frequency for which we want to load data.
+
+        variable_id : str, optional
+            The variable_id for which we want to load data.
+
+        grid_label : str, optional
+            The grid_label for which we want to load data.
+
+        version : str, optional
+            The version for which we want to load data.
+
+        dataset_category : str, optional
+            The dataset_category for which we want to load data.
+
+        time_range : str, optional
+            The time range for which we want to load data. If ``None``, this
+            information isn't included in the filename which is useful for loading
+            metadata files which don't have a relevant time period.
+
+        file_ext : str, optional
+            The file extension of the data file we want to load.
+
+        Returns
+        -------
+        str
+            The full filepath (path and name) of the file to load.
+        """
+        inargs = locals()
+        del inargs["self"]
+        # if the step above ever gets more complicated, use the solution here
+        # http://kbyanc.blogspot.com/2007/07/python-aggregating-function-arguments.html
+
+        for name, value in inargs.items():
+            setattr(self, name, value)
+
+        source_id_elements = {"version": version, "institution_id": institution_id}
+        for key, value in source_id_elements.items():
+            assert value in source_id, "source_id must contain {}".format(key)
+
+        return join(self._get_data_directory(), self._get_data_filename())
+
+    def get_load_data_from_identifiers_args_from_filepath(self, filepath):
+        """Get the set of identifiers to use to load data from a filepath.
+
+        Parameters
+        ----------
+        filepath : str
+            The filepath from which to load the data.
+
+        Returns
+        -------
+        dict
+            Set of arguments which can be passed to
+            ``self.load_data_from_identifiers`` to load the data in the filepath.
+        """
+        import pdb
+        pdb.set_trace()
+        dirpath_bits = dirname(filepath).split(os.sep)
+        if len(dirpath_bits) < 6:
+            self._raise_filepath_error(filepath)
+
+        root_dir = os.sep.join(dirpath_bits[:-6])
+        if not root_dir:
+            root_dir = "."
+
+        filename_bits = basename(filepath).split("_")
+        if len(filename_bits) == 6:
+            time_period, file_ext = splitext(filename_bits[-1])
+            ensemble_member = filename_bits[-2]
+        elif len(filename_bits) == 5:
+            time_period = None
+            ensemble_member, file_ext = splitext(filename_bits[-1])
+        else:
+            self._raise_filepath_error(filepath)
+
+        return {
+            "root_dir": root_dir,
+            "activity": dirpath_bits[-6],
+            "variable_name": filename_bits[0],
+            "modeling_realm": filename_bits[1],
+            "model": filename_bits[2],
+            "experiment": filename_bits[3],
+            "ensemble_member": ensemble_member,
+            "time_period": time_period,
+            "file_ext": file_ext,
+        }
 
 
 class CMIP6OutputCube(_CMIPCube):
