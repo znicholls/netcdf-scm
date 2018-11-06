@@ -14,7 +14,7 @@ from iris.exceptions import ConstraintMismatchError
 from iris.util import broadcast_to_shape
 
 
-from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
+from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube, CMIP6Cube
 from conftest import (
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_TAS_FILE,
@@ -988,3 +988,7 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         result = test_cube._get_metadata_load_arguments(tmetadata_var)
 
         assert result == expected
+
+
+class TestCMIP6Cube(TestSCMCube):
+    tclass = CMIP6Cube
