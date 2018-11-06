@@ -1005,19 +1005,20 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
     tclass = CMIP6Input4MIPsCube
     troot_dir = "cmip6input4mipstestdata"
-    tactivity_id = ""
-    tmip_era
-    ttarget_mip
-    tinstitution_id
-    tsource_id
-    trealm
-    tfrequency
-    tvariable_id
-    tgrid_label
-    tversion
-    tdataset_category
-    ttime_range
-    tfile_ext
+    tactivity_id = "input4MIPs"
+    tmip_era = "CMIP6"
+    ttarget_mip = "CMIP"
+    tinstitution_id = "PCMDI"
+    tsource_id = "PCMDI-AMIP-1-1-4"
+    trealm = "ocean"
+    tfrequency = "mon"
+    tvariable_id = "tos"
+    tgrid_label = "gn"
+    tversion = "1-1-4"
+    tdataset_category = "SSTsAndSeaIce"
+    ttime_range = "2015-2100"
+    tfile_ext = ".nc"
+
 
     @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
     @pytest.mark.parametrize(
@@ -1067,9 +1068,38 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         ]
         self._run_test_get_filepath_from_load_data_from_identifiers_args(test_cube, tkwargs_list)
 
+        error_msg_base = "source_id must contain {}"
+        with pytest.raises(AssertionError, match=re.escape(error_msg_base.format("version"))):
+            test_cube.get_filepath_from_load_data_from_identifiers_args(
+                source_id="UoM-REMIND-MAGPIE-ssp585-1-2-0",
+                version="1-2-1",
+                institution_id="UoM",
+            )
+
+        with pytest.raises(AssertionError, match=re.escape(error_msg_base.format("institution_id"))):
+            test_cube.get_filepath_from_load_data_from_identifiers_args(
+                source_id="UoM-REMIND-MAGPIE-ssp585-1-2-0",
+                version="1-2-0",
+                institution_id="UoB",
+            )
+
 
 class TestCMIP6OutputCube(_CMIPCubeTester):
     tclass = CMIP6OutputCube
+    troot_dir = "cmip6input4mipstestdata"
+    tmip_era = "CMIP6"
+    tactivity_id = "DCPP"
+    tinstitution_id = "CNRM-CERFACS"
+    tsource_id = "CNRM-CM6-1"
+    texperiment_id = "dcppA-hindcast"
+    tmember_id = "s1960-r2i1p1f3"
+    ttable_id = "day"
+    tvariable_id = "pr"
+    tgrid_label = "gn"
+    tversion = "v20160215"
+    ttime_range = "198001-198412"
+    tfile_ext = ".nc"
+
 
     @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
     @pytest.mark.parametrize(
