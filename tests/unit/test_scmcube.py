@@ -14,7 +14,7 @@ from iris.exceptions import ConstraintMismatchError
 from iris.util import broadcast_to_shape
 
 
-from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube, CMIP6Cube
+from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube, CMIP6Input4MIPsCube, CMIP6OutputCube
 from conftest import (
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_TAS_FILE,
@@ -689,6 +689,42 @@ class _CMIPCubeTester(TestSCMCube):
         )
         test_cube.load_data_from_identifiers.assert_called_with(**tids)
 
+    def _run_test_add_time_period_from_files_in_directory(
+        self, mock_listdir, files_in_path, expected_time_period, test_cube
+    ):
+        mock_listdir.return_value = files_in_path
+        tdir = "mocked"
+        test_cube._check_data_names_in_same_directory = MagicMock()
+
+        test_cube._add_time_period_from_files_in_directory(tdir)
+
+        assert test_cube.time_period == expected_time_period
+        test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
+
+    def _run_test_get_filepath_from_load_data_from_identifiers_args(self, test_cube, tkwargs_list):
+        tkwargs = {k: getattr(self, "t" + k) for k in tkwargs_list}
+
+        mock_data_path = "here/there/everywhere"
+        test_cube._get_data_directory = MagicMock(return_value=mock_data_path)
+
+        mock_data_name = "here_there_file.nc"
+        test_cube._get_data_filename = MagicMock(return_value=mock_data_name)
+
+        for kwarg in tkwargs_list:
+            with pytest.raises(AttributeError):
+                getattr(test_cube, kwarg)
+
+        result = test_cube.get_filepath_from_load_data_from_identifiers_args(**tkwargs)
+        expected = join(mock_data_path, mock_data_name)
+
+        assert result == expected
+
+        for kwarg in tkwargs_list:
+            assert getattr(test_cube, kwarg) == tkwargs[kwarg]
+
+        assert test_cube._get_data_directory.call_count == 1
+        assert test_cube._get_data_filename.call_count == 1
+
 
 class TestMarbleCMIP5Cube(_CMIPCubeTester):
     tclass = MarbleCMIP5Cube
@@ -727,14 +763,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
     def test_add_time_period_from_files_in_directory(
         self, mock_listdir, files_in_path, expected_time_period, test_cube
     ):
-        mock_listdir.return_value = files_in_path
-        tdir = "mocked"
-        test_cube._check_data_names_in_same_directory = MagicMock()
-
-        test_cube._add_time_period_from_files_in_directory(tdir)
-
-        assert test_cube.time_period == expected_time_period
-        test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
+        self._run_test_add_time_period_from_files_in_directory(
+            mock_listdir, files_in_path, expected_time_period, test_cube
+        )
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
         tkwargs_list = [
@@ -748,28 +779,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "time_period",
             "file_ext",
         ]
-        tkwargs = {k: getattr(self, "t" + k) for k in tkwargs_list}
-
-        mock_data_path = "here/there/everywhere"
-        test_cube._get_data_directory = MagicMock(return_value=mock_data_path)
-
-        mock_data_name = "here_there_file.nc"
-        test_cube._get_data_filename = MagicMock(return_value=mock_data_name)
-
-        for kwarg in tkwargs_list:
-            with pytest.raises(AttributeError):
-                getattr(test_cube, kwarg)
-
-        result = test_cube.get_filepath_from_load_data_from_identifiers_args(**tkwargs)
-        expected = join(mock_data_path, mock_data_name)
-
-        assert result == expected
-
-        for kwarg in tkwargs_list:
-            assert getattr(test_cube, kwarg) == tkwargs[kwarg]
-
-        assert test_cube._get_data_directory.call_count == 1
-        assert test_cube._get_data_filename.call_count == 1
+        self._run_test_get_filepath_from_load_data_from_identifiers_args(test_cube, tkwargs_list)
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/Amon/fco2antt/CanESM2/r1i1p1/fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc"
@@ -992,6 +1002,118 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         assert result == expected
 
 
-class TestCMIP6Cube(_CMIPCubeTester):
-    tclass = CMIP6Cube
+class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
+    tclass = CMIP6Input4MIPsCube
+    troot_dir = "cmip6input4mipstestdata"
+    tactivity_id = ""
+    tmip_era
+    ttarget_mip
+    tinstitution_id
+    tsource_id
+    trealm
+    tfrequency
+    tvariable_id
+    tgrid_label
+    tversion
+    tdataset_category
+    ttime_range
+    tfile_ext
 
+    @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
+    @pytest.mark.parametrize(
+        "files_in_path, expected_time_period",
+        [
+            (
+                [
+                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_200601-201012.nc",
+                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_201401-203812.nc",
+                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_201101-201312.nc",
+                ],
+                "200601-203812",
+            ),
+            (
+                [
+                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_010009-103812.nc",
+                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_000601-009912.nc",
+                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_010001-010008.nc",
+                ],
+                "000601-103812",
+            ),
+        ],
+    )
+    def test_add_time_period_from_files_in_directory(
+        self, mock_listdir, files_in_path, expected_time_period, test_cube
+    ):
+        self._run_test_add_time_period_from_files_in_directory(
+            mock_listdir, files_in_path, expected_time_period, test_cube
+        )
+
+    def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
+        tkwargs_list = [
+            "root_dir",
+            "activity_id",
+            "mip_era",
+            "target_mip",
+            "institution_id",
+            "source_id",
+            "realm",
+            "frequency",
+            "variable_id",
+            "grid_label",
+            "version",
+            "dataset_category",
+            "time_range",
+            "file_ext",
+        ]
+        self._run_test_get_filepath_from_load_data_from_identifiers_args(test_cube, tkwargs_list)
+
+
+class TestCMIP6OutputCube(_CMIPCubeTester):
+    tclass = CMIP6OutputCube
+
+    @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
+    @pytest.mark.parametrize(
+        "files_in_path, expected_time_period",
+        [
+            (
+                [
+                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_200601-201012.nc",
+                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_201401-203812.nc",
+                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_201101-201312.nc",
+                ],
+                "200601-203812",
+            ),
+            (
+                [
+                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_010009-103812.nc",
+                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_000601-009912.nc",
+                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_010001-010008.nc",
+                ],
+                "000601-103812",
+            ),
+        ],
+    )
+    def test_add_time_period_from_files_in_directory(
+        self, mock_listdir, files_in_path, expected_time_period, test_cube
+    ):
+        self._run_test_add_time_period_from_files_in_directory(
+            mock_listdir, files_in_path, expected_time_period, test_cube
+        )
+
+    def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
+        tkwargs_list = [
+            "root_dir",
+            "mip_era",
+            "activity_id",
+            "institution_id",
+            "source_id",
+            "experiment_id",
+            "member_id",
+            "table_id",
+            "variable_id",
+            "grid_label",
+            "version",
+            "time_range",
+            "file_ext",
+        ]
+        self._run_test_get_filepath_from_load_data_from_identifiers_args(test_cube, tkwargs_list)
