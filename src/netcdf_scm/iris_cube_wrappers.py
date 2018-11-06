@@ -1050,3 +1050,7 @@ class MarbleCMIP5Cube(SCMCube):
             "time_period": None,
             "file_ext": self.file_ext,
         }
+
+
+class CMIP6Cube(SCMCube):
+    pass
