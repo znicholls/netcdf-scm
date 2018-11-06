@@ -815,15 +815,7 @@ class SCMCube(object):
         raise ValueError(message)
 
 
-class MarbleCMIP5Cube(SCMCube):
-    """Subclass of `SCMCube` which can be used with the `cmip5` directory on marble.
-
-    This directory structure is very similar, but not quite identical, to the
-    recommended CMIP5 directory structure described in section 3.1 of the `CMIP5 Data
-    Reference Syntax
-    <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
-    """
-
+class _CMIPCube(SCMCube):
     def load_data_from_path(self, filepath):
         """Load data from a path.
 
@@ -849,6 +841,15 @@ class MarbleCMIP5Cube(SCMCube):
         end = self._get_timestamp_bits_from_filename(loaded_files[-1])["timeend_str"]
         self.time_period = self.time_period_separator.join([strt, end])
 
+
+class MarbleCMIP5Cube(_CMIPCube):
+    """Subclass of `SCMCube` which can be used with the `cmip5` directory on marble.
+
+    This directory structure is very similar, but not quite identical, to the
+    recommended CMIP5 directory structure described in section 3.1 of the `CMIP5 Data
+    Reference Syntax
+    <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
+    """
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
         """Get the set of identifiers to use to load data from a filepath.
 
@@ -1052,5 +1053,5 @@ class MarbleCMIP5Cube(SCMCube):
         }
 
 
-class CMIP6Cube(SCMCube):
+class CMIP6Cube(_CMIPCube):
     pass
