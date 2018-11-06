@@ -843,7 +843,7 @@ class _CMIPCube(SCMCube):
 
 
 class MarbleCMIP5Cube(_CMIPCube):
-    """Subclass of `SCMCube` which can be used with the `cmip5` directory on marble.
+    """Subclass of `SCMCube` which can be used with the ``cmip5`` directory on marble.
 
     This directory structure is very similar, but not quite identical, to the
     recommended CMIP5 directory structure described in section 3.1 of the `CMIP5 Data
@@ -1053,5 +1053,19 @@ class MarbleCMIP5Cube(_CMIPCube):
         }
 
 
-class CMIP6Cube(_CMIPCube):
+class CMIP6Input4MIPsCube(_CMIPCube):
+    """Subclass of `SCMCube` which can be used with CMIP6 input4MIPs data
+
+    The data must match the CMIP6 Forcing Datasets Summary, specifically the `Forcing Dataset Specifications <http://goo.gl/r8up31>`_.
+    """
+    pass
+
+
+class CMIP6OutputCube(_CMIPCube):
+    """Subclass of `SCMCube` which can be used with CMIP6 model output data
+
+    The data must match the CMIP6 data reference syntax as specified in the 'File name
+    template' and 'Directory structure template' sections of the `CMIP6 Data Reference
+    Syntax <https://goo.gl/v1drZl>`_.
+    """
     pass
