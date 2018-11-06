@@ -162,7 +162,7 @@ latex_documents = [
         master_doc,
         "netcdf-scm.tex",
         "NetCDF-SCM Documentation",
-        "Zebedee Nicholls",
+        author,
         "manual",
     )
 ]
