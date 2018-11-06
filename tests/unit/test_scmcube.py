@@ -673,18 +673,7 @@ class TestSCMCube(object):
             test_cube._check_time_period_valid(invalid_time_period_str)
 
 
-class TestMarbleCMIP5Cube(TestSCMCube):
-    tclass = MarbleCMIP5Cube
-    troot_dir = TEST_DATA_MARBLE_CMIP5_DIR
-    tactivity = "cmip5"
-    texperiment = "1pctCO2"
-    tmodeling_realm = "Amon"
-    tvariable_name = "tas"
-    tmodel = "CanESM2"
-    tensemble_member = "r1i1p1"
-    ttime_period = "185001-198912"
-    tfile_ext = ".nc"
-
+class _CMIPCubeTester(TestSCMCube):
     def test_load_data_from_path(self, test_cube):
         tpath = "./somewhere/over/the/rainbow/test.nc"
         tids = {"id1": "mocked", "id2": 123}
@@ -699,6 +688,19 @@ class TestMarbleCMIP5Cube(TestSCMCube):
             tpath
         )
         test_cube.load_data_from_identifiers.assert_called_with(**tids)
+
+
+class TestMarbleCMIP5Cube(_CMIPCubeTester):
+    tclass = MarbleCMIP5Cube
+    troot_dir = TEST_DATA_MARBLE_CMIP5_DIR
+    tactivity = "cmip5"
+    texperiment = "1pctCO2"
+    tmodeling_realm = "Amon"
+    tvariable_name = "tas"
+    tmodel = "CanESM2"
+    tensemble_member = "r1i1p1"
+    ttime_period = "185001-198912"
+    tfile_ext = ".nc"
 
     @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
     @pytest.mark.parametrize(
@@ -990,5 +992,6 @@ class TestMarbleCMIP5Cube(TestSCMCube):
         assert result == expected
 
 
-class TestCMIP6Cube(TestSCMCube):
+class TestCMIP6Cube(_CMIPCubeTester):
     tclass = CMIP6Cube
+
