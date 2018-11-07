@@ -1291,6 +1291,68 @@ class CMIP6OutputCube(_CMIPCube):
 
         return join(self._get_data_directory(), self._get_data_filename())
 
+    def get_variable_constraint_from_load_data_from_identifiers_args(
+        self, variable_id="tas", **kwargs
+    ):
+        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
+
+        Parameters
+        ----------
+        root_dir : str, optional
+            The root directory of the database i.e. where the cube should start its
+            path from e.g. ``/home/users/usertim/cmip5_25x25``.
+
+        mip_era : str, optional
+            The mip_era for which we want to load data.
+
+        activity_id : str, optional
+            The activity_id for which we want to load data. For these cubes, will
+            almost always be "input4MIPs".
+
+        institution_id : str, optional
+            The institution_id for which we want to load data.
+
+        source_id : str, optional
+            The source_id for which we want to load data. This was known as model in
+            CMIP5.
+
+        experiment_id : str, optional
+            The experiment_id for which we want to load data.
+
+        member_id : str, optional
+            The member_id for which we want to load data.
+
+        table_id : str, optional
+            The table_id for which we want to load data.
+
+        variable_id : str, optional
+            The variable_id for which we want to load data.
+
+        grid_label : str, optional
+            The grid_label for which we want to load data.
+
+        version : str, optional
+            The version for which we want to load data.
+
+        time_range : str, optional
+            The time range for which we want to load data. If ``None``, this
+            information isn't included in the filename which is useful for loading
+            metadata files which don't have a relevant time period.
+
+        file_ext : str, optional
+            The file extension of the data file we want to load.
+
+        Returns
+        -------
+        :obj:`iris.Constraint`
+            constraint to use which ensures that only the variable of interest is loaded.
+        """
+        # thank you Duncan!!
+        # https://github.com/SciTools/iris/issues/2107#issuecomment-246644471
+        return iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str(variable_id))
+        )
+
     def _get_metadata_load_arguments(self, metadata_variable):
         return {
             "root_dir": self.root_dir,
@@ -1355,3 +1417,33 @@ class CMIP6OutputCube(_CMIPCube):
             "time_range": time_range,
             "file_ext": file_ext,
         }
+
+    def _get_data_filename(self):
+        bits_to_join = [
+            self.variable_id,
+            self.table_id,
+            self.source_id,
+            self.experiment_id,
+            self.member_id,
+            self.grid_label,
+        ]
+        if self.time_range is not None:
+            bits_to_join.append(self.time_range)
+
+        return "_".join(bits_to_join) + self.file_ext
+
+    def _get_data_directory(self):
+        return join(
+            self.root_dir,
+            self.mip_era,
+            self.activity_id,
+            self.institution_id,
+            self.source_id,
+            self.experiment_id,
+            self.member_id,
+            self.variable_id,
+            self.grid_label,
+            self.version,
+        )
+
+
