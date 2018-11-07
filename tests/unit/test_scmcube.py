@@ -970,7 +970,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         # here.
         """
         expected = iris.Constraint(
-            cube_func=(lambda c: c.var_name == np.str(tkwargs_list["variable_name"]))
+            cube_func=(lambda c: c.var_name == np.str(tkwargs["variable_name"]))
         )
         """
 
@@ -1398,3 +1398,104 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         error_msg = re.escape("Filepath does not look right: {}".format(tpath))
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+    def test_get_data_filename(self, test_cube):
+        expected = (
+            "_".join(
+                [
+                    self.tvariable_id,
+                    self.ttable_id,
+                    self.tsource_id,
+                    self.texperiment_id,
+                    self.tmember_id,
+                    self.tgrid_label,
+                    self.ttime_range,
+                ]
+            )
+            + self.tfile_ext
+        )
+
+        atts_to_set = [
+            "source_id",
+            "experiment_id",
+            "member_id",
+            "table_id",
+            "variable_id",
+            "grid_label",
+            "time_range",
+            "file_ext",
+        ]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        result = test_cube._get_data_filename()
+
+        assert result == expected
+
+    def test_get_data_directory(self, test_cube):
+        expected = join(
+            self.troot_dir,
+            self.tmip_era,
+            self.tactivity_id,
+            self.tinstitution_id,
+            self.tsource_id,
+            self.texperiment_id,
+            self.tmember_id,
+            self.tvariable_id,
+            self.tgrid_label,
+            self.tversion,
+        )
+
+        atts_to_set = [
+            "root_dir",
+            "mip_era",
+            "activity_id",
+            "institution_id",
+            "source_id",
+            "experiment_id",
+            "member_id",
+            "variable_id",
+            "grid_label",
+            "version",
+        ]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        result = test_cube._get_data_directory()
+
+        assert result == expected
+
+    def test_get_variable_constraint_from_load_data_from_identifiers_args(
+        self, test_cube
+    ):
+        # TODO and refactor to make attribute of self
+        tkwargs_list = [
+            "root_dir",
+            "mip_era",
+            "activity_id",
+            "institution_id",
+            "source_id",
+            "experiment_id",
+            "member_id",
+            "table_id",
+            "variable_id",
+            "grid_label",
+            "version",
+            "time_range",
+            "file_ext",
+        ]
+        tkwargs = {k: getattr(self, "t" + k) for k in tkwargs_list}
+
+        # impossible to do other tests as far as I can tell because you have to pass a
+        # local function in both the test and the argument, help welcome. expected is
+        # here.
+        """
+        expected = iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str(tkwargs["variable_name"]))
+        )
+        """
+
+        result = test_cube.get_variable_constraint_from_load_data_from_identifiers_args(
+            **tkwargs
+        )
+        assert isinstance(result, iris.Constraint)
