@@ -853,6 +853,7 @@ class MarbleCMIP5Cube(_CMIPCube):
     Reference Syntax
     <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
     """
+
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
         """Get the set of identifiers to use to load data from a filepath.
 
@@ -1049,6 +1050,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
     The data must match the CMIP6 Forcing Datasets Summary, specifically the `Forcing Dataset Specifications <http://goo.gl/r8up31>`_.
     """
+
     def get_filepath_from_load_data_from_identifiers_args(
         self,
         root_dir=".",
@@ -1130,11 +1132,14 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             setattr(self, name, value)
 
         # TODO: do time indicator/frequency checks too and make a new method for checks so can be reused by different methods
-        source_id_elements = {"institution_id": institution_id}
-        for key, value in source_id_elements.items():
-            assert value in source_id, "source_id must contain {}".format(key)
+        self._check_self_consistency()
 
         return join(self._get_data_directory(), self._get_data_filename())
+
+    def _check_self_consistency(self):
+        assert (
+            self.institution_id in self.source_id
+        ), "source_id must contain institution_id"
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
         """Get the set of identifiers to use to load data from a filepath.
@@ -1206,6 +1211,7 @@ class CMIP6OutputCube(_CMIPCube):
     template' and 'Directory structure template' sections of the `CMIP6 Data Reference
     Syntax <https://goo.gl/v1drZl>`_.
     """
+
     def get_filepath_from_load_data_from_identifiers_args(
         self,
         root_dir=".",
@@ -1216,9 +1222,9 @@ class CMIP6OutputCube(_CMIPCube):
         experiment_id="dcppA-hindcast",
         member_id="s1960-r2i1p1f3",
         table_id="day",
-        variable_id = "pr",
-        grid_label = "gn",
-        version = "v20160215",
+        variable_id="pr",
+        grid_label="gn",
+        version="v20160215",
         time_range=None,
         file_ext=None,
     ):
