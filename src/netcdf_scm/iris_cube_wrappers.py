@@ -869,7 +869,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             ``self.load_data_from_identifiers`` to load the data in the filepath.
         """
         dirpath_bits = dirname(filepath).split(os.sep)
-        if len(dirpath_bits) < 6:
+        if (len(dirpath_bits) < 6) or any(["_" in d for d in dirpath_bits[-6:]]):
             self._raise_filepath_error(filepath)
 
         root_dir = os.sep.join(dirpath_bits[:-6])
@@ -1323,31 +1323,35 @@ class CMIP6OutputCube(_CMIPCube):
             ``self.load_data_from_identifiers`` to load the data in the filepath.
         """
         dirpath_bits = dirname(filepath).split(os.sep)
-        if len(dirpath_bits) < 6:
+        if (len(dirpath_bits) < 10) or any(["_" in d for d in dirpath_bits[-10:]]):
             self._raise_filepath_error(filepath)
 
-        root_dir = os.sep.join(dirpath_bits[:-6])
+        root_dir = os.sep.join(dirpath_bits[:-10])
         if not root_dir:
             root_dir = "."
 
         filename_bits = basename(filepath).split("_")
-        if len(filename_bits) == 6:
-            time_period, file_ext = splitext(filename_bits[-1])
-            ensemble_member = filename_bits[-2]
-        elif len(filename_bits) == 5:
-            time_period = None
-            ensemble_member, file_ext = splitext(filename_bits[-1])
+        if len(filename_bits) == 7:
+            time_range, file_ext = splitext(filename_bits[-1])
+            grid_label = filename_bits[-2]
+        elif len(filename_bits) == 6:
+            time_range = None
+            grid_label, file_ext = splitext(filename_bits[-1])
         else:
             self._raise_filepath_error(filepath)
 
         return {
             "root_dir": root_dir,
-            "activity": dirpath_bits[-6],
-            "variable_name": filename_bits[0],
-            "modeling_realm": filename_bits[1],
-            "model": filename_bits[2],
-            "experiment": filename_bits[3],
-            "ensemble_member": ensemble_member,
-            "time_period": time_period,
+            "mip_era": dirpath_bits[-10],
+            "activity_id": dirpath_bits[-9],
+            "institution_id": dirpath_bits[-8],
+            "source_id": filename_bits[2],
+            "experiment_id": filename_bits[3],
+            "member_id": filename_bits[4],
+            "table_id": filename_bits[1],
+            "variable_id": filename_bits[0],
+            "grid_label": grid_label,
+            "version": dirpath_bits[-1],
+            "time_range": time_range,
             "file_ext": file_ext,
         }
