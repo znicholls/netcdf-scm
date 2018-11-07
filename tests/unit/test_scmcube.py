@@ -14,7 +14,12 @@ from iris.exceptions import ConstraintMismatchError
 from iris.util import broadcast_to_shape
 
 
-from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube, CMIP6Input4MIPsCube, CMIP6OutputCube
+from netcdf_scm.iris_cube_wrappers import (
+    SCMCube,
+    MarbleCMIP5Cube,
+    CMIP6Input4MIPsCube,
+    CMIP6OutputCube,
+)
 from conftest import (
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_TAS_FILE,
@@ -701,7 +706,9 @@ class _CMIPCubeTester(TestSCMCube):
         assert test_cube.time_period == expected_time_period
         test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
 
-    def _run_test_get_filepath_from_load_data_from_identifiers_args(self, test_cube, tkwargs_list):
+    def _run_test_get_filepath_from_load_data_from_identifiers_args(
+        self, test_cube, tkwargs_list
+    ):
         tkwargs = {k: getattr(self, "t" + k) for k in tkwargs_list}
 
         mock_data_path = "here/there/everywhere"
@@ -779,7 +786,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "time_period",
             "file_ext",
         ]
-        self._run_test_get_filepath_from_load_data_from_identifiers_args(test_cube, tkwargs_list)
+        self._run_test_get_filepath_from_load_data_from_identifiers_args(
+            test_cube, tkwargs_list
+        )
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/Amon/fco2antt/CanESM2/r1i1p1/fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc"
@@ -1019,7 +1028,6 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
     ttime_range = "2015-2100"
     tfile_ext = ".nc"
 
-
     @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
     @pytest.mark.parametrize(
         "files_in_path, expected_time_period",
@@ -1050,6 +1058,8 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         )
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
+        test_cube._check_self_consistency = MagicMock()
+
         tkwargs_list = [
             "root_dir",
             "activity_id",
@@ -1066,14 +1076,22 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
             "time_range",
             "file_ext",
         ]
-        self._run_test_get_filepath_from_load_data_from_identifiers_args(test_cube, tkwargs_list)
+        self._run_test_get_filepath_from_load_data_from_identifiers_args(
+            test_cube, tkwargs_list
+        )
 
-        error_msg_base = "source_id must contain {}"
-        with pytest.raises(AssertionError, match=re.escape(error_msg_base.format("institution_id"))):
-            test_cube.get_filepath_from_load_data_from_identifiers_args(
-                source_id="UoM-REMIND-MAGPIE-ssp585-1-2-0",
-                version="1-2-0",
-                institution_id="UoB",
+        test_cube._check_self_consistency.assert_called()
+
+    def test_check_self_consistency(self, test_cube):
+        test_cube.source_id = "UoM-REMIND-MAGPIE-ssp585-1-2-0"
+        test_cube.institution_id = "UoB"
+
+        error_msg = re.escape("source_id must contain institution_id")
+        with pytest.raises(
+            AssertionError, match=error_msg
+        ):
+            test_cube._check_self_consistency(
+
             )
 
     def test_get_metadata_load_arguments(self, test_cube):
@@ -1117,7 +1135,8 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         result = test_cube._get_metadata_load_arguments(tmetadata_var)
 
         assert result == expected
-#input4MIPs
+
+    # input4MIPs
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "tests/test_data/cmip6-input4mips/input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc"
         expected = {
@@ -1213,7 +1232,6 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
     ttime_range = "198001-198412"
     tfile_ext = ".nc"
 
-
     @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
     @pytest.mark.parametrize(
         "files_in_path, expected_time_period",
@@ -1259,7 +1277,9 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             "time_range",
             "file_ext",
         ]
-        self._run_test_get_filepath_from_load_data_from_identifiers_args(test_cube, tkwargs_list)
+        self._run_test_get_filepath_from_load_data_from_identifiers_args(
+            test_cube, tkwargs_list
+        )
 
     def test_get_metadata_load_arguments(self, test_cube):
         tmetadata_var = "mdata_var"
@@ -1300,7 +1320,8 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         result = test_cube._get_metadata_load_arguments(tmetadata_var)
 
         assert result == expected
-        #CMIP6Output
+        # CMIP6Output
+
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/Amon/fco2antt/CanESM2/r1i1p1/fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc"
         expected = {
