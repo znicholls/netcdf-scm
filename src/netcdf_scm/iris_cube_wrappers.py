@@ -1136,6 +1136,68 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
         return join(self._get_data_directory(), self._get_data_filename())
 
+    def get_variable_constraint_from_load_data_from_identifiers_args(
+        self, variable_id="tas", **kwargs
+    ):
+        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
+
+        Parameters
+        ----------
+        root_dir : str, optional
+            The root directory of the database i.e. where the cube should start its
+            path from e.g. ``/home/users/usertim/cmip5_25x25``.
+
+        activity_id : str, optional
+            The activity_id for which we want to load data. For these cubes, will
+            almost always be "input4MIPs".
+
+        mip_era : str, optional
+            The mip_era for which we want to load data.
+
+        target_mip : str, optional
+            The target_mip for which we want to load data.
+
+        institution_id : str, optional
+            The institution_id for which we want to load data.
+
+        source_id : str, optional
+            The source_id for which we want to load data. This must include the version and the institution_id.
+
+        realm : str, optional
+            The realm for which we want to load data.
+
+        frequency : str, optional
+            The frequency for which we want to load data.
+
+        variable_id : str, optional
+            The variable_id for which we want to load data.
+
+        grid_label : str, optional
+            The grid_label for which we want to load data.
+
+        version : str, optional
+            The version for which we want to load data.
+
+        dataset_category : str, optional
+            The dataset_category for which we want to load data.
+
+        time_range : str, optional
+            The time range for which we want to load data. If ``None``, this
+            information isn't included in the filename which is useful for loading
+            metadata files which don't have a relevant time period.
+
+        file_ext : str, optional
+            The file extension of the data file we want to load.
+
+        Returns
+        -------
+        :obj:`iris.Constraint`
+            constraint to use which ensures that only the variable of interest is loaded.
+        """
+        # thank you Duncan!!
+        # https://github.com/SciTools/iris/issues/2107#issuecomment-246644471
+        return iris.Constraint(cube_func=(lambda c: c.var_name == np.str(variable_id)))
+
     def _check_self_consistency(self):
         assert (
             self.institution_id in self.source_id
@@ -1202,6 +1264,86 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             "time_range": None,
             "file_ext": self.file_ext,
         }
+
+    def get_load_data_from_identifiers_args_from_filepath(self, filepath):
+        """Get the set of identifiers to use to load data from a filepath.
+
+        Parameters
+        ----------
+        filepath : str
+            The filepath from which to load the data.
+
+        Returns
+        -------
+        dict
+            Set of arguments which can be passed to
+            ``self.load_data_from_identifiers`` to load the data in the filepath.
+        """
+        dirpath_bits = dirname(filepath).split(os.sep)
+        if (len(dirpath_bits) < 10) or any(["_" in d for d in dirpath_bits[-10:]]):
+            self._raise_filepath_error(filepath)
+
+        root_dir = os.sep.join(dirpath_bits[:-10])
+        if not root_dir:
+            root_dir = "."
+
+        filename_bits = basename(filepath).split("_")
+        if len(filename_bits) == 7:
+            time_range, file_ext = splitext(filename_bits[-1])
+            grid_label = filename_bits[-2]
+        elif len(filename_bits) == 6:
+            time_range = None
+            grid_label, file_ext = splitext(filename_bits[-1])
+        else:
+            self._raise_filepath_error(filepath)
+
+        return {
+            "root_dir": root_dir,
+            "activity_id": dirpath_bits[-10],
+            "mip_era": dirpath_bits[-9],
+            "target_mip": dirpath_bits[-8],
+            "institution_id": dirpath_bits[-7],
+            "realm": dirpath_bits[-5],
+            "frequency": dirpath_bits[-4],
+            "version": dirpath_bits[-1],
+            "variable_id": filename_bits[0],
+            "activity_id": filename_bits[1],
+            "dataset_category": filename_bits[2],
+            "target_mip": filename_bits[3],
+            "source_id": filename_bits[4],
+            "grid_label": grid_label,
+            "time_range": time_range,
+            "file_ext": file_ext,
+        }
+
+    def _get_data_filename(self):
+        bits_to_join = [
+            self.variable_id,
+            self.activity_id,
+            self.dataset_category,
+            self.target_mip,
+            self.source_id,
+            self.grid_label,
+        ]
+        if self.time_range is not None:
+            bits_to_join.append(self.time_range)
+
+        return "_".join(bits_to_join) + self.file_ext
+
+    def _get_data_directory(self):
+        return join(
+            self.root_dir,
+            self.activity_id,
+            self.mip_era,
+            self.target_mip,
+            self.institution_id,
+            self.source_id,
+            self.realm,
+            self.frequency,
+            self.variable_id,
+            self.grid_label,
+            self.version,
+        )
 
 
 class CMIP6OutputCube(_CMIPCube):
@@ -1349,9 +1491,7 @@ class CMIP6OutputCube(_CMIPCube):
         """
         # thank you Duncan!!
         # https://github.com/SciTools/iris/issues/2107#issuecomment-246644471
-        return iris.Constraint(
-            cube_func=(lambda c: c.var_name == np.str(variable_id))
-        )
+        return iris.Constraint(cube_func=(lambda c: c.var_name == np.str(variable_id)))
 
     def _get_metadata_load_arguments(self, metadata_variable):
         return {
@@ -1445,5 +1585,3 @@ class CMIP6OutputCube(_CMIPCube):
             self.grid_label,
             self.version,
         )
-
-
