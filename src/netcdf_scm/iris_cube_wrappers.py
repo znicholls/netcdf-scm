@@ -846,7 +846,7 @@ class _CMIPCube(SCMCube):
 
 
 class MarbleCMIP5Cube(_CMIPCube):
-    """Subclass of `SCMCube` which can be used with the ``cmip5`` directory on marble.
+    """Subclass of ``SCMCube`` which can be used with the ``cmip5`` directory on marble.
 
     This directory structure is very similar, but not quite identical, to the
     recommended CMIP5 directory structure described in section 3.1 of the `CMIP5 Data
@@ -908,7 +908,7 @@ class MarbleCMIP5Cube(_CMIPCube):
         model="CanESM2",
         ensemble_member="r1i1p1",
         time_period=None,
-        file_ext=None,
+        file_ext=".nc",
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
@@ -1046,9 +1046,10 @@ class MarbleCMIP5Cube(_CMIPCube):
 
 
 class CMIP6Input4MIPsCube(_CMIPCube):
-    """Subclass of `SCMCube` which can be used with CMIP6 input4MIPs data
+    """Subclass of ``SCMCube`` which can be used with CMIP6 input4MIPs data
 
-    The data must match the CMIP6 Forcing Datasets Summary, specifically the `Forcing Dataset Specifications <http://goo.gl/r8up31>`_.
+    The data must match the CMIP6 Forcing Datasets Summary, specifically the
+    `Forcing Dataset Specifications <http://goo.gl/r8up31>`_.
     """
 
     def get_filepath_from_load_data_from_identifiers_args(
@@ -1066,7 +1067,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         version="1-2-0",
         dataset_category="GHGConcentrations",
         time_range=None,
-        file_ext=None,
+        file_ext=".nc",
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
@@ -1347,7 +1348,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
 
 class CMIP6OutputCube(_CMIPCube):
-    """Subclass of `SCMCube` which can be used with CMIP6 model output data
+    """Subclass of ``SCMCube`` which can be used with CMIP6 model output data
 
     The data must match the CMIP6 data reference syntax as specified in the 'File name
     template' and 'Directory structure template' sections of the `CMIP6 Data Reference
@@ -1368,7 +1369,7 @@ class CMIP6OutputCube(_CMIPCube):
         grid_label="gn",
         version="v20160215",
         time_range=None,
-        file_ext=None,
+        file_ext=".nc",
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
