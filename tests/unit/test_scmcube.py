@@ -1133,7 +1133,6 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
 
         assert result == expected
 
-    # input4MIPs
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "tests/test_data/cmip6-input4mips/input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc"
         expected = {
@@ -1157,44 +1156,50 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         assert result == expected
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_time(self, test_cube):
-        tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc"
+        tpath = "tests/test_data/cmip6-input4mips/input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/land/fx/sftlf/gn/v20180427/sftlf_input4MIPs_landState_CMIP_PCMDI-AMIP-1-1-4_gn.nc"
         expected = {
-            "root_dir": "tests/test_data/marble_cmip5",
-            "activity": "cmip5",
-            "experiment": "1pctCO2",
-            "modeling_realm": "fx",
-            "variable_name": "sftlf",
-            "model": "CanESM2",
-            "ensemble_member": "r0i0p0",
-            "time_period": None,
+            "root_dir": "tests/test_data/cmip6-input4mips",
+            "activity_id": "input4MIPs",
+            "mip_era": "CMIP6",
+            "target_mip": "CMIP",
+            "institution_id": "PCMDI",
+            "source_id": "PCMDI-AMIP-1-1-4",
+            "realm": "land",
+            "frequency": "fx",
+            "variable_id": "sftlf",
+            "grid_label": "gn",
+            "version": "v20180427",
+            "dataset_category": "landState",
+            "time_range": None,
             "file_ext": ".nc",
         }
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
-        assert False
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
         self, test_cube
     ):
-        tpath = (
-            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc"
-        )
+        tpath = "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc"
         expected = {
             "root_dir": ".",
-            "activity": "cmip5",
-            "experiment": "1pctCO2",
-            "modeling_realm": "fx",
-            "variable_name": "sftlf",
-            "model": "CanESM2",
-            "ensemble_member": "r0i0p0",
-            "time_period": None,
+            "activity_id": "input4MIPs",
+            "mip_era": "CMIP6",
+            "target_mip": "CMIP",
+            "institution_id": "PCMDI",
+            "source_id": "PCMDI-AMIP-1-1-4",
+            "realm": "ocean",
+            "frequency": "mon",
+            "variable_id": "tos",
+            "grid_label": "gn",
+            "version": "v20180427",
+            "dataset_category": "SSTsAndSeaIce",
+            "time_range": "187001-201712",
             "file_ext": ".nc",
         }
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
-        assert False
 
     @pytest.mark.parametrize(
         "tpath",
@@ -1210,7 +1215,109 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
-        assert False
+    def test_get_data_filename(self, test_cube):
+        expected = (
+            "_".join(
+                [
+                    self.tvariable_id,
+                    self.tactivity_id,
+                    self.tdataset_category,
+                    self.ttarget_mip,
+                    self.tsource_id,
+                    self.tgrid_label,
+                    self.ttime_range,
+                ]
+            )
+            + self.tfile_ext
+        )
+
+        atts_to_set = [
+            "variable_id",
+            "activity_id",
+            "dataset_category",
+            "target_mip",
+            "source_id",
+            "grid_label",
+            "time_range",
+            "file_ext",
+        ]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        result = test_cube._get_data_filename()
+
+        assert result == expected
+
+    def test_get_data_directory(self, test_cube):
+        expected = join(
+            self.troot_dir,
+            self.tactivity_id,
+            self.tmip_era,
+            self.ttarget_mip,
+            self.tinstitution_id,
+            self.tsource_id,
+            self.trealm,
+            self.tfrequency,
+            self.tvariable_id,
+            self.tgrid_label,
+            self.tversion,
+        )
+
+        atts_to_set = [
+            "root_dir",
+            "activity_id",
+            "mip_era",
+            "target_mip",
+            "institution_id",
+            "source_id",
+            "realm",
+            "frequency",
+            "variable_id",
+            "grid_label",
+            "version",
+        ]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        result = test_cube._get_data_directory()
+
+        assert result == expected
+
+    def test_get_variable_constraint_from_load_data_from_identifiers_args(
+        self, test_cube
+    ):
+        # TODO and refactor to make attribute of self
+        tkwargs_list = [
+            "root_dir",
+            "activity_id",
+            "mip_era",
+            "target_mip",
+            "institution_id",
+            "source_id",
+            "realm",
+            "frequency",
+            "variable_id",
+            "grid_label",
+            "version",
+            "dataset_category",
+            "time_range",
+            "file_ext",
+        ]
+        tkwargs = {k: getattr(self, "t" + k) for k in tkwargs_list}
+
+        # impossible to do other tests as far as I can tell because you have to pass a
+        # local function in both the test and the argument, help welcome. expected is
+        # here.
+        """
+        expected = iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str(tkwargs["variable_name"]))
+        )
+        """
+
+        result = test_cube.get_variable_constraint_from_load_data_from_identifiers_args(
+            **tkwargs
+        )
+        assert isinstance(result, iris.Constraint)
 
 
 class TestCMIP6OutputCube(_CMIPCubeTester):
@@ -1363,9 +1470,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
     def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
         self, test_cube
     ):
-        tpath = (
-            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
-        )
+        tpath = "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
         expected = {
             "root_dir": ".",
             "mip_era": "CMIP6",
