@@ -1,6 +1,9 @@
 # Example output folder
 output_examples
 
+# venv for pip installs
+venv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
