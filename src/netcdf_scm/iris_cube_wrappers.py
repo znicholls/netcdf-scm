@@ -16,10 +16,15 @@ from dateutil.relativedelta import relativedelta
 
 import numpy as np
 import pandas as pd
-import iris
-from iris.util import broadcast_to_shape, unify_time_units
-import iris.analysis.cartography
-import iris.experimental.equalise_cubes
+
+try:
+    import iris
+    from iris.util import broadcast_to_shape, unify_time_units
+    import iris.analysis.cartography
+    import iris.experimental.equalise_cubes
+except ModuleNotFoundError:
+    warnings.warn("Install iris via conda for stable performance")
+
 from pymagicc.io import MAGICCData
 
 
