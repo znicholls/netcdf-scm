@@ -46,18 +46,18 @@ $(DOCS_DIR)/build/html/index.html: $(DOCS_DIR)/source/*.py $(DOCS_DIR)/source/_t
 		cd $(DOCS_DIR); \
 		make html
 
-.PHONY: test_all
-test_all:
+.PHONY: test-all
+test-all:
 	make test
-	make test_notebooks
+	make test-notebooks
 
 .PHONY: test
 test:
 	$(call activate_conda_env,); \
 		pytest --cov -rfsxEX --cov-report term-missing
 
-.PHONY: test_notebooks
-test_notebooks:
+.PHONY: test-notebooks
+test-notebooks:
 	$(call activate_conda_env,); \
 		pytest -rfsxEX --nbval $(NOTEBOOKS_DIR) --sanitize $(NOTEBOOKS_SANITIZE_FILE)
 
