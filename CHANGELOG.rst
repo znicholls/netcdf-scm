@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#20 <https://github.com/znicholls/netcdf-scm/pull/20>`_) Added ``CMIP6Input4MIPsCube`` and ``CMIP6OutputCube`` which add compatibility with CMIP6 data
 
 v0.3.1
 ------
