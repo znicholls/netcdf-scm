@@ -849,9 +849,8 @@ class MarbleCMIP5Cube(_CMIPCube):
     """Subclass of ``SCMCube`` which can be used with the ``cmip5`` directory on marble.
 
     This directory structure is very similar, but not quite identical, to the
-    recommended CMIP5 directory structure described in section 3.1 of the `CMIP5 Data
-    Reference Syntax
-    <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
+    recommended CMIP5 directory structure described in section 3.1 of the
+    `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
     """
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
@@ -901,16 +900,19 @@ class MarbleCMIP5Cube(_CMIPCube):
     def get_filepath_from_load_data_from_identifiers_args(
         self,
         root_dir=".",
-        activity="cmip5",
-        experiment="1pctCO2",
-        modeling_realm="Amon",
-        variable_name="tas",
-        model="CanESM2",
-        ensemble_member="r1i1p1",
+        activity="activity",
+        experiment="experiment",
+        modeling_realm="modeling-realm",
+        variable_name="variable-name",
+        model="model",
+        ensemble_member="ensemble-member",
         time_period=None,
         file_ext=".nc",
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
+
+        Full details about the identifiers are given in Section 2 of the
+        `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
 
         Parameters
         ----------
@@ -919,30 +921,30 @@ class MarbleCMIP5Cube(_CMIPCube):
             path from e.g. ``/home/users/usertim/cmip5_25x25``.
 
         activity : str, optional
-            The activity for which we want to load data.
+            The activity for which we want to load data e.g. ``cmip5``.
 
         experiment : str, optional
-            The experiment for which we want to load data.
+            The experiment for which we want to load data e.g. ``1pctCO2``.
 
         modeling_realm : str, optional
-            The modeling_realm for which we want to load data.
+            The modeling_realm for which we want to load data e.g. ``Amon``.
 
         variable_name : str, optional
-            The variable for which we want to load data.
+            The variable for which we want to load data e.g. ``variable_name``.
 
         model : str, optional
-            The model for which we want to load data.
+            The model for which we want to load data ``CanESM2``.
 
         ensemble_member : str, optional
-            The ensemble member for which we want to load data.
+            The ensemble member for which we want to load data ``r1i1p1``.
 
         time_period : str, optional
-            The time period for which we want to load data. If ``None``, this
-            information isn't included in the filename which is useful for loading
-            metadata files which don't have a relevant time period.
+            The time period for which we want to load data e.g. ``1850-2000``.
+            If ``None``, this information isn't included in the filename which is
+            useful for loading metadata files which don't have a relevant time period.
 
         file_ext : str, optional
-            The file extension of the data file we want to load.
+            The file extension of the data file we want to load e.g. ``.nc``.
 
         Returns
         -------
@@ -1049,27 +1051,30 @@ class CMIP6Input4MIPsCube(_CMIPCube):
     """Subclass of ``SCMCube`` which can be used with CMIP6 input4MIPs data
 
     The data must match the CMIP6 Forcing Datasets Summary, specifically the
-    `Forcing Dataset Specifications <http://goo.gl/r8up31>`_.
+    `Forcing Dataset Specifications <https://docs.google.com/document/d/1pU9IiJvPJwRvIgVaSDdJ4O0Jeorv_2ekEtted34K9cA/edit#heading=h.cn9f7982ycw6>`_.
     """
 
     def get_filepath_from_load_data_from_identifiers_args(
         self,
         root_dir=".",
-        activity_id="input4MIPs",
-        mip_era="CMIP6",
-        target_mip="ScenarioMIP",
-        institution_id="UoM",
-        source_id="UoM-REMIND-MAGPIE-ssp585-1-2-0",
-        realm="atmos",
-        frequency="yr",
-        variable_id="mole-fraction-of-carbon-dioxide-in-air",
-        grid_label="gr1-GMNHSH",
-        version="1-2-0",
-        dataset_category="GHGConcentrations",
+        activity_id="activity-id",
+        mip_era="mip-era",
+        target_mip="target-mip",
+        institution_id="institution-id",
+        source_id="source-id-including-institution-id",
+        realm="realm",
+        frequency="frequency",
+        variable_id="variable-id",
+        grid_label="grid-label",
+        version="version",
+        dataset_category="dataset-category",
         time_range=None,
-        file_ext=".nc",
+        file_ext="file-ext",
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
+
+        Full details about the meaning of the identifiers are given in the
+        `Forcing Dataset Specifications <https://docs.google.com/document/d/1pU9IiJvPJwRvIgVaSDdJ4O0Jeorv_2ekEtted34K9cA/edit#heading=h.cn9f7982ycw6>`_.
 
         Parameters
         ----------
@@ -1079,45 +1084,48 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
         activity_id : str, optional
             The activity_id for which we want to load data. For these cubes, will
-            almost always be "input4MIPs".
+            almost always be ``input4MIPs``.
 
         mip_era : str, optional
-            The mip_era for which we want to load data.
+            The mip_era for which we want to load data e.g. ``CMIP6``.
 
         target_mip : str, optional
-            The target_mip for which we want to load data.
+            The target_mip for which we want to load data e.g. ``ScenarioMIP``.
 
         institution_id : str, optional
-            The institution_id for which we want to load data.
+            The institution_id for which we want to load data e.g. ``UoM``.
 
         source_id : str, optional
-            The source_id for which we want to load data. This must include the version and the institution_id.
+            The source_id for which we want to load data e.g.
+            ``UoM-REMIND-MAGPIE-ssp585-1-2-0``. This must include the institution_id.
 
         realm : str, optional
-            The realm for which we want to load data.
+            The realm for which we want to load data e.g. ``atmos``.
 
         frequency : str, optional
-            The frequency for which we want to load data.
+            The frequency for which we want to load data e.g. ``yr``.
 
         variable_id : str, optional
-            The variable_id for which we want to load data.
+            The variable_id for which we want to load data e.g.
+            ``mole-fraction-of-carbon-dioxide-in-air``.
 
         grid_label : str, optional
-            The grid_label for which we want to load data.
+            The grid_label for which we want to load data e.g. ``gr1-GMNHSH``.
 
         version : str, optional
-            The version for which we want to load data.
+            The version for which we want to load data e.g. ``v20180427``.
 
         dataset_category : str, optional
-            The dataset_category for which we want to load data.
+            The dataset_category for which we want to load data e.g.
+            ``GHGConcentrations``.
 
         time_range : str, optional
-            The time range for which we want to load data. If ``None``, this
-            information isn't included in the filename which is useful for loading
-            metadata files which don't have a relevant time period.
+            The time range for which we want to load data e.g. ``2005-2100``. If
+            ``None``, this information isn't included in the filename which is useful
+            for loading metadata files which don't have a relevant time period.
 
         file_ext : str, optional
-            The file extension of the data file we want to load.
+            The file extension of the data file we want to load e.g. ``.nc``.
 
         Returns
         -------
@@ -1204,50 +1212,6 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             self.institution_id in self.source_id
         ), "source_id must contain institution_id"
 
-    def get_load_data_from_identifiers_args_from_filepath(self, filepath):
-        """Get the set of identifiers to use to load data from a filepath.
-
-        Parameters
-        ----------
-        filepath : str
-            The filepath from which to load the data.
-
-        Returns
-        -------
-        dict
-            Set of arguments which can be passed to
-            ``self.load_data_from_identifiers`` to load the data in the filepath.
-        """
-        dirpath_bits = dirname(filepath).split(os.sep)
-        if len(dirpath_bits) < 6:
-            self._raise_filepath_error(filepath)
-
-        root_dir = os.sep.join(dirpath_bits[:-6])
-        if not root_dir:
-            root_dir = "."
-
-        filename_bits = basename(filepath).split("_")
-        if len(filename_bits) == 6:
-            time_period, file_ext = splitext(filename_bits[-1])
-            ensemble_member = filename_bits[-2]
-        elif len(filename_bits) == 5:
-            time_period = None
-            ensemble_member, file_ext = splitext(filename_bits[-1])
-        else:
-            self._raise_filepath_error(filepath)
-
-        return {
-            "root_dir": root_dir,
-            "activity": dirpath_bits[-6],
-            "variable_name": filename_bits[0],
-            "modeling_realm": filename_bits[1],
-            "model": filename_bits[2],
-            "experiment": filename_bits[3],
-            "ensemble_member": ensemble_member,
-            "time_period": time_period,
-            "file_ext": file_ext,
-        }
-
     def _get_metadata_load_arguments(self, metadata_variable):
         return {
             "root_dir": self.root_dir,
@@ -1300,9 +1264,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
         return {
             "root_dir": root_dir,
-            "activity_id": dirpath_bits[-10],
             "mip_era": dirpath_bits[-9],
-            "target_mip": dirpath_bits[-8],
             "institution_id": dirpath_bits[-7],
             "realm": dirpath_bits[-5],
             "frequency": dirpath_bits[-4],
@@ -1351,73 +1313,75 @@ class CMIP6OutputCube(_CMIPCube):
     """Subclass of ``SCMCube`` which can be used with CMIP6 model output data
 
     The data must match the CMIP6 data reference syntax as specified in the 'File name
-    template' and 'Directory structure template' sections of the `CMIP6 Data Reference
-    Syntax <https://goo.gl/v1drZl>`_.
+    template' and 'Directory structure template' sections of the
+    `CMIP6 Data Reference Syntax <https://goo.gl/v1drZl>`_.
     """
 
     def get_filepath_from_load_data_from_identifiers_args(
         self,
         root_dir=".",
-        mip_era="CMIP6",
-        activity_id="DCPP",
-        institution_id="CNRM-CERFACS",
-        source_id="CNRM-CM6-1",
-        experiment_id="dcppA-hindcast",
-        member_id="s1960-r2i1p1f3",
-        table_id="day",
-        variable_id="pr",
-        grid_label="gn",
-        version="v20160215",
+        mip_era="mip-era",
+        activity_id="activity-id",
+        institution_id="institution-id",
+        source_id="source-id",
+        experiment_id="experiment-id",
+        member_id="member-id",
+        table_id="table-id",
+        variable_id="variable-id",
+        grid_label="grid-label",
+        version="version",
         time_range=None,
-        file_ext=".nc",
+        file_ext="file-ext",
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
+
+        Full details about the meaning of each identifier is given in Table 1 of the
+        `CMIP6 Data Reference Syntax <https://goo.gl/v1drZl>`_.
 
         Parameters
         ----------
         root_dir : str, optional
             The root directory of the database i.e. where the cube should start its
-            path from e.g. ``/home/users/usertim/cmip5_25x25``.
+            path from e.g. ``/home/users/usertim/cmip6_data``.
 
         mip_era : str, optional
-            The mip_era for which we want to load data.
+            The mip_era for which we want to load data e.g. ``CMIP6``.
 
         activity_id : str, optional
-            The activity_id for which we want to load data. For these cubes, will
-            almost always be "input4MIPs".
+            The activity for which we want to load data e.g. ``DCPP``.
 
         institution_id : str, optional
-            The institution_id for which we want to load data.
+            The institution for which we want to load data e.g. ``CNRM-CERFACS``
 
         source_id : str, optional
-            The source_id for which we want to load data. This was known as model in
-            CMIP5.
+            The source_id for which we want to load data e.g. ``CNRM-CM6-1``. This was
+            known as model in CMIP5.
 
         experiment_id : str, optional
-            The experiment_id for which we want to load data.
+            The experiment_id for which we want to load data e.g. ``dcppA-hindcast``.
 
         member_id : str, optional
-            The member_id for which we want to load data.
+            The member_id for which we want to load data e.g. ``s1960-r2i1p1f3``.
 
         table_id : str, optional
-            The table_id for which we want to load data.
+            The table_id for which we want to load data. e.g. ``day``.
 
         variable_id : str, optional
-            The variable_id for which we want to load data.
+            The variable_id for which we want to load data e.g. ``pr``.
 
         grid_label : str, optional
-            The grid_label for which we want to load data.
+            The grid_label for which we want to load data e.g. ``gn``.
 
         version : str, optional
-            The version for which we want to load data.
+            The version for which we want to load data e.g. ``v20160215``.
 
         time_range : str, optional
-            The time range for which we want to load data. If ``None``, this
-            information isn't included in the filename which is useful for loading
-            metadata files which don't have a relevant time period.
+            The time range for which we want to load data e.g. ``198001-198412``. If
+            ``None``, this information isn't included in the filename which is useful
+            for loading metadata files which don't have a relevant time period.
 
         file_ext : str, optional
-            The file extension of the data file we want to load.
+            The file extension of the data file we want to load e.g. ``.nc``.
 
         Returns
         -------

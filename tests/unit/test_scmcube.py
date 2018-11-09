@@ -1204,8 +1204,11 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
     @pytest.mark.parametrize(
         "tpath",
         [
-            "1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc",
-            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2-r0i0p0.nc",
+            "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4.nc",
+            "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001_201712.nc",
+            "input4MIPs/CMIP/PCMDI/PCMDI-AMIP_1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc",
+            "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP_1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001_201712.nc",
+            "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_187001-201712.nc",
         ],
     )
     def test_get_load_data_from_identifiers_args_from_filepath_errors(
@@ -1225,12 +1228,12 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
                     self.ttarget_mip,
                     self.tsource_id,
                     self.tgrid_label,
-                    self.ttime_range,
                 ]
             )
             + self.tfile_ext
         )
 
+        test_cube.time_range = None
         atts_to_set = [
             "variable_id",
             "activity_id",
@@ -1238,14 +1241,34 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
             "target_mip",
             "source_id",
             "grid_label",
-            "time_range",
             "file_ext",
         ]
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
         result = test_cube._get_data_filename()
+        assert result == expected
 
+        expected = (
+            "_".join(
+                [
+                    self.tvariable_id,
+                    self.tactivity_id,
+                    self.tdataset_category,
+                    self.ttarget_mip,
+                    self.tsource_id,
+                    self.tgrid_label,
+                    self.ttime_range,
+                ]
+            )
+            + self.tfile_ext
+        )
+
+        atts_to_set = ["time_range"]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        result = test_cube._get_data_filename()
         assert result == expected
 
     def test_get_data_directory(self, test_cube):
@@ -1493,6 +1516,8 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
     @pytest.mark.parametrize(
         "tpath",
         [
+            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3.nc",
+            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001_198412.nc",
             "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960_r2i1p1f3/day/pr/gn/v20160215",
             "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/pr/gn/v20160215",
         ],
@@ -1514,12 +1539,12 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
                     self.texperiment_id,
                     self.tmember_id,
                     self.tgrid_label,
-                    self.ttime_range,
                 ]
             )
             + self.tfile_ext
         )
 
+        test_cube.time_range = None
         atts_to_set = [
             "source_id",
             "experiment_id",
@@ -1527,14 +1552,34 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             "table_id",
             "variable_id",
             "grid_label",
-            "time_range",
             "file_ext",
         ]
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
         result = test_cube._get_data_filename()
+        assert result == expected
 
+        expected = (
+            "_".join(
+                [
+                    self.tvariable_id,
+                    self.ttable_id,
+                    self.tsource_id,
+                    self.texperiment_id,
+                    self.tmember_id,
+                    self.tgrid_label,
+                    self.ttime_range,
+                ]
+            )
+            + self.tfile_ext
+        )
+
+        atts_to_set = ["time_range"]
+        for att in atts_to_set:
+            setattr(test_cube, att, getattr(self, "t" + att))
+
+        result = test_cube._get_data_filename()
         assert result == expected
 
     def test_get_data_directory(self, test_cube):
