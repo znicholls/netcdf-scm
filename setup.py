@@ -63,7 +63,14 @@ setup(
     packages=find_packages(SOURCE_DIR),  # no tests/docs in `src` so don't need exclude
     package_dir={"": SOURCE_DIR},
     # include_package_data=True,
-    # install_requires=["pandas", "f90nml"],
+    install_requires=[
+        "python-dateutil",
+        "numpy",
+        "pandas",
+        "iris",
+        "pymagicc",
+        "cf_units",
+    ],
     extras_require={
         "docs": ["sphinx", "sphinx_rtd_theme"],
         "test": ["nbresuse", "nbval", "codecov", "pytest-cov", "pytest"],
