@@ -63,15 +63,17 @@ setup(
     packages=find_packages(SOURCE_DIR),  # no tests/docs in `src` so don't need exclude
     package_dir={"": SOURCE_DIR},
     # include_package_data=True,
-    install_requires=[
-        "numpy",
-        "progressbar2",
-        "python-dateutil",
-        "pandas",
-        "pymagicc==2.0.0-alpha",
-    ],
+    # install_requires=[]
     extras_require={
-        "docs": ["sphinx", "sphinx_rtd_theme"],
+        "docs": [
+            "sphinx",
+            "sphinx_rtd_theme",
+            "numpy",
+            "pandas",
+            "pymagicc==2.0.0-alpha",
+            "python-dateutil",
+            "progressbar2",
+        ],
         "test": ["nbresuse", "nbval", "codecov", "pytest-cov", "pytest"],
         "deploy": ["twine", "setuptools", "wheel", "flake8", "black", "versioneer"],
     },
