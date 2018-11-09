@@ -2,10 +2,14 @@
 
 For example, applying masks to cubes, taking latitude-longitude means and getting timeseries from a cube as datetime values.
 """
+import warnings
 
 import numpy as np
-import iris
-import cf_units
+try:
+    import iris
+    import cf_units
+except ModuleNotFoundError:
+    warnings.warn("Install iris via conda for stable performance")
 
 
 def get_cube_timeseries_data(scm_cube):

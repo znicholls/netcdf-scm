@@ -65,10 +65,10 @@ setup(
     # include_package_data=True,
     install_requires=[
         "numpy",
-        "cf_units",
+        "progressbar2",
         "python-dateutil",
         "pandas",
-        "pymagicc",
+        "pymagicc==2.0.0-alpha",
     ],
     extras_require={
         "docs": ["sphinx", "sphinx_rtd_theme"],
