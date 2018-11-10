@@ -1,10 +1,10 @@
 OS=`uname`
 SHELL=/bin/bash
 
-CONDA_ENV_NAME=netcdf-scm
-CONDA_ENV_PATH=$(MINICONDA_PATH)/envs/$(CONDA_ENV_NAME)
-CONDA_ENV_MINIMAL_YML=$(PWD)/conda-environment-minimal.yaml
-CONDA_ENV_DEV_YML=$(PWD)/conda-environment-dev.yaml
+conda_env_NAME=netcdf-scm
+conda_env_PATH=$(MINICONDA_PATH)/envs/$(conda_env_NAME)
+conda_env_MINIMAL_YML=$(PWD)/conda-environment-minimal.yaml
+conda_env_DEV_YML=$(PWD)/conda-environment-dev.yaml
 
 PIP_REQUIREMENTS_MINIMAL=$(PWD)/pip-requirements-minimal.txt
 PIP_REQUIREMENTS_DEV=$(PWD)/pip-requirements-dev.txt
@@ -29,8 +29,8 @@ endef
 
 define activate_conda_env
 	$(call activate_conda,); \
-	echo 'If this fails, install your environment with make conda_env'; \
-	conda activate $(CONDA_ENV_NAME)
+	echo 'If this fails, install your environment with make conda-env'; \
+	conda activate $(conda_env_NAME)
 endef
 
 
@@ -76,8 +76,8 @@ black:
 		echo Not trying any formatting. Working directory is dirty ... >&2; \
 	fi;
 
-.PHONY: new_release
-new_release:
+.PHONY: new-release
+new-release:
 	@echo 'See instructions in the Releasing sub-section of the Development section of the docs'
 
 .PHONY: release-on-conda
@@ -110,44 +110,44 @@ publish-on-pypi:
 		echo Working directory is dirty >&2; \
 	fi;
 
-.PHONY: setup_versioneer
-setup_versioneer:
+.PHONY: setup-versioneer
+setup-versioneer:
 	$(call activate_conda_env,); \
 		versioneer install
 
-.PHONY: conda_env_update
-conda_env_update:
+.PHONY: conda-env-update
+conda-env-update:
 	@echo "Updating the environment requires this command"
 	@echo "conda env update --name env-name --file env-file"
 	@echo "You have to decide for yourself which file to update from and how "
 	@echo "to ensure that the dev and minimal environments don't conflict, we "
 	@echo "haven't worked out how to automate that."
 
-.PHONY: conda_env
-conda_env:
+.PHONY: conda-env
+conda-env:
 	# thanks https://stackoverflow.com/a/38609653 for the conda install from
 	# file solution
 	# tidy up pip install once I get expect exception pip installable
 	$(call activate_conda,); \
 		conda config --add channels conda-forge; \
-		conda create -y -n $(CONDA_ENV_NAME); \
-		conda activate $(CONDA_ENV_NAME); \
-		conda install -y --file $(CONDA_ENV_MINIMAL_YML); \
-		conda install -y --file $(CONDA_ENV_DEV_YML); \
+		conda create -y -n $(conda_env_NAME); \
+		conda activate $(conda_env_NAME); \
+		conda install -y --file $(conda_env_MINIMAL_YML); \
+		conda install -y --file $(conda_env_DEV_YML); \
 		pip install --upgrade pip; \
 		pip install -Ur $(PIP_REQUIREMENTS_MINIMAL); \
 		pip install -e .[test,docs,deploy]
 
-.PHONY: clean_docs
-clean_docs:
+.PHONY: clean-docs
+clean-docs:
 	rm -rf $(DOCS_DIR)/build
 
 .PHONY: clean
 clean:
 	$(call activate_conda,); \
 		conda deactivate; \
-		conda remove --name $(CONDA_ENV_NAME) --all -y
-	make clean_docs
+		conda remove --name $(conda_env_NAME) --all -y
+	make clean-docs
 
 .PHONY: variables
 variables:
@@ -155,10 +155,10 @@ variables:
 	@echo OS: $(OS)
 	@echo SHELL: $(SHELL)
 
-	@echo CONDA_ENV_NAME: $(CONDA_ENV_NAME)
-	@echo CONDA_ENV_PATH: $(CONDA_ENV_PATH)
-	@echo CONDA_ENV_MINIMAL_YML: $(CONDA_ENV_MINIMAL_YML)
-	@echo CONDA_ENV_DEV_YML: $(CONDA_ENV_DEV_YML)
+	@echo conda_env_NAME: $(conda_env_NAME)
+	@echo conda_env_PATH: $(conda_env_PATH)
+	@echo conda_env_MINIMAL_YML: $(conda_env_MINIMAL_YML)
+	@echo conda_env_DEV_YML: $(conda_env_DEV_YML)
 
 	@echo PIP_REQUIREMENTS_MINIMAL: $(PIP_REQUIREMENTS_MINIMAL)
 	@echo PIP_REQUIREMENTS_DEV: $(PIP_REQUIREMENTS_DEV)

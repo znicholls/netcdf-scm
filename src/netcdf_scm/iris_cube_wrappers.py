@@ -249,6 +249,8 @@ class SCMCube(object):
         tmp_time = cftime.num2date(
             tmp_time_dim.points, new_unit_str, tmp_time_dim.units.calendar
         )
+        # TODO: move to utils
+        tmp_time = np.array([datetime(*v.timetuple()[:6]) for v in tmp_time])
         # undo the shift to new units
         usable_time = cf_units.date2num(
             tmp_time - relativedelta(years=new_units_shift),
