@@ -33,6 +33,21 @@ TEST_AREACELLA_FILE = join(
     "r0i0p0",
     "areacella_fx_CanESM2_1pctCO2_r0i0p0.nc",
 )
+TEST_DATA_CMIP6Input4MIPS_DIR = join(TEST_DATA_ROOT_DIR, "cmip6input4mips")
+TEST_CMIP6_HISTORICAL_CONCS_FILE = join(
+    TEST_DATA_CMIP6Input4MIPS_DIR,
+    "input4MIPs",
+    "CMIP6",
+    "CMIP",
+    "UoM",
+    "UoM-CMIP-1-2-0",
+    "atmos",
+    "yr",
+    "mole-fraction-of-so2f2-in-air",
+    "gr1-GMNHSH",
+    "v20100304",
+    "mole-fraction-of-so2f2-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_0000-2014.nc"
+)
 
 
 tdata_required = pytest.mark.skipif(
