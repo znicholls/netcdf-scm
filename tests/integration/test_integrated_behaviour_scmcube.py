@@ -14,7 +14,12 @@ import cftime
 from pymagicc.io import MAGICCData
 
 
-from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube
+from netcdf_scm.iris_cube_wrappers import (
+    SCMCube,
+    MarbleCMIP5Cube,
+    CMIP6Input4MIPsCube,
+    CMIP6OutputCube,
+)
 from conftest import (
     TEST_TAS_FILE,
     TEST_AREACELLA_FILE,
@@ -23,9 +28,7 @@ from conftest import (
 )
 
 
-class TestSCMCubeIntegration(object):
-    tclass = SCMCube
-
+class _SCMCubeIntegrationTester(object):
     @tdata_required
     def test_load_data_from_identifiers_and_areacella(self, test_cube):
         tfile = TEST_TAS_FILE
@@ -285,6 +288,10 @@ class TestSCMCubeIntegration(object):
         with pytest.raises(AssertionError, match=error_msg):
             test_cube._check_data_names_in_same_directory(tdir)
 
+
+class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
+    tclass = SCMCube
+
     def test_load_and_concatenate_files_in_directory_same_time(self, test_cube):
         tdir = join(
             TEST_DATA_MARBLE_CMIP5_DIR,
@@ -307,8 +314,64 @@ class TestSCMCubeIntegration(object):
         assert obs_time[0] == cftime.Datetime360Day(2006, 1, 16, 0, 0, 0, 0, -1, 16)
         assert obs_time[-1] == cftime.Datetime360Day(2035, 12, 16, 0, 0, 0, 0, -1, 346)
 
-        if type(test_cube) is not SCMCube:
-            assert test_cube.time_period == "200601-203512"
+        removed_attributes = ["creation_date", "tracking_id", "history"]
+        for removed_attribute in removed_attributes:
+            with pytest.raises(KeyError):
+                test_cube.cube.attributes[removed_attribute]
+
+    def test_load_and_concatenate_files_in_directory_different_time(self, test_cube):
+        tdir = join(
+            TEST_DATA_MARBLE_CMIP5_DIR,
+            "cmip5",
+            "rcp85",
+            "Amon",
+            "tas",
+            "NorESM1-ME",
+            "r1i1p1",
+        )
+
+        with warnings.catch_warnings(record=True):
+            test_cube._load_and_concatenate_files_in_directory(tdir)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        obs_time = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+        assert obs_time[0] == cftime.DatetimeNoLeap(2006, 1, 16, 12, 0, 0, 0, 0, 16)
+        assert obs_time[-1] == cftime.DatetimeNoLeap(2100, 12, 16, 12, 0, 0, 0, 1, 350)
+
+        removed_attributes = ["creation_date", "tracking_id", "history"]
+        for removed_attribute in removed_attributes:
+            with pytest.raises(KeyError):
+                test_cube.cube.attributes[removed_attribute]
+
+
+class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
+    tclass = MarbleCMIP5Cube
+
+    def test_load_and_concatenate_files_in_directory_same_time(self, test_cube):
+        tdir = join(
+            TEST_DATA_MARBLE_CMIP5_DIR,
+            "cmip5",
+            "rcp45",
+            "Amon",
+            "tas",
+            "HadCM3",
+            "r1i1p1",
+        )
+
+        # can ignore warnings safely here as tested elsewhere
+        with warnings.catch_warnings(record=True):
+            test_cube._load_and_concatenate_files_in_directory(tdir)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        obs_time = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+        assert obs_time[0] == cftime.Datetime360Day(2006, 1, 16, 0, 0, 0, 0, -1, 16)
+        assert obs_time[-1] == cftime.Datetime360Day(2035, 12, 16, 0, 0, 0, 0, -1, 346)
+
+        assert test_cube.time_period == "200601-203512"
 
         removed_attributes = ["creation_date", "tracking_id", "history"]
         for removed_attribute in removed_attributes:
@@ -326,13 +389,7 @@ class TestSCMCubeIntegration(object):
             "r1i1p1",
         )
 
-        if type(test_cube) is MarbleCMIP5Cube:
-            # expect no warnings
-            test_cube._load_and_concatenate_files_in_directory(tdir)
-        else:
-            # can ignore warnings safely here as tested elsewhere
-            with warnings.catch_warnings(record=True):
-                test_cube._load_and_concatenate_files_in_directory(tdir)
+        test_cube._load_and_concatenate_files_in_directory(tdir)
 
         obs_time = test_cube.cube.dim_coords[0]
         obs_time = cf_units.num2date(
@@ -341,8 +398,7 @@ class TestSCMCubeIntegration(object):
         assert obs_time[0] == cftime.DatetimeNoLeap(2006, 1, 16, 12, 0, 0, 0, 0, 16)
         assert obs_time[-1] == cftime.DatetimeNoLeap(2100, 12, 16, 12, 0, 0, 0, 1, 350)
 
-        if type(test_cube) is not SCMCube:
-            assert test_cube.time_period == "200601-210012"
+        assert test_cube.time_period == "200601-210012"
 
         removed_attributes = ["creation_date", "tracking_id", "history"]
         for removed_attribute in removed_attributes:
@@ -350,5 +406,9 @@ class TestSCMCubeIntegration(object):
                 test_cube.cube.attributes[removed_attribute]
 
 
-class TestMarbleCMIP5Cube(TestSCMCubeIntegration):
-    tclass = MarbleCMIP5Cube
+class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
+    tclass = CMIP6Input4MIPsCube
+
+
+class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
+    tclass = CMIP6OutputCube
