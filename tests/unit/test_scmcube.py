@@ -44,8 +44,24 @@ class TestSCMCube(object):
         assert False, "Overload {} in your subclass".format(method_to_overload)
 
     @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
+    @pytest.mark.parametrize(
+        "tfilepath,tconstraint",
+        [("here/there/now.nc", "mocked"), ("here/there/now.nc", None)],
+    )
+    def test_load_cube(self, mock_iris_load_cube, test_cube, tfilepath, tconstraint):
+        test_cube._check_cube = MagicMock()
+        if tconstraint is not None:
+            test_cube._load_cube(tfilepath, constraint=tconstraint)
+        else:
+            test_cube._load_cube(tfilepath)
+        mock_iris_load_cube.assert_called_with(tfilepath, constraint=tconstraint)
+        test_cube._check_cube.assert_called()
+
+    @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
     def test_load_data_from_identifiers(self, mock_iris_load_cube, test_cube):
         tfile = "hello_world_test.nc"
+        test_cube._check_cube = MagicMock()
+
         test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
             return_value=tfile
         )
@@ -75,8 +91,9 @@ class TestSCMCube(object):
         test_cube.get_variable_constraint_from_load_data_from_identifiers_args.assert_called_with(
             **tkwargs
         )
-        mock_iris_load_cube.assert_called_with(tfile, vcons)
+        mock_iris_load_cube.assert_called_with(tfile, constraint=vcons)
         test_cube._process_load_data_from_identifiers_warnings.assert_not_called()
+        test_cube._check_cube.assert_called()
 
     def test_process_load_data_from_identifiers_warnings(self, test_cube):
         warn_1 = "warning 1"
@@ -149,12 +166,12 @@ class TestSCMCube(object):
         with pytest.raises(ConstraintMismatchError, match="no cubes found"):
             test_cube.load_data_from_identifiers(mocked_out="mocked")
 
-    @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
-    def test_load_data_from_path(self, mock_iris_load_cube, test_cube):
+    def test_load_data_from_path(self, test_cube):
         if type(test_cube) is SCMCube:
+            test_cube._load_cube = MagicMock()
             tpath = "here/there/everywehre/test.nc"
             test_cube.load_data_from_path(tpath)
-            mock_iris_load_cube.assert_called_with(tpath)
+            test_cube._load_cube.assert_called_with(tpath)
         else:
             self.raise_overload_message("test_load_data")
 

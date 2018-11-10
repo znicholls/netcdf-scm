@@ -46,7 +46,7 @@ TEST_CMIP6_HISTORICAL_CONCS_FILE = join(
     "mole-fraction-of-so2f2-in-air",
     "gr1-GMNHSH",
     "v20100304",
-    "mole-fraction-of-so2f2-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_0000-2014.nc"
+    "mole-fraction-of-so2f2-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_0000-2014.nc",
 )
 
 
