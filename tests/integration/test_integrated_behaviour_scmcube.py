@@ -2,6 +2,8 @@ from os.path import join
 from unittest.mock import patch, MagicMock
 import re
 import warnings
+import datetime
+
 
 import pytest
 import numpy as np
@@ -347,13 +349,37 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
                 test_cube.cube.attributes[removed_attribute]
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
-        test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+        expected_warn = (
+            "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
+            "rectify this by removing all data before year 5 and changing the units "
+            "to 'days since 1-1-1'. If you want other behaviour, you will need to use "
+            "another package."
+        )
+        with warnings.catch_warnings(record=True) as adjust_warnings:
+            test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+
+        assert len(adjust_warnings) == 1
+        assert str(adjust_warnings[0].message) == expected_warn
 
         obs_time = test_cube.cube.dim_coords[0]
-        obs_time = cf_units.num2date(
+        assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
+        assert obs_time.units.calendar == "gregorian"
+
+        obs_time_points = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
-        assert obs_time[0] == cftime.DatetimeNoLeap(1, 1, 1, 12, 0, 0, 0, 0, 0)
+        assert obs_time_points[0] == datetime.datetime(5, 7, 3, 12, 0)
+        assert obs_time_points[-1] == datetime.datetime(2014, 7, 3, 12, 0)
+
+        assert test_cube.cube.attributes["institution_id"] == "UoM"
+        assert test_cube.cube.attributes["Conventions"] == "CF-1.6"
+        assert test_cube.cube.attributes["table_id"] == "input4MIPs"
+        assert test_cube.cube.cell_methods[0].method == "mean"
+        assert str(test_cube.cube.units) == "1.e-12"
+        assert test_cube.cube.var_name == "mole_fraction_of_so2f2_in_air"
+        assert test_cube.cube.name() == "mole"
+        assert test_cube.cube.long_name == "mole"
+        assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
 
 class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
@@ -420,13 +446,37 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     tclass = CMIP6Input4MIPsCube
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
-        test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+        expected_warn = (
+            "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
+            "rectify this by removing all data before year 5 and changing the units "
+            "to 'days since 1-1-1'. If you want other behaviour, you will need to use "
+            "another package."
+        )
+        with warnings.catch_warnings(record=True) as adjust_warnings:
+            test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+
+        assert len(adjust_warnings) == 1
+        assert str(adjust_warnings[0].message) == expected_warn
 
         obs_time = test_cube.cube.dim_coords[0]
-        obs_time = cf_units.num2date(
+        assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
+        assert obs_time.units.calendar == "gregorian"
+
+        obs_time_points = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
-        assert obs_time[0] == cftime.DatetimeNoLeap(1, 1, 1, 12, 0, 0, 0, 0, 0)
+        assert obs_time_points[0] == datetime.datetime(5, 7, 3, 12, 0)
+        assert obs_time_points[-1] == datetime.datetime(2014, 7, 3, 12, 0)
+
+        assert test_cube.cube.attributes["institution_id"] == "UoM"
+        assert test_cube.cube.attributes["Conventions"] == "CF-1.6"
+        assert test_cube.cube.attributes["table_id"] == "input4MIPs"
+        assert test_cube.cube.cell_methods[0].method == "mean"
+        assert str(test_cube.cube.units) == "1.e-12"
+        assert test_cube.cube.var_name == "mole_fraction_of_so2f2_in_air"
+        assert test_cube.cube.name() == "mole"
+        assert test_cube.cube.long_name == "mole"
+        assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
 
 class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
