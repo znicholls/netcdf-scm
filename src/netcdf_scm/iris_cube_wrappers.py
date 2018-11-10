@@ -15,18 +15,20 @@ from dateutil.relativedelta import relativedelta
 
 import numpy as np
 import pandas as pd
+import cftime
+import cf_units
+from pymagicc.io import MAGICCData
 
 try:
     import iris
     from iris.util import broadcast_to_shape, unify_time_units
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
+    from iris.exceptions import CoordinateNotFoundError
 except ModuleNotFoundError:
     from .errors import raise_no_iris_warning
 
     raise_no_iris_warning()
-
-from pymagicc.io import MAGICCData
 
 
 from .utils import (
@@ -68,6 +70,9 @@ class SCMCube(object):
     file. In some cases, it might be as simple as replacing ``tas`` with the value of
     ``areacella_var``.
     """
+
+    time_name = "time"
+    """str: The expected name of the time co-ordinate in data."""
 
     lat_name = "latitude"
     """str: The expected name of the latitude co-ordinate in data."""
@@ -141,8 +146,7 @@ class SCMCube(object):
 
     @property
     def lon_dim(self):
-        """:obj:`iris.coords.DimCoord` The longitude dimension of the data.
-        """
+        """:obj:`iris.coords.DimCoord` The longitude dimension of the data."""
         return self.cube.coord(self.lon_name)
 
     @property
@@ -156,8 +160,7 @@ class SCMCube(object):
 
     @property
     def lat_dim(self):
-        """:obj:`iris.coords.DimCoord` The latitude dimension of the data.
-        """
+        """:obj:`iris.coords.DimCoord` The latitude dimension of the data."""
         return self.cube.coord(self.lat_name)
 
     @property
@@ -168,6 +171,123 @@ class SCMCube(object):
         ``self.lat_dim_number`` will be ``0`` (Python is zero-indexed).
         """
         return self.cube.coord_dims(self.lat_name)[0]
+
+    @property
+    def time_dim(self):
+        """:obj:`iris.coords.DimCoord` The time dimension of the data."""
+        return self.cube.coord(self.time_name)
+
+    @property
+    def time_dim_number(self):
+        """int: The index which corresponds to the time dimension.
+
+        e.g. if time is the first dimension of the data, then
+        ``self.time_dim_number`` will be ``0`` (Python is zero-indexed).
+        """
+        return self.cube.coord_dims(self.time_name)[0]
+
+    def _load_cube(self, filepath, constraint=None):
+        self.cube = iris.load_cube(filepath, constraint=constraint)
+        self._check_cube()
+
+    def _check_cube(self):
+        try:
+            time_dim = self.time_dim
+            gregorian = time_dim.units.calendar == "gregorian"
+            year_zero = str(time_dim.units).startswith("days since 0-1-1")
+        except CoordinateNotFoundError:
+            gregorian = False
+            year_zero = False
+
+        if gregorian and year_zero:
+            warn_msg = (
+                "Your calendar is gregorian yet has units of 'days since 0-1-1'. "
+                "We rectify this by removing all data before year 5 and changing the "
+                "units to 'days since 1-1-1'. If you want other behaviour, you will "
+                "need to use another package."
+            )
+            warnings.warn(warn_msg)
+            self._adjust_gregorian_year_zero_units()
+
+    def _adjust_gregorian_year_zero_units(self):
+        year_zero_cube = self.cube.copy()
+        year_zero_cube_time_dim = self.time_dim
+
+        gregorian_year_zero_cube = (
+            year_zero_cube_time_dim.units.calendar == "gregorian"
+        ) and str(year_zero_cube_time_dim.units).startswith("days since 0-1-1")
+        assert gregorian_year_zero_cube, "This function is not setup for other cases"
+
+        new_unit_str = "days since 1-1-1"
+        # converting with the new units means we're actually converting with the wrong
+        # units, we use this variable to track how many years to shift back to get the
+        # right time axis again
+        new_units_shift = 1
+        new_time_dim_unit = cf_units.Unit(
+            new_unit_str, calendar=year_zero_cube_time_dim.units.calendar
+        )
+
+        tmp_time_dim = year_zero_cube_time_dim.copy()
+        tmp_time_dim.units = new_time_dim_unit
+        tmp_cube = iris.cube.Cube(year_zero_cube.data)
+        for i, coord in enumerate(year_zero_cube.dim_coords):
+            if coord.standard_name == "time":
+                tmp_cube.add_dim_coord(tmp_time_dim, i)
+            else:
+                tmp_cube.add_dim_coord(coord, i)
+
+        years_to_bin = 5
+        first_valid_year = years_to_bin + new_units_shift
+
+        def check_usable_data(cell):
+            return first_valid_year <= cell.point.year
+
+        usable_cube = tmp_cube.extract(iris.Constraint(time=check_usable_data))
+        usable_data = usable_cube.data
+
+        tmp_time_dim = usable_cube.coord(self.time_name)
+        tmp_time = cftime.num2date(
+            tmp_time_dim.points, new_unit_str, tmp_time_dim.units.calendar
+        )
+        # undo the shift to new units
+        usable_time = cf_units.date2num(
+            tmp_time - relativedelta(years=new_units_shift),
+            year_zero_cube_time_dim.units.name,
+            year_zero_cube_time_dim.units.calendar,
+        )
+        usable_time_unit = cf_units.Unit(
+            year_zero_cube_time_dim.units.name,
+            calendar=year_zero_cube_time_dim.units.calendar,
+        )
+        usable_time_dim = iris.coords.DimCoord(
+            usable_time,
+            standard_name=year_zero_cube_time_dim.standard_name,
+            long_name=year_zero_cube_time_dim.long_name,
+            var_name=year_zero_cube_time_dim.var_name,
+            units=usable_time_unit,
+        )
+
+        self.cube = iris.cube.Cube(usable_data)
+        for i, coord in enumerate(usable_cube.dim_coords):
+            if coord.standard_name == "time":
+                self.cube.add_dim_coord(usable_time_dim, i)
+            else:
+                self.cube.add_dim_coord(coord, i)
+
+        # hard coding as making this list dynamically is super hard as there's so many
+        # edge cases to cover
+        attributes_to_copy = [
+            "attributes",
+            "cell_methods",
+            "units",
+            "var_name",
+            "standard_name",
+            "name",
+            "metadata",
+            "long_name",
+        ]
+        for att in attributes_to_copy:
+            setattr(self.cube, att, getattr(year_zero_cube, att))
 
     def load_data_from_path(self, filepath):
         """Load data from a path.
@@ -185,7 +305,7 @@ class SCMCube(object):
         filepath : str
             The filepath from which to load the data.
         """
-        self.cube = iris.load_cube(filepath)
+        self._load_cube(filepath)
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath=None):
         """Get the set of identifiers to use to load data from a filepath.
@@ -333,7 +453,7 @@ class SCMCube(object):
             filepath of the file to load and the variable constraint to use.
         """
         with warnings.catch_warnings(record=True) as w:
-            self.cube = iris.load_cube(
+            self._load_cube(
                 self.get_filepath_from_load_data_from_identifiers_args(**kwargs),
                 self.get_variable_constraint_from_load_data_from_identifiers_args(
                     **kwargs
@@ -1211,7 +1331,9 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         """
         # thank you Duncan!!
         # https://github.com/SciTools/iris/issues/2107#issuecomment-246644471
-        return iris.Constraint(cube_func=(lambda c: c.var_name == np.str(variable_id)))
+        return iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str(variable_id.replace("-", "_")))
+        )
 
     def _check_self_consistency(self):
         assert (
@@ -1462,7 +1584,9 @@ class CMIP6OutputCube(_CMIPCube):
         """
         # thank you Duncan!!
         # https://github.com/SciTools/iris/issues/2107#issuecomment-246644471
-        return iris.Constraint(cube_func=(lambda c: c.var_name == np.str(variable_id)))
+        return iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str(variable_id.replace("-", "_")))
+        )
 
     def _get_metadata_load_arguments(self, metadata_variable):
         return {
