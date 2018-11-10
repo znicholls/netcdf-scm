@@ -1,10 +1,9 @@
 """This module contains our wrappers of the iris cube.
 
 These classes automate handling of a number of netCDF processing steps.
-For example, finding surface land fraction files, applying masks to data and returning timeseries in key regions for simple climate models.
+For example, finding surface land fraction files, applying masks to data and
+returning timeseries in key regions for simple climate models.
 """
-
-
 import os
 from os.path import join, dirname, basename, splitext
 import re
@@ -23,7 +22,9 @@ try:
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
 except ModuleNotFoundError:
-    warnings.warn("Install iris via conda for stable performance")
+    from .errors import raise_no_iris_warning
+
+    raise_no_iris_warning()
 
 from pymagicc.io import MAGICCData
 
