@@ -25,6 +25,7 @@ from conftest import (
     TEST_AREACELLA_FILE,
     tdata_required,
     TEST_DATA_MARBLE_CMIP5_DIR,
+    TEST_CMIP6_HISTORICAL_CONCS_FILE,
 )
 
 
@@ -345,6 +346,15 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
             with pytest.raises(KeyError):
                 test_cube.cube.attributes[removed_attribute]
 
+    def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
+        test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        obs_time = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+        assert obs_time[0] == cftime.DatetimeNoLeap(1, 1, 1, 12, 0, 0, 0, 0, 0)
+
 
 class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
     tclass = MarbleCMIP5Cube
@@ -408,6 +418,15 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
 
 class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     tclass = CMIP6Input4MIPsCube
+
+    def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
+        test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        obs_time = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+        assert obs_time[0] == cftime.DatetimeNoLeap(1, 1, 1, 12, 0, 0, 0, 0, 0)
 
 
 class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
