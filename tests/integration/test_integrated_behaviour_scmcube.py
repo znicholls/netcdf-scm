@@ -368,7 +368,9 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
         obs_time_points = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
-        assert obs_time_points[0] == datetime.datetime(5, 7, 3, 12, 0)
+        assert obs_time_points[0] == cftime.DatetimeGregorian(
+            5, 7, 3, 12, 0, 0, 0, 4, 184
+        )
         assert obs_time_points[-1] == datetime.datetime(2014, 7, 3, 12, 0)
 
         assert test_cube.cube.attributes["institution_id"] == "UoM"
@@ -465,7 +467,9 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
         obs_time_points = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
-        assert obs_time_points[0] == datetime.datetime(5, 7, 3, 12, 0)
+        assert obs_time_points[0] == cftime.DatetimeGregorian(
+            5, 7, 3, 12, 0, 0, 0, 4, 184
+        )
         assert obs_time_points[-1] == datetime.datetime(2014, 7, 3, 12, 0)
 
         assert test_cube.cube.attributes["institution_id"] == "UoM"
