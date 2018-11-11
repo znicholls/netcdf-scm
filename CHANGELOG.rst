@@ -5,6 +5,12 @@ master
 ------
 
 
+v0.4.3
+------
+
+- Move ``import cftime`` into same block as iris imports
+
+
 v0.4.2
 ------
 
