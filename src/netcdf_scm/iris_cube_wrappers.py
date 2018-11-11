@@ -15,8 +15,6 @@ from dateutil.relativedelta import relativedelta
 
 import numpy as np
 import pandas as pd
-import cftime
-import cf_units
 from pymagicc.io import MAGICCData
 
 try:
@@ -25,6 +23,8 @@ try:
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
     from iris.exceptions import CoordinateNotFoundError
+    import cftime
+    import cf_units
 except ModuleNotFoundError:
     from .errors import raise_no_iris_warning
 
