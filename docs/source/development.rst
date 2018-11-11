@@ -155,7 +155,7 @@ PyPI
 
 #. ``make publish-on-testpypi``
 #. Go to `test PyPI <https://test.pypi.org/project/netcdf-scm/>`_ and check that the new release is as intended. If it isn't, stop and debug.
-#. Test the install with ``make test-testpypi-install`` (a pip only install will throw warnings about Iris not being installed, that's how it should be).
+#. Test the install with ``make test-testpypi-install`` (a pip only install might throw warnings about Iris not being installed, that's fine).
 #. ``make publish-on-pypi``
 #. Go to `NetCDF-SCM's PyPI`_ and check that the new release is as intended.
 #. Test the install with ``make test-pypi-install``
@@ -164,8 +164,7 @@ PyPI
 Conda
 ~~~~~
 
-#. If you haven't already, fork the `NetCDF-SCM conda feedstock`_.
-#. In your fork, add the feedstock upstream with ``git remote add upstream https://github.com/conda-forge/netcdf-scm-feedstock`` (``upstream`` should now appear in the output of ``git remote -v``)
+#. If you haven't already, fork the `NetCDF-SCM conda feedstock`_. In your fork, add the feedstock upstream with ``git remote add upstream https://github.com/conda-forge/netcdf-scm-feedstock`` (``upstream`` should now appear in the output of ``git remote -v``)
 #. Update your fork's master to the upstream master with:
 
     #. ``git checkout master``
