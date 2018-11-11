@@ -98,6 +98,19 @@ publish-on-testpypi:
 		echo Working directory is dirty >&2; \
 	fi;
 
+test-testpypi-install: venv
+	$(eval TEMPVENV := $(shell mktemp -d))
+	python3 -m venv $(TEMPVENV)
+	$(TEMPVENV)/bin/pip install pip --upgrade
+	# Install dependencies not on testpypi registry
+	$(TEMPVENV)/bin/pip install pandas
+	# Install pymagicc without dependencies.
+	$(TEMPVENV)/bin/pip install \
+		-i https://testpypi.python.org/pypi netcdf-scm \
+		--no-dependencies --pre
+	# Remove local directory from path to get actual installed version.
+	$(TEMPVENV)/bin/python -c "import sys; sys.path.remove(''); import netcdf_scm; print(netcdf_scm.__version__)"
+
 .PHONY: publish-on-pypi
 publish-on-pypi:
 	-rm -rf build dist
@@ -109,6 +122,13 @@ publish-on-pypi:
 	else \
 		echo Working directory is dirty >&2; \
 	fi;
+
+test-pypi-install: venv
+	$(eval TEMPVENV := $(shell mktemp -d))
+	python3 -m venv $(TEMPVENV)
+	$(TEMPVENV)/bin/pip install pip --upgrade
+	$(TEMPVENV)/bin/pip install netcdf_scm --pre
+	$(TEMPVENV)/bin/python -c "import sys; sys.path.remove(''); import netcdf_scm; print(netcdf_scm.__version__)"
 
 .PHONY: setup-versioneer
 setup-versioneer:
