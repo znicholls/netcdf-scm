@@ -184,7 +184,7 @@ Conda
 #. ``git push``
 #. Make a PR into the `NetCDF-SCM conda feedstock`_
 #. If the PR passes (give it at least 10 minutes to run all the CI), merge
-#. Check https://anaconda.org/conda-forge/netcdf-scm to double check that the version has increased
+#. Check https://anaconda.org/conda-forge/netcdf-scm to double check that the version has increased (this can take a few minutes to update)
 
 .. _`NetCDF-SCM's PyPI`: https://pypi.org/project/netcdf-scm/
 .. _`NetCDF-SCM conda feedstock`: https://github.com/conda-forge/netcdf-scm-feedstock
