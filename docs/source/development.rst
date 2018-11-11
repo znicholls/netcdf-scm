@@ -155,8 +155,10 @@ PyPI
 
 #. ``make publish-on-testpypi``
 #. Go to `test PyPI <https://test.pypi.org/project/netcdf-scm/>`_ and check that the new release is as intended. If it isn't, stop and debug.
+#. Test the install with ``make test-testpypi-install`` (a pip only install will throw warnings about Iris not being installed, that's how it should be).
 #. ``make publish-on-pypi``
 #. Go to `NetCDF-SCM's PyPI`_ and check that the new release is as intended.
+#. Test the install with ``make test-pypi-install``
 
 
 Conda
