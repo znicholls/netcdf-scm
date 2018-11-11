@@ -163,18 +163,25 @@ Conda
 ~~~~~
 
 #. If you haven't already, fork the `NetCDF-SCM conda feedstock`_.
+#. In your fork, add the feedstock upstream with ``git remote add upstream https://github.com/conda-forge/netcdf-scm-feedstock`` (``upstream`` should now appear in the output of ``git remote -v``)
+#. Update your fork's master to the upstream master with:
+
+    #. ``git checkout master``
+    #. ``git fetch upstream``
+    #. ``git reset --hard upstream/master``
+
 #. Create a new branch in the feedstock for the version you want to bump to.
 #. Edit ``recipe/meta.yaml`` and update:
 
     - version number in line 1 (don't include the 'v' in the version tag)
     - the build number to zero (you should only be here if releasing a new version)
-    - update ``sha256`` in line 9 (you can get the sha from `NetCDF-SCM's PyPI`_ by clicking on 'Download files' on the left and then clicking on 'SHA256' of the ``.tar.gz`` to copy it to the clipboard)
+    - update ``sha256`` in line 9 (you can get the sha from `NetCDF-SCM's PyPI`_ by clicking on 'Download files' on the left and then clicking on 'SHA256' of the ``.tar.gz`` file to copy it to the clipboard)
 
 #. ``git add .``
 #. ``git commit -m "Update to vX.Y.Z"``
 #. ``git push``
 #. Make a PR into the `NetCDF-SCM conda feedstock`_
-#. If the PR passes, merge
+#. If the PR passes (give it at least 10 minutes to run all the CI), merge
 #. Check https://anaconda.org/conda-forge/netcdf-scm to double check that the version has increased
 
 .. _`NetCDF-SCM's PyPI`: https://pypi.org/project/netcdf-scm/
@@ -185,7 +192,7 @@ Last steps
 ~~~~~~~~~~
 
 #. If you want to archive this version, follow the `instructions here <https://help.github.com/articles/creating-releases/>`_
-#. Update any badges in ``README.rst`` that don't update automatically
+#. Update any badges in ``README.rst`` that don't update automatically (note that the commits since badge only updates if you archive the version)
 #. ``git add .``
 #. ``git commit -m "Update README badges"``
 #. ``git push``
