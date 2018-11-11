@@ -5,6 +5,12 @@ master
 ------
 
 
+v0.4.2
+------
+
+- Update ``setup.py`` to install dependencies so that non-Iris dependent functionality can be run from a pip install
+
+
 v0.4.1
 ------
 
