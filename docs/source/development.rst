@@ -139,6 +139,7 @@ Releasing
 The steps to release a new version of NetCDF-SCM are shown below.
 Please do all the steps below and all the steps for both release platforms.
 
+#. Test installation with dependencies ``make test-install``
 #. Update ``CHANGELOG.rst``:
 
     - add a header for the new version between ``master`` and the latest bullet point
@@ -155,10 +156,10 @@ PyPI
 
 #. ``make publish-on-testpypi``
 #. Go to `test PyPI <https://test.pypi.org/project/netcdf-scm/>`_ and check that the new release is as intended. If it isn't, stop and debug.
-#. Test the install with ``make test-testpypi-install`` (a pip only install might throw warnings about Iris not being installed, that's fine).
+#. Test the install with ``make test-testpypi-install`` (this doesn't test all the imports as most required packages are not on test PyPI).
 #. ``make publish-on-pypi``
 #. Go to `NetCDF-SCM's PyPI`_ and check that the new release is as intended.
-#. Test the install with ``make test-pypi-install``
+#. Test the install with ``make test-pypi-install`` (a pip only install will throw warnings about Iris not being installed, that's fine).
 
 
 Conda
