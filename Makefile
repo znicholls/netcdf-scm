@@ -109,7 +109,7 @@ test-testpypi-install: venv
 		-i https://testpypi.python.org/pypi netcdf-scm \
 		--no-dependencies --pre
 	# Remove local directory from path to get actual installed version.
-	$(TEMPVENV)/bin/python -c "import sys; sys.path.remove(''); import netcdf_scm; print(netcdf_scm.__version__)"
+	$(TEMPVENV)/bin/python -c "import sys; sys.path.remove(''); from netcdf_scm import *; import netcdf_scm; print(netcdf_scm.__version__)"
 
 .PHONY: publish-on-pypi
 publish-on-pypi:
@@ -128,7 +128,7 @@ test-pypi-install: venv
 	python3 -m venv $(TEMPVENV)
 	$(TEMPVENV)/bin/pip install pip --upgrade
 	$(TEMPVENV)/bin/pip install netcdf_scm --pre
-	$(TEMPVENV)/bin/python -c "import sys; sys.path.remove(''); import netcdf_scm; print(netcdf_scm.__version__)"
+	$(TEMPVENV)/bin/python -c "import sys; sys.path.remove(''); from netcdf_scm import *; import netcdf_scm; print(netcdf_scm.__version__)"
 
 .PHONY: setup-versioneer
 setup-versioneer:
