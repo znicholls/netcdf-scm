@@ -714,15 +714,16 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
     @pytest.mark.parametrize(
         "tpath",
         [
-            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3.nc",
-            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001_198412.nc",
-            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960_r2i1p1f3/day/pr/gn/v20160215",
-            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/pr/gn/v20160215",
+            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA_s1960-r2i1p1f3_gn_198001-198412.nc"
         ],
     )
     def test_get_load_data_from_identifiers_args_from_filepath_errors(
         self, test_cube, tpath
     ):
-        error_msg = re.escape("Filepath does not look right: {}".format(tpath))
+        error_msg = (
+            re.escape("Path and filename do not agree:") + "\n"
+            + re.escape("    - path experiment_id: dcppA-hindcast") + "\n"
+            + re.escape("    - filename experiment_id: dcppA") + "\n"
+        )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
