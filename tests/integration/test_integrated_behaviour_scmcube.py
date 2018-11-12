@@ -387,7 +387,6 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
 class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
     tclass = MarbleCMIP5Cube
 
-
     def test_load_and_concatenate_files_in_directory_same_time(self, test_cube):
         tdir = join(
             TEST_DATA_MARBLE_CMIP5_DIR,
@@ -501,17 +500,18 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
 
     @pytest.mark.parametrize(
         "tpath",
-        [
-            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_HadGem3_1pctCO2_r0i0p0.nc"
-        ],
+        ["cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_HadGem3_1pctCO2_r0i0p0.nc"],
     )
     def test_get_load_data_from_identifiers_args_from_filepath_errors(
         self, test_cube, tpath
     ):
         error_msg = (
-            re.escape("Path and filename do not agree:") + "\n"
-            + re.escape("    - path model: CanESM2") + "\n"
-            + re.escape("    - filename model: HadGem3") + "\n"
+            re.escape("Path and filename do not agree:")
+            + "\n"
+            + re.escape("    - path model: CanESM2")
+            + "\n"
+            + re.escape("    - filename model: HadGem3")
+            + "\n"
         )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
@@ -519,7 +519,6 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
 
 class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     tclass = CMIP6Input4MIPsCube
-
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
         expected_warn = (
@@ -627,16 +626,19 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     @pytest.mark.parametrize(
         "tpath",
         [
-            "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tas/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc",
+            "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tas/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc"
         ],
     )
     def test_get_load_data_from_identifiers_args_from_filepath_errors(
         self, test_cube, tpath
     ):
         error_msg = (
-            re.escape("Path and filename do not agree:") + "\n"
-            + re.escape("    - path variable_id: tas") + "\n"
-            + re.escape("    - filename variable_id: tos") + "\n"
+            re.escape("Path and filename do not agree:")
+            + "\n"
+            + re.escape("    - path variable_id: tas")
+            + "\n"
+            + re.escape("    - filename variable_id: tos")
+            + "\n"
         )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
@@ -644,7 +646,6 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
 
 class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
     tclass = CMIP6OutputCube
-
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "tests/test_data/cmip6-output/CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
@@ -721,9 +722,12 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         self, test_cube, tpath
     ):
         error_msg = (
-            re.escape("Path and filename do not agree:") + "\n"
-            + re.escape("    - path experiment_id: dcppA-hindcast") + "\n"
-            + re.escape("    - filename experiment_id: dcppA") + "\n"
+            re.escape("Path and filename do not agree:")
+            + "\n"
+            + re.escape("    - path experiment_id: dcppA-hindcast")
+            + "\n"
+            + re.escape("    - filename experiment_id: dcppA")
+            + "\n"
         )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
