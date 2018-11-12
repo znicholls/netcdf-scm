@@ -4,6 +4,10 @@ Changelog
 master
 ------
 
+
+v0.5.1
+------
+
 - (`#26 <https://github.com/znicholls/netcdf-scm/pull/26>`_) Expose directory and filename parsers directly
 
 
