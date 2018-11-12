@@ -996,9 +996,6 @@ class _CMIPCube(SCMCube):
 
         return {**path_ids, **name_ids}
 
-    def _raise_filepath_error(self, filepath):
-        raise ValueError("Filepath does not look right: {}".format(filepath))
-
     def _raise_path_error(self, path):
         raise ValueError("Path does not look right: {}".format(path))
 
@@ -1034,9 +1031,10 @@ class MarbleCMIP5Cube(_CMIPCube):
         elif len(filename_bits) == 5:
             time_period = None
             ensemble_member, file_ext = splitext(filename_bits[-1])
-            if not file_ext:
-                self._raise_filename_error(filename)
         else:
+            self._raise_filename_error(filename)
+
+        if not file_ext:
             self._raise_filename_error(filename)
 
         return {
@@ -1259,9 +1257,10 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         elif len(filename_bits) == 6:
             time_range = None
             grid_label, file_ext = splitext(filename_bits[-1])
-            if not file_ext:
-                self._raise_filename_error(filename)
         else:
+            self._raise_filename_error(filename)
+
+        if not file_ext:
             self._raise_filename_error(filename)
 
         return {
@@ -1528,6 +1527,80 @@ class CMIP6OutputCube(_CMIPCube):
     template' and 'Directory structure template' sections of the
     `CMIP6 Data Reference Syntax <https://goo.gl/v1drZl>`_.
     """
+    def process_filename(self, filename):
+        """Cut a filename into its identifiers
+
+        Parameters
+        ----------
+        filename : str
+            The filename to process. Filename here means just the filename, no path
+            should be included.
+
+        Returns
+        -------
+        dict
+            A dictionary where each key is the identifier name and each value is the value of that identifier for the input filename
+        """
+        filename_bits = filename.split("_")
+        if len(filename_bits) == 7:
+            time_range, file_ext = splitext(filename_bits[-1])
+            grid_label = filename_bits[-2]
+        elif len(filename_bits) == 6:
+            time_range = None
+            grid_label, file_ext = splitext(filename_bits[-1])
+        else:
+            self._raise_filename_error(filename)
+
+        if not file_ext:
+            self._raise_filename_error(filename)
+
+        return {
+            "variable_id": filename_bits[0],
+            "table_id": filename_bits[1],
+            "source_id": filename_bits[2],
+            "experiment_id": filename_bits[3],
+            "member_id": filename_bits[4],
+            "grid_label": grid_label,
+            "time_range": time_range,
+            "file_ext": file_ext,
+        }
+
+    def process_path(self, path):
+        """Cut a path into its identifiers
+
+        Parameters
+        ----------
+        path : str
+            The path to process. Path here means just the path, no filename
+            should be included.
+
+        Returns
+        -------
+        dict
+            A dictionary where each key is the identifier name and each value is the value of that identifier for the input path
+        """
+        path = path[:-1] if path.endswith(os.sep) else path
+        dirpath_bits = path.split(os.sep)
+        if (len(dirpath_bits) < 10) or any(["_" in d for d in dirpath_bits[-10:]]):
+            self._raise_path_error(path)
+
+        root_dir = os.sep.join(dirpath_bits[:-10])
+        if not root_dir:
+            root_dir = "."
+
+        return {
+            "root_dir": root_dir,
+            "mip_era": dirpath_bits[-10],
+            "activity_id": dirpath_bits[-9],
+            "institution_id": dirpath_bits[-8],
+            "source_id": dirpath_bits[-7],
+            "experiment_id": dirpath_bits[-6],
+            "member_id": dirpath_bits[-5],
+            "table_id": dirpath_bits[-4],
+            "variable_id": dirpath_bits[-3],
+            "grid_label": dirpath_bits[-2],
+            "version": dirpath_bits[-1],
+        }
 
     def get_filepath_from_load_data_from_identifiers_args(
         self,
@@ -1689,53 +1762,6 @@ class CMIP6OutputCube(_CMIPCube):
             "file_ext": self.file_ext,
         }
 
-    def get_load_data_from_identifiers_args_from_filepath(self, filepath):
-        """Get the set of identifiers to use to load data from a filepath.
-
-        Parameters
-        ----------
-        filepath : str
-            The filepath from which to load the data.
-
-        Returns
-        -------
-        dict
-            Set of arguments which can be passed to
-            ``self.load_data_from_identifiers`` to load the data in the filepath.
-        """
-        dirpath_bits = dirname(filepath).split(os.sep)
-        if (len(dirpath_bits) < 10) or any(["_" in d for d in dirpath_bits[-10:]]):
-            self._raise_filepath_error(filepath)
-
-        root_dir = os.sep.join(dirpath_bits[:-10])
-        if not root_dir:
-            root_dir = "."
-
-        filename_bits = basename(filepath).split("_")
-        if len(filename_bits) == 7:
-            time_range, file_ext = splitext(filename_bits[-1])
-            grid_label = filename_bits[-2]
-        elif len(filename_bits) == 6:
-            time_range = None
-            grid_label, file_ext = splitext(filename_bits[-1])
-        else:
-            self._raise_filepath_error(filepath)
-
-        return {
-            "root_dir": root_dir,
-            "mip_era": dirpath_bits[-10],
-            "activity_id": dirpath_bits[-9],
-            "institution_id": dirpath_bits[-8],
-            "source_id": filename_bits[2],
-            "experiment_id": filename_bits[3],
-            "member_id": filename_bits[4],
-            "table_id": filename_bits[1],
-            "variable_id": filename_bits[0],
-            "grid_label": grid_label,
-            "version": dirpath_bits[-1],
-            "time_range": time_range,
-            "file_ext": file_ext,
-        }
 
     def _get_data_filename(self):
         bits_to_join = [

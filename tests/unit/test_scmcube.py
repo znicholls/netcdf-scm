@@ -856,6 +856,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "sftlf_CanESM2_1pctCO2_r0i0p0.nc",
             "sftlf_fx_CanESM2_1pctCO2.nc",
             "sftlf_fx_CanESM2_1pctCO2-r0i0p0.nc",
+            "fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_.nc",
         ],
     )
     def test_process_filename_errors(self, test_cube, tname):
@@ -1412,6 +1413,67 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         self._run_test_get_filepath_from_load_data_from_identifiers_args(
             test_cube, tkwargs_list
         )
+
+    def test_process_filename(self, test_cube):
+        tname = "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
+        result = test_cube.process_filename(tname)
+        expected = {
+            "source_id": "CNRM-CM6-1",
+            "experiment_id": "dcppA-hindcast",
+            "member_id": "s1960-r2i1p1f3",
+            "variable_id": "pr",
+            "table_id": "day",
+            "grid_label": "gn",
+            "time_range": "198001-198412",
+            "file_ext": ".nc",
+        }
+
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        "tname",
+        [
+            "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_.nc",
+            "dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
+            "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3.nc"
+        ],
+    )
+    def test_process_filename_errors(self, test_cube, tname):
+        error_msg = re.escape("Filename does not look right: {}".format(tname))
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.process_filename(tname)
+
+    def test_process_path(self, test_cube):
+        tpath = "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/"
+        result = test_cube.process_path(tpath)
+        expected = {
+            "root_dir": ".",
+            "mip_era": "CMIP6",
+            "activity_id": "DCPP",
+            "institution_id": "CNRM-CERFACS",
+            "source_id": "CNRM-CM6-1",
+            "experiment_id": "dcppA-hindcast",
+            "member_id": "s1960-r2i1p1f3",
+            "table_id": "day",
+            "variable_id": "pr",
+            "grid_label": "gn",
+            "version": "v20160215",
+        }
+
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        "tpath",
+        [
+            "/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/day/pr/gn/v20160215",
+            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/s1960-r2i1p1f3/day/pr/gn/v20160215",
+            "CMIP6/DCPP/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/pr/gn/v20160215",
+        ],
+    )
+    def test_process_path_errors(self, test_cube, tpath):
+        error_msg = re.escape("Path does not look right: {}".format(tpath))
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.process_path(tpath)
 
     def test_get_metadata_load_arguments(self, test_cube):
         tmetadata_var = "mdata_var"
