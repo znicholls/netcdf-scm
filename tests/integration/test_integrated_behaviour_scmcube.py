@@ -387,6 +387,7 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
 class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
     tclass = MarbleCMIP5Cube
 
+
     def test_load_and_concatenate_files_in_directory_same_time(self, test_cube):
         tdir = join(
             TEST_DATA_MARBLE_CMIP5_DIR,
@@ -443,9 +444,82 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
             with pytest.raises(KeyError):
                 test_cube.cube.attributes[removed_attribute]
 
+    def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
+        tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/Amon/fco2antt/CanESM2/r1i1p1/fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc"
+        expected = {
+            "root_dir": "tests/test_data/marble_cmip5",
+            "activity": "cmip5",
+            "experiment": "1pctCO2",
+            "modeling_realm": "Amon",
+            "variable_name": "fco2antt",
+            "model": "CanESM2",
+            "ensemble_member": "r1i1p1",
+            "time_period": "185001-198912",
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    def test_get_load_data_from_identifiers_args_from_filepath_no_time(self, test_cube):
+        tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc"
+        expected = {
+            "root_dir": "tests/test_data/marble_cmip5",
+            "activity": "cmip5",
+            "experiment": "1pctCO2",
+            "modeling_realm": "fx",
+            "variable_name": "sftlf",
+            "model": "CanESM2",
+            "ensemble_member": "r0i0p0",
+            "time_period": None,
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
+        self, test_cube
+    ):
+        tpath = (
+            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc"
+        )
+        expected = {
+            "root_dir": ".",
+            "activity": "cmip5",
+            "experiment": "1pctCO2",
+            "modeling_realm": "fx",
+            "variable_name": "sftlf",
+            "model": "CanESM2",
+            "ensemble_member": "r0i0p0",
+            "time_period": None,
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        "tpath",
+        [
+            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_HadGem3_1pctCO2_r0i0p0.nc"
+        ],
+    )
+    def test_get_load_data_from_identifiers_args_from_filepath_errors(
+        self, test_cube, tpath
+    ):
+        error_msg = (
+            re.escape("Path and filename do not agree:") + "\n"
+            + re.escape("    - path model: CanESM2") + "\n"
+            + re.escape("    - filename model: HadGem3") + "\n"
+        )
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
 
 class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     tclass = CMIP6Input4MIPsCube
+
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
         expected_warn = (
@@ -482,6 +556,173 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
         assert test_cube.cube.long_name == "mole"
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
+    def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
+        tpath = "tests/test_data/cmip6-input4mips/input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc"
+        expected = {
+            "root_dir": "tests/test_data/cmip6-input4mips",
+            "activity_id": "input4MIPs",
+            "mip_era": "CMIP6",
+            "target_mip": "CMIP",
+            "institution_id": "PCMDI",
+            "source_id": "PCMDI-AMIP-1-1-4",
+            "realm": "ocean",
+            "frequency": "mon",
+            "variable_id": "tos",
+            "grid_label": "gn",
+            "version": "v20180427",
+            "dataset_category": "SSTsAndSeaIce",
+            "time_range": "187001-201712",
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    def test_get_load_data_from_identifiers_args_from_filepath_no_time(self, test_cube):
+        tpath = "tests/test_data/cmip6-input4mips/input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/land/fx/sftlf/gn/v20180427/sftlf_input4MIPs_landState_CMIP_PCMDI-AMIP-1-1-4_gn.nc"
+        expected = {
+            "root_dir": "tests/test_data/cmip6-input4mips",
+            "activity_id": "input4MIPs",
+            "mip_era": "CMIP6",
+            "target_mip": "CMIP",
+            "institution_id": "PCMDI",
+            "source_id": "PCMDI-AMIP-1-1-4",
+            "realm": "land",
+            "frequency": "fx",
+            "variable_id": "sftlf",
+            "grid_label": "gn",
+            "version": "v20180427",
+            "dataset_category": "landState",
+            "time_range": None,
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
+        self, test_cube
+    ):
+        tpath = "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc"
+        expected = {
+            "root_dir": ".",
+            "activity_id": "input4MIPs",
+            "mip_era": "CMIP6",
+            "target_mip": "CMIP",
+            "institution_id": "PCMDI",
+            "source_id": "PCMDI-AMIP-1-1-4",
+            "realm": "ocean",
+            "frequency": "mon",
+            "variable_id": "tos",
+            "grid_label": "gn",
+            "version": "v20180427",
+            "dataset_category": "SSTsAndSeaIce",
+            "time_range": "187001-201712",
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        "tpath",
+        [
+            "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tas/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc",
+        ],
+    )
+    def test_get_load_data_from_identifiers_args_from_filepath_errors(
+        self, test_cube, tpath
+    ):
+        error_msg = (
+            re.escape("Path and filename do not agree:") + "\n"
+            + re.escape("    - path variable_id: tas") + "\n"
+            + re.escape("    - filename variable_id: tos") + "\n"
+        )
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
 
 class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
     tclass = CMIP6OutputCube
+
+
+    def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
+        tpath = "tests/test_data/cmip6-output/CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
+        expected = {
+            "root_dir": "tests/test_data/cmip6-output",
+            "mip_era": "CMIP6",
+            "activity_id": "DCPP",
+            "institution_id": "CNRM-CERFACS",
+            "source_id": "CNRM-CM6-1",
+            "experiment_id": "dcppA-hindcast",
+            "member_id": "s1960-r2i1p1f3",
+            "table_id": "day",
+            "variable_id": "pr",
+            "grid_label": "gn",
+            "version": "v20160215",
+            "time_range": "198001-198412",
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    def test_get_load_data_from_identifiers_args_from_filepath_no_time(self, test_cube):
+        tpath = "tests/test_data/cmip6-output/CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/r0i0p0/fx/sftlf/gn/v20160215/sftlf_fx_CNRM-CM6-1_dcppA-hindcast_r0i0p0_gn.nc"
+        expected = {
+            "root_dir": "tests/test_data/cmip6-output",
+            "mip_era": "CMIP6",
+            "activity_id": "DCPP",
+            "institution_id": "CNRM-CERFACS",
+            "source_id": "CNRM-CM6-1",
+            "experiment_id": "dcppA-hindcast",
+            "member_id": "r0i0p0",
+            "table_id": "fx",
+            "variable_id": "sftlf",
+            "grid_label": "gn",
+            "version": "v20160215",
+            "time_range": None,
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
+        self, test_cube
+    ):
+        tpath = "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
+        expected = {
+            "root_dir": ".",
+            "mip_era": "CMIP6",
+            "activity_id": "DCPP",
+            "institution_id": "CNRM-CERFACS",
+            "source_id": "CNRM-CM6-1",
+            "experiment_id": "dcppA-hindcast",
+            "member_id": "s1960-r2i1p1f3",
+            "table_id": "day",
+            "variable_id": "pr",
+            "grid_label": "gn",
+            "version": "v20160215",
+            "time_range": "198001-198412",
+            "file_ext": ".nc",
+        }
+        result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        "tpath",
+        [
+            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3.nc",
+            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001_198412.nc",
+            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960_r2i1p1f3/day/pr/gn/v20160215",
+            "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/pr/gn/v20160215",
+        ],
+    )
+    def test_get_load_data_from_identifiers_args_from_filepath_errors(
+        self, test_cube, tpath
+    ):
+        error_msg = re.escape("Filepath does not look right: {}".format(tpath))
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
