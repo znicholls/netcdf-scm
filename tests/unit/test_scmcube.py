@@ -711,9 +711,7 @@ class _CMIPCubeTester(TestSCMCube):
         )
         test_cube.load_data_from_identifiers.assert_called_with(**tids)
 
-    def test_get_load_data_from_identifiers_args_from_filepath(
-        self, test_cube
-    ):
+    def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "/tpath/file.ext"
         test_cube.process_path = MagicMock(return_value={"a": "b"})
         test_cube.process_filename = MagicMock(return_value={"c": "d"})
@@ -725,16 +723,17 @@ class _CMIPCubeTester(TestSCMCube):
         test_cube.process_path.assert_called_with(dirname(tpath))
         test_cube.process_filename.assert_called_with(basename(tpath))
 
-    def test_get_load_data_from_identifiers_args_from_filepath_errors(
-        self, test_cube
-    ):
+    def test_get_load_data_from_identifiers_args_from_filepath_errors(self, test_cube):
         tpath = "/tpath/file.ext"
         test_cube.process_path = MagicMock(return_value={"model": "CanESM2"})
         test_cube.process_filename = MagicMock(return_value={"model": "HadGem3"})
         error_msg = (
-            re.escape("Path and filename do not agree:") + "\n"
-            + re.escape("    - path model: CanESM2") + "\n"
-            + re.escape("    - filename model: HadGem3") + "\n"
+            re.escape("Path and filename do not agree:")
+            + "\n"
+            + re.escape("    - path model: CanESM2")
+            + "\n"
+            + re.escape("    - filename model: HadGem3")
+            + "\n"
         )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
@@ -865,7 +864,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             test_cube.process_filename(tname)
 
     def test_process_path(self, test_cube):
-        tpath = "/tests/test_data/marble_cmip5/cmip5/1pctCO2/Amon/fco2antt/CanESM2/r1i1p1/"
+        tpath = (
+            "/tests/test_data/marble_cmip5/cmip5/1pctCO2/Amon/fco2antt/CanESM2/r1i1p1/"
+        )
         result = test_cube.process_path(tpath)
         expected = {
             "root_dir": "/tests/test_data/marble_cmip5",
@@ -1435,7 +1436,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         [
             "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_.nc",
             "dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
-            "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3.nc"
+            "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3.nc",
         ],
     )
     def test_process_filename_errors(self, test_cube, tname):
