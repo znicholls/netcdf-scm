@@ -865,17 +865,45 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
     @pytest.mark.parametrize(
         "tpath",
         [
-            "1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc",
-            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2-r0i0p0.nc",
-            "cmip5/1pctCO2_today/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2-r0i0p0.nc",
+            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_HadGem3_1pctCO2_r0i0p0.nc"
         ],
     )
     def test_get_load_data_from_identifiers_args_from_filepath_errors(
         self, test_cube, tpath
     ):
-        error_msg = re.escape("Filepath does not look right: {}".format(tpath))
+        error_msg = (
+            re.escape("Path and filename do not agree:") + "\n"
+            + re.escape("    - path model: CanESM2") + "\n"
+            + re.escape("    - filename model: HadGem3") + "\n"
+        )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+    @pytest.mark.parametrize(
+        "tname",
+        [
+            "sftlf_CanESM2_1pctCO2_r0i0p0.nc",
+            "sftlf_fx_CanESM2_1pctCO2.nc",
+            "sftlf_fx_CanESM2_1pctCO2-r0i0p0.nc",
+        ],
+    )
+    def test_process_filename(self, test_cube, tname):
+        error_msg = re.escape("Filename does not look right: {}".format(tname))
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.process_filename(tname)
+
+    @pytest.mark.parametrize(
+        "tpath",
+        [
+            "1pctCO2/fx/sftlf/CanESM2/r0i0p0",
+            "cmip5/1pctCO2/sftlf/CanESM2/r0i0p0",
+            "cmip5/1pctCO2_today/fx/sftlf/CanESM2/r0i0p0",
+        ],
+    )
+    def test_process_path_errors(self, test_cube, tpath):
+        error_msg = re.escape("Path does not look right: {}".format(tpath))
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.process_path(tpath)
 
     def test_get_data_directory(self, test_cube):
         expected = join(
