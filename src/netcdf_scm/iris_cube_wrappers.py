@@ -969,18 +969,6 @@ class _CMIPCube(SCMCube):
         end = self._get_timestamp_bits_from_filename(loaded_files[-1])["timeend_str"]
         self.time_period = self.time_period_separator.join([strt, end])
 
-    def _raise_filepath_error(self, filepath):
-        raise ValueError("Filepath does not look right: {}".format(filepath))
-
-
-class MarbleCMIP5Cube(_CMIPCube):
-    """Subclass of ``SCMCube`` which can be used with the ``cmip5`` directory on marble.
-
-    This directory structure is very similar, but not quite identical, to the
-    recommended CMIP5 directory structure described in section 3.1 of the
-    `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
-    """
-
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
         """Get the set of identifiers to use to load data from a filepath.
 
@@ -995,15 +983,51 @@ class MarbleCMIP5Cube(_CMIPCube):
             Set of arguments which can be passed to
             ``self.load_data_from_identifiers`` to load the data in the filepath.
         """
-        dirpath_bits = dirname(filepath).split(os.sep)
-        if (len(dirpath_bits) < 6) or any(["_" in d for d in dirpath_bits[-6:]]):
-            self._raise_filepath_error(filepath)
+        path_ids = self.process_path(dirname(filepath))
+        name_ids = self.process_filename(basename(filepath))
+        for key, value in path_ids.items():
+            if (key in name_ids) and (value != name_ids[key]):
+                error_msg = (
+                    "Path and filename do not agree:\n"
+                    "    - path {0}: {1}\n"
+                    "    - filename {0}: {2}\n".format(key, value, name_ids[key])
+                )
+                raise ValueError(error_msg)
 
-        root_dir = os.sep.join(dirpath_bits[:-6])
-        if not root_dir:
-            root_dir = "."
+        return {**path_ids, **name_ids}
 
-        filename_bits = basename(filepath).split("_")
+    def _raise_filepath_error(self, filepath):
+        raise ValueError("Filepath does not look right: {}".format(filepath))
+
+    def _raise_path_error(self, path):
+        raise ValueError("Path does not look right: {}".format(path))
+
+    def _raise_filename_error(self, filename):
+        raise ValueError("Filename does not look right: {}".format(filename))
+
+
+class MarbleCMIP5Cube(_CMIPCube):
+    """Subclass of ``SCMCube`` which can be used with the ``cmip5`` directory on marble.
+
+    This directory structure is very similar, but not quite identical, to the
+    recommended CMIP5 directory structure described in section 3.1 of the
+    `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
+    """
+    def process_filename(self, filename):
+        """Cut a filename into its identifiers
+
+        Parameters
+        ----------
+        filename : str
+            The filename to process. Filename here means just the filename, no path
+            should be included.
+
+        Returns
+        -------
+        dict
+            A dictionary where each key is the identifier name and each value is the value of that identifier for the input filename
+        """
+        filename_bits = filename.split("_")
         if len(filename_bits) == 6:
             time_period, file_ext = splitext(filename_bits[-1])
             ensemble_member = filename_bits[-2]
@@ -1011,11 +1035,9 @@ class MarbleCMIP5Cube(_CMIPCube):
             time_period = None
             ensemble_member, file_ext = splitext(filename_bits[-1])
         else:
-            self._raise_filepath_error(filepath)
+            self._raise_filename_error(filename)
 
         return {
-            "root_dir": root_dir,
-            "activity": dirpath_bits[-6],
             "variable_name": filename_bits[0],
             "modeling_realm": filename_bits[1],
             "model": filename_bits[2],
@@ -1023,6 +1045,39 @@ class MarbleCMIP5Cube(_CMIPCube):
             "ensemble_member": ensemble_member,
             "time_period": time_period,
             "file_ext": file_ext,
+        }
+
+
+    def process_path(self, path):
+        """Cut a path into its identifiers
+
+        Parameters
+        ----------
+        path : str
+            The path to process. Path here means just the path, no filename
+            should be included.
+
+        Returns
+        -------
+        dict
+            A dictionary where each key is the identifier name and each value is the value of that identifier for the input path
+        """
+        dirpath_bits = path.split(os.sep)
+        if (len(dirpath_bits) < 6) or any(["_" in d for d in dirpath_bits[-6:]]):
+            self._raise_path_error(path)
+
+        root_dir = os.sep.join(dirpath_bits[:-6])
+        if not root_dir:
+            root_dir = "."
+
+        return {
+            "root_dir": root_dir,
+            "activity": dirpath_bits[-6],
+            "variable_name": dirpath_bits[-3],
+            "modeling_realm": dirpath_bits[-4],
+            "model": dirpath_bits[-2],
+            "experiment": dirpath_bits[-5],
+            "ensemble_member": dirpath_bits[-1],
         }
 
     def get_filepath_from_load_data_from_identifiers_args(
