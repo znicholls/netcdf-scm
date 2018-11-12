@@ -1010,6 +1010,7 @@ class MarbleCMIP5Cube(_CMIPCube):
     recommended CMIP5 directory structure described in section 3.1 of the
     `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
     """
+
     def process_filename(self, filename):
         """Cut a filename into its identifiers
 
@@ -1236,6 +1237,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
     The data must match the CMIP6 Forcing Datasets Summary, specifically the
     `Forcing Dataset Specifications <https://docs.google.com/document/d/1pU9IiJvPJwRvIgVaSDdJ4O0Jeorv_2ekEtted34K9cA/edit#heading=h.cn9f7982ycw6>`_.
     """
+
     def process_filename(self, filename):
         """Cut a filename into its identifiers
 
@@ -1489,7 +1491,6 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             "file_ext": self.file_ext,
         }
 
-
     def _get_data_filename(self):
         bits_to_join = [
             self.variable_id,
@@ -1527,6 +1528,7 @@ class CMIP6OutputCube(_CMIPCube):
     template' and 'Directory structure template' sections of the
     `CMIP6 Data Reference Syntax <https://goo.gl/v1drZl>`_.
     """
+
     def process_filename(self, filename):
         """Cut a filename into its identifiers
 
@@ -1761,7 +1763,6 @@ class CMIP6OutputCube(_CMIPCube):
             "time_range": None,
             "file_ext": self.file_ext,
         }
-
 
     def _get_data_filename(self):
         bits_to_join = [
