@@ -13,13 +13,12 @@ from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
 def test_crunching(tmpdir):
     here = abspath(dirname(__file__))
 
-    THRESHOLD_PERCENTAGE_DIFF = 10**-1
+    THRESHOLD_PERCENTAGE_DIFF = 10 ** -1
 
     SCRIPT_TO_RUN = join(here, "..", "..", "scripts/crunch_to_scm.py")
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = tmpdir
     VAR_TO_CRUNCH = "tas"
-
 
     command = [
         "python",
@@ -49,21 +48,27 @@ def test_crunching(tmpdir):
                 skiprows=3,
                 delim_whitespace=True,
                 header=None,
-                names=["year", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                names=["year", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             ).melt(id_vars="year", var_name="month")
             knmi_data["year"] = knmi_data["year"].astype(int)
             knmi_data["month"] = knmi_data["month"].astype(int)
             knmi_data = knmi_data.set_index(["year", "month"])
 
-            crunched_data = pd.read_csv(
-                join(dirpath, filename),
-                header=list(range(5)),
-                index_col=0
-            ).reset_index().melt(id_vars="time")
+            crunched_data = (
+                pd.read_csv(join(dirpath, filename), header=list(range(5)), index_col=0)
+                .reset_index()
+                .melt(id_vars="time")
+            )
 
-            comparison_data = crunched_data[crunched_data["region"] == "World"][["time", "value"]]
-            comparison_data["year"] = comparison_data["time"].apply(lambda x: int(x.split("-")[0]))
-            comparison_data["month"] = comparison_data["time"].apply(lambda x: int(x.split("-")[1]))
+            comparison_data = crunched_data[crunched_data["region"] == "World"][
+                ["time", "value"]
+            ]
+            comparison_data["year"] = comparison_data["time"].apply(
+                lambda x: int(x.split("-")[0])
+            )
+            comparison_data["month"] = comparison_data["time"].apply(
+                lambda x: int(x.split("-")[1])
+            )
             comparison_data = comparison_data.drop("time", axis="columns")
             comparison_data = comparison_data.set_index(["year", "month"])
 
@@ -71,7 +76,15 @@ def test_crunching(tmpdir):
             # drop regions where times are not equal
             rel_difference = rel_difference.dropna()
 
-            assert_message = "{} data is not the same to within {}%".format(filename, THRESHOLD_PERCENTAGE_DIFF)
+            assert_message = "{} data is not the same to within {}%".format(
+                filename, THRESHOLD_PERCENTAGE_DIFF
+            )
 
-            assert (np.abs(rel_difference.values) < THRESHOLD_PERCENTAGE_DIFF / 100).all(), assert_message
-            print("{} file matches KNMI data to within {}%".format(filename, THRESHOLD_PERCENTAGE_DIFF))
+            assert (
+                np.abs(rel_difference.values) < THRESHOLD_PERCENTAGE_DIFF / 100
+            ).all(), assert_message
+            print(
+                "{} file matches KNMI data to within {}%".format(
+                    filename, THRESHOLD_PERCENTAGE_DIFF
+                )
+            )
