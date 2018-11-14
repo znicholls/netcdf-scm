@@ -155,7 +155,7 @@ def crunch_data(
         msg_underline.join(failures),
     )
 
-    already_exist_header = "Already exist"
+    already_exist_header = "Skipped (already exist and not overwriting)"
     if already_exist_files:
         already_exist_files_string = "- {}\n".format("\n- ".join(already_exist_files))
     else:
