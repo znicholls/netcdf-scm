@@ -11,8 +11,8 @@ import cf_units as unit
 from netcdf_scm.iris_cube_wrappers import SCMCube
 
 
-TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test_data")
-TEST_DATA_MARBLE_CMIP5_DIR = join(TEST_DATA_ROOT_DIR, "marble_cmip5")
+TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test-data")
+TEST_DATA_MARBLE_CMIP5_DIR = join(TEST_DATA_ROOT_DIR, "marble-cmip5")
 TEST_TAS_FILE = join(
     TEST_DATA_MARBLE_CMIP5_DIR,
     "cmip5",
