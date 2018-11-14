@@ -1,4 +1,3 @@
-import sys
 import argparse
 import os
 from os import walk, makedirs, path
