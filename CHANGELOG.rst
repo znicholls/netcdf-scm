@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#28 <https://github.com/znicholls/netcdf-scm/pull/28>`_) Added cmip5 crunching script example, not tested so use with caution until `#6 <https://github.com/znicholls/netcdf-scm/issues/6>`_ is closed
 
 v0.5.1
 ------
