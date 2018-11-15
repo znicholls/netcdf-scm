@@ -1,8 +1,10 @@
+import sys
 import argparse
 import os
 from os import walk, makedirs, path
 from os.path import join, isfile
 import warnings
+import traceback
 import time
 from time import gmtime, strftime
 
@@ -119,6 +121,7 @@ def crunch_data(
                     magicc_df = scmcube.get_scm_timeseries(
                         land_mask_threshold=land_mask_threshold
                     )
+
                     magicc_df.df = magicc_df.df.pivot_table(
                         values="value",
                         index=["time"],
@@ -126,9 +129,11 @@ def crunch_data(
                     )
                     magicc_df.df.to_csv(out_filepath)
 
-                except Exception as exc:
+                except Exception:
+                    import pdb
+                    pdb.set_trace()
                     header = "Exception"
-                    exc_string = header + "\n" + "-" * len(header) + "\n" + str(exc)
+                    exc_string = header + "\n" + "-" * len(header) + "\n" + traceback.format_exc()
 
                     # ideally would write to a logger here
                     failures.append("{}\n{}\n{}".format(dirpath, filenames, exc_string))
@@ -192,6 +197,8 @@ def crunch_data(
     with open(summary_file, "w") as ef:
         ef.write(output_string)
 
+    return bool(failures)
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -215,13 +222,15 @@ def main():
 
     args = parser.parse_args()
 
-    crunch_data(
+    any_error = crunch_data(
         args.input,
         args.output,
         var_to_crunch=args.var_to_crunch,
         land_mask_threshold=args.land_mask_threshold,
         force_regeneration=args.force,
     )
+
+    sys.exit(any_error)
 
 
 if __name__ == "__main__":
