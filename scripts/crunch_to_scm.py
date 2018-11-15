@@ -131,9 +131,16 @@ def crunch_data(
 
                 except Exception:
                     import pdb
+
                     pdb.set_trace()
                     header = "Exception"
-                    exc_string = header + "\n" + "-" * len(header) + "\n" + traceback.format_exc()
+                    exc_string = (
+                        header
+                        + "\n"
+                        + "-" * len(header)
+                        + "\n"
+                        + traceback.format_exc()
+                    )
 
                     # ideally would write to a logger here
                     failures.append("{}\n{}\n{}".format(dirpath, filenames, exc_string))
