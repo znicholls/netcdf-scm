@@ -295,7 +295,6 @@ class _SCMCubeIntegrationTester(object):
 class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
     tclass = SCMCube
 
-    @tdata_required
     def test_load_and_concatenate_files_in_directory_same_time(self, test_cube):
         tdir = join(
             TEST_DATA_MARBLE_CMIP5_DIR,
@@ -323,7 +322,6 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
             with pytest.raises(KeyError):
                 test_cube.cube.attributes[removed_attribute]
 
-    @tdata_required
     def test_load_and_concatenate_files_in_directory_different_time(self, test_cube):
         tdir = join(
             TEST_DATA_MARBLE_CMIP5_DIR,
@@ -350,7 +348,6 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
             with pytest.raises(KeyError):
                 test_cube.cube.attributes[removed_attribute]
 
-    @tdata_required
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
@@ -371,9 +368,7 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
         obs_time_points = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
-        assert obs_time_points[0] == cftime.DatetimeGregorian(
-            5, 7, 3, 12, 0, 0, 0, 4, 184
-        )
+        assert obs_time_points[0] == datetime.datetime(5, 7, 3, 12, 0)
         assert obs_time_points[-1] == datetime.datetime(2014, 7, 3, 12, 0)
 
         assert test_cube.cube.attributes["institution_id"] == "UoM"
@@ -390,7 +385,6 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
 class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
     tclass = MarbleCMIP5Cube
 
-    @tdata_required
     def test_load_and_concatenate_files_in_directory_same_time(self, test_cube):
         tdir = join(
             TEST_DATA_MARBLE_CMIP5_DIR,
@@ -420,7 +414,6 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
             with pytest.raises(KeyError):
                 test_cube.cube.attributes[removed_attribute]
 
-    @tdata_required
     def test_load_and_concatenate_files_in_directory_different_time(self, test_cube):
         tdir = join(
             TEST_DATA_MARBLE_CMIP5_DIR,
@@ -525,7 +518,6 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
 class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     tclass = CMIP6Input4MIPsCube
 
-    @tdata_required
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
@@ -546,9 +538,8 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
         obs_time_points = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
-        assert obs_time_points[0] == cftime.DatetimeGregorian(
-            5, 7, 3, 12, 0, 0, 0, 4, 184
-        )
+
+        assert obs_time_points[0] == datetime.datetime(5, 7, 3, 12, 0)
         assert obs_time_points[-1] == datetime.datetime(2014, 7, 3, 12, 0)
 
         assert test_cube.cube.attributes["institution_id"] == "UoM"

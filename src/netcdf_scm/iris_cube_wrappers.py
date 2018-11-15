@@ -838,6 +838,7 @@ class SCMCube(object):
     def _convert_scm_timeseries_cubes_to_openscmdata(
         self, scm_timeseries_cubes, out_calendar=None
     ):
+        # could probably just use iris.pandas.to_series() here..?
         data = {k: get_cube_timeseries_data(v) for k, v in scm_timeseries_cubes.items()}
 
         time_index, out_calendar = self._get_openscmdata_time_axis_and_calendar(
