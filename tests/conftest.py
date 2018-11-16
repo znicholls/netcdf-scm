@@ -34,6 +34,9 @@ TEST_AREACELLA_FILE = join(
     "r0i0p0",
     "areacella_fx_CanESM2_1pctCO2_r0i0p0.nc",
 )
+TEST_ACCESS_CMIP5_FILE = join(
+    "access file goes here"
+)
 TEST_DATA_CMIP6Input4MIPS_DIR = join(TEST_DATA_ROOT_DIR, "cmip6input4mips")
 TEST_CMIP6_HISTORICAL_CONCS_FILE = join(
     TEST_DATA_CMIP6Input4MIPS_DIR,

@@ -25,6 +25,7 @@ from netcdf_scm.iris_cube_wrappers import (
 from conftest import (
     TEST_TAS_FILE,
     TEST_AREACELLA_FILE,
+    TEST_ACCESS_CMIP5_FILE,
     tdata_required,
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_CMIP6_HISTORICAL_CONCS_FILE,
@@ -380,6 +381,9 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
         assert test_cube.cube.name() == "mole"
         assert test_cube.cube.long_name == "mole"
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
+
+    def test_access_cmip5_read_issue_xx(self, test_cube):
+        test_cube.load_data_from_path(TEST_ACCESS_CMIP5_FILE)
 
 
 class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
