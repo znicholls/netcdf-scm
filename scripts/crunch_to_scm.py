@@ -130,9 +130,6 @@ def crunch_data(
                     magicc_df.df.to_csv(out_filepath)
 
                 except Exception:
-                    import pdb
-
-                    pdb.set_trace()
                     header = "Exception"
                     exc_string = (
                         header
@@ -145,6 +142,7 @@ def crunch_data(
                     # ideally would write to a logger here
                     failures.append("{}\n{}\n{}".format(dirpath, filenames, exc_string))
                     continue
+
         bar.finish()
 
     header_underline = "="
