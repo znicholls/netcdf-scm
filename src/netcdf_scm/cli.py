@@ -15,9 +15,9 @@ def process_args():
 
 def main():
     _args = process_args()
-    logging.basicConfig(level=logging.DEBUG if _args.verbose else logging.INFO,
-                        format="%(asctime)s %(levelname)s:%(name)s:%(message)s")
-
+    root_logger = logging.getLogger()
+    logging.basicConfig(format="%(asctime)s %(levelname)s:%(name)s:%(message)s")
+    root_logger.level = logging.DEBUG if _args.verbose else logging.INFO
 
 if __name__ == '__main__':
     main()
