@@ -76,4 +76,8 @@ setup(
         "deploy": ["twine", "setuptools", "wheel", "flake8", "black", "versioneer"],
     },
     cmdclass=cmdclass,
+    entry_points={
+        'netcdf-scm':
+            ['netcdf_scm = netcdf_scm.cli:main']
+    },
 )
