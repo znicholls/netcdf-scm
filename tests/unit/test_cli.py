@@ -1,13 +1,13 @@
+from logging import getLogger, DEBUG, INFO
+from unittest.mock import patch
+
 import pytest
 
-from argparse import Namespace
 from netcdf_scm.cli import main
-
-from unittest.mock import patch
-from logging import getLogger, DEBUG, INFO
 
 # Default cli parameters to include in the config. These are normally set in `netcdf_scm.cli.process_args` from sys.argv
 default_config = {
+    'cmd': None,
     'verbose': False
 }
 
@@ -26,7 +26,8 @@ def with_cli_config():
         def set_config(**d):
             args = default_config.copy()
             args.update(d)
-            mock_process_args.return_value = Namespace(**args)
+            mock_process_args.return_value = args
+
         yield set_config
 
 
@@ -40,5 +41,3 @@ def test_verbose_flag(with_cli_config):
     main()
 
     assert getLogger().level == DEBUG
-
-

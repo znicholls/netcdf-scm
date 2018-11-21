@@ -1,5 +1,8 @@
 import argparse
 import logging
+import sys
+
+from netcdf_scm.commands import run_command
 
 logger = logging.getLogger('netcdf_scm')
 
@@ -10,14 +13,27 @@ def process_args():
                                                  'climate models')
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
 
-    return parser.parse_args()
+    # Extract the cli arguments
+    args = parser.parse_args()
+
+    # If a command is not specified exit with code 1
+    if not args.cmd:
+        parser.print_help()
+        sys.exit(1)
+
+    return {k: v for k, v in args._get_kwargs()}
 
 
 def main():
-    _args = process_args()
+    args = process_args()
     root_logger = logging.getLogger()
     logging.basicConfig(format="%(asctime)s %(levelname)s:%(name)s:%(message)s")
-    root_logger.level = logging.DEBUG if _args.verbose else logging.INFO
+    root_logger.level = logging.DEBUG if args['verbose'] else logging.INFO
+
+    # Run the requested command
+    cmd_name = args.pop('cmd')
+    run_command(cmd_name, args)
+
 
 if __name__ == '__main__':
     main()
