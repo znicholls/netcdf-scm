@@ -77,7 +77,7 @@ setup(
     },
     cmdclass=cmdclass,
     entry_points={
-        'netcdf-scm':
-            ['netcdf_scm = netcdf_scm.cli:main']
+        'console_scripts':
+            ['netcdf-scm = netcdf_scm.cli:main']
     },
 )

@@ -8,5 +8,5 @@ class BaseCommand(object):
     def initialise(self, subparser):
         pass
 
-    def run(self):
+    def run(self, args):
         pass
