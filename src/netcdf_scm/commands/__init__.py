@@ -18,7 +18,7 @@ from .base import BaseCommand
 logger = getLogger(__name__)
 
 
-def _init_commands():
+def _find_commands():
     cmds = []
 
     # Find all submodules
@@ -39,11 +39,17 @@ def _init_commands():
 
 
 # Cache the loaded modules
-_commands = _init_commands()
+_commands = _find_commands()
 
 
 def get_commands():
     return _commands
+
+
+def initialise_parser(parser):
+    for cmd in get_commands():
+        p = parser.add_parser(cmd.name, help=cmd.help)
+        cmd.initialise_parser(p)
 
 
 def run_command(cmd_name, args):

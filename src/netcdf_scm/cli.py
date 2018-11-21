@@ -2,7 +2,7 @@ import argparse
 import logging
 import sys
 
-from netcdf_scm.commands import run_command
+from netcdf_scm.commands import run_command, initialise_parser
 
 logger = logging.getLogger('netcdf_scm')
 
@@ -12,6 +12,10 @@ def process_args():
                                      description='Python wrapper for processing netCDF files for use with simple '
                                                  'climate models')
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
+
+    # Add all the parser information from the commands
+    subparsers = parser.add_subparsers(dest='cmd')
+    initialise_parser(subparsers)
 
     # Extract the cli arguments
     args = parser.parse_args()
