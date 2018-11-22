@@ -382,8 +382,18 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
         assert test_cube.cube.long_name == "mole"
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
-    def test_access_cmip5_read_issue_xx(self, test_cube):
+    def test_access_cmip5_read_issue_30(self, test_cube):
         test_cube.load_data_from_path(TEST_ACCESS_CMIP5_FILE)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
+        assert obs_time.units.calendar == "proleptic_gregorian"
+
+        obs_time_points = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+        assert obs_time_points[0] == datetime.datetime(2006, 1, 16, 12, 0)
+        assert obs_time_points[-1] == datetime.datetime(2049, 12, 16, 12, 0)
 
 
 class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
@@ -517,6 +527,21 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
         )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+    def test_access_cmip5_read_issue_30(self, test_cube):
+        test_cube.load_data_from_path(TEST_ACCESS_CMIP5_FILE)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
+        assert obs_time.units.calendar == "proleptic_gregorian"
+
+        obs_time_points = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+        assert obs_time_points[0] == datetime.datetime(2006, 1, 16, 12, 0)
+        assert obs_time_points[-1] == datetime.datetime(2049, 12, 16, 12, 0)
+
+        assert test_cube.model == "ACCESS1-0"
 
 
 class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
