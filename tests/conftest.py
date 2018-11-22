@@ -35,7 +35,14 @@ TEST_AREACELLA_FILE = join(
     "areacella_fx_CanESM2_1pctCO2_r0i0p0.nc",
 )
 TEST_ACCESS_CMIP5_FILE = join(
-    "access file goes here"
+    TEST_DATA_MARBLE_CMIP5_DIR,
+    "cmip5",
+    "rcp45",
+    "Amon",
+    "tas",
+    "ACCESS1-0",
+    "r1i1p1",
+    "tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc",
 )
 TEST_DATA_CMIP6Input4MIPS_DIR = join(TEST_DATA_ROOT_DIR, "cmip6input4mips")
 TEST_CMIP6_HISTORICAL_CONCS_FILE = join(

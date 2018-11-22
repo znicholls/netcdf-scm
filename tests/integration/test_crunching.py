@@ -75,11 +75,11 @@ def test_crunching(tmpdir):
             rel_difference = (knmi_data - comparison_data) / knmi_data
             # drop regions where times are not equal
             rel_difference = rel_difference.dropna()
+            assert not rel_difference.empty, "not testing anything"
 
             assert_message = "{} data is not the same to within {}%".format(
                 filename, THRESHOLD_PERCENTAGE_DIFF
             )
-
             assert (
                 np.abs(rel_difference.values) < THRESHOLD_PERCENTAGE_DIFF / 100
             ).all(), assert_message
