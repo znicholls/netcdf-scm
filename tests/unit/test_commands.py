@@ -5,6 +5,7 @@ import pytest
 from netcdf_scm.commands import run_command
 from netcdf_scm.commands.base import BaseCommand
 
+
 @patch('netcdf_scm.commands.get_commands')
 def test_missing_command(mock_commands):
     mock_commands.return_value = []
@@ -24,6 +25,4 @@ def test_runs_command(mock_commands):
         'passed_arg': True
     })
 
-    mock_command.run.assert_called_with({
-        'passed_arg': True
-    })
+    mock_command.run.assert_called_with(passed_arg=True)

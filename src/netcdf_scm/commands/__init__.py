@@ -31,10 +31,13 @@ def _find_commands():
                 continue
 
             # Check if subclass of BaseCommand
-            v = getattr(mod, m)
-            if issubclass(v, BaseCommand):
-                logger.debug('Found command {}'.format('.'.join([__package__, mod_name, m])))
-                cmds.append(v())
+            try:
+                v = getattr(mod, m)
+                if issubclass(v, BaseCommand) and v.name:
+                    logger.debug('Found command {}: {}'.format(v.name, '.'.join([__package__, mod_name, m])))
+                    cmds.append(v())
+            except TypeError:
+                pass
     return cmds
 
 
@@ -52,10 +55,13 @@ def initialise_parser(parser):
         cmd.initialise_parser(p)
 
 
-def run_command(cmd_name, args):
+def run_command(cmd_name, cli_args):
+    # Drop all the None args
+    kwargs = {k: cli_args[k] for k in cli_args if cli_args[k] is not None}
+
     for cmd in get_commands():
         if cmd.name == cmd_name:
-            cmd.run(args)
+            cmd.run(**kwargs)
             logger.debug('command: {} completed successfully'.format(cmd_name))
             return
     raise KeyError('No command {}'.format(cmd_name))
