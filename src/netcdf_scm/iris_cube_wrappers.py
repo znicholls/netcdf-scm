@@ -1093,6 +1093,7 @@ class MarbleCMIP5Cube(_CMIPCube):
         ensemble_member="ensemble-member",
         time_period=None,
         file_ext=".nc",
+        **kwargs
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
@@ -1136,13 +1137,14 @@ class MarbleCMIP5Cube(_CMIPCube):
         str
             The full filepath (path and name) of the file to load.
         """
-        inargs = locals()
+        inargs = locals().copy()
         del inargs["self"]
         # if the step above ever gets more complicated, use the solution here
         # http://kbyanc.blogspot.com/2007/07/python-aggregating-function-arguments.html
 
         for name, value in inargs.items():
-            setattr(self, name, value)
+            if name is not "kwargs":
+                setattr(self, name, value)
 
         return join(self._get_data_directory(), self._get_data_filename())
 

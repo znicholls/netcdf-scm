@@ -81,6 +81,7 @@ class TestSCMCube(object):
             "modeling_realm": "Amon",
             "model": "CanESM2",
             "experiment": "1pctCO2",
+            "extra": "param"
         }
         test_cube.load_data_from_identifiers(**tkwargs)
 
