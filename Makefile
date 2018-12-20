@@ -108,8 +108,9 @@ test-testpypi-install: venv
 	$(TEMPVENV)/bin/pip install \
 		-i https://testpypi.python.org/pypi netcdf-scm \
 		--no-dependencies --pre
+		# Remove local directory from path to get actual installed version.
 	@echo "This doesn't test dependencies"
-	$(TEMPVENV)/bin/python -c "from netcdf_scm import *; import netcdf_scm; print(netcdf_scm.__version__)"
+	$(TEMPVENV)/bin/python -c "import sys; sys.path.remove(''); import netcdf_scm; print(netcdf_scm.__version__)"
 
 .PHONY: publish-on-pypi
 publish-on-pypi:
