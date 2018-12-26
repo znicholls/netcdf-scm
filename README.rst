@@ -91,8 +91,8 @@ Contributing
 
 Please see the `Development section of the docs <https://netcdf-scm.readthedocs.io/en/latest/development.html>`_.
 
-.. |Build Status| image:: https://travis-ci.org/znicholls/netcdf-scm.svg?branch=master
-    :target: https://travis-ci.org/znicholls/netcdf-scm
+.. |Build Status| image:: https://travis-ci.com/znicholls/netcdf-scm.svg?branch=master
+    :target: https://travis-ci.com/znicholls/netcdf-scm
 .. |Docs| image:: https://readthedocs.org/projects/netcdf-scm/badge/?version=latest
     :target: https://netcdf-scm.readthedocs.io/en/latest/
 .. |Codecov| image:: https://img.shields.io/codecov/c/github/znicholls/netcdf-scm.svg
