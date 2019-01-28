@@ -5,3 +5,4 @@ python-dateutil
 progressbar2
 matplotlib
 git+https://github.com/thedataincubator/expectexception.git@master
+git+https://github.com/openclimatedata/openscm.git@add-openscm-dataframe

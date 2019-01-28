@@ -60,9 +60,7 @@ def test_crunching(tmpdir):
                 .melt(id_vars="time")
             )
 
-            comparison_data = crunched_data[crunched_data["region"] == "World"][
-                ["time", "value"]
-            ]
+            comparison_data = crunched_data.fiter(region="World")[["time", "value"]]
             comparison_data["year"] = comparison_data["time"].apply(
                 lambda x: int(x.split("-")[0])
             )
