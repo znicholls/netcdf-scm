@@ -66,7 +66,6 @@ setup(
     install_requires=[
         "python-dateutil",
         "progressbar2",
-        "pymagicc>=2.0.0-alpha",
         "pandas",
         "numpy",
     ],

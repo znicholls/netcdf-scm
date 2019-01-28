@@ -5,6 +5,7 @@ import subprocess
 
 import pandas as pd
 import numpy as np
+from openscm.highlevel import OpenSCMDataFrame
 
 
 from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
@@ -17,9 +18,8 @@ def test_crunching(tmpdir):
 
     SCRIPT_TO_RUN = join(here, "..", "..", "scripts/crunch_to_scm.py")
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
-    OUTPUT_DIR = tmpdir
+    OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = "tas"
-
     command = [
         "python",
         SCRIPT_TO_RUN,
@@ -54,19 +54,12 @@ def test_crunching(tmpdir):
             knmi_data["month"] = knmi_data["month"].astype(int)
             knmi_data = knmi_data.set_index(["year", "month"])
 
-            crunched_data = (
-                pd.read_csv(join(dirpath, filename), header=list(range(5)), index_col=0)
-                .reset_index()
-                .melt(id_vars="time")
-            )
+            crunched_data = OpenSCMDataFrame(join(dirpath, filename))
+            comparison_data = crunched_data.filter(region="World")[["time", "value"]]
 
-            comparison_data = crunched_data.fiter(region="World")[["time", "value"]]
-            comparison_data["year"] = comparison_data["time"].apply(
-                lambda x: int(x.split("-")[0])
-            )
-            comparison_data["month"] = comparison_data["time"].apply(
-                lambda x: int(x.split("-")[1])
-            )
+            comparison_data["year"] = comparison_data["time"].apply(lambda x: x.year)
+            comparison_data["month"] = comparison_data["time"].apply(lambda x: x.month)
+
             comparison_data = comparison_data.drop("time", axis="columns")
             comparison_data = comparison_data.set_index(["year", "month"])
 
@@ -78,9 +71,11 @@ def test_crunching(tmpdir):
             assert_message = "{} data is not the same to within {}%".format(
                 filename, THRESHOLD_PERCENTAGE_DIFF
             )
-            assert (
+            all_close = (
                 np.abs(rel_difference.values) < THRESHOLD_PERCENTAGE_DIFF / 100
-            ).all(), assert_message
+            ).all()
+            assert all_close, assert_message
+
             print(
                 "{} file matches KNMI data to within {}%".format(
                     filename, THRESHOLD_PERCENTAGE_DIFF

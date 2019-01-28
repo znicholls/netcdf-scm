@@ -258,16 +258,16 @@ class TestSCMCube(object):
 
         assert_frame_equal(result, test_conversion_return)
 
-    def test_get_model_scenario(self, test_cube):
+    def test_get_climate_model_scenario(self, test_cube):
         warn_msg = (
-            "Could not determine appropriate model scenario combination, filling with "
-            "'unknown'"
+            "Could not determine appropriate climate_model scenario combination, "
+            "filling with 'unspecified'"
         )
         with warnings.catch_warnings(record=True) as recorded_warnings:
-            model, scenario = test_cube._get_model_scenario()
+            model, scenario = test_cube._get_climate_model_scenario()
 
-        assert model == "unknown"
-        assert scenario == "unknown"
+        assert model == "unspecified"
+        assert scenario == "unspecified"
         assert len(recorded_warnings) == 1
         assert str(recorded_warnings[0].message) == warn_msg
 
@@ -281,7 +281,7 @@ class TestSCMCube(object):
         test_cube.experiment = texperiment
         test_cube.ensemble_member = tensemble_member
 
-        model, scenario = test_cube._get_model_scenario()
+        model, scenario = test_cube._get_climate_model_scenario()
         assert model == tmodel
         assert scenario == tscenario
 
