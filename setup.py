@@ -63,12 +63,7 @@ setup(
     packages=find_packages(SOURCE_DIR),  # no tests/docs in `src` so don't need exclude
     package_dir={"": SOURCE_DIR},
     # include_package_data=True,
-    install_requires=[
-        "python-dateutil",
-        "progressbar2",
-        "pandas",
-        "numpy",
-    ],
+    install_requires=["python-dateutil", "progressbar2", "pandas", "numpy"],
     extras_require={
         "docs": ["sphinx", "sphinx_rtd_theme"],
         "test": ["nbresuse", "nbval", "codecov", "pytest-cov", "pytest"],
