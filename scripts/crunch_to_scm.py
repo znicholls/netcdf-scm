@@ -118,16 +118,10 @@ def crunch_data(
                             already_exist_files.append(out_filepath)
                             continue
 
-                    magicc_df = scmcube.get_scm_timeseries(
+                    results = scmcube.get_scm_timeseries(
                         land_mask_threshold=land_mask_threshold
                     )
-
-                    magicc_df.df = magicc_df.df.pivot_table(
-                        values="value",
-                        index=["time"],
-                        columns=["variable", "unit", "region", "model", "scenario"],
-                    )
-                    magicc_df.df.to_csv(out_filepath)
+                    results.to_csv(out_filepath)
 
                 except Exception:
                     header = "Exception"
