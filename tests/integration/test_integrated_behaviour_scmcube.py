@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 import re
 import warnings
 import datetime
+from dateutil import parser
 
 
 import pytest
@@ -13,7 +14,7 @@ import iris
 from iris.util import broadcast_to_shape
 import cf_units
 import cftime
-from pymagicc.io import MAGICCData
+from openscm.highlevel import OpenSCMDataFrame
 
 
 from netcdf_scm.iris_cube_wrappers import (
@@ -177,6 +178,8 @@ class _SCMCubeIntegrationTester(object):
 
         time = sh_ocean_cube.cube.dim_coords[0]
         datetimes = cf_units.num2date(time.points, time.units.name, expected_calendar)
+        if not isinstance(datetimes[0], datetime.datetime):
+            datetimes = np.array([parser.parse(x.strftime()) for x in datetimes])
         time_index = pd.Index(datetimes, dtype="object", name="time")
 
         expected_df = pd.DataFrame(
@@ -192,21 +195,21 @@ class _SCMCubeIntegrationTester(object):
                 [test_cube.cube.standard_name],
                 [test_cube.cube.units.name],
                 expected_df.columns.tolist(),
-                ["unknown"],
-                ["unknown"],
+                ["unspecified"],
+                ["unspecified"],
+                ["unspecified"],
             ],
-            names=["variable", "unit", "region", "model", "scenario"],
+            names=["variable", "unit", "region", "climate_model", "scenario", "model"],
         )
         expected_df = (
             expected_df.unstack().reset_index().rename({0: "value"}, axis="columns")
         )
 
-        expected = MAGICCData()
-        expected.df = expected_df
+        expected = OpenSCMDataFrame(expected_df)
         expected.metadata = {"calendar": expected_calendar}
 
         assert result.metadata == expected.metadata
-        assert_frame_equal(result.df, expected.df)
+        assert_frame_equal(result.data, expected.data)
 
     @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
     def test_check_data_names_in_same_directory(self, mock_listdir, test_cube):
