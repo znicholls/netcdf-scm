@@ -11,11 +11,12 @@ import warnings
 import traceback
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from dateutil import parser
 
 
 import numpy as np
 import pandas as pd
-from pymagicc.io import MAGICCData
+from openscm.highlevel import OpenSCMDataFrame
 
 try:
     import iris
@@ -845,7 +846,7 @@ class SCMCube(object):
             scm_timeseries_cubes, out_calendar=out_calendar
         )
 
-        model, scenario = self._get_model_scenario()
+        climate_model, scenario = self._get_climate_model_scenario()
 
         out_df = pd.DataFrame(data, index=time_index)
         out_df.columns = pd.MultiIndex.from_product(
@@ -853,32 +854,35 @@ class SCMCube(object):
                 [self.cube.standard_name],
                 [self.cube.units.name],
                 out_df.columns.tolist(),
-                [model],
+                [climate_model],
                 [scenario],
+                ["unspecified"],
             ],
-            names=["variable", "unit", "region", "model", "scenario"],
+            names=["variable", "unit", "region", "climate_model", "scenario", "model"],
         )
         out_df = out_df.unstack().reset_index().rename({0: "value"}, axis="columns")
+        output = OpenSCMDataFrame(out_df)
+        try:
+            output.metadata["calendar"] = out_calendar
+        except AttributeError:
+            output.metadata = {"calendar": out_calendar}
 
-        output = MAGICCData()
-        output.df = out_df
-        output.metadata["calendar"] = out_calendar
         return output
 
-    def _get_model_scenario(self):
+    def _get_climate_model_scenario(self):
         try:
-            model = self.model
+            climate_model = self.model
             scenario = "_".join([self.activity, self.experiment, self.ensemble_member])
         except AttributeError:
             warn_msg = (
-                "Could not determine appropriate model scenario combination, filling "
-                "with 'unknown'"
+                "Could not determine appropriate climate_model scenario combination, "
+                "filling with 'unspecified'"
             )
             warnings.warn(warn_msg)
-            model = "unknown"
-            scenario = "unknown"
+            climate_model = "unspecified"
+            scenario = "unspecified"
 
-        return model, scenario
+        return climate_model, scenario
 
     def _get_openscmdata_time_axis_and_calendar(
         self, scm_timeseries_cubes, out_calendar
@@ -891,12 +895,18 @@ class SCMCube(object):
             for scm_cube in scm_timeseries_cubes.values()
         ]
         assert_all_time_axes_same(time_axes)
+        time_axis = time_axes[0]
+
+        if isinstance(time_axis[0], cftime.datetime):
+            time_axis = np.array([parser.parse(x.strftime()) for x in time_axis])
+        elif isinstance(time_axis[0], datetime):
+            pass
 
         # As we sometimes have to deal with long timeseries, we force the index to be
         # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
         # pandas limitation, see
         # http://pandas-docs.github.io/pandas-docs-travis/timeseries.html#timestamp-limitations
-        return pd.Index(time_axes[0], dtype="object", name="time"), out_calendar
+        return pd.Index(time_axis, dtype="object", name="time"), out_calendar
 
     def _check_time_period_valid(self, time_period_str):
         """Check that a time_period identifier string is valid.
