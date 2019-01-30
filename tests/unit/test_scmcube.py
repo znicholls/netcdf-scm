@@ -459,7 +459,7 @@ class TestSCMCube(object):
         test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
 
         test_land_fraction_input = (
-            test_sftlf_cube if input_format is "scmcube" else None
+            test_sftlf_cube if input_format == "scmcube" else None
         )
 
         if test_threshold is None:

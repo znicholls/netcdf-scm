@@ -8,4 +8,6 @@ linters:
     # E501 - line too long. Handled by black, we have longer lines
     # W503 - line break before binary operator. Dumb rule, ignore
     ignore: 'E203,E501,W503'
+    python: 3
   black:
+    py36: true
