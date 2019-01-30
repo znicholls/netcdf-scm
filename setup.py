@@ -21,7 +21,7 @@ REQUIREMENTS = [
     "pandas",
     "python-dateutil",
     "progressbar2",
-    "expectexception @ git+https://github.com/thedataincubator/expectexception.git@684560f4dfb8cb69eb0693a1605ec0e81fd9b42a",
+    "expectexception",
     "openscm @ git+https://github.com/openclimatedata/openscm.git@add-openscm-dataframe",
 ]
 REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0", "notebook", "nbval"]
