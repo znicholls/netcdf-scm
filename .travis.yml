@@ -27,8 +27,6 @@ install:
   # solution
   - >
     echo 'Configure conda and install minimal working environment';
-    CONDA_ENV_FILE=conda-environment-minimal.yaml;
-    PIP_ENV_FILE=pip-requirements-minimal.txt;
     ENV_NAME='netcdf-scm-test-environment';
     conda config --set always_yes yes;
     conda config --set show_channel_urls True;
@@ -36,14 +34,11 @@ install:
     conda update --quiet conda;
     conda create -y -n ${ENV_NAME} python=${TRAVIS_PYTHON_VERSION} pip;
     source activate ${ENV_NAME};
-    conda install -y --file ${CONDA_ENV_FILE} -n ${ENV_NAME};
-    pip install --upgrade pip;
-    pip install -Ur ${PIP_ENV_FILE};
 
   # Install package and required testing packages
   # ---------------------------------------------
   - >
-    pip install -e .[test,docs,deploy];
+    make -B venv;
 
   # Check config before running tests
   # ---------------------------------
