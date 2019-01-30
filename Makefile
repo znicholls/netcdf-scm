@@ -110,7 +110,7 @@ publish-on-testpypi: $(VENV_DIR)  ## publish the current state of the repository
 	-rm -rf build dist
 	@status=$$(git status --porcelain); \
 	if test "x$${status}" = x; then \
-		$(VENV_DIR)/bin/python setup.py sdist bdist_wheel --universal
+		$(VENV_DIR)/bin/python setup.py sdist bdist_wheel --universal; \
 		$(VENV_DIR)/bin/twine upload -r testpypi dist/*; \
 	else \
 		echo Working directory is dirty >&2; \
@@ -135,7 +135,7 @@ publish-on-pypi:  $(VENV_DIR) ## publish the current state of the repository to 
 	-rm -rf build dist
 	@status=$$(git status --porcelain); \
 	if test "x$${status}" = x; then \
-		$(VENV_DIR)/bin/python setup.py sdist bdist_wheel --universal
+		$(VENV_DIR)/bin/python setup.py sdist bdist_wheel --universal; \
 		$(VENV_DIR)/bin/twine upload dist/*; \
 	else \
 		echo Working directory is dirty >&2; \
