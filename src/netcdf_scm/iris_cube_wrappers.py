@@ -16,7 +16,7 @@ from dateutil import parser
 
 import numpy as np
 import pandas as pd
-from openscm.highlevel import OpenSCMDataFrame
+from openscm.highlevel import OpenSCMDataFrameBase
 
 try:
     import iris
@@ -624,8 +624,8 @@ class SCMCube(object):
 
         Returns
         -------
-        :obj:`pymagicc.io.MAGICCData`
-            A pymagicc MAGICCData instance with the data in the ``df`` attribute and
+        :obj:`openscm.io.OpenSCMDataFrameBase`
+            An OpenSCM DataFrame instance with the data in the ``data`` attribute and
             metadata in the ``metadata`` attribute.
         """
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
@@ -861,7 +861,7 @@ class SCMCube(object):
             names=["variable", "unit", "region", "climate_model", "scenario", "model"],
         )
         out_df = out_df.unstack().reset_index().rename({0: "value"}, axis="columns")
-        output = OpenSCMDataFrame(out_df)
+        output = OpenSCMDataFrameBase(out_df)
         try:
             output.metadata["calendar"] = out_calendar
         except AttributeError:
