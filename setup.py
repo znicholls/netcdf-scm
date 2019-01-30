@@ -16,6 +16,32 @@ README = "README.rst"
 
 SOURCE_DIR = "src"
 
+REQUIREMENTS = [
+    "numpy",
+    "pandas",
+    "python-dateutil",
+    "progressbar2",
+    "expectexception @ git+https://github.com/thedataincubator/expectexception.git@684560f4dfb8cb69eb0693a1605ec0e81fd9b42a",
+    "openscm @ git+https://github.com/openclimatedata/openscm.git@add-openscm-dataframe",
+]
+REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0"]
+REQUIREMENTS_DOCS = ["sphinx>=1.4", "sphinx_rtd_theme"]
+REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
+
+requirements_dev = [
+    *["flake8", "black"],
+    *REQUIREMENTS_TESTS,
+    *REQUIREMENTS_DOCS,
+    *REQUIREMENTS_DEPLOY,
+]
+
+requirements_extras = {
+    "docs": REQUIREMENTS_DOCS,
+    "tests": REQUIREMENTS_TESTS,
+    "deploy": REQUIREMENTS_DEPLOY,
+    "dev": requirements_dev,
+}
+
 with open(README, "r") as readme_file:
     README_TEXT = readme_file.read()
 
@@ -63,11 +89,7 @@ setup(
     packages=find_packages(SOURCE_DIR),  # no tests/docs in `src` so don't need exclude
     package_dir={"": SOURCE_DIR},
     # include_package_data=True,
-    install_requires=["python-dateutil", "progressbar2", "pandas", "numpy"],
-    extras_require={
-        "docs": ["sphinx", "sphinx_rtd_theme"],
-        "test": ["nbresuse", "nbval", "codecov", "pytest-cov", "pytest"],
-        "deploy": ["twine", "setuptools", "wheel", "flake8", "black", "versioneer"],
-    },
+    install_requires=REQUIREMENTS,
+    extras_require=requirements_extras,
     cmdclass=cmdclass,
 )
