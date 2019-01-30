@@ -24,7 +24,7 @@ REQUIREMENTS = [
     "expectexception @ git+https://github.com/thedataincubator/expectexception.git@684560f4dfb8cb69eb0693a1605ec0e81fd9b42a",
     "openscm @ git+https://github.com/openclimatedata/openscm.git@add-openscm-dataframe",
 ]
-REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0"]
+REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0", "notebook", "nbval"]
 REQUIREMENTS_DOCS = ["sphinx>=1.4", "sphinx_rtd_theme"]
 REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
 
