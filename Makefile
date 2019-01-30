@@ -1,104 +1,122 @@
+.DEFAULT_GOAL := help
+
 OS=`uname`
 SHELL=/bin/bash
 
-conda_env_NAME=netcdf-scm
-conda_env_PATH=$(MINICONDA_PATH)/envs/$(conda_env_NAME)
-conda_env_MINIMAL_YML=$(PWD)/conda-environment-minimal.yaml
-conda_env_DEV_YML=$(PWD)/conda-environment-dev.yaml
+CONDA_ENV_YML=environment.yml
+CONDA_ENV_DEV_YML=environment-dev.yml
 
-PIP_REQUIREMENTS_MINIMAL=$(PWD)/pip-requirements-minimal.txt
-PIP_REQUIREMENTS_DEV=$(PWD)/pip-requirements-dev.txt
-
-NOTEBOOKS_DIR=./notebooks
-NOTEBOOKS_SANITIZE_FILE=$(NOTEBOOKS_DIR)/tests_sanitize.cfg
+FILES_TO_FORMAT_PYTHON=setup.py scripts src tests docs/source/conf.py
 
 DOCS_DIR=$(PWD)/docs
 LATEX_BUILD_DIR=$(DOCS_DIR)/build/latex
 LATEX_BUILD_STATIC_DIR=$(LATEX_BUILD_DIR)/_static
 LATEX_LOGO=$(DOCS_DIR)/source/_static/logo.png
 
-FILES_TO_FORMAT_PYTHON=setup.py scripts src tests docs/source/conf.py
+NOTEBOOKS_DIR=./notebooks
+NOTEBOOKS_SANITIZE_FILE=$(NOTEBOOKS_DIR)/tests_sanitize.cfg
 
+ifndef CONDA_PREFIX
+$(error Conda environment not active. Activate your conda environment before using this Makefile.)
+else
+ifeq ($(CONDA_DEFAULT_ENV),base)
+$(error Do not install to conda base environment. Activate a different conda environment and rerun make. A new environment can be created with e.g. `conda env create -n netcdf-scm`.))
+endif
+VENV_DIR=$(CONDA_PREFIX)
+endif
 
-define activate_conda
-	[ ! -f $(HOME)/.bash_profile ] || . $(HOME)/.bash_profile; \
-	[ ! -f $(HOME)/.bashrc ] || . $(HOME)/.bashrc; \
-	conda activate; \
-	[ ! -z "`which conda`" ] || { echo 'conda not found'; exit 1; }
+PYTHON=$(VENV_DIR)/bin/python
+COVERAGE=$(VENV_DIR)/bin/coverage
+
+define PRINT_HELP_PYSCRIPT
+import re, sys
+
+for line in sys.stdin:
+	match = re.match(r'^([a-zA-Z_-]+):.*?## (.*)$$', line)
+	if match:
+		target, help = match.groups()
+		print("%-20s %s" % (target, help))
 endef
+export PRINT_HELP_PYSCRIPT
 
-define activate_conda_env
-	$(call activate_conda,); \
-	echo 'If this fails, install your environment with make conda-env'; \
-	conda activate $(conda_env_NAME)
-endef
+help:
+	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
+.PHONY: clean-docs
+clean-docs:  ## remove all the documentation build files
+	rm -rf $(DOCS_DIR)/build
+
+.PHONY: clean-conda-env
+clean-conda-env:  ## remove the conda environment
+	$(CONDA_EXE) deactivate; @echo $(CONDA_DEFAULT_ENV)
+	# remove --name
+
+.PHONY: clean
+clean:  ## remove the conda environment and clean the docs
+	# $(call activate_conda,); \
+	# 	conda deactivate; \
+	# 	conda remove --name $(conda_env_NAME) --all -y
+	make clean-conda-env
+	make clean-docs
 
 .PHONY: docs
-docs:
+docs:  ## make docs
 	make $(DOCS_DIR)/build/html/index.html
 
 # Have to run build twice to get stuff in right place
-$(DOCS_DIR)/build/html/index.html: $(DOCS_DIR)/source/*.py $(DOCS_DIR)/source/_templates/*.html $(DOCS_DIR)/source/*.rst src/netcdf_scm/*.py README.rst CHANGELOG.rst
+$(DOCS_DIR)/build/html/index.html: $(DOCS_DIR)/source/*.py $(DOCS_DIR)/source/_templates/*.html $(DOCS_DIR)/source/*.rst src/netcdf_scm/*.py README.rst CHANGELOG.rst $(VENV_DIR)
 	mkdir -p $(LATEX_BUILD_STATIC_DIR)
 	cp $(LATEX_LOGO) $(LATEX_BUILD_STATIC_DIR)
-	$(call activate_conda_env,); \
-		cd $(DOCS_DIR); \
-		make html
+	cd $(DOCS_DIR); make html
+
+.PHONY: flake8
+flake8: $(VENV_DIR)  ## check compliance with pep8
+	$(VENV_DIR)/bin/flake8 $(FILES_TO_FORMAT_PYTHON)
+
+.PHONY: black
+black: $(VENV_DIR)  ## use black to autoformat code
+	@status=$$(git status --porcelain); \
+	if test "x$${status}" = x; then \
+		$(VENV_DIR)/bin/black --exclude _version.py --py36 $(FILES_TO_FORMAT_PYTHON); \
+	else \
+		echo Not trying any formatting, working directory is dirty... >&2; \
+	fi;
 
 .PHONY: test-all
-test-all:
+test-all:  ## run the testsuite and test the notebooks
 	make test
 	make test-notebooks
 
 .PHONY: test
-test:
-	$(call activate_conda_env,); \
-		pytest --cov -rfsxEX --cov-report term-missing
+test: $(VENV_DIR)  ## run the testsuite
+	$(VENV_DIR)/bin/pytest --cov -rfsxEX --cov-report term-missing
 
 .PHONY: test-notebooks
-test-notebooks:
-	$(call activate_conda_env,); \
-		pytest -rfsxEX --nbval $(NOTEBOOKS_DIR) --sanitize $(NOTEBOOKS_SANITIZE_FILE)
-
-.PHONY: flake8
-flake8:
-	$(call activate_conda_env,); \
-		flake8 $(FILES_TO_FORMAT_PYTHON)
-
-.PHONY: black
-black:
-	@status=$$(git status --porcelain pymagicc tests); \
-	if test "x$${status}" = x; then \
-		$(call activate_conda_env,); \
-		black --exclude _version.py --py36 $(FILES_TO_FORMAT_PYTHON); \
-	else \
-		echo Not trying any formatting. Working directory is dirty ... >&2; \
-	fi;
+test-notebooks: $(VENV_DIR)  ## test the notebooks
+	$(VENV_DIR)/bin/pytest -rfsxEX --nbval $(NOTEBOOKS_DIR) --sanitize $(NOTEBOOKS_SANITIZE_FILE)
 
 .PHONY: new-release
-new-release:
+new-release:  ## make a new release
 	@echo 'See instructions in the Releasing sub-section of the Development section of the docs'
 
 .PHONY: release-on-conda
-release-on-conda:
+release-on-conda:  ## make a new release on conda
 	@echo 'See instructions in the Releasing sub-section of the Development section of the docs'
 
 # first time setup, follow this https://blog.jetbrains.com/pycharm/2017/05/how-to-publish-your-package-on-pypi/
 # then this works
 .PHONY: publish-on-testpypi
-publish-on-testpypi:
+publish-on-testpypi: $(VENV_DIR)  ## publish the current state of the repository to test PyPI
 	-rm -rf build dist
 	@status=$$(git status --porcelain); \
 	if test "x$${status}" = x; then \
-		$(call activate_conda_env,); \
-			python setup.py sdist bdist_wheel --universal; \
-			twine upload -r testpypi dist/*; \
+		$(VENV_DIR)/bin/python setup.py sdist bdist_wheel --universal
+		$(VENV_DIR)/bin/twine upload -r testpypi dist/*; \
 	else \
 		echo Working directory is dirty >&2; \
 	fi;
 
-test-testpypi-install: venv
+test-testpypi-install: $(VENV_DIR)  ## test whether installing from test PyPI works
 	$(eval TEMPVENV := $(shell mktemp -d))
 	python3 -m venv $(TEMPVENV)
 	$(TEMPVENV)/bin/pip install pip --upgrade
@@ -113,18 +131,17 @@ test-testpypi-install: venv
 	$(TEMPVENV)/bin/python -c "import sys; sys.path.remove(''); import netcdf_scm; print(netcdf_scm.__version__)"
 
 .PHONY: publish-on-pypi
-publish-on-pypi:
+publish-on-pypi:  $(VENV_DIR) ## publish the current state of the repository to PyPI
 	-rm -rf build dist
 	@status=$$(git status --porcelain); \
 	if test "x$${status}" = x; then \
-		$(call activate_conda_env,); \
-			python setup.py sdist bdist_wheel --universal; \
-			twine upload dist/*; \
+		$(VENV_DIR)/bin/python setup.py sdist bdist_wheel --universal
+		$(VENV_DIR)/bin/twine upload dist/*; \
 	else \
 		echo Working directory is dirty >&2; \
 	fi;
 
-test-pypi-install: venv
+test-pypi-install: $(VENV_DIR)  ## test whether installing from PyPI works
 	$(eval TEMPVENV := $(shell mktemp -d))
 	python3 -m venv $(TEMPVENV)
 	$(TEMPVENV)/bin/pip install pip --upgrade
@@ -132,70 +149,46 @@ test-pypi-install: venv
 	$(TEMPVENV)/bin/python scripts/test_install.py
 
 .PHONY: test-install
-test-install: venv
+test-install: $(VENV_DIR)  ## test whether installing the local setup works
 	$(eval TEMPVENV := $(shell mktemp -d))
 	python3 -m venv $(TEMPVENV)
 	$(TEMPVENV)/bin/pip install pip --upgrade
 	$(TEMPVENV)/bin/pip install .
 	$(TEMPVENV)/bin/python scripts/test_install.py
 
-.PHONY: setup-versioneer
-setup-versioneer:
-	$(call activate_conda_env,); \
-		versioneer install
-
-.PHONY: conda-env-update
-conda-env-update:
-	@echo "Updating the environment requires this command"
-	@echo "conda env update --name env-name --file env-file"
-	@echo "You have to decide for yourself which file to update from and how "
-	@echo "to ensure that the dev and minimal environments don't conflict, we "
-	@echo "haven't worked out how to automate that."
-
-.PHONY: conda-env
-conda-env:
-	# thanks https://stackoverflow.com/a/38609653 for the conda install from
-	# file solution
-	# tidy up pip install once I get expect exception pip installable
-	$(call activate_conda,); \
-		conda config --add channels conda-forge; \
-		conda create -y -n $(conda_env_NAME); \
-		conda activate $(conda_env_NAME); \
-		conda install -y --file $(conda_env_MINIMAL_YML); \
-		conda install -y --file $(conda_env_DEV_YML); \
-		pip install --upgrade pip; \
-		pip install -Ur $(PIP_REQUIREMENTS_MINIMAL); \
-		pip install -e .[test,docs,deploy]
-
-.PHONY: clean-docs
-clean-docs:
-	rm -rf $(DOCS_DIR)/build
-
-.PHONY: clean
-clean:
-	$(call activate_conda,); \
-		conda deactivate; \
-		conda remove --name $(conda_env_NAME) --all -y
-	make clean-docs
+.PHONY: venv
+venv:  $(VENV_DIR)  ## make virtual environment for development
+$(VENV_DIR): $(CONDA_ENV_YML) $(CONDA_ENV_DEV_YML) setup.py
+	$(CONDA_EXE) install -y --file $(CONDA_ENV_YML)
+	$(CONDA_EXE) install -y --file $(CONDA_ENV_DEV_YML)
+	# Install the remainder of the dependencies using pip
+	$(VENV_DIR)/bin/pip install --upgrade pip
+	$(VENV_DIR)/bin/pip install -e .[dev]
+	touch $(VENV_DIR)
 
 .PHONY: variables
-variables:
+variables:  ## display the value of all variables in the Makefile
+	@echo CONDA_PREFIX: $(CONDA_PREFIX)
+	@echo CONDA_DEFAULT_ENV: $(CONDA_DEFAULT_ENV)
+	@echo CONDA_EXE: $(CONDA_EXE)
+	@echo VENV_DIR: $(VENV_DIR)
+	@echo PYTHON: $(PYTHON)
+	@echo COVERAGE: $(COVERAGE)
+	@echo ""
 	@echo PWD: $(PWD)
 	@echo OS: $(OS)
 	@echo SHELL: $(SHELL)
-
-	@echo conda_env_NAME: $(conda_env_NAME)
-	@echo conda_env_PATH: $(conda_env_PATH)
-	@echo conda_env_MINIMAL_YML: $(conda_env_MINIMAL_YML)
-	@echo conda_env_DEV_YML: $(conda_env_DEV_YML)
-
+	@echo ""
+	@echo CONDA_ENV_YML: $(CONDA_ENV_YML)
+	@echo CONDA_ENV_DEV_YML: $(CONDA_ENV_DEV_YML)
+	@echo ""
 	@echo PIP_REQUIREMENTS_MINIMAL: $(PIP_REQUIREMENTS_MINIMAL)
 	@echo PIP_REQUIREMENTS_DEV: $(PIP_REQUIREMENTS_DEV)
-
+	@echo ""
 	@echo NOTEBOOKS_DIR: $(NOTEBOOKS_DIR)
 	@echo NOTEBOOKS_SANITIZE_FILE: $(NOTEBOOKS_SANITIZE_FILE)
-
+	@echo ""
 	@echo DOCS_DIR: $(DOCS_DIR)
 	@echo LATEX_LOGO: $(LATEX_LOGO)
-
+	@echo ""
 	@echo FILES_TO_FORMAT_PYTHON: $(FILES_TO_FORMAT_PYTHON)

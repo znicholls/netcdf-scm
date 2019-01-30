@@ -1,8 +1,0 @@
-numpy
-pandas
-pymagicc==2.0.0-alpha
-python-dateutil
-progressbar2
-matplotlib
-git+https://github.com/thedataincubator/expectexception.git@master
-git+https://github.com/openclimatedata/openscm.git@add-openscm-dataframe
