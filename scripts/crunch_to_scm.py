@@ -47,6 +47,11 @@ def crunch_data(
     output_prefix : str
         Prefix to attach to the input filenames when saving the
         crunched csvs.
+
+    Returns
+    -------
+    bool
+        True (i.e. 1) if failures, False (i.e. 0) if no failures
     """
     output_prefix = "netcdf-scm"
     separator = "_"
@@ -202,7 +207,7 @@ def crunch_data(
 def main():
     parser = argparse.ArgumentParser(
         prog="crunch-to-netcdf-scm",
-        description="Crunch netCDF files to NetCDF SCM csv files",
+        description="Crunch netCDF files to OpenSCM csv files",
     )
 
     # Command line args
