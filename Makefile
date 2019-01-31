@@ -20,7 +20,7 @@ ifndef CONDA_PREFIX
 $(error Conda environment not active. Activate your conda environment before using this Makefile.)
 else
 ifeq ($(CONDA_DEFAULT_ENV),base)
-$(error Do not install to conda base environment. Activate a different conda environment and rerun make. A new environment can be created with e.g. `conda env create -n netcdf-scm`.))
+$(error Do not install to conda base environment. Activate a different conda environment and rerun make. A new environment can be created with e.g. `conda create --name netcdf-scm`.))
 endif
 VENV_DIR=$(CONDA_PREFIX)
 endif
