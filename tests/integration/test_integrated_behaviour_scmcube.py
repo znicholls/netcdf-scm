@@ -14,7 +14,7 @@ import iris
 from iris.util import broadcast_to_shape
 import cf_units
 import cftime
-from openscm.highlevel import OpenSCMDataFrame
+from openscm.highlevel import ScmDataFrame
 
 
 from netcdf_scm.iris_cube_wrappers import (
@@ -205,7 +205,7 @@ class _SCMCubeIntegrationTester(object):
             expected_df.unstack().reset_index().rename({0: "value"}, axis="columns")
         )
 
-        expected = OpenSCMDataFrame(expected_df)
+        expected = ScmDataFrame(expected_df)
         expected.metadata = {"calendar": expected_calendar}
 
         assert result.metadata == expected.metadata
