@@ -16,7 +16,7 @@ from dateutil import parser
 
 import numpy as np
 import pandas as pd
-from openscm.highlevel import OpenSCMDataFrameBase
+from openscm.highlevel import ScmDataFrame
 
 try:
     import iris
@@ -624,7 +624,7 @@ class SCMCube(object):
 
         Returns
         -------
-        :obj:`openscm.io.OpenSCMDataFrameBase`
+        :obj:`openscm.io.ScmDataFrame`
             An OpenSCM DataFrame instance with the data in the ``data`` attribute and
             metadata in the ``metadata`` attribute.
         """
@@ -861,7 +861,7 @@ class SCMCube(object):
             names=["variable", "unit", "region", "climate_model", "scenario", "model"],
         )
         out_df = out_df.unstack().reset_index().rename({0: "value"}, axis="columns")
-        output = OpenSCMDataFrameBase(out_df)
+        output = ScmDataFrame(out_df)
         try:
             output.metadata["calendar"] = out_calendar
         except AttributeError:
