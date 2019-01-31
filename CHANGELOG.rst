@@ -7,6 +7,7 @@ master
 v0.6.1
 ------
 
+- (`#34 <https://github.com/znicholls/netcdf-scm/pull/34>`_) Move to new openscm naming i.e. returning ScmDataFrame rather than OpenSCMDataFrameBase
 - (`#32 <https://github.com/znicholls/netcdf-scm/pull/32>`_) Move to returning OpenSCMDataFrameBase rather than pandas DataFrame when crunching to scm format
 - (`#29 <https://github.com/znicholls/netcdf-scm/pull/29>`_) Fixed bug identified in `#30 <https://github.com/znicholls/netcdf-scm/issues/30>`_
 - (`#29 <https://github.com/znicholls/netcdf-scm/pull/29>`_) Put crunching script into formal testsuite which confirms results against KNMI data available `here <https://climexp.knmi.nl/cmip5_indices.cgi?id=someone@somewhere>`_, however no docs or formal example until `#6 <https://github.com/znicholls/netcdf-scm/issues/6>`_ is closed
