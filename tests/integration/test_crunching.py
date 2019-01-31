@@ -5,7 +5,7 @@ import subprocess
 
 import pandas as pd
 import numpy as np
-from openscm.highlevel import OpenSCMDataFrame
+from openscm.highlevel import ScmDataFrame
 
 
 from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
@@ -54,7 +54,7 @@ def test_crunching(tmpdir):
             knmi_data["month"] = knmi_data["month"].astype(int)
             knmi_data = knmi_data.set_index(["year", "month"])
 
-            crunched_data = OpenSCMDataFrame(join(dirpath, filename))
+            crunched_data = ScmDataFrame(join(dirpath, filename))
             comparison_data = crunched_data.filter(region="World")[["time", "value"]]
 
             comparison_data["year"] = comparison_data["time"].apply(lambda x: x.year)
