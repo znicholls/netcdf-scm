@@ -86,9 +86,7 @@ class _SCMCubeIntegrationTester(object):
         sftlf.cube = iris.load_cube(TEST_SFTLF_FILE)
 
         var.get_scm_timeseries(
-            sftlf_cube=sftlf,
-            land_mask_threshold=50,
-            areacella_scmcube=None
+            sftlf_cube=sftlf, land_mask_threshold=50, areacella_scmcube=None
         )
 
     def test_get_scm_timeseries_cubes(self, test_cube):
