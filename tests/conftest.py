@@ -24,6 +24,16 @@ TEST_TAS_FILE = join(
     "r1i1p1",
     "tas_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
 )
+TEST_SFTLF_FILE = join(
+    TEST_DATA_MARBLE_CMIP5_DIR,
+    "cmip5",
+    "1pctCO2",
+    "fx",
+    "sftlf",
+    "CanESM2",
+    "r0i0p0",
+    "sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc",
+)
 TEST_AREACELLA_FILE = join(
     TEST_DATA_MARBLE_CMIP5_DIR,
     "cmip5",
