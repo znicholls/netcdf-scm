@@ -79,9 +79,6 @@ class _SCMCubeIntegrationTester(object):
 
     @tdata_required
     def test_get_scm_timeseries_no_areacealla(self, test_cube):
-        tfile = TEST_TAS_FILE
-        tsftlffile = TEST_SFTLF_FILE
-
         var = self.tclass()
         var.cube = iris.load_cube(TEST_TAS_FILE)
 
