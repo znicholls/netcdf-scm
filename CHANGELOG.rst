@@ -7,6 +7,7 @@ master
 v0.6.1
 ------
 
+- (`#35 <https://github.com/znicholls/netcdf-scm/pull/35>`_) Fixed bug which prevented SCMCube from crunching to scm timeseries with default earth radius when areacella cube was missing
 - (`#34 <https://github.com/znicholls/netcdf-scm/pull/34>`_) Move to new openscm naming i.e. returning ScmDataFrame rather than OpenSCMDataFrameBase
 - (`#32 <https://github.com/znicholls/netcdf-scm/pull/32>`_) Move to returning OpenSCMDataFrameBase rather than pandas DataFrame when crunching to scm format
 - (`#29 <https://github.com/znicholls/netcdf-scm/pull/29>`_) Fixed bug identified in `#30 <https://github.com/znicholls/netcdf-scm/issues/30>`_
