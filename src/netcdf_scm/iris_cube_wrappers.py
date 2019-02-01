@@ -835,6 +835,8 @@ class SCMCube(object):
             warnings.warn(str(exc))
         except OSError as exc:
             warnings.warn(str(exc))
+        except NotImplementedError as exc:
+            warnings.warn(str(exc))
 
     def _convert_scm_timeseries_cubes_to_openscmdata(
         self, scm_timeseries_cubes, out_calendar=None
