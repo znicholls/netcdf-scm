@@ -25,6 +25,7 @@ from netcdf_scm.iris_cube_wrappers import (
 )
 from conftest import (
     TEST_TAS_FILE,
+    TEST_SFTLF_FILE,
     TEST_AREACELLA_FILE,
     TEST_ACCESS_CMIP5_FILE,
     tdata_required,
@@ -75,6 +76,23 @@ class _SCMCubeIntegrationTester(object):
         cell_measures = test_cube.cube.cell_measures()
         assert len(cell_measures) == 1
         assert cell_measures[0].standard_name == "cell_area"
+
+    @tdata_required
+    def test_get_scm_timeseries_no_areacealla(self, test_cube):
+        tfile = TEST_TAS_FILE
+        tsftlffile = TEST_SFTLF_FILE
+
+        var = self.tclass()
+        var.cube = iris.load_cube(TEST_TAS_FILE)
+
+        sftlf = self.tclass()
+        sftlf.cube = iris.load_cube(TEST_SFTLF_FILE)
+
+        var.get_scm_timeseries(
+            sftlf_cube=sftlf,
+            land_mask_threshold=50,
+            areacella_scmcube=None
+        )
 
     def test_get_scm_timeseries_cubes(self, test_cube):
         tsftlf_cube = "mocked 124"
