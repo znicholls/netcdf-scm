@@ -22,7 +22,8 @@ REQUIREMENTS = [
     "python-dateutil",
     "progressbar2",
     "expectexception",
-    "openscm @ git+https://github.com/openclimatedata/openscm.git@master",
+    "openscm @ git+https://github.com/openclimatedata/openscm.git@scmcallib",
+    "pymagicc @ git+https://github.com/openclimatedata/pymagicc.git@master",
 ]
 REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0", "notebook", "nbval"]
 REQUIREMENTS_DOCS = ["sphinx>=1.4", "sphinx_rtd_theme"]
