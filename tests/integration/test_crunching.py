@@ -55,9 +55,13 @@ def test_crunching(tmpdir):
             knmi_data = knmi_data.set_index(["year", "month"])
 
             crunched_data = ScmDataFrame(join(dirpath, filename))
-            comparison_data = crunched_data.filter(
-                region="World"
-            ).timeseries().stack().to_frame().reset_index()[["time", 0]]
+            comparison_data = (
+                crunched_data.filter(region="World")
+                .timeseries()
+                .stack()
+                .to_frame()
+                .reset_index()[["time", 0]]
+            )
             comparison_data = comparison_data.rename({0: "value"}, axis="columns")
 
             comparison_data["year"] = comparison_data["time"].apply(lambda x: x.year)
