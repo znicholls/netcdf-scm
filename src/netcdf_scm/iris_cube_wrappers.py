@@ -203,7 +203,7 @@ class SCMCube(object):
         if gregorian and year_zero:
             warn_msg = (
                 "Your calendar is gregorian yet has units of 'days since 0-1-1'. "
-                "We rectify this by removing all data before year 5 and changing the "
+                "We rectify this by removing all data before year 1 and changing the "
                 "units to 'days since 1-1-1'. If you want other behaviour, you will "
                 "need to use another package."
             )
@@ -237,7 +237,7 @@ class SCMCube(object):
             else:
                 tmp_cube.add_dim_coord(coord, i)
 
-        years_to_bin = 5
+        years_to_bin = 1
         first_valid_year = years_to_bin + new_units_shift
 
         def check_usable_data(cell):

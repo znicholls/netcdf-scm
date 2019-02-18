@@ -566,7 +566,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
-            "rectify this by removing all data before year 5 and changing the units "
+            "rectify this by removing all data before year 1 and changing the units "
             "to 'days since 1-1-1'. If you want other behaviour, you will need to use "
             "another package."
         )
@@ -584,7 +584,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
 
-        assert obs_time_points[0] == datetime.datetime(5, 7, 3, 12, 0)
+        assert obs_time_points[0] == datetime.datetime(1, 7, 3, 12, 0)
         assert obs_time_points[-1] == datetime.datetime(2014, 7, 3, 12, 0)
 
         assert test_cube.cube.attributes["institution_id"] == "UoM"
