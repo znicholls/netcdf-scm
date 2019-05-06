@@ -7,6 +7,7 @@ master
 v0.6.1
 ------
 
+- (`#38 <https://github.com/znicholls/netcdf-scm/pull/38>`_) Update to using openscm releases
 - (`#37 <https://github.com/znicholls/netcdf-scm/pull/37>`_) Adjusted read in of gregorian with 0 reference to give all data from year 1 back
 - (`#35 <https://github.com/znicholls/netcdf-scm/pull/35>`_) Fixed bug which prevented SCMCube from crunching to scm timeseries with default earth radius when areacella cube was missing
 - (`#34 <https://github.com/znicholls/netcdf-scm/pull/34>`_) Move to new openscm naming i.e. returning ScmDataFrame rather than OpenSCMDataFrameBase
