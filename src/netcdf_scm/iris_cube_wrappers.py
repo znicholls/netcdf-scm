@@ -16,7 +16,7 @@ from dateutil import parser
 
 import numpy as np
 import pandas as pd
-from openscm.highlevel import ScmDataFrame
+from openscm.scmdataframe import ScmDataFrame
 
 try:
     import iris

@@ -5,7 +5,7 @@ import subprocess
 
 import pandas as pd
 import numpy as np
-from openscm.highlevel import ScmDataFrame
+from openscm.scmdataframe import ScmDataFrame
 
 
 from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
