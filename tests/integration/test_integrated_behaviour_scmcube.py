@@ -14,7 +14,7 @@ import iris
 from iris.util import broadcast_to_shape
 import cf_units
 import cftime
-from openscm.highlevel import ScmDataFrame
+from openscm.scmdataframe import ScmDataFrame
 
 
 from netcdf_scm.iris_cube_wrappers import (
