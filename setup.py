@@ -29,7 +29,12 @@ REQUIREMENTS_DOCS = ["sphinx>=1.4", "sphinx_rtd_theme"]
 REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
 
 requirements_dev = [
-    *["flake8", "black"],
+    *[
+        "flake8",
+        "black",
+        # TODO use pypi version
+        "pyam-iamc @ git+https://github.com/IAMconsortium/pyam.git@a6ac0c574c3d5363fb8dba7d8b42a845fd3dbe87",
+    ],
     *REQUIREMENTS_TESTS,
     *REQUIREMENTS_DOCS,
     *REQUIREMENTS_DEPLOY,

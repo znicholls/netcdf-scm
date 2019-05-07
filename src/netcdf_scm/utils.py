@@ -73,9 +73,12 @@ def assert_all_time_axes_same(time_axes):
     """
     for time_axis_to_check in time_axes:
         assert_msg = "all the time axes should be the same"
-        np.testing.assert_array_equal(
-            time_axis_to_check, time_axes[0], err_msg=assert_msg
-        )
+        try:
+            np.testing.assert_array_equal(
+                time_axis_to_check, time_axes[0], err_msg=assert_msg
+            )
+        except AttributeError:  # handle weird numpy error
+            raise AssertionError(assert_msg)
 
 
 def take_lat_lon_mean(in_scmcube, in_weights):
