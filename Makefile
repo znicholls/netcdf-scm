@@ -159,7 +159,7 @@ test-install: $(VENV_DIR)  ## test whether installing the local setup works
 .PHONY: venv
 venv:  $(VENV_DIR)  ## make virtual environment for development
 $(VENV_DIR): $(CONDA_ENV_YML) $(CONDA_ENV_DEV_YML) setup.py
-	$(CONDA_EXE) config --add channels conda-forge 
+	$(CONDA_EXE) config --add channels conda-forge
 	$(CONDA_EXE) install -y --file $(CONDA_ENV_YML)
 	$(CONDA_EXE) install -y --file $(CONDA_ENV_DEV_YML)
 	# Install the remainder of the dependencies using pip
