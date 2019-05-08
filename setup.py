@@ -34,9 +34,7 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.7",
 ]
 
-ENTRY_POINTS = {
-    'console_scripts': ['netcdf-scm-crunch = netcdf_scm.cli:crunch_data']
-}
+ENTRY_POINTS = {"console_scripts": ["netcdf-scm-crunch = netcdf_scm.cli:crunch_data"]}
 
 
 REQUIREMENTS_INSTALL = [
@@ -53,7 +51,7 @@ REQUIREMENTS_NOTEBOOKS = [
     # TODO use pypi version
     "pyam-iamc @ git+https://github.com/IAMconsortium/pyam.git@a6ac0c574c3d5363fb8dba7d8b42a845fd3dbe87",
     "notebook",
-    "nbval"
+    "nbval",
 ]
 REQUIREMENTS_DOCS = ["sphinx>=1.4", "sphinx_rtd_theme", "sphinx-click"]
 REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
