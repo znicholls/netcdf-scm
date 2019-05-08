@@ -27,14 +27,11 @@ _CUBES = {
     "CMIP6Output": CMIP6OutputCube,
 }
 
-@click.command(context_settings={"help_option_names": ['-h', '--help']})
+
+@click.command(context_settings={"help_option_names": ["-h", "--help"]})
+@click.argument("src", type=click.Path(exists=True, readable=True, resolve_path=True))
 @click.argument(
-    "src",
-    type=click.Path(exists=True, readable=True, resolve_path=True),
-)
-@click.argument(
-    "dst",
-    type=click.Path(file_okay=False, writable=True, resolve_path=True)
+    "dst", type=click.Path(file_okay=False, writable=True, resolve_path=True)
 )
 @click.option(
     "--cube-type",
@@ -69,13 +66,7 @@ _CUBES = {
     show_default=True,
 )
 def crunch_data(
-    src,
-    dst,
-    cube_type,
-    var_to_crunch,
-    land_mask_threshold,
-    data_sub_dir,
-    force,
+    src, dst, cube_type, var_to_crunch, land_mask_threshold, data_sub_dir, force
 ):
     """Crunch data in ``src`` to OpenSCM csv's in ``dst``.
 
@@ -103,7 +94,7 @@ def crunch_data(
         "force: {}\n\n"
         "".format(
             title,
-            "="*len(title),
+            "=" * len(title),
             netcdf_scm.__version__,
             timestamp,
             cube_type,
@@ -234,9 +225,10 @@ def crunch_data(
     )
     click.echo(output_string)
     summary_file = join(
-        out_dir, "{}-failures-and-warnings.txt".format(
+        out_dir,
+        "{}-failures-and-warnings.txt".format(
             timestamp.replace(" ", "_").replace(":", "")
-        )
+        ),
     )
     with open(summary_file, "w") as ef:
         ef.write(output_string)

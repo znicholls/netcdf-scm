@@ -33,7 +33,7 @@ def test_crunching(tmpdir):
             "--var-to-crunch",
             VAR_TO_CRUNCH,
             "-f",
-        ]
+        ],
     )
     assert result.exit_code == 0
     assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
@@ -126,7 +126,7 @@ def test_crunching_arguments(tmpdir):
             "--land-mask-threshold",
             LAND_MASK_TRESHHOLD,
             "-f",
-        ]
+        ],
     )
     assert result.exit_code == 0
 
@@ -154,24 +154,26 @@ def test_crunching_arguments(tmpdir):
             DATA_SUB_DIR,
             "--land-mask-threshold",
             LAND_MASK_TRESHHOLD,
-        ]
+        ],
     )
     assert result_skip.exit_code == 0
 
     skip_str = (
         "Skipped (already exist, not overwriting)\n"
         "========================================\n"
-        "- {}".format(join(
-            OUTPUT_DIR,
-            DATA_SUB_DIR,
-            "cmip5",
-            "1pctCO2",
-            "Amon",
-            "fco2antt",
-            "CanESM2",
-            "r1i1p1",
-            "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.csv"
-        ))
+        "- {}".format(
+            join(
+                OUTPUT_DIR,
+                DATA_SUB_DIR,
+                "cmip5",
+                "1pctCO2",
+                "Amon",
+                "fco2antt",
+                "CanESM2",
+                "r1i1p1",
+                "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.csv",
+            )
+        )
     )
     assert skip_str in result_skip.output
 
@@ -183,15 +185,7 @@ def test_crunching_other_cube(tmpdir):
     CUBE = "CMIP6Output"
 
     runner = CliRunner()
-    result = runner.invoke(
-        crunch_data,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--cube-type",
-            CUBE,
-        ]
-    )
+    result = runner.invoke(crunch_data, [INPUT_DIR, OUTPUT_DIR, "--cube-type", CUBE])
     assert result.exit_code  # non-zero exit code
 
     assert "cube-type: {}".format(CUBE) in result.output
