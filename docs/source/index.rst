@@ -29,6 +29,7 @@ NetCDF-SCM
 
     utils
     iris-cube-wrappers
+    cli
 
 .. toctree::
     :maxdepth: 2
