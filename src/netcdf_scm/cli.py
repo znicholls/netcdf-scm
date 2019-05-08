@@ -1,6 +1,5 @@
 """Command line interface
 """
-import os
 from os import walk, makedirs, path
 from os.path import join, isfile
 import re
