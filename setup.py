@@ -34,9 +34,7 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.7",
 ]
 
-ENTRY_POINTS = {
-    'console_scripts': ['netcdf-scm-crunch = netcdf_scm.cli:crunch_data']
-}
+ENTRY_POINTS = {"console_scripts": ["netcdf-scm-crunch = netcdf_scm.cli:crunch_data"]}
 
 
 REQUIREMENTS_INSTALL = [
