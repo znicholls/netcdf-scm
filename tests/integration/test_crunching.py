@@ -28,6 +28,8 @@ def test_crunching(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
+            "--cube-type",
+            "MarbleCMIP5",
             "--var-to-crunch",
             VAR_TO_CRUNCH,
             "-f",
@@ -100,6 +102,7 @@ def test_crunching(tmpdir):
 
     assert files_found == 5
 
+
 def test_crunching_arguments(tmpdir):
     here = abspath(dirname(__file__))
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
@@ -114,6 +117,8 @@ def test_crunching_arguments(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
+            "--cube-type",
+            "MarbleCMIP5",
             "--var-to-crunch",
             VAR_TO_CRUNCH,
             "--data-sub-dir",
@@ -141,6 +146,8 @@ def test_crunching_arguments(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
+            "--cube-type",
+            "MarbleCMIP5",
             "--var-to-crunch",
             VAR_TO_CRUNCH,
             "--data-sub-dir",
@@ -167,3 +174,24 @@ def test_crunching_arguments(tmpdir):
         ))
     )
     assert skip_str in result_skip.output
+
+
+def test_crunching_other_cube(tmpdir):
+    here = abspath(dirname(__file__))
+    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
+    OUTPUT_DIR = str(tmpdir)
+    CUBE = "CMIP6Output"
+
+    runner = CliRunner()
+    result = runner.invoke(
+        crunch_data,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--cube-type",
+            CUBE,
+        ]
+    )
+    assert result.exit_code  # non-zero exit code
+
+    assert "cube-type: {}".format(CUBE) in result.output
