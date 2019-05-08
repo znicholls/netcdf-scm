@@ -229,7 +229,7 @@ def crunch_data(
         already_exist_files_string,
     )
 
-    output_string = "{}\n\n{}\n\n{}\n\n{}".format(
+    output_string = "\n\n{}\n\n{}\n\n{}\n\n{}".format(
         metadata_header, failures_string, warnings_string, already_exist_string
     )
     click.echo(output_string)
