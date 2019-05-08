@@ -34,6 +34,11 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.7",
 ]
 
+ENTRY_POINTS = {
+    'console_scripts': ['netcdf-scm-crunch = netcdf_scm.cli:crunch_data']
+}
+
+
 REQUIREMENTS_INSTALL = [
     "numpy",
     "pandas",
@@ -110,4 +115,5 @@ setup(
     install_requires=REQUIREMENTS_INSTALL,
     extras_require=REQUIREMENTS_EXTRAS,
     cmdclass=cmdclass,
+    entry_points=ENTRY_POINTS,
 )

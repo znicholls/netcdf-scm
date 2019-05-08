@@ -1,66 +1,106 @@
-import sys
-import re
 import os
 from os import walk, makedirs, path
 from os.path import join, isfile
+import re
 import warnings
 import traceback
 import time
 from time import gmtime, strftime
 
-
+import click
 import netcdf_scm
 from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
 import progressbar
 
-
+@click.command(context_settings={"help_option_names": ['-h', '--help']})
+@click.argument(
+    "src",
+    type=click.Path(exists=True, readable=True, resolve_path=True),
+)
+@click.argument(
+    "dst",
+    type=click.Path(file_okay=False, writable=True, resolve_path=True)
+)
+@click.option(
+    "--var-to-crunch",
+    default=".*",
+    show_default=True,
+    help="Variable to crunch (uses regexp syntax, matches on filepaths).",
+)
+@click.option(
+    "--land-mask-threshold",
+    default=50.0,
+    show_default=True,
+    help="Minimum land fraction for a box to be considered land.",
+)
+@click.option(
+    "--data-sub-dir",
+    default="netcdf-scm-crunched",
+    show_default=True,
+    help="Sub-directory of ``dst`` to save data in.",
+)
+@click.option(
+    "--force/--do-not-force",
+    "-f",
+    help="Overwrite any existing files.",
+    default=False,
+    show_default=True,
+)
 def crunch_data(
-    in_dir,
-    out_dir,
-    var_to_crunch=None,
-    land_mask_threshold=50,
-    force_regeneration=False,
+    src,
+    dst,
+    var_to_crunch,
+    land_mask_threshold,
+    data_sub_dir,
+    force,
 ):
-    """Crunch data in a directory structure to OpenSCM csvs
+    """Crunch data in ``src`` to OpenSCM csv's in ``dst``.
 
-    Failures are written into a text file in the directory above
-    ``out_dir``
+    The directory structure in ``src`` will be mirrored in ``dst``.
 
-    Parameters
-    ----------
-    in_dir : str
-        Directory to walk to find files to crunch
-
-    out_dir : str
-        Directory in which to save output csvs
-
-    var_to_crunch : str
-        Variable to crunch. If None, crunch all variables.
-
-    land_mask_threshold : float
-        Land mask threshold to use when deciding which boxes are
-        land and which are ocean in the input data.
-
-    force_regeneration : bool
-        If True, crunch file even if the output file already exists.
+    Failures are written into a text file in ``dst``.
     """
+    title = "NetCDF Crunching"
     output_prefix = "netcdf-scm"
     separator = "_"
-    timestamp = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-    out_sub_dir = "netcdf-scm-crunched"
-    out_dir = join(out_dir, out_sub_dir)
-    print("\nCrunching:\n{}\n\nto\n{}\n".format(in_dir, out_dir))
+    timestamp = strftime("%Y%m%d %H%M%S", gmtime())
+    out_dir = join(dst, data_sub_dir)
+
+    metadata_header = (
+        "{}\n"
+        "{}\n"
+        "NetCDF SCM version: {}\n"
+        "\n"
+        "time: {}\n"
+        "source: {}\n"
+        "destination: {}\n"
+        "var-to-crunch: {}\n"
+        "land-mask-threshold: {}\n"
+        "force: {}\n\n"
+        "".format(
+            title,
+            "="*len(title),
+            netcdf_scm.__version__,
+            timestamp,
+            src,
+            out_dir,
+            var_to_crunch,
+            land_mask_threshold,
+            force,
+        )
+    )
+    click.echo(metadata_header)
 
     if not path.exists(out_dir):
-        print("Making output directory: {}\n".format(out_dir))
+        click.echo("Making output directory: {}\n".format(out_dir))
         makedirs(out_dir)
 
     already_exist_files = []
 
     var_regexp = re.compile(var_to_crunch)
 
-    time.sleep(0.5)  # needed to get progress bar in right place...
-    # really should use a logger here...
+    time.sleep(0.5)  # needed to get logging bar in right place...
+    # really should use a logger here
     with warnings.catch_warnings(record=True) as recorded_warns:
         failures = []
         format_custom_text = progressbar.FormatCustomText(
@@ -68,14 +108,11 @@ def crunch_data(
         )
         bar = progressbar.ProgressBar(
             widgets=[progressbar.SimpleProgress(), ". ", format_custom_text],
-            max_value=len([w for w in walk(in_dir)]),
+            max_value=len([w for w in walk(src)]),
             prefix="Visiting directory ",
         ).start()
-        for i, (dirpath, dirnames, filenames) in enumerate(walk(in_dir)):
+        for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
             if not dirnames:
-                import pdb
-                pdb.set_trace()
-
                 if not var_regexp.match(dirpath):
                     continue
                 format_custom_text.update_mapping(curr_dir=dirpath)
@@ -94,7 +131,7 @@ def crunch_data(
                         out_filepath = join(out_filedir, out_filename)
                         if not path.exists(out_filedir):
                             makedirs(out_filedir)
-                        if not force_regeneration and isfile(out_filepath):
+                        if not force and isfile(out_filepath):
                             already_exist_files.append(out_filepath)
                             continue
                     else:
@@ -113,7 +150,7 @@ def crunch_data(
                         if not path.exists(out_filedir):
                             makedirs(out_filedir)
 
-                        if not force_regeneration and isfile(out_filepath):
+                        if not force and isfile(out_filepath):
                             already_exist_files.append(out_filepath)
                             continue
 
@@ -157,7 +194,7 @@ def crunch_data(
         msg_underline.join(failures),
     )
 
-    already_exist_header = "Skipped (already exist and not overwriting)"
+    already_exist_header = "Skipped (already exist, not overwriting)"
     if already_exist_files:
         already_exist_files_string = "- {}\n".format("\n- ".join(already_exist_files))
     else:
@@ -168,68 +205,17 @@ def crunch_data(
         already_exist_files_string,
     )
 
-    metadata_header = (
-        "Files crunched with NetCDF SCM\ntimestamp: {}\n\n"
-        "NetCDF SCM version: {}\n"
-        "input: {}\n"
-        "output: {}\n"
-        "var-to-crunch: {}\n"
-        "land-mask-threshold: {}\n"
-        "force: {}\n".format(
-            timestamp,
-            netcdf_scm.__version__,
-            in_dir,
-            out_dir,
-            var_to_crunch,
-            land_mask_threshold,
-            force_regeneration,
-        )
-    )
     output_string = "{}\n\n{}\n\n{}\n\n{}".format(
         metadata_header, failures_string, warnings_string, already_exist_string
     )
-    print(output_string)
+    click.echo(output_string)
     summary_file = join(
-        out_dir, separator.join([out_sub_dir, "failures-and-warnings.txt"])
+        out_dir, "{}-failures-and-warnings.txt".format(
+            timestamp.replace(" ", "_").replace(":", "")
+        )
     )
     with open(summary_file, "w") as ef:
         ef.write(output_string)
 
-    return bool(failures)
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        prog="crunch-to-netcdf-scm",
-        description="Crunch netCDF files to OpenSCM csv files",
-    )
-
-    # Command line args
-    parser.add_argument("input", help="Root folder of the data to crunch.")
-    parser.add_argument("output", help="Root folder in which to save the output data")
-    parser.add_argument("--var-to-crunch", help="Variable to crunch", default=None)
-    parser.add_argument(
-        "--land-mask-threshold",
-        help="Minimum fraction of a box which must be land for it to be counted as a land box",
-        default=50,
-        type=float,
-    )
-    parser.add_argument(
-        "-f", "--force", help="Overwrite any existing files", action="store_true"
-    )
-
-    args = parser.parse_args()
-
-    any_error = crunch_data(
-        args.input,
-        args.output,
-        var_to_crunch=args.var_to_crunch,
-        land_mask_threshold=args.land_mask_threshold,
-        force_regeneration=args.force,
-    )
-
-    sys.exit(any_error)
-
-
-if __name__ == "__main__":
-    main()
+    if failures:
+        click.ClickException("Failures were found")
