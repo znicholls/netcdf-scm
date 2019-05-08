@@ -9,8 +9,21 @@ from time import gmtime, strftime
 
 import click
 import netcdf_scm
-from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
+from netcdf_scm.iris_cube_wrappers import (
+    SCMCube,
+    MarbleCMIP5Cube,
+    CMIP6Input4MIPsCube,
+    CMIP6OutputCube,
+)
 import progressbar
+
+
+_CUBES = {
+    "Scm": SCMCube,
+    "MarbleCMIP5": MarbleCMIP5Cube,
+    "CMIP6Input4MIPs": CMIP6Input4MIPsCube,
+    "CMIP6Output": CMIP6OutputCube,
+}
 
 @click.command(context_settings={"help_option_names": ['-h', '--help']})
 @click.argument(
@@ -20,6 +33,13 @@ import progressbar
 @click.argument(
     "dst",
     type=click.Path(file_okay=False, writable=True, resolve_path=True)
+)
+@click.option(
+    "--cube-type",
+    default="Scm",
+    type=click.Choice(["Scm", "MarbleCMIP5", "CMIP6Input4MIPs", "CMIP6Output"]),
+    show_default=True,
+    help="Cube to use for crunching.",
 )
 @click.option(
     "--var-to-crunch",
@@ -49,6 +69,7 @@ import progressbar
 def crunch_data(
     src,
     dst,
+    cube_type,
     var_to_crunch,
     land_mask_threshold,
     data_sub_dir,
@@ -72,6 +93,7 @@ def crunch_data(
         "NetCDF SCM version: {}\n"
         "\n"
         "time: {}\n"
+        "cube-type: {}\n"
         "source: {}\n"
         "destination: {}\n"
         "var-to-crunch: {}\n"
@@ -82,6 +104,7 @@ def crunch_data(
             "="*len(title),
             netcdf_scm.__version__,
             timestamp,
+            cube_type,
             src,
             out_dir,
             var_to_crunch,
@@ -117,9 +140,8 @@ def crunch_data(
                     continue
                 format_custom_text.update_mapping(curr_dir=dirpath)
                 bar.update(i)
+                scmcube = _CUBES[cube_type]()
                 try:
-                    # todo: should be an arg/autodiscovered
-                    scmcube = MarbleCMIP5Cube()
                     if len(filenames) == 1:
                         out_filename = separator.join(
                             [output_prefix, filenames[0].replace(".nc", ".csv")]
@@ -218,4 +240,4 @@ def crunch_data(
         ef.write(output_string)
 
     if failures:
-        click.ClickException("Failures were found")
+        raise click.ClickException("Failures were found")
