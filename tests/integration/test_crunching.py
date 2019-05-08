@@ -1,9 +1,7 @@
 from os import walk
-from os.path import abspath, dirname, join, isfile, isdir
-import subprocess
+from os.path import join, isfile, isdir
 
 
-import click
 from click.testing import CliRunner
 import pandas as pd
 import numpy as np
@@ -17,7 +15,6 @@ from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
 
 
 def test_crunching(tmpdir):
-    here = abspath(dirname(__file__))
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*tas.*"
@@ -104,7 +101,6 @@ def test_crunching(tmpdir):
 
 
 def test_crunching_arguments(tmpdir):
-    here = abspath(dirname(__file__))
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*fco2antt.*"
@@ -179,7 +175,6 @@ def test_crunching_arguments(tmpdir):
 
 
 def test_crunching_other_cube(tmpdir):
-    here = abspath(dirname(__file__))
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = str(tmpdir)
     CUBE = "CMIP6Output"
