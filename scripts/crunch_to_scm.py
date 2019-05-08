@@ -73,8 +73,7 @@ def crunch_data(
         ).start()
         for i, (dirpath, dirnames, filenames) in enumerate(walk(in_dir)):
             if not dirnames:
-                import pdb
-                pdb.set_trace()
+
 
                 if not var_regexp.match(dirpath):
                     continue
