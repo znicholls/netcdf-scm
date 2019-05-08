@@ -69,9 +69,10 @@ def crunch_data(
 ):
     """Crunch data in ``src`` to OpenSCM csv's in ``dst``.
 
-    The directory structure in ``src`` will be mirrored in ``dst``.
+    ``src`` is searched recursively and netcdf-scm will attemp to crunch all the files
+    found. The directory structure in ``src`` will be mirrored in ``dst``.
 
-    Failures are written into a text file in ``dst``.
+    Failures and warnings are recorded and written into a text file in ``dst``.
     """
     title = "NetCDF Crunching"
     output_prefix = "netcdf-scm"
