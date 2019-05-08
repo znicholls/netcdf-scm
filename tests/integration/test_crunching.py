@@ -1,11 +1,16 @@
 from os import walk
-from os.path import abspath, dirname, join, isfile
+from os.path import abspath, dirname, join, isfile, isdir
 import subprocess
 
 
+import click
+from click.testing import CliRunner
 import pandas as pd
 import numpy as np
 from openscm.scmdataframe import ScmDataFrame
+
+import netcdf_scm
+from netcdf_scm.cli import crunch_data
 
 
 from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
@@ -13,28 +18,32 @@ from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
 
 def test_crunching(tmpdir):
     here = abspath(dirname(__file__))
-
-    THRESHOLD_PERCENTAGE_DIFF = 10 ** -1
-
-    SCRIPT_TO_RUN = join(here, "..", "..", "scripts/crunch_to_scm.py")
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = str(tmpdir)
-    VAR_TO_CRUNCH = "tas"
-    command = [
-        "python",
-        SCRIPT_TO_RUN,
-        INPUT_DIR,
-        OUTPUT_DIR,
-        "--var-to-crunch",
-        VAR_TO_CRUNCH,
-        "-f",
-    ]
-    subprocess.check_call(command)
+    VAR_TO_CRUNCH = ".*tas.*"
 
+    runner = CliRunner()
+    result = runner.invoke(
+        crunch_data,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-crunch",
+            VAR_TO_CRUNCH,
+            "-f",
+        ]
+    )
+    assert result.exit_code == 0
+    assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
+    assert "Making output directory:" in result.output
+
+    THRESHOLD_PERCENTAGE_DIFF = 10 ** -1
+    files_found = 0
     for dirpath, dirnames, filenames in walk(OUTPUT_DIR):
         if not dirnames:
             assert len(filenames) == 1
             filename = filenames[0]
+            files_found += 1
 
             knmi_data_name = "global_{}.dat".format("_".join(filename.split("_")[1:6]))
             knmi_data_path = join(TEST_DATA_KNMI_DIR, knmi_data_name)
@@ -88,3 +97,73 @@ def test_crunching(tmpdir):
                     filename, THRESHOLD_PERCENTAGE_DIFF
                 )
             )
+
+    assert files_found == 5
+
+def test_crunching_arguments(tmpdir):
+    here = abspath(dirname(__file__))
+    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
+    OUTPUT_DIR = str(tmpdir)
+    VAR_TO_CRUNCH = ".*fco2antt.*"
+    DATA_SUB_DIR = "custom-name"
+    LAND_MASK_TRESHHOLD = 45
+
+    runner = CliRunner()
+    result = runner.invoke(
+        crunch_data,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-crunch",
+            VAR_TO_CRUNCH,
+            "--data-sub-dir",
+            DATA_SUB_DIR,
+            "--land-mask-threshold",
+            LAND_MASK_TRESHHOLD,
+            "-f",
+        ]
+    )
+    assert result.exit_code == 0
+
+    assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
+    assert "Making output directory:" in result.output
+
+    assert "fco2antt" in result.output
+    assert "tas" not in result.output
+
+    assert "Making output directory:" in result.output
+    assert isdir(join(OUTPUT_DIR, DATA_SUB_DIR, "cmip5"))
+
+    assert "land-mask-threshold: {}".format(LAND_MASK_TRESHHOLD) in result.output
+
+    result_skip = runner.invoke(
+        crunch_data,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-crunch",
+            VAR_TO_CRUNCH,
+            "--data-sub-dir",
+            DATA_SUB_DIR,
+            "--land-mask-threshold",
+            LAND_MASK_TRESHHOLD,
+        ]
+    )
+    assert result_skip.exit_code == 0
+
+    skip_str = (
+        "Skipped (already exist, not overwriting)\n"
+        "========================================\n"
+        "- {}".format(join(
+            OUTPUT_DIR,
+            DATA_SUB_DIR,
+            "cmip5",
+            "1pctCO2",
+            "Amon",
+            "fco2antt",
+            "CanESM2",
+            "r1i1p1",
+            "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.csv"
+        ))
+    )
+    assert skip_str in result_skip.output
