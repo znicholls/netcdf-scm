@@ -77,7 +77,7 @@ flake8: $(VENV_DIR)  ## check compliance with pep8
 black: $(VENV_DIR)  ## use black to autoformat code
 	@status=$$(git status --porcelain); \
 	if test "x$${status}" = x; then \
-		$(VENV_DIR)/bin/black --exclude _version.py --py36 $(FILES_TO_FORMAT_PYTHON); \
+		$(VENV_DIR)/bin/black --exclude _version.py --target-version py37 $(FILES_TO_FORMAT_PYTHON); \
 	else \
 		echo Not trying any formatting, working directory is dirty... >&2; \
 	fi;
