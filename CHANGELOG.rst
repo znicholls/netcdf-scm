@@ -4,7 +4,11 @@ Changelog
 master
 ------
 
-- (`#39 <https://github.com/znicholls/netcdf-scm/pull/39>`_) Add basic command line interface
+
+v0.6.2
+------
+
+- (`#39 <https://github.com/znicholls/netcdf-scm/pull/39>`_) Add ``netcdf-scm-crunch`` command line interface
 
 v0.6.1
 ------
