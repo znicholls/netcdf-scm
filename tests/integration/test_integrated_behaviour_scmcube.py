@@ -842,7 +842,10 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         ts = test_cube.get_scm_timeseries()
         assert (ts["model"] == "unspecified").all()
         assert (ts["scenario"] == "CMIP_1pctCO2_r1i1p1f1").all()
-        assert (ts["region"] == ["World", "World|Northern Hemisphere", "World|Southern Hemisphere"]).all()
+        assert (
+            ts["region"]
+            == ["World", "World|Northern Hemisphere", "World|Southern Hemisphere"]
+        ).all()
         assert (ts["variable"] == "toa_outgoing_longwave_flux").all()
         assert (ts["unit"] == "W m^-2").all()
         assert (ts["climate_model"] == "BCC-CSM2-MR").all()
@@ -874,17 +877,20 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         ts = test_cube.get_scm_timeseries()
         assert (ts["model"] == "unspecified").all()
         assert (ts["scenario"] == "ScenarioMIP_ssp126_r1i1p1f1").all()
-        assert (ts["region"] == [
-            "World",
-            "World|Land",
-            "World|Northern Hemisphere",
-            "World|Northern Hemisphere|Land",
-            "World|Northern Hemisphere|Ocean",
-            "World|Ocean",
-            "World|Southern Hemisphere"
-            "World|Southern Hemisphere|Land"
-            "World|Southern Hemisphere|Ocean"
-        ]).all()
+        assert (
+            ts["region"]
+            == [
+                "World",
+                "World|Land",
+                "World|Northern Hemisphere",
+                "World|Northern Hemisphere|Land",
+                "World|Northern Hemisphere|Ocean",
+                "World|Ocean",
+                "World|Southern Hemisphere"
+                "World|Southern Hemisphere|Land"
+                "World|Southern Hemisphere|Ocean",
+            ]
+        ).all()
         assert (ts["variable"] == "fast_soil_pool_mass_content_of_carbon").all()
         assert (ts["unit"] == "kg m^-2").all()
         assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
