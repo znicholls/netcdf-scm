@@ -12,7 +12,9 @@ from netcdf_scm.iris_cube_wrappers import SCMCube
 
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test-data")
+
 TEST_DATA_KNMI_DIR = join(TEST_DATA_ROOT_DIR, "knmi-climate-explorer")
+
 TEST_DATA_MARBLE_CMIP5_DIR = join(TEST_DATA_ROOT_DIR, "marble-cmip5")
 TEST_TAS_FILE = join(
     TEST_DATA_MARBLE_CMIP5_DIR,
@@ -54,6 +56,7 @@ TEST_ACCESS_CMIP5_FILE = join(
     "r1i1p1",
     "tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc",
 )
+
 TEST_DATA_CMIP6Input4MIPS_DIR = join(TEST_DATA_ROOT_DIR, "cmip6input4mips")
 TEST_CMIP6_HISTORICAL_CONCS_FILE = join(
     TEST_DATA_CMIP6Input4MIPS_DIR,
@@ -69,6 +72,7 @@ TEST_CMIP6_HISTORICAL_CONCS_FILE = join(
     "v20100304",
     "mole-fraction-of-so2f2-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_0000-2014.nc",
 )
+
 TEST_DATA_CMIP6Output_DIR = join(TEST_DATA_ROOT_DIR, "cmip6output")
 TEST_CMIP6_OUTPUT_FILE = join(
     TEST_DATA_CMIP6Output_DIR,
@@ -99,6 +103,7 @@ TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS = join(
     "cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_201501-210012.nc",
 )
 
+TEST_DATA_OPENSCMCSVS_DIR = join(TEST_DATA_ROOT_DIR, "openscmcsvs")
 
 tdata_required = pytest.mark.skipif(
     not isdir(TEST_DATA_ROOT_DIR), reason="test data required"
