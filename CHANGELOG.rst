@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#41 <https://github.com/znicholls/netcdf-scm/pull/41>`_) Fixed bug in path handling of ``CMIP6OutputCube``
 
 v0.6.2
 ------
