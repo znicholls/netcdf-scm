@@ -7,17 +7,19 @@ import pandas as pd
 import numpy as np
 
 
-from conftest import TEST_DATA_DIR
-from scmcallib.utils import (
+from conftest import TEST_DATA_ROOT_DIR
+from netcdf_scm.wranglers import (
     convert_tuningstruc_to_scmdf,
     convert_scmdf_to_tuningstruc,
 )
 
 
+TEST_DATA_TUNINGSTRUCS_DIR = join(TEST_DATA_ROOT_DIR, "tuningstrucs")
+
 @pytest.fixture(scope='function', params=[
         {
             "location": join(
-                TEST_DATA_DIR,
+                TEST_DATA_TUNINGSTRUCS_DIR,
                 "xavier_RCP85_GISSLE_transient_SMBdata_1850nan.mat"
             ),
             "var": "SMB",
@@ -32,7 +34,7 @@ from scmcallib.utils import (
             }
         },
         {
-            "location": join(TEST_DATA_DIR, "single_var_tuningstruc.mat"),
+            "location": join(TEST_DATA_TUNINGSTRUCS_DIR, "single_var_tuningstruc.mat"),
             "var": "cLitter",
             "region": "World",
             "unit": "GtC",
