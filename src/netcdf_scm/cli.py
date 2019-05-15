@@ -9,13 +9,16 @@ import time
 from time import gmtime, strftime
 
 import click
+from openscm.scmdataframe import df_append
+
 import netcdf_scm
-from netcdf_scm.iris_cube_wrappers import (
+from .iris_cube_wrappers import (
     SCMCube,
     MarbleCMIP5Cube,
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
 )
+from .wranglers import convert_scmdf_to_tuningstruc
 import progressbar
 
 
@@ -67,9 +70,10 @@ _CUBES = {
 def crunch_data(
     src, dst, cube_type, var_to_crunch, land_mask_threshold, data_sub_dir, force
 ):
-    """Crunch data in ``src`` to OpenSCM csv's in ``dst``.
+    """
+    Crunch data in ``src`` to OpenSCM csv's in ``dst``.
 
-    ``src`` is searched recursively and netcdf-scm will attemp to crunch all the files
+    ``src`` is searched recursively and netcdf-scm will attempt to crunch all the files
     found. The directory structure in ``src`` will be mirrored in ``dst``.
 
     Failures and warnings are recorded and written into a text file in ``dst``.
@@ -235,3 +239,109 @@ def crunch_data(
 
     if failures:
         raise click.ClickException("Failures were found")
+
+
+@click.command(context_settings={"help_option_names": ["-h", "--help"]})
+@click.argument("src", type=click.Path(exists=True, readable=True, resolve_path=True))
+@click.argument(
+    "dst", type=click.Path(file_okay=False, writable=True, resolve_path=True)
+)
+@click.option(
+    "--var-to-wrangle",
+    default=".*",
+    show_default=True,
+    help="Variable to wrangle (uses regexp syntax, matches on filepaths).",
+)
+@click.option(
+    "--nested/--flat",
+    help="Maintain source directory structure in destination. If `flat`, writes all files to a single directory.",
+    default=True,
+    show_default=True,
+)
+@click.option(
+    "--out-format",
+    default="tuningstrucs",
+    type=click.Choice(["tuningstrucs"]),
+    show_default=True,
+    help="Format to re-write csvs into.",
+)
+def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format):
+    """
+    Wrangle OpenSCM csv files into other formats and directory structures
+
+    ``src`` is searched recursively and netcdf-scm will attemp to wrangle all the files
+    found.
+    """
+    title = "NetCDF Wrangling"
+    timestamp = strftime("%Y%m%d %H%M%S", gmtime())
+
+    metadata_header = (
+        "{}\n"
+        "{}\n"
+        "NetCDF SCM version: {}\n"
+        "\n"
+        "time: {}\n"
+        "source: {}\n"
+        "destination: {}\n"
+        "var-to-wrangle: {}\n"
+        "nested: {}\n"
+        "out-format: {}\n\n"
+        "".format(
+            title,
+            "=" * len(title),
+            netcdf_scm.__version__,
+            timestamp,
+            src,
+            dst,
+            var_to_wrangle,
+            nested,
+            out_format,
+        )
+    )
+    click.echo(metadata_header)
+
+    if not path.exists(dst):
+        click.echo("Making output directory: {}\n".format(dst))
+        makedirs(dst)
+
+    var_regexp = re.compile(var_to_wrangle)
+
+    format_custom_text = progressbar.FormatCustomText(
+        "Current directory :: %(curr_dir)-400s", {"curr_dir": "uninitialised"}
+    )
+    bar = progressbar.ProgressBar(
+        widgets=[progressbar.SimpleProgress(), ". ", format_custom_text],
+        max_value=len([w for w in walk(src)]),
+        prefix="Visiting directory ",
+    ).start()
+    for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
+        if not dirnames:
+            if not var_regexp.match(dirpath):
+                continue
+
+            openscmdf = df_append([join(dirpath, f) for f in filenames])
+
+            if nested:
+                out_filedir = dirpath.replace(src, dst)
+                if not path.exists(out_filedir):
+                    makedirs(out_filedir)
+
+                if out_format == "tuningstrucs":
+                    out_file = join(out_filedir, "ts")
+                    click.echo("Wrangling {} to {}".format(filenames, out_file))
+                    convert_scmdf_to_tuningstruc(openscmdf, out_file)
+                else:
+                    raise ValueError("Unsupported format: {}".format(out_format))
+            else:
+                try:
+                    collected = collected.append(openscmdf)
+                except NameError:
+                    collected = openscmdf
+
+    if not nested:
+        if out_format == "tuningstrucs":
+            out_file = join(dst, "ts")
+            click.echo("Wrangling everything to {}".format(dst))
+            convert_scmdf_to_tuningstruc(openscmdf, out_file)
+        else:
+            raise ValueError("Unsupported format: {}".format(out_format))
