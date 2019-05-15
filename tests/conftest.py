@@ -84,6 +84,21 @@ TEST_CMIP6_OUTPUT_FILE = join(
     "v20181015",
     "rlut_Amon_BCC-CSM2-MR_1pctCO2_r1i1p1f1_gn_185001-185912.nc",
 )
+TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS = join(
+    TEST_DATA_CMIP6Output_DIR,
+    "CMIP6",
+    "ScenarioMIP",
+    "IPSL",
+    "IPSL-CM6A-LR",
+    "ssp126",
+    "r1i1p1f1",
+    "Lmon",
+    "cSoilFast",
+    "gr",
+    "v20190121",
+    "cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_201501-210012.nc",
+)
+
 
 tdata_required = pytest.mark.skipif(
     not isdir(TEST_DATA_ROOT_DIR), reason="test data required"
