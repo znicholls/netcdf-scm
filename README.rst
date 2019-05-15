@@ -60,12 +60,8 @@ The easiest way to install NetCDF-SCM is with `conda <https://conda.io/miniconda
     conda install -c conda-forge netcdf-scm
 
 If you do install it this way, we think (but aren't yet completely sure) that you will also need to install (at least) the minimal pip requirements.
-
-::
-
-  # if you're using a conda environment, make sure you're in it
-  # and that pip is installed in the conda environment
-  pip install -Ur pip-requirements-minimal.txt
+At the moment these have to be read out of ``setup.py`` manually, we are working on automating this better.
+Last time we tried the only extra step that was required was ``conda install progressbar2`` and ``pip install openscm>=0.1.0a``.
 
 It is also possible to install it with `pip <https://pypi.org/project/pip/>`_
 
