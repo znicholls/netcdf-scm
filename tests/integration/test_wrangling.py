@@ -83,4 +83,4 @@ def test_wrangling_flat(tmpdir):
 
     assert "everything" in result.output
 
-    assert len(listdir(OUTPUT_DIR)) == 3
+    assert len(listdir(OUTPUT_DIR)) == 12
