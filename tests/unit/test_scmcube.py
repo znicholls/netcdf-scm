@@ -1503,7 +1503,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             "institution_id": test_cube.institution_id,
             "source_id": test_cube.source_id,
             "experiment_id": test_cube.experiment_id,
-            "member_id": "r0i0p0",
+            "member_id": test_cube.member_id,
             "table_id": "fx",
             "variable_id": tmetadata_var,
             "grid_label": test_cube.grid_label,
@@ -1638,3 +1638,30 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             **tkwargs
         )
         assert isinstance(result, iris.Constraint)
+
+    def test_get_climate_model_scenario(self, test_cube):
+        warn_msg = (
+            "Could not determine appropriate climate_model scenario combination, "
+            "filling with 'unspecified'"
+        )
+        with warnings.catch_warnings(record=True) as recorded_warnings:
+            model, scenario = test_cube._get_climate_model_scenario()
+
+        assert model == "unspecified"
+        assert scenario == "unspecified"
+        assert len(recorded_warnings) == 1
+        assert str(recorded_warnings[0].message) == warn_msg
+
+        tmodel = "ABCD"
+        tactivity = "rcpmip"
+        texperiment = "oscvolcanicrf"
+        tensemble_member = "r1i3p10"
+        tscenario = "_".join([tactivity, texperiment, tensemble_member])
+        test_cube.source_id = tmodel
+        test_cube.activity_id = tactivity
+        test_cube.experiment_id = texperiment
+        test_cube.member_id = tensemble_member
+
+        model, scenario = test_cube._get_climate_model_scenario()
+        assert model == tmodel
+        assert scenario == tscenario
