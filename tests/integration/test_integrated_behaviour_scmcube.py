@@ -32,6 +32,7 @@ from conftest import (
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_CMIP6_HISTORICAL_CONCS_FILE,
     TEST_CMIP6_OUTPUT_FILE,
+    TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
 )
 
 
@@ -838,3 +839,30 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         assert test_cube.cube.name() == "toa_outgoing_longwave_flux"
         assert test_cube.cube.long_name == "TOA Outgoing Longwave Radiation"
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
+
+    def test_load_data_missing_bounds(self, test_cube):
+        test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        assert obs_time.units.name == "day since 2015-01-01 00:00:00.00000000 UTC"
+        assert obs_time.units.calendar == "gregorian"
+
+        obs_time_points = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+
+        assert obs_time_points[0] == datetime.datetime(2015, 1, 16, 12, 0)
+        assert obs_time_points[-1] == datetime.datetime(2100, 12, 16, 12, 0)
+
+        assert test_cube.cube.attributes["institution_id"] == "IPSL"
+        assert test_cube.cube.attributes["Conventions"] == "CF-1.7 CMIP-6.2"
+        assert test_cube.cube.attributes["table_id"] == "Lmon"
+        assert test_cube.cube.cell_methods[0].method == "mean where land"
+        assert str(test_cube.cube.units) == "kg m-2"
+        assert test_cube.cube.var_name == "cSoilFast"
+        assert test_cube.cube.name() == "fast_soil_pool_mass_content_of_carbon"
+        assert test_cube.cube.long_name == "Carbon Mass in Fast Soil Pool"
+        assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
+
+        test_cube.get_scm_timeseries()
+        assert False
