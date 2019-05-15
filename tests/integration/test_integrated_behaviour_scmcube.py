@@ -31,6 +31,7 @@ from conftest import (
     tdata_required,
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_CMIP6_HISTORICAL_CONCS_FILE,
+    TEST_CMIP6_OUTPUT_FILE,
 )
 
 
@@ -511,7 +512,7 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
         self, test_cube
     ):
         tpath = (
-            "cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc"
+            "./cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc"
         )
         expected = {
             "root_dir": ".",
@@ -649,7 +650,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
         self, test_cube
     ):
-        tpath = "input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc"
+        tpath = "./input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc"
         expected = {
             "root_dir": ".",
             "activity_id": "input4MIPs",
@@ -696,9 +697,9 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
     tclass = CMIP6OutputCube
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
-        tpath = "tests/test_data/cmip6-output/CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
+        tpath = "./tests/test_data/cmip6-output/CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
         expected = {
-            "root_dir": "tests/test_data/cmip6-output",
+            "root_dir": "./tests/test_data/cmip6-output",
             "mip_era": "CMIP6",
             "activity_id": "DCPP",
             "institution_id": "CNRM-CERFACS",
@@ -718,9 +719,9 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_time(self, test_cube):
-        tpath = "tests/test_data/cmip6-output/CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/r0i0p0/fx/sftlf/gn/v20160215/sftlf_fx_CNRM-CM6-1_dcppA-hindcast_r0i0p0_gn.nc"
+        tpath = "./tests/test_data/cmip6-output/CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/r0i0p0/fx/sftlf/gn/v20160215/sftlf_fx_CNRM-CM6-1_dcppA-hindcast_r0i0p0_gn.nc"
         expected = {
-            "root_dir": "tests/test_data/cmip6-output",
+            "root_dir": "./tests/test_data/cmip6-output",
             "mip_era": "CMIP6",
             "activity_id": "DCPP",
             "institution_id": "CNRM-CERFACS",
@@ -742,7 +743,7 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
     def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
         self, test_cube
     ):
-        tpath = "CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
+        tpath = "./CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
         expected = {
             "root_dir": ".",
             "mip_era": "CMIP6",
@@ -782,3 +783,25 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
+
+    def test_load_data(self, test_cube):
+        test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        assert obs_time.units.name == "day since 1850-01-01 00:00:00.0000000 UTC"
+        assert obs_time.units.calendar == "365_day"
+
+        obs_time_points = cf_units.num2date(obs_time.points, obs_time.units.name, obs_time.units.calendar)
+
+        assert obs_time_points[0] == cftime.DatetimeNoLeap(1850, 1, 16, 12, 0, 0, 0, 5, 16)
+        assert obs_time_points[-1] == cftime.DatetimeNoLeap(1859, 12, 16, 12, 0, 0, 0, 5, 350)
+
+        assert test_cube.cube.attributes["institution_id"] == "BCC"
+        assert test_cube.cube.attributes["Conventions"] == "CF-1.5"
+        assert test_cube.cube.attributes["table_id"] == "Amon"
+        assert test_cube.cube.cell_methods[0].method == "mean"
+        assert str(test_cube.cube.units) == "W m-2"
+        assert test_cube.cube.var_name == "rlut"
+        assert test_cube.cube.name() == "toa_outgoing_longwave_flux"
+        assert test_cube.cube.long_name == "TOA Outgoing Longwave Radiation"
+        assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
