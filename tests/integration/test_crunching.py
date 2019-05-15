@@ -132,7 +132,6 @@ def test_crunching_arguments(tmpdir):
     assert "fco2antt" in result.output
     assert "tas" not in result.output
 
-    assert "Making output directory:" in result.output
     assert isdir(join(OUTPUT_DIR, DATA_SUB_DIR, "cmip5"))
 
     assert "land-mask-threshold: {}".format(LAND_MASK_TRESHHOLD) in result.output
