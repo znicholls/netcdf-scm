@@ -1,7 +1,9 @@
 [run]
 branch = True
 source = src
-omit = *_version.py
+omit =
+    *_version.py
+    */mat4py/*
 
 [report]
 fail_under = 90
