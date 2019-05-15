@@ -1811,3 +1811,18 @@ class CMIP6OutputCube(_CMIPCube):
             self.grid_label,
             self.version,
         )
+
+    def _get_climate_model_scenario(self):
+        try:
+            climate_model = self.source_id
+            scenario = "_".join([self.activity_id, self.experiment_id, self.member_id])
+        except AttributeError:
+            warn_msg = (
+                "Could not determine appropriate climate_model scenario combination, "
+                "filling with 'unspecified'"
+            )
+            warnings.warn(warn_msg)
+            climate_model = "unspecified"
+            scenario = "unspecified"
+
+        return climate_model, scenario
