@@ -34,7 +34,12 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.7",
 ]
 
-ENTRY_POINTS = {"console_scripts": ["netcdf-scm-crunch = netcdf_scm.cli:crunch_data", "netcdf-scm-wrangle = netcdf_scm.cli:wrangle_openscm_csvs"]}
+ENTRY_POINTS = {
+    "console_scripts": [
+        "netcdf-scm-crunch = netcdf_scm.cli:crunch_data",
+        "netcdf-scm-wrangle = netcdf_scm.cli:wrangle_openscm_csvs",
+    ]
+}
 
 
 REQUIREMENTS_INSTALL = [

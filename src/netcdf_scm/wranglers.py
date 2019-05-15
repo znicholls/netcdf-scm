@@ -6,12 +6,7 @@ from . import mat4py
 
 
 def convert_tuningstruc_to_scmdf(
-    filepath,
-    variable=None,
-    region=None,
-    unit=None,
-    scenario=None,
-    model=None,
+    filepath, variable=None, region=None, unit=None, scenario=None, model=None
 ):
     """Convert a matlab tuningstruc to an ScmDataFrame
 
@@ -59,7 +54,7 @@ def convert_tuningstruc_to_scmdf(
     """
     dataset = mat4py.loadmat(filepath)
 
-    for m, climate_model in enumerate(dataset['tuningdata']['modelcodes']):
+    for m, climate_model in enumerate(dataset["tuningdata"]["modelcodes"]):
         metadata = {
             "variable": [variable],
             "region": [region],
@@ -71,23 +66,20 @@ def convert_tuningstruc_to_scmdf(
         for k, v in metadata.items():
             if v == [None]:
                 try:
-                    metadata[k] = [
-                        dataset['tuningdata']['model'][m][k]
-                    ]
+                    metadata[k] = [dataset["tuningdata"]["model"][m][k]]
                 except KeyError:
                     if k is "model":
                         metadata[k] = ["unspecified"]
                         continue
 
-                    error_msg = (
-                        "Cannot determine {} from file: "
-                        "{}".format(k, filepath)
+                    error_msg = "Cannot determine {} from file: " "{}".format(
+                        k, filepath
                     )
                     raise KeyError(error_msg)
 
         scmdf = ScmDataFrame(
-            data=np.asarray(dataset['tuningdata']['model'][m]['data'][1]),
-            index=dataset['tuningdata']['model'][m]['data'][0],
+            data=np.asarray(dataset["tuningdata"]["model"][m]["data"][1]),
+            index=dataset["tuningdata"]["model"][m]["data"][0],
             columns=metadata,
         )
 
@@ -127,7 +119,7 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath):
             # impossible to make dataframe with duplicate rows, this is just in
             # case
             error_msg = (
-                'Should only have a single unique timeseries for a given '
+                "Should only have a single unique timeseries for a given "
                 '["climate_model", "model", "scenario", "variable", '
                 '"region", "unit"] combination'
             )
@@ -148,12 +140,14 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath):
             )
             dataset["tuningdata"]["model"][m]["data"] = [
                 [float(t.year) for t in df.columns],
-                list(df.values.squeeze())
+                list(df.values.squeeze()),
             ]
             dataset["tuningdata"]["model"][m]["col_code"] = ["YEARS", variable]
 
-        outfile = "{}_{}_{}_{}_{}.mat".format(
-            outpath, scenario, model, variable, region
-        ).replace(" ", "_").replace("|", "_")
+        outfile = (
+            "{}_{}_{}_{}_{}.mat".format(outpath, scenario, model, variable, region)
+            .replace(" ", "_")
+            .replace("|", "_")
+        )
         # ask Jared how to add logging here
         mat4py.savemat(outfile, dataset)
