@@ -30,11 +30,12 @@ The following Matlab data structures/types are not supported:
 from .loadmat import loadmat
 from .savemat import savemat
 
-__version__ = '0.4.2'
-__all__ = ['loadmat', 'savemat']
+__version__ = "0.4.2"
+__all__ = ["loadmat", "savemat"]
 __license__ = """The MIT License (MIT), Copyright (c) 2011-2018 Nephics AB"""
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import cmd
+
     cmd.main()
