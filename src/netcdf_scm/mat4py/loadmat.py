@@ -26,8 +26,13 @@ from io import BytesIO
 
 
 # encode a string to bytes and vice versa
-asbytes = lambda s: s.encode("latin1")
-asstr = lambda b: b.decode("latin1")
+def asbytes(s):
+    return s.encode("latin1")
+
+
+def asstr(b):
+    return b.decode("latin1")
+
 
 # array element data types
 etypes = {
@@ -323,7 +328,9 @@ def read_struct_array(fd, endian, header):
         fields = [fields]
 
     # read rows and columns of each field
-    empty = lambda: [list() for i in range(header["dims"][0])]
+    def empty():
+        return [list() for i in range(header["dims"][0])]
+
     array = {}
     for row in range(header["dims"][0]):
         for col in range(header["dims"][1]):

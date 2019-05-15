@@ -27,8 +27,13 @@ from io import BytesIO
 
 
 # encode a string to bytes and vice versa
-asbytes = lambda s: s.encode("latin1")
-asstr = lambda b: b.decode("latin1")
+def asbytes(s):
+    return s.encode("latin1")
+
+
+def asstr(b):
+    return b.decode("latin1")
+
 
 # array element data types
 etypes = {
@@ -145,13 +150,13 @@ def write_elements(fd, mtp, data, is_name=False):
             else:
                 fmt = "".join("{}s".format(len(s)) for s in data)
         else:
-            l = len(data)
-            if l == 0:
+            length = len(data)
+            if length == 0:
                 # empty array
                 fmt = ""
-            if l > 1:
+            if length > 1:
                 # more than one element to be written
-                fmt = "{}{}".format(l, fmt)
+                fmt = "{}{}".format(length, fmt)
     else:
         data = (data,)
     num_bytes = struct.calcsize(fmt)
