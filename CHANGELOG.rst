@@ -4,6 +4,10 @@ Changelog
 master
 ------
 
+v0.7.1
+------
+
+- (`#42 <https://github.com/znicholls/netcdf-scm/pull/42>`_) Add ``netcdf-scm-wrangle`` command line interface
 - (`#41 <https://github.com/znicholls/netcdf-scm/pull/41>`_) Fixed bug in path handling of ``CMIP6OutputCube``
 
 v0.6.2
