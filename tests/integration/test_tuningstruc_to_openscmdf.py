@@ -16,11 +16,14 @@ from netcdf_scm.wranglers import (
 
 TEST_DATA_TUNINGSTRUCS_DIR = join(TEST_DATA_ROOT_DIR, "tuningstrucs")
 
-@pytest.fixture(scope='function', params=[
+
+@pytest.fixture(
+    scope="function",
+    params=[
         {
             "location": join(
                 TEST_DATA_TUNINGSTRUCS_DIR,
-                "xavier_RCP85_GISSLE_transient_SMBdata_1850nan.mat"
+                "xavier_RCP85_GISSLE_transient_SMBdata_1850nan.mat",
             ),
             "var": "SMB",
             "region": "World",
@@ -31,7 +34,7 @@ TEST_DATA_TUNINGSTRUCS_DIR = join(TEST_DATA_ROOT_DIR, "tuningstrucs")
                 "FGOALSG2": 92.01503047091413,
                 "GISSE2R": 56.65268144044319,
                 "IPSLCM5ALR": 124.97478670360111,
-            }
+            },
         },
         {
             "location": join(TEST_DATA_TUNINGSTRUCS_DIR, "single_var_tuningstruc.mat"),
@@ -39,9 +42,7 @@ TEST_DATA_TUNINGSTRUCS_DIR = join(TEST_DATA_ROOT_DIR, "tuningstrucs")
             "region": "World",
             "unit": "GtC",
             "scenario": "RCP26",
-            "climate_model_2100_values": {
-                "BNUESM": 0.30397183,
-            }
+            "climate_model_2100_values": {"BNUESM": 0.30397183},
         },
     ],
 )
@@ -59,12 +60,7 @@ def test_convert_tuningstruc_to_scmdf(test_file_info, model):
     tscen = test_file_info["scenario"]
 
     res = convert_tuningstruc_to_scmdf(
-        test_file,
-        tvar,
-        tregion,
-        tunit,
-        tscen,
-        **tkwargs,
+        test_file, tvar, tregion, tunit, tscen, **tkwargs
     )
 
     if model is None:
@@ -73,22 +69,24 @@ def test_convert_tuningstruc_to_scmdf(test_file_info, model):
         assert (res["model"] == model).all()
 
     for cm, v in test_file_info["climate_model_2100_values"].items():
-        rv = res.filter(
-            climate_model=cm,
-            year=2100,
-            variable=tvar,
-            region=tregion,
-            scenario=tscen,
-            unit=tunit,
-        ).timeseries().values
+        rv = (
+            res.filter(
+                climate_model=cm,
+                year=2100,
+                variable=tvar,
+                region=tregion,
+                scenario=tscen,
+                unit=tunit,
+            )
+            .timeseries()
+            .values
+        )
         np.testing.assert_allclose(rv, v)
 
 
 def test_convert_tuningstruc_to_scmdf_errors(test_file_info):
     test_file = test_file_info["location"]
-    error_msg = (
-        r"Cannot determine \S* " + re.escape("from file: {}".format(test_file))
-    )
+    error_msg = r"Cannot determine \S* " + re.escape("from file: {}".format(test_file))
     with pytest.raises(KeyError, match=error_msg):
         convert_tuningstruc_to_scmdf(test_file)
 
@@ -103,17 +101,14 @@ def test_convert_scmdf_to_tuningstruc(test_file_info, tmpdir):
     tscen = test_file_info["scenario"]
     tmodel = "iam"
     start = convert_tuningstruc_to_scmdf(
-        test_file,
-        tvar,
-        tregion,
-        tunit,
-        tscen,
-        model=tmodel,
+        test_file, tvar, tregion, tunit, tscen, model=tmodel
     )
 
-    expected_outfile = "{}_{}_{}_{}_{}.mat".format(
-        tbase, tscen, tmodel, tvar, tregion
-    ).replace(" ", "_").replace("|", "_")
+    expected_outfile = (
+        "{}_{}_{}_{}_{}.mat".format(tbase, tscen, tmodel, tvar, tregion)
+        .replace(" ", "_")
+        .replace("|", "_")
+    )
     convert_scmdf_to_tuningstruc(start, tbase)
     res = convert_tuningstruc_to_scmdf(expected_outfile)
 
