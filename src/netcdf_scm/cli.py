@@ -319,6 +319,9 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format):
             if not var_regexp.match(dirpath):
                 continue
 
+            format_custom_text.update_mapping(curr_dir=dirpath)
+            bar.update(i)
+
             openscmdf = df_append([join(dirpath, f) for f in filenames])
 
             if nested:
@@ -342,6 +345,6 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format):
         if out_format == "tuningstrucs":
             out_file = join(dst, "ts")
             click.echo("Wrangling everything to {}".format(dst))
-            convert_scmdf_to_tuningstruc(openscmdf, out_file)
+            convert_scmdf_to_tuningstruc(collected, out_file)
         else:
             raise ValueError("Unsupported format: {}".format(out_format))

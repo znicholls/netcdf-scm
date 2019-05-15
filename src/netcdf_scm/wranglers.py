@@ -68,7 +68,7 @@ def convert_tuningstruc_to_scmdf(
                 try:
                     metadata[k] = [dataset["tuningdata"]["model"][m][k]]
                 except KeyError:
-                    if k is "model":
+                    if k == "model":
                         metadata[k] = ["unspecified"]
                         continue
 
