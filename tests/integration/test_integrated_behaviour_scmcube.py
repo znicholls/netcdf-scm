@@ -878,7 +878,7 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         assert (ts["model"] == "unspecified").all()
         assert (ts["scenario"] == "ScenarioMIP_ssp126_r1i1p1f1").all()
         assert (
-            ts["region"]
+            ts["region"].tolist()
             == [
                 "World",
                 "World|Land",
@@ -886,11 +886,11 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
                 "World|Northern Hemisphere|Land",
                 "World|Northern Hemisphere|Ocean",
                 "World|Ocean",
-                "World|Southern Hemisphere"
-                "World|Southern Hemisphere|Land"
+                "World|Southern Hemisphere",
+                "World|Southern Hemisphere|Land",
                 "World|Southern Hemisphere|Ocean",
             ]
-        ).all()
+        )
         assert (ts["variable"] == "fast_soil_pool_mass_content_of_carbon").all()
         assert (ts["unit"] == "kg m^-2").all()
         assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
