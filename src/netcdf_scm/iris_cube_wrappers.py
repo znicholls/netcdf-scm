@@ -1800,6 +1800,7 @@ class CMIP6OutputCube(_CMIPCube):
             self.source_id,
             self.experiment_id,
             self.member_id,
+            self.table_id,
             self.variable_id,
             self.grid_label,
             self.version,
