@@ -860,7 +860,7 @@ class SCMCube(object):
         out_df.columns = pd.MultiIndex.from_product(
             [
                 [self.cube.standard_name],
-                [self.cube.units.name],
+                [str(self.cube.units).replace("-", "^-")],
                 out_df.columns.tolist(),
                 [climate_model],
                 [scenario],

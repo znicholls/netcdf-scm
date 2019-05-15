@@ -204,11 +204,10 @@ class _SCMCubeIntegrationTester(object):
             },
             index=time_index,
         )
-
         expected_df.columns = pd.MultiIndex.from_product(
             [
                 [test_cube.cube.standard_name],
-                [test_cube.cube.units.name],
+                [str(test_cube.cube.units).replace("-", "^-")],
                 expected_df.columns.tolist(),
                 ["unspecified"],
                 ["unspecified"],
@@ -840,6 +839,14 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         assert test_cube.cube.long_name == "TOA Outgoing Longwave Radiation"
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
+        ts = test_cube.get_scm_timeseries()
+        assert (ts["model"] == "unspecified").all()
+        assert (ts["scenario"] == "CMIP_1pctCO2_r1i1p1f1").all()
+        assert (ts["region"] == ["World", "World|Northern Hemisphere", "World|Southern Hemisphere"]).all()
+        assert (ts["variable"] == "toa_outgoing_longwave_flux").all()
+        assert (ts["unit"] == "W m^-2").all()
+        assert (ts["climate_model"] == "BCC-CSM2-MR").all()
+
     def test_load_data_missing_bounds(self, test_cube):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS)
 
@@ -864,5 +871,20 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         assert test_cube.cube.long_name == "Carbon Mass in Fast Soil Pool"
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
-        test_cube.get_scm_timeseries()
-        assert False
+        ts = test_cube.get_scm_timeseries()
+        assert (ts["model"] == "unspecified").all()
+        assert (ts["scenario"] == "ScenarioMIP_ssp126_r1i1p1f1").all()
+        assert (ts["region"] == [
+            "World",
+            "World|Land",
+            "World|Northern Hemisphere",
+            "World|Northern Hemisphere|Land",
+            "World|Northern Hemisphere|Ocean",
+            "World|Ocean",
+            "World|Southern Hemisphere"
+            "World|Southern Hemisphere|Land"
+            "World|Southern Hemisphere|Ocean"
+        ]).all()
+        assert (ts["variable"] == "fast_soil_pool_mass_content_of_carbon").all()
+        assert (ts["unit"] == "kg m^-2").all()
+        assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
