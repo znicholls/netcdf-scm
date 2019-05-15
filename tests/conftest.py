@@ -69,7 +69,21 @@ TEST_CMIP6_HISTORICAL_CONCS_FILE = join(
     "v20100304",
     "mole-fraction-of-so2f2-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_0000-2014.nc",
 )
-
+TEST_DATA_CMIP6Output_DIR = join(TEST_DATA_ROOT_DIR, "cmip6output")
+TEST_CMIP6_OUTPUT_FILE = join(
+    TEST_DATA_CMIP6Output_DIR,
+    "CMIP6",
+    "CMIP",
+    "BCC",
+    "BCC-CSM2-MR",
+    "1pctCO2",
+    "r1i1p1f1",
+    "Amon",
+    "rlut",
+    "gn",
+    "v20181015",
+    "rlut_Amon_BCC-CSM2-MR_1pctCO2_r1i1p1f1_gn_185001-185912.nc",
+)
 
 tdata_required = pytest.mark.skipif(
     not isdir(TEST_DATA_ROOT_DIR), reason="test data required"
