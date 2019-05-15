@@ -487,6 +487,7 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+        assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_time(self, test_cube):
         tpath = "tests/test_data/marble_cmip5/cmip5/1pctCO2/fx/sftlf/CanESM2/r0i0p0/sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc"
@@ -504,6 +505,7 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+        assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
         self, test_cube
@@ -525,6 +527,7 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+        assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     @pytest.mark.parametrize(
         "tpath",
@@ -618,6 +621,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+        assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_time(self, test_cube):
         tpath = "tests/test_data/cmip6-input4mips/input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/land/fx/sftlf/gn/v20180427/sftlf_input4MIPs_landState_CMIP_PCMDI-AMIP-1-1-4_gn.nc"
@@ -640,6 +644,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+        assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
         self, test_cube
@@ -664,6 +669,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+        assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     @pytest.mark.parametrize(
         "tpath",
@@ -709,6 +715,7 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+        assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_time(self, test_cube):
         tpath = "tests/test_data/cmip6-output/CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/r0i0p0/fx/sftlf/gn/v20160215/sftlf_fx_CNRM-CM6-1_dcppA-hindcast_r0i0p0_gn.nc"
@@ -730,6 +737,7 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+        assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
         self, test_cube
@@ -753,6 +761,7 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         result = test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
         assert result == expected
+        assert test_cube.get_filepath_from_load_data_from_identifiers_args(**expected) == tpath
 
     @pytest.mark.parametrize(
         "tpath",
