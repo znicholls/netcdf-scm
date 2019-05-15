@@ -818,7 +818,13 @@ class SCMCube(object):
         warnings.warn(
             "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
         )
-        return iris.analysis.cartography.area_weights(self.cube)
+        try:
+            return iris.analysis.cartography.area_weights(self.cube)
+        except ValueError:
+            warnings.warn("Guessing latitude and longitude bounds")
+            self.cube.coord("latitude").guess_bounds()
+            self.cube.coord("longitude").guess_bounds()
+            return iris.analysis.cartography.area_weights(self.cube)
 
     def _get_areacella_scmcube(self):
         try:
@@ -1768,7 +1774,7 @@ class CMIP6OutputCube(_CMIPCube):
             "institution_id": self.institution_id,
             "source_id": self.source_id,
             "experiment_id": self.experiment_id,
-            "member_id": "r0i0p0",
+            "member_id": self.member_id,
             "table_id": "fx",
             "variable_id": metadata_variable,
             "grid_label": self.grid_label,
