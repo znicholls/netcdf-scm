@@ -4,6 +4,8 @@ Changelog
 master
 ------
 
+- (`#44 <https://github.com/znicholls/netcdf-scm/pull/44>`_) Speed up crunching by forcing data to load before applying masks, not each time a mask is applied
+
 v0.7.2
 ------
 
