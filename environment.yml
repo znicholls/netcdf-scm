@@ -4,4 +4,3 @@ cftime==1.0.1
 nc-time-axis
 cython
 netcdf4==1.4.1
-xarray
