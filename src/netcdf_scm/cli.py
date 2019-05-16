@@ -5,7 +5,6 @@ from os.path import join, isfile
 import re
 import warnings
 import traceback
-import time
 from time import gmtime, strftime
 
 import click
