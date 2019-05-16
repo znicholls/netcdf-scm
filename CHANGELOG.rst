@@ -4,6 +4,8 @@ Changelog
 master
 ------
 
+- (`#43 <https://github.com/znicholls/netcdf-scm/pull/43>`_) Speed up crunching, in particular remove string parsing to convert cftime to python datetime
+
 v0.7.1
 ------
 
