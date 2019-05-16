@@ -119,7 +119,6 @@ def crunch_data(
 
     var_regexp = re.compile(var_to_crunch)
 
-    time.sleep(0.5)  # needed to get logging bar in right place...
     # really should use a logger here
     with warnings.catch_warnings(record=True) as recorded_warns:
         failures = []

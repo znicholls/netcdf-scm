@@ -2,6 +2,7 @@
 
 For example, applying masks to cubes, taking latitude-longitude means and getting timeseries from a cube as datetime values.
 """
+import datetime as dt
 import numpy as np
 
 try:
@@ -101,8 +102,7 @@ def take_lat_lon_mean(in_scmcube, in_weights):
         of the input cube's data
     """
     out_cube = type(in_scmcube)()
-    out_cube.cube = in_scmcube.cube.copy()
-    out_cube.cube = out_cube.cube.collapsed(
+    out_cube.cube = in_scmcube.cube.collapsed(
         [in_scmcube.lat_name, in_scmcube.lon_name],
         iris.analysis.MEAN,
         weights=in_weights,
@@ -128,7 +128,6 @@ def apply_mask(in_scmcube, in_mask):
     """
     out_cube = type(in_scmcube)()
     out_cube.cube = in_scmcube.cube.copy()
-    out_cube.cube.data = np.ma.asarray(out_cube.cube.data)
     out_cube.cube.data.mask = in_mask
 
     return out_cube
@@ -176,3 +175,9 @@ def unify_lat_lon(cubes, rtol=10 ** -10):
         lon_dim_no = cube.coord_dims("longitude")[0]
         cube.remove_coord("longitude")
         cube.add_dim_coord(cubes[0].coords("longitude")[0], lon_dim_no)
+
+
+def _cftime_conversion(t):
+    return dt.datetime(t.year, t.month, t.day, t.hour, t.minute, t.second, t.microsecond)
+
+_vector_cftime_conversion = np.vectorize(_cftime_conversion)
