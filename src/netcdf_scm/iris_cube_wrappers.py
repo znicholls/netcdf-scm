@@ -39,6 +39,7 @@ from .utils import (
     take_lat_lon_mean,
     apply_mask,
     unify_lat_lon,
+    _vector_cftime_conversion
 )
 
 
@@ -847,29 +848,30 @@ class SCMCube(object):
     def _convert_scm_timeseries_cubes_to_openscmdata(
         self, scm_timeseries_cubes, out_calendar=None
     ):
-        # could probably just use iris.pandas.to_series() here..?
-        data = {k: get_cube_timeseries_data(v) for k, v in scm_timeseries_cubes.items()}
+        data = []
+        regions = []
+        for k, v in scm_timeseries_cubes.items():
+            data.append(get_cube_timeseries_data(v))
+            regions.append(k)
+        data = np.vstack(data).T
 
         time_index, out_calendar = self._get_openscmdata_time_axis_and_calendar(
             scm_timeseries_cubes, out_calendar=out_calendar
         )
 
         climate_model, scenario = self._get_climate_model_scenario()
-
-        out_df = pd.DataFrame(data, index=time_index)
-        out_df.columns = pd.MultiIndex.from_product(
-            [
-                [self.cube.standard_name],
-                [str(self.cube.units).replace("-", "^-")],
-                out_df.columns.tolist(),
-                [climate_model],
-                [scenario],
-                ["unspecified"],
-            ],
-            names=["variable", "unit", "region", "climate_model", "scenario", "model"],
+        output = ScmDataFrame(
+            data,
+            index=time_index,
+            columns={
+                "variable": self.cube.standard_name,
+                "unit": str(self.cube.units).replace("-", "^-"),
+                "region": regions,
+                "climate_model": climate_model,
+                "scenario": scenario,
+                "model": "unspecified",
+            }
         )
-        out_df = out_df.unstack().reset_index().rename({0: "value"}, axis="columns")
-        output = ScmDataFrame(out_df)
         try:
             output.metadata["calendar"] = out_calendar
         except AttributeError:
@@ -906,7 +908,14 @@ class SCMCube(object):
         time_axis = time_axes[0]
 
         if isinstance(time_axis[0], cftime.datetime):
-            time_axis = np.array([parser.parse(x.strftime()) for x in time_axis])
+            # inspired by xarray, should make a PR back in there...
+            if out_calendar not in {'standard', 'gregorian', 'proleptic_gregorian'}:
+                warnings.warn(
+                    "Performing lazy conversion to datetime for calendar: {}. This "
+                    "may cause subtle errors in operations that depend on the length "
+                    "of time between dates".format(out_calendar)
+                )
+            time_axis = _vector_cftime_conversion(time_axis)
         elif isinstance(time_axis[0], datetime):
             pass
 
