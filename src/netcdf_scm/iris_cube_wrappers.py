@@ -11,7 +11,6 @@ import warnings
 import traceback
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from dateutil import parser
 
 
 import numpy as np
@@ -39,7 +38,7 @@ from .utils import (
     take_lat_lon_mean,
     apply_mask,
     unify_lat_lon,
-    _vector_cftime_conversion
+    _vector_cftime_conversion,
 )
 
 
@@ -870,7 +869,7 @@ class SCMCube(object):
                 "climate_model": climate_model,
                 "scenario": scenario,
                 "model": "unspecified",
-            }
+            },
         )
         try:
             output.metadata["calendar"] = out_calendar
@@ -909,7 +908,7 @@ class SCMCube(object):
 
         if isinstance(time_axis[0], cftime.datetime):
             # inspired by xarray, should make a PR back in there...
-            if out_calendar not in {'standard', 'gregorian', 'proleptic_gregorian'}:
+            if out_calendar not in {"standard", "gregorian", "proleptic_gregorian"}:
                 warnings.warn(
                     "Performing lazy conversion to datetime for calendar: {}. This "
                     "may cause subtle errors in operations that depend on the length "
