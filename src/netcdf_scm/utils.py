@@ -30,7 +30,7 @@ def get_cube_timeseries_data(scm_cube):
         The cube's timeseries data.
     """
     _assert_only_cube_dim_coord_is_time(scm_cube)
-    return scm_cube.cube.data
+    return scm_cube.cube.core_data()
 
 
 def get_scm_cube_time_axis_in_calendar(scm_cube, calendar):

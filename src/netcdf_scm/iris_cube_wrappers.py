@@ -486,7 +486,7 @@ class SCMCube(object):
     def _add_areacella_measure(self):
         areacella_cube = self.get_metadata_cube(self.areacella_var).cube
         areacella_measure = iris.coords.CellMeasure(
-            areacella_cube.data,
+            areacella_cube.core_data(),
             standard_name=areacella_cube.standard_name,
             long_name=areacella_cube.long_name,
             var_name=areacella_cube.var_name,
