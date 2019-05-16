@@ -4,6 +4,9 @@ output-examples
 # venv for pip installs
 venv
 
+# profile outputs
+*.lprof
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
