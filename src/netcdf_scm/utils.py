@@ -178,6 +178,9 @@ def unify_lat_lon(cubes, rtol=10 ** -10):
 
 
 def _cftime_conversion(t):
-    return dt.datetime(t.year, t.month, t.day, t.hour, t.minute, t.second, t.microsecond)
+    return dt.datetime(
+        t.year, t.month, t.day, t.hour, t.minute, t.second, t.microsecond
+    )
+
 
 _vector_cftime_conversion = np.vectorize(_cftime_conversion)
