@@ -693,6 +693,8 @@ class SCMCube(object):
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
+        # force the data to realise so it's not read 9 times while applying masks
+        self.cube.data
 
         return {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
 
