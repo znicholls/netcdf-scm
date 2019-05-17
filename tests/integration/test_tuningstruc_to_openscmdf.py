@@ -1,10 +1,12 @@
 from os.path import join
+import datetime as dt
 import re
 
 
 import pytest
 import pandas as pd
 import numpy as np
+from openscm.scmdataframe import ScmDataFrame
 
 
 from conftest import TEST_DATA_ROOT_DIR
@@ -82,6 +84,25 @@ def test_convert_tuningstruc_to_scmdf(test_file_info, model):
             .values
         )
         np.testing.assert_allclose(rv, v)
+
+
+def test_convert_scmdf_to_tuningstruc_single_char_unit(tmpdir):
+    tbase = join(tmpdir, "test_tuningstruc")
+
+    test_df = ScmDataFrame(
+        np.array([1, 2, 3]),
+        index=[dt.datetime(y, 1, 1) for y in [1990, 1991, 1992]],
+        columns={
+            "variable": "var",
+            "region": "World",
+            "unit": "K",
+            "scenario": "test",
+            "model": "test",
+            "climate_model": "test",
+        }
+    )
+
+    convert_scmdf_to_tuningstruc(test_df, tbase)
 
 
 def test_convert_tuningstruc_to_scmdf_errors(test_file_info):
