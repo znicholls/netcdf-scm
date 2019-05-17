@@ -103,6 +103,10 @@ def test_convert_scmdf_to_tuningstruc_single_char_unit(tmpdir):
     )
 
     convert_scmdf_to_tuningstruc(test_df, tbase)
+    expected_outfile = join(tmpdir, "test_tuningstruc_test_test_var_World.mat")
+
+    reread = convert_tuningstruc_to_scmdf(expected_outfile)
+    assert (reread["unit"] == "K").all()
 
 
 def test_convert_tuningstruc_to_scmdf_errors(test_file_info):
