@@ -8,7 +8,7 @@ import traceback
 from time import gmtime, strftime
 
 import click
-from openscm.scmdataframe import df_append
+from openscm.scmdataframe import ScmDataFrame, df_append
 
 import netcdf_scm
 from .iris_cube_wrappers import (
@@ -321,6 +321,9 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format):
             bar.update(i)
 
             openscmdf = df_append([join(dirpath, f) for f in filenames])
+            tmp_ts = openscmdf.timeseries().reset_index()
+            tmp_ts["unit"] = tmp_ts["unit"].astype(str)
+            openscmdf = ScmDataFrame(tmp_ts)
 
             if nested:
                 out_filedir = dirpath.replace(src, dst)
