@@ -106,10 +106,10 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath):
         Base path in which to save the tuningstruc. The rest of the pathname is
         generated from the metadata. `.mat` is also appended automatically.
     """
-    iter = scmdf.timeseries().groupby(
+    iterable = scmdf.timeseries().groupby(
         ["model", "scenario", "variable", "region", "unit"]
     )
-    for (model, scenario, variable, region, unit), df in iter:
+    for (model, scenario, variable, region, unit), df in iterable:
         dataset = {}
         dataset["tuningdata"] = {}
         dataset["tuningdata"]["modelcodes"] = []
