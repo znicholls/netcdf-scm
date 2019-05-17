@@ -16,7 +16,6 @@ DEFAULT_REGIONS = (
     "World|Southern Hemisphere|Land",
     "World|Northern Hemisphere|Ocean",
     "World|Southern Hemisphere|Ocean",
-
 )
 
 
@@ -31,9 +30,11 @@ def invert(mask_to_invert):
     return f
 
 
-def get_hemi_mask(hemi, surface):
+def or_masks(mask_a, mask_b):
     def f(masker, cube, **kwargs):
-        return np.logical_or(masker.get_mask(hemi), masker.get_mask(surface))
+        a = mask_a(masker, cube, **kwargs) if callable(mask_a) else masker.get_mask(mask_a)
+        b = mask_b(masker, cube, **kwargs) if callable(mask_b) else masker.get_mask(mask_b)
+        return np.logical_or(a, b)
 
     return f
 
@@ -89,6 +90,42 @@ def get_nh_mask(masker, cube, **kwargs):
     return broadcast_onto_lat_lon_grid(cube, mask_nh)
 
 
+def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
+    def f(masker, cube, **kwargs):
+        def mask_dim(dim, lower, upper):
+            # Finds any cells where the bounds overlaps with the range (lower, upper)
+            if dim.circular:
+                max_val = dim.contiguous_bounds()[-1]
+                if lower % max_val > upper % max_val:
+                    # Handle case where it wraps around 0
+                    return ~np.array(
+                        [(lower % max_val < cell).any() or (cell < upper % max_val).any() for cell in dim.bounds]
+                    )
+                else:
+                    return ~np.array(
+                        [(lower % max_val < cell).any() and (cell < upper % max_val).any() for cell in dim.bounds]
+                    )
+
+            else:
+                return ~np.array(
+                    [(lower < cell).any() and (cell < upper).any() for cell in dim.bounds]
+                )
+
+        mask_lat = mask_dim(cube.lat_dim, lower_lat, upper_lat)
+        mask_lon = mask_dim(cube.lon_dim, left_lon, right_lon)
+
+        # Here we make a grid which we can use as a mask. We have to use all
+        # of these nots so that our product (which uses AND logic) gives us
+        # False in the NH and True in the SH (another way to think of this is
+        # that we have to flip everything so False goes to True and True goes
+        # to False, do all our operations with AND logic, then flip everything
+        # back).
+        mask = ~np.outer(~mask_lat, ~mask_lon)
+
+        return broadcast_onto_lat_lon_grid(cube, mask)
+    return f
+
+
 def get_world_mask(masker, cube, **kwargs):
     return np.full(masker.get_mask("World|Northern Hemisphere").shape, False)
 
@@ -99,10 +136,11 @@ MASKS = {
     "World|Southern Hemisphere": invert("World|Northern Hemisphere"),
     "World|Land": get_land_mask,
     "World|Ocean": invert("World|Land"),
-    "World|Northern Hemisphere|Land": get_hemi_mask("World|Northern Hemisphere", "World|Land"),
-    "World|Southern Hemisphere|Land": get_hemi_mask("World|Southern Hemisphere", "World|Land"),
-    "World|Northern Hemisphere|Ocean": get_hemi_mask("World|Northern Hemisphere", "World|Ocean"),
-    "World|Southern Hemisphere|Ocean": get_hemi_mask("World|Southern Hemisphere", "World|Ocean"),
+    "World|Northern Hemisphere|Land": or_masks("World|Northern Hemisphere", "World|Land"),
+    "World|Southern Hemisphere|Land": or_masks("World|Southern Hemisphere", "World|Land"),
+    "World|Northern Hemisphere|Ocean": or_masks("World|Northern Hemisphere", "World|Ocean"),
+    "World|Southern Hemisphere|Ocean": or_masks("World|Southern Hemisphere", "World|Ocean"),
+    "World|North Atlantic|Ocean": or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")
 }
 
 

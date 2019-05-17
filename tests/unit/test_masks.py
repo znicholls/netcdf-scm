@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from iris.util import broadcast_to_shape
 
-from netcdf_scm.masks import CubeMasker, DEFAULT_REGIONS, MASKS, get_land_mask, get_nh_mask
+from netcdf_scm.masks import CubeMasker, DEFAULT_REGIONS, MASKS, get_land_mask, get_nh_mask, get_area_mask
 
 from conftest import create_sftlf_cube
 
@@ -199,6 +199,66 @@ def test_get_nh_mask(test_all_cubes):
         [
             [False, False, False, False],
             [False, False, False, False],
+            [True, True, True, True],
+        ]
+    )
+    expected = broadcast_to_shape(
+        expected_base,
+        test_all_cubes.cube.shape,
+        [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
+    )
+
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_nao_mask(test_all_cubes):
+    sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
+    masker = CubeMasker(test_all_cubes, sftlf_cube=sftlf_cube, land_mask_threshold=50.5)
+    result = masker.get_mask("World|North Atlantic|Ocean")
+
+    expected_base = np.array(
+        [
+            [True, True, True, False],
+            [True, True, True, True],
+            [True, True, True, True],
+        ]
+    )
+    expected = broadcast_to_shape(
+        expected_base,
+        test_all_cubes.cube.shape,
+        [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
+    )
+
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_area_mask(test_all_cubes):
+    # increasing lons (test_nao_mask tests wrapping around)
+    result = get_area_mask(-20, 100, 20, 250)(None, test_all_cubes)
+
+    expected_base = np.array(
+        [
+            [True, True, True, True],
+            [True, False, False, True],
+            [True, True, True, True],
+        ]
+    )
+    expected = broadcast_to_shape(
+        expected_base,
+        test_all_cubes.cube.shape,
+        [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
+    )
+
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_area_mask_wrapped_lons(test_all_cubes):
+    result = get_area_mask(0, -80, 65, 0)(None, test_all_cubes)
+
+    expected_base = np.array(
+        [
+            [True, True, True, False],
+            [True, True, True, False],
             [True, True, True, True],
         ]
     )
