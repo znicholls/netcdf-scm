@@ -1,7 +1,8 @@
 """Command line interface
 """
+import os
 from os import walk, makedirs, path
-from os.path import join, isfile
+from os.path import join, isfile, dirname
 import re
 import warnings
 import traceback
@@ -264,13 +265,20 @@ def crunch_data(
     help="Format to re-write csvs into.",
 )
 @click.option(
+    "--drs",
+    default="None",
+    type=click.Choice(["None", "MarbleCMIP5", "CMIP6Input4MIPs", "CMIP6Output"]),
+    show_default=True,
+    help="Data reference syntax to use to decipher paths when crunching to flat and the output format is tuningstrucs. This is required to ensure the output names are unique.",
+)
+@click.option(
     "--force/--do-not-force",
     "-f",
     help="Overwrite any existing files.",
     default=False,
     show_default=True,
 )
-def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, force):
+def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, force):
     """
     Wrangle OpenSCM csv files into other formats and directory structures
 
@@ -325,17 +333,21 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, force):
 
                 if considered_regexps:
                     if any([r.match(dirpath) for r in considered_regexps]):
-                        import pdb
-                        pdb.set_trace()
                         continue
 
                 openscmdf = df_append([join(dirpath, f) for f in filenames])
-                climate_model = openscmdf["climate_model"].unique()
-                if len(climate_model) != 1:
-                    raise NotImplementedError
-                climate_model = climate_model[0]
 
-                regexp = re.compile(dirpath.replace(climate_model, ".*"))
+                if drs == "None":
+                    raise NotImplementedError("Raise an issue if you need this")
+
+                scmcube = _CUBES[drs]()
+                ids = {
+                    k: v if any([s in k for s in ["variable", "experiment", "activity", "mip"]]) else ".*"
+                    for k, v in scmcube.process_path(dirpath).items()
+
+                }
+
+                regexp = re.compile(dirname(scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)))
                 here_skipped = _do_wrangling(src, dst, regexp, nested, out_format, force)
                 if here_skipped:
                     already_exist_files += here_skipped

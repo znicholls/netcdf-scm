@@ -82,7 +82,16 @@ def test_wrangling_flat(tmpdir):
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
-    result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--flat"])
+    result = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--flat",
+            "--drs",
+            "CMIP6Output",
+        ]
+    )
     assert result.exit_code == 0
 
     assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
@@ -91,7 +100,8 @@ def test_wrangling_flat(tmpdir):
     assert ".*" in result.output
     assert ".mat" in result.output
 
-    assert len(listdir(OUTPUT_DIR)) == 21
+    assert len(listdir(OUTPUT_DIR)) == 27
+    assert "ts_CMIP_1pctCO2_r1i1p1f1_unspecified_toa_outgoing_shortwave_flux_World.mat" not in result.output
 
 
 def test_wrangling_handles_integer_units(tmpdir):
@@ -187,6 +197,8 @@ def test_wrangling_force_flat(tmpdir):
             ".*lai.*",
             "-f",
             "--flat",
+            "--drs",
+            "CMIP6Output",
         ],
     )
     assert result.exit_code == 0
@@ -199,6 +211,8 @@ def test_wrangling_force_flat(tmpdir):
             "--var-to-wrangle",
             ".*lai.*",
             "--flat",
+            "--drs",
+            "CMIP6Output",
         ],
     )
     assert result_skip.exit_code == 0
@@ -227,8 +241,26 @@ def test_wrangling_force_flat(tmpdir):
             ".*lai.*",
             "-f",
             "--flat",
+            "--drs",
+            "CMIP6Output",
         ],
     )
     assert result_force.exit_code == 0
     assert skip_str_header in result_force.output
     assert skip_str_file not in result_force.output
+
+
+def test_wrangling_default_drs_error(tmpdir):
+    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    OUTPUT_DIR = str(tmpdir)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--flat",
+        ],
+    )
+    assert result.exit_code != 0
