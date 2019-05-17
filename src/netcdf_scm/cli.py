@@ -354,6 +354,7 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
                         scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)
                     )
                 )
+                click.echo("Wrangling {}".format(regexp))
                 here_skipped = _do_wrangling(
                     src, dst, regexp, nested, out_format, force
                 )
