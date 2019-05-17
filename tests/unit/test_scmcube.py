@@ -345,8 +345,10 @@ class TestSCMCube(object):
         mock_apply_mask.assert_has_calls(
             [call(test_cube, c) for c in tscm_masks.values()], any_order=True
         )
-
-    def test_get_scm_masks(self, test_cube):
+    
+    @patch('netcdf_scm.iris_cube_wrappers.get_land_mask')
+    @patch('netcdf_scm.iris_cube_wrappers.get_nh_mask')
+    def test_get_scm_masks(self, mock_nh_mask, mock_land_mask, test_cube):
         tsftlf_cube = "mocked 124"
         tland_mask_threshold = "mocked 51"
 
@@ -357,7 +359,7 @@ class TestSCMCube(object):
                 [False, False, True, False],
             ]
         )
-        test_cube._get_land_mask = MagicMock(return_value=land_mask)
+        mock_land_mask.return_value = land_mask
 
         nh_mask = np.array(
             [
@@ -366,7 +368,7 @@ class TestSCMCube(object):
                 [True, True, True, True],
             ]
         )
-        test_cube._get_nh_mask = MagicMock(return_value=nh_mask)
+        mock_nh_mask.return_value = nh_mask
 
         nh_land_mask = np.array(
             [
@@ -396,13 +398,15 @@ class TestSCMCube(object):
 
         for label, array in expected.items():
             np.testing.assert_array_equal(array, result[label])
-        test_cube._get_land_mask.assert_called_with(
+        mock_land_mask.assert_called_with(test_cube,
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
         )
-        test_cube._get_nh_mask.assert_called_with()
+        mock_nh_mask.assert_called_with(test_cube)
 
-    def test_get_scm_masks_no_land_available(self, test_cube):
-        test_cube._get_land_mask = MagicMock(side_effect=OSError)
+    @patch('netcdf_scm.iris_cube_wrappers.get_land_mask')
+    @patch('netcdf_scm.iris_cube_wrappers.get_nh_mask')
+    def test_get_scm_masks_no_land_available(self, mock_nh_mask, mock_land_mask, test_cube):
+        mock_land_mask.side_effect = OSError
 
         nh_mask = np.array(
             [
@@ -411,7 +415,7 @@ class TestSCMCube(object):
                 [True, True, True, True],
             ]
         )
-        test_cube._get_nh_mask = MagicMock(return_value=nh_mask)
+        mock_nh_mask.return_value = nh_mask
 
         expected = {
             "World": np.full(nh_mask.shape, False),
@@ -430,8 +434,8 @@ class TestSCMCube(object):
 
         for label, array in expected.items():
             np.testing.assert_array_equal(array, result[label])
-        test_cube._get_land_mask.assert_called()
-        test_cube._get_nh_mask.assert_called_with()
+        mock_land_mask.assert_called()
+        mock_nh_mask.assert_called_with(test_cube)
 
     @pytest.mark.parametrize("transpose", [True, False])
     @pytest.mark.parametrize("input_format", ["scmcube", None])

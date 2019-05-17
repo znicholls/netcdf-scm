@@ -19,7 +19,7 @@ from openscm.scmdataframe import ScmDataFrame
 
 try:
     import iris
-    from iris.util import broadcast_to_shape, unify_time_units
+    from iris.util import unify_time_units
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
     from iris.exceptions import CoordinateNotFoundError
@@ -30,7 +30,7 @@ except ModuleNotFoundError:
 
     raise_no_iris_warning()
 
-
+from .masks import broadcast_onto_lat_lon_grid, get_land_mask, get_nh_mask
 from .utils import (
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
@@ -705,7 +705,7 @@ class SCMCube(object):
         -------
         dict
         """
-        nh_mask = self._get_nh_mask()
+        nh_mask = get_nh_mask(self)
         hemisphere_masks = {
             "World": np.full(nh_mask.shape, False),
             "World|Northern Hemisphere": nh_mask,
@@ -713,7 +713,7 @@ class SCMCube(object):
         }
 
         try:
-            land_mask = self._get_land_mask(
+            land_mask = get_land_mask(self,
                 sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
             )
             land_masks = {
@@ -756,33 +756,7 @@ class SCMCube(object):
             True,  # otherwise True
         )
 
-        return self._broadcast_onto_self_lat_lon_grid(land_mask)
-
-    def _broadcast_onto_self_lat_lon_grid(self, array_in):
-        """Broadcast an array onto the latitude-longitude grid of ``self``.
-
-        Here, broadcasting means taking the array and 'duplicating' it so that it
-        has the same number of dimensions as the cube's underlying data. For example,
-        if our cube has a time dimension of length 3, a latitude dimension of length 4
-        and a longitude dimension of length 2 then if we are given in a 4x2 array, we
-        broadcast this onto a 3x4x2 array where each slice in the broadcasted array's
-        time dimension is identical to the input array.
-        """
-        lat_length = len(self.lat_dim.points)
-        lon_length = len(self.lon_dim.points)
-
-        dim_order = [self.lat_dim_number, self.lon_dim_number]
-        base_shape = (lat_length, lon_length)
-        if array_in.shape != base_shape:
-            array_in = np.transpose(array_in)
-
-        shape_assert_msg = (
-            "the sftlf_cube data must be the same shape as the "
-            "cube's longitude-latitude grid"
-        )
-        assert array_in.shape == base_shape, shape_assert_msg
-
-        return broadcast_to_shape(array_in, self.cube.shape, dim_order)
+        return broadcast_onto_lat_lon_grid(self, land_mask)
 
     def _get_nh_mask(self):
         mask_nh_lat = np.array(
@@ -798,7 +772,7 @@ class SCMCube(object):
         # back).
         mask_nh = ~np.outer(~mask_nh_lat, ~mask_all_lon)
 
-        return self._broadcast_onto_self_lat_lon_grid(mask_nh)
+        return broadcast_onto_lat_lon_grid(self, mask_nh)
 
     def _get_area_weights(self, areacella_scmcube=None):
         use_self_area_weights = True
@@ -813,7 +787,7 @@ class SCMCube(object):
         if use_self_area_weights:
             try:
                 areacella_cube = areacella_scmcube.cube
-                return self._broadcast_onto_self_lat_lon_grid(areacella_cube.data)
+                return broadcast_onto_lat_lon_grid(self, areacella_cube.data)
             except AssertionError as exc:
                 warnings.warn(str(exc))
 
