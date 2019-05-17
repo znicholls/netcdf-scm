@@ -16,7 +16,13 @@ def test_wrangling_defaults(tmpdir):
     OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
 
     runner = CliRunner()
-    result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR])
+    result = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+        ]
+    )
     assert result.exit_code == 0
 
     assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
@@ -135,21 +141,55 @@ def test_wrangling_force(tmpdir):
     )
     assert result_skip.exit_code == 0
 
-    skip_str = (
+    skip_str_header = (
         "Skipped (already exist, not overwriting)\n"
         "========================================\n"
-        "- {}".format(
-            join(
-                OUTPUT_DIR,
-                DATA_SUB_DIR,
-                "cmip5",
-                "1pctCO2",
-                "Amon",
-                "fco2antt",
-                "CanESM2",
-                "r1i1p1",
-                "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.csv",
-            )
-        )
+        "- "
     )
+    assert skip_str_header in result_skip.output
+
+    skip_str_file = "cmip6/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r2i1p1f2/Lmon/lai/gr/v20181126/ts_filename"
+
+    assert skip_str in result_skip.output
+
+
+def test_wrangling_force_flat(tmpdir):
+    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    OUTPUT_DIR = str(tmpdir)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-wrangle",
+            ".*lai.*",
+            "-f",
+            "--flat",
+        ],
+    )
+    assert result.exit_code == 0
+
+    result_skip = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-wrangle",
+            ".*lai.*",
+            "--flat",
+        ],
+    )
+    assert result_skip.exit_code == 0
+
+    skip_str_header = (
+        "Skipped (already exist, not overwriting)\n"
+        "========================================\n"
+        "- "
+    )
+    assert skip_str_header in result_skip.output
+
+    skip_str_file = "cmip6/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r2i1p1f2/Lmon/lai/gr/v20181126/ts_filename"
+
     assert skip_str in result_skip.output
