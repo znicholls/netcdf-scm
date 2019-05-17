@@ -84,3 +84,24 @@ def test_wrangling_flat(tmpdir):
     assert "everything" in result.output
 
     assert len(listdir(OUTPUT_DIR)) == 12
+
+
+def test_wrangling_handles_integer_units(tmpdir):
+    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    OUTPUT_DIR = str(tmpdir)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-wrangle",
+            ".*lai.*",
+        ],
+    )
+    assert result.exit_code == 0
+
+    assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
+
+    assert "lai" in result.output
