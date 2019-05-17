@@ -1,3 +1,6 @@
+from os.path import isfile
+
+
 import numpy as np
 from openscm.scmdataframe import ScmDataFrame
 
@@ -90,7 +93,7 @@ def convert_tuningstruc_to_scmdf(
     return ref_df
 
 
-def convert_scmdf_to_tuningstruc(scmdf, outpath):
+def convert_scmdf_to_tuningstruc(scmdf, outpath, force=False):
     """Convert an ScmDataFrame to a matlab tuningstruc
 
     One tuningstruc file will be created for each unique
@@ -105,7 +108,17 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath):
     outpath : str
         Base path in which to save the tuningstruc. The rest of the pathname is
         generated from the metadata. `.mat` is also appended automatically.
+
+    force : bool
+        If True, overwrite any existing files
+
+    Returns
+    -------
+    list
+        List of files which were not re-written as they already exist
     """
+    already_written = []
+
     iterable = scmdf.timeseries().groupby(
         ["model", "scenario", "variable", "region", "unit"]
     )
@@ -146,8 +159,12 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath):
 
         outfile = get_tuningstruc_name_from_df(df, outpath)
 
-        # ask Jared how to add logging here
-        mat4py.savemat(outfile, dataset)
+        if isfile(outfile) and not force:
+            already_written.append(outfile)
+        else:
+            mat4py.savemat(outfile, dataset)
+
+    return already_written
 
 
 def get_tuningstruc_name_from_df(df, outpath):
