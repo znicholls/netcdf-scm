@@ -17,7 +17,7 @@ from .iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
 )
-from .wranglers import convert_scmdf_to_tuningstruc
+from .wranglers import convert_scmdf_to_tuningstruc, get_tuningstruc_name_from_df
 import progressbar
 
 
@@ -311,8 +311,11 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, force):
 
     var_regexp = re.compile(var_to_wrangle)
 
+    already_exist_files = []
     if nested:
-        _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force)
+        here_skipped = _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force)
+        if here_skipped:
+            already_exist_files += here_skipped
     else:
         considered_regexps = []
         for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
@@ -333,9 +336,29 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, force):
                 climate_model = climate_model[0]
 
                 regexp = re.compile(dirpath.replace(climate_model, ".*"))
-                _do_wrangling(src, dst, regexp, nested, out_format, force)
+                here_skipped = _do_wrangling(src, dst, regexp, nested, out_format, force)
+                if here_skipped:
+                    already_exist_files += here_skipped
 
                 considered_regexps.append(regexp)
+
+    header_underline = "="
+    msg_underline = "-"
+
+    already_exist_header = "Skipped (already exist, not overwriting)"
+    if already_exist_files:
+        already_exist_files_string = "- {}\n".format("\n- ".join(already_exist_files))
+    else:
+        already_exist_files_string = ""
+    already_exist_string = "{}\n{}\n{}".format(
+        already_exist_header,
+        len(already_exist_header) * header_underline,
+        already_exist_files_string,
+    )
+    output_string = "\n\n{}".format(
+        already_exist_string
+    )
+    click.echo(output_string)
 
 
 def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
@@ -349,6 +372,7 @@ def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
         max_value=len([w for w in walk(src)]),
         prefix="Visiting directory ",
     ).start()
+    already_exist_files = []
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
         if filenames:
             if not var_regexp.match(dirpath):
@@ -369,8 +393,13 @@ def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
 
                 if out_format == "tuningstrucs":
                     out_file = join(out_filedir, "ts")
-                    click.echo("Wrangling {} to {}".format(filenames, out_file))
-                    convert_scmdf_to_tuningstruc(openscmdf, out_file)
+                    click.echo(
+                        "Wrangling {} to {}".format(filenames, out_file)
+                    )
+                    skipped_files = convert_scmdf_to_tuningstruc(openscmdf, out_file, force=force)
+                    if skipped_files:
+                        already_exist_files.append(skipped_files)
+
                 else:
                     raise ValueError("Unsupported format: {}".format(out_format))
             else:
@@ -382,7 +411,19 @@ def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
     if not nested:
         if out_format == "tuningstrucs":
             out_file = join(dst, "ts")
-            click.echo("Wrangling {} to {}".format(var_to_wrangle, dst))
-            convert_scmdf_to_tuningstruc(collected, out_file)
+            first_region = collected["region"].unique()[0]
+            out_file_base = get_tuningstruc_name_from_df(
+                collected.filter(
+                    region=first_region,
+                ).timeseries(),
+                out_file
+            ).replace(first_region, "<region>")
+            click.echo("Wrangling {} to {}".format(var_to_wrangle, out_file_base))
+            skipped_files = convert_scmdf_to_tuningstruc(collected, out_file, force=force)
+            if skipped_files:
+                already_exist_files.append(skipped_files)
+
         else:
             raise ValueError("Unsupported format: {}".format(out_format))
+
+    return skipped_files
