@@ -33,6 +33,7 @@ from conftest import (
     TEST_CMIP6_HISTORICAL_CONCS_FILE,
     TEST_CMIP6_OUTPUT_FILE,
     TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
+    TEST_CMIP6_OUTPUT_FILE_1_UNIT,
 )
 
 
@@ -893,3 +894,10 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         assert (ts["variable"] == "fast_soil_pool_mass_content_of_carbon").all()
         assert (ts["unit"] == "kg m^-2").all()
         assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
+
+    def test_load_data_1_unit(self, test_cube):
+        test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_1_UNIT)
+
+        ts = test_cube.get_scm_timeseries()
+        assert (ts["unit"] == "1").all()
+        assert (ts["climate_model"] == "CNRM-CM6-1").all()
