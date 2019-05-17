@@ -17,7 +17,7 @@ from .iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
 )
-from .wranglers import convert_scmdf_to_tuningstruc, get_tuningstruc_name_from_df
+from .wranglers import convert_scmdf_to_tuningstruc
 import progressbar
 
 
