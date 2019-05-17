@@ -12,7 +12,7 @@ import iris
 import cf_units as unit
 
 
-from netcdf_scm.iris_cube_wrappers import SCMCube
+from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube, CMIP6Input4MIPsCube, CMIP6OutputCube
 
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test-data")
@@ -186,10 +186,8 @@ def get_test_cube_attributes():
     }
 
 
-@pytest.fixture(scope="function")
-def test_cube(request):
-    test_cube = request.cls.tclass()
-
+def create_cube(cube_cls):
+    c = cube_cls()
     test_data = np.ma.masked_array(
         [
             [[0, 0.5, 1, 3], [0.0, 0.15, 0.25, 0.3], [-4, -5, -6, -7]],
@@ -200,7 +198,7 @@ def test_cube(request):
         mask=False,
     )
 
-    test_cube.cube = iris.cube.Cube(
+    c.cube = iris.cube.Cube(
         test_data,
         standard_name="air_temperature",
         long_name="air_temperature",
@@ -214,23 +212,37 @@ def test_cube(request):
         attributes=get_test_cube_attributes(),
     )
 
-    return test_cube
+    return c
 
 
 @pytest.fixture(scope="function")
-def test_sftlf_cube(request):
-    test_sftlf_cube = request.cls.tclass()
+def test_cube(request):
+    return create_cube(request.cls.tclass)
+
+
+@pytest.fixture(scope="function", params=[SCMCube, MarbleCMIP5Cube, CMIP6Input4MIPsCube, CMIP6OutputCube])
+def test_all_cubes(request):
+    return create_cube(request.param)
+
+
+def create_sftlf_cube(cube_cls):
+    c = cube_cls()
 
     test_data = np.ma.masked_array(
         [[90, 49.9, 50.0, 50.1], [100, 49, 50, 51], [51, 30, 10, 0]], mask=False
     )
-    test_sftlf_cube.cube = iris.cube.Cube(test_data)
-    test_sftlf_cube.cube.standard_name = "land_area_fraction"
+    c.cube = iris.cube.Cube(test_data)
+    c.cube.standard_name = "land_area_fraction"
 
-    test_sftlf_cube.cube.add_dim_coord(get_test_cube_lat(), 0)
-    test_sftlf_cube.cube.add_dim_coord(get_test_cube_lon(), 1)
+    c.cube.add_dim_coord(get_test_cube_lat(), 0)
+    c.cube.add_dim_coord(get_test_cube_lon(), 1)
 
-    return test_sftlf_cube
+    return c
+
+
+@pytest.fixture(scope="function")
+def test_sftlf_cube(request):
+    return create_sftlf_cube(request.cls.tclass)
 
 
 @pytest.fixture(scope="function")
