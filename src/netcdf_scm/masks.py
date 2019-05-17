@@ -1,4 +1,7 @@
 """Masking regions of the World
+
+These masks are applied to data fields to exclude unwanted parts of the globe. The convention used here is the same as numpy masked
+arrays, where ``True`` values are excluded.
 """
 import warnings
 
@@ -20,10 +23,30 @@ DEFAULT_REGIONS = (
 
 
 class InvalidMask(Exception):
+    """
+    Raised when a mask cannot be calculated.
+
+    This error usually propogates. For example, if a child mask used in the calculation of a parent mask fails then the parent mask
+    should also raise an InvalidMask exception (unless it can be satisfactorily handled).
+    """
     pass
 
 
 def invert(mask_to_invert):
+    """
+    Invert a mask
+
+    I.e. convert from Land to Ocean
+
+    Parameters
+    ----------
+    mask_to_invert: str
+        Name of the mask to invert. This mask is loaded at evaluation time.
+
+    Returns
+    -------
+    MaskFunc
+    """
     def f(masker, cube, **kwargs):
         return ~masker.get_mask(mask_to_invert)
 
@@ -31,6 +54,23 @@ def invert(mask_to_invert):
 
 
 def or_masks(mask_a, mask_b):
+    """
+    Or's two masks
+
+    This is the equivilent of an inner join between two masks. Only values which are not masked in both masks (False in both masks)
+    will remain unmasked (False).
+
+    Parameters
+    ----------
+    mask_a : str or MaskFunc
+        If a string is provided, the mask specified by the string is retrieved. Otherwise the MaskFunc is evaluated at runtime
+    mask_b: str or MaskFunc
+        If a string is provided, the mask specified by the string is retrieved. Otherwise the MaskFunc is evaluated at runtime
+
+    Returns
+    -------
+    MaskFunc
+    """
     def f(masker, cube, **kwargs):
         a = mask_a(masker, cube, **kwargs) if callable(mask_a) else masker.get_mask(mask_a)
         b = mask_b(masker, cube, **kwargs) if callable(mask_b) else masker.get_mask(mask_b)
@@ -74,6 +114,9 @@ def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwarg
 
 
 def get_nh_mask(masker, cube, **kwargs):
+    """
+    Get a mask of the Northern Hemisphere
+    """
     mask_nh_lat = np.array(
         [cell < 0 for cell in cube.cube.coord(cube.lat_name).cells()]
     )
@@ -91,6 +134,22 @@ def get_nh_mask(masker, cube, **kwargs):
 
 
 def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
+    """
+    Mask a subset of the globe
+
+    Circular coordinates (longitude) can cross the 0E.
+
+    Parameters
+    ----------
+    lower_lat: int or float
+    left_lon: int or float
+    upper_lat: int or float
+    right_lon: int or float
+
+    Returns
+    -------
+    MaskFunc
+    """
     def f(masker, cube, **kwargs):
         def mask_dim(dim, lower, upper):
             # Finds any cells where the bounds overlaps with the range (lower, upper)
@@ -127,9 +186,25 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
 
 
 def get_world_mask(masker, cube, **kwargs):
+    """
+    Gets a mask with no values masked out
+    """
     return np.full(masker.get_mask("World|Northern Hemisphere").shape, False)
 
 
+"""
+A list of known masks
+
+This is a mapping between mask name and a MaskFunc. These MaskFunc's are called by an instance of ``CubeMasker``.
+
+A MaskFunc is a function which takes a ScmCube, CubeMasker and any additional keyword arguments. The function should return a numpy
+array of boolean's with the same dimensionality as the ScmCube. Where True values are returned, data will be masked out (excluded)
+from any calculations. The "World|Northern Hemisphere|Land" mask should be True everywhere except for land cells in the Northern 
+Hemisphere.
+
+These MaskFunc's can be composed together to create more complex functionality. For example 
+`or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")` will return a mask consisting of an or between a subsetted area and an ocean mask.
+"""
 MASKS = {
     "World": get_world_mask,
     "World|Northern Hemisphere": get_nh_mask,
@@ -154,7 +229,19 @@ class CubeMasker:
     Adding new masks
     ----------------
 
-    Additional masks can be added to the MASKS
+    Additional masks can be added to the MASKS array above. The values in the ``MASKS`` array should be MaskFunc's
+
+    Parameters
+    ----------
+    cube : ScmCube
+
+    kwargs : dict
+        Any optional arguments to be passed to the MaskFunc's during evaluation.
+        Possible parameters include:
+
+            sftlf_cube : ScmCube
+
+            land_mask_threshold : float default: 50.
     """
 
     def __init__(self, cube, **kwargs):
@@ -163,6 +250,26 @@ class CubeMasker:
         self.kwargs = kwargs
 
     def get_mask(self, mask_name):
+        """
+        Get a single mask
+
+        If the mask has previously been calculated the precalculated result is returned from the cache. Otherwise the appropriate
+        MaskFunc is called with any kwargs specified in the constructor.
+
+        Parameters
+        ----------
+        mask_name : str
+
+        Raises
+        ------
+        InvalidMask
+            If the requested mask cannot be found or evaluated.
+
+        Returns
+        -------
+        ndarray[bool]
+            Any True values should be masked out and excluded from any further calculation.
+        """
         try:
             return self._masks[mask_name]
         except KeyError:
