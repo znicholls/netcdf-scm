@@ -87,7 +87,9 @@ def test_wrangling_flat(tmpdir):
 
     assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
 
-    assert "everything" in result.output
+    assert "Wrangling re.compile" in result.output
+    assert ".*" in result.output
+    assert ".mat" in result.output
 
     assert len(listdir(OUTPUT_DIR)) == 21
 
@@ -163,8 +165,6 @@ def test_wrangling_force_flat(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
-            "--var-to-wrangle",
-            ".*lai.*",
             "-f",
             "--flat",
         ],
@@ -176,8 +176,6 @@ def test_wrangling_force_flat(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
-            "--var-to-wrangle",
-            ".*lai.*",
             "--flat",
         ],
     )
