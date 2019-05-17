@@ -102,6 +102,20 @@ TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS = join(
     "v20190121",
     "cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_201501-210012.nc",
 )
+TEST_CMIP6_OUTPUT_FILE_1_UNIT = join(
+    TEST_DATA_CMIP6Output_DIR,
+    "CMIP6",
+    "CMIP",
+    "CNRM-CERFACS",
+    "CNRM-CM6-1",
+    "historical",
+    "r1i1p1f2",
+    "Lmon",
+    "lai",
+    "gr",
+    "v20180917",
+    "lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.nc",
+)
 
 TEST_DATA_OPENSCMCSVS_DIR = join(TEST_DATA_ROOT_DIR, "openscmcsvs")
 
