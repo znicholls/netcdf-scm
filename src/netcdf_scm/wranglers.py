@@ -115,7 +115,7 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath):
         dataset["tuningdata"]["modelcodes"] = []
         dataset["tuningdata"]["model"] = []
 
-        for m, (climate_model, df) in enumerate(df.groupby("climate_model")):
+        for m, (climate_model, cmdf) in enumerate(df.groupby("climate_model")):
             # impossible to make dataframe with duplicate rows, this is just in
             # case
             error_msg = (
@@ -123,7 +123,7 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath):
                 '["climate_model", "model", "scenario", "variable", '
                 '"region", "unit"] combination'
             )
-            assert df.shape[0] == 1, error_msg
+            assert cmdf.shape[0] == 1, error_msg
 
             dataset["tuningdata"]["modelcodes"].append(climate_model)
             dataset["tuningdata"]["model"].append({})
@@ -139,15 +139,57 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath):
                 "".format(scenario, model, region, variable, unit)
             )
             dataset["tuningdata"]["model"][m]["data"] = [
-                [float(t.year) for t in df.columns],
-                list(df.values.squeeze()),
+                [float(t.year) for t in cmdf.columns],
+                list(cmdf.values.squeeze()),
             ]
             dataset["tuningdata"]["model"][m]["col_code"] = ["YEARS", variable]
 
-        outfile = (
-            "{}_{}_{}_{}_{}.mat".format(outpath, scenario, model, variable, region)
-            .replace(" ", "_")
-            .replace("|", "_")
-        )
+        outfile = get_tuningstruc_name_from_df(df, outpath)
+
         # ask Jared how to add logging here
         mat4py.savemat(outfile, dataset)
+
+
+def get_tuningstruc_name_from_df(df, outpath):
+    """
+    Get the name of a tuningstruc from a ``pd.DataFrame``
+
+    Parameters
+    ----------
+    df : :obj: `pd.DataFrame`
+        *pandas* DataFrame to convert to a tuningstruc
+
+    outpath : str
+        Base path on which to append the metadata and `.mat`.
+
+    Returns
+    -------
+    str
+        tuningstruc name
+
+    Raises
+    ------
+    ValueError
+        A name cannot be determined because e.g. more than one scenario is contained
+        in the dataframe
+    """
+    def _get_col(col):
+        try:
+            vals = df[col].unique()
+        except KeyError:
+            vals = df.index.get_level_values(col).unique()
+        if len(vals) != 1:
+            raise ValueError("More than one {} in df".format(col))
+
+        return vals[0]
+
+    scenario = _get_col("scenario")
+    model = _get_col("model")
+    variable = _get_col("variable")
+    region = _get_col("region")
+
+    return (
+        "{}_{}_{}_{}_{}.mat".format(outpath, scenario, model, variable, region)
+        .replace(" ", "_")
+        .replace("|", "_")
+    )
