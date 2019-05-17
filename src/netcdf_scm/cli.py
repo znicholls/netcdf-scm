@@ -429,11 +429,7 @@ def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
     if not nested:
         if out_format == "tuningstrucs":
             out_file = join(dst, "ts")
-            first_region = collected["region"].unique()[0]
-            out_file_base = get_tuningstruc_name_from_df(
-                collected.filter(region=first_region).timeseries(), out_file
-            ).replace(first_region, "<region>")
-            click.echo("Wrangling {} to {}".format(var_to_wrangle, out_file_base))
+            click.echo("Wrangling {} to {}*.mat".format(var_to_wrangle, out_file))
             skipped_files = convert_scmdf_to_tuningstruc(
                 collected, out_file, force=force
             )
