@@ -16,13 +16,7 @@ def test_wrangling_defaults(tmpdir):
     OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
 
     runner = CliRunner()
-    result = runner.invoke(
-        wrangle_openscm_csvs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-        ]
-    )
+    result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR])
     assert result.exit_code == 0
 
     assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
@@ -83,14 +77,7 @@ def test_wrangling_flat(tmpdir):
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_openscm_csvs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--flat",
-            "--drs",
-            "CMIP6Output",
-        ]
+        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--flat", "--drs", "CMIP6Output"]
     )
     assert result.exit_code == 0
 
@@ -101,7 +88,10 @@ def test_wrangling_flat(tmpdir):
     assert ".mat" in result.output
 
     assert len(listdir(OUTPUT_DIR)) == 27
-    assert "ts_CMIP_1pctCO2_r1i1p1f1_unspecified_toa_outgoing_shortwave_flux_World.mat" not in result.output
+    assert (
+        "ts_CMIP_1pctCO2_r1i1p1f1_unspecified_toa_outgoing_shortwave_flux_World.mat"
+        not in result.output
+    )
 
 
 def test_wrangling_handles_integer_units(tmpdir):
@@ -110,13 +100,7 @@ def test_wrangling_handles_integer_units(tmpdir):
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_openscm_csvs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--var-to-wrangle",
-            ".*lai.*",
-        ],
+        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--var-to-wrangle", ".*lai.*"]
     )
     assert result.exit_code == 0
 
@@ -132,24 +116,12 @@ def test_wrangling_force(tmpdir):
     runner = CliRunner()
     result = runner.invoke(
         wrangle_openscm_csvs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--var-to-wrangle",
-            ".*lai.*",
-            "-f",
-        ],
+        [INPUT_DIR, OUTPUT_DIR, "--var-to-wrangle", ".*lai.*", "-f"],
     )
     assert result.exit_code == 0
 
     result_skip = runner.invoke(
-        wrangle_openscm_csvs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--var-to-wrangle",
-            ".*lai.*",
-        ],
+        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--var-to-wrangle", ".*lai.*"]
     )
     assert result_skip.exit_code == 0
 
@@ -163,20 +135,14 @@ def test_wrangling_force(tmpdir):
     skip_str_file = "- {}".format(
         join(
             OUTPUT_DIR,
-            "cmip6/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r2i1p1f2/Lmon/lai/gr/v20181126/ts_CMIP_historical_r2i1p1f2_unspecified_leaf_area_index_World_Southern_Hemisphere_Ocean.mat"
+            "cmip6/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r2i1p1f2/Lmon/lai/gr/v20181126/ts_CMIP_historical_r2i1p1f2_unspecified_leaf_area_index_World_Southern_Hemisphere_Ocean.mat",
         )
     )
     assert skip_str_file in result_skip.output
 
     result_force = runner.invoke(
         wrangle_openscm_csvs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--var-to-wrangle",
-            ".*lai.*",
-            "-f",
-        ],
+        [INPUT_DIR, OUTPUT_DIR, "--var-to-wrangle", ".*lai.*", "-f"],
     )
     assert result_force.exit_code == 0
     assert skip_str_header in result_force.output
@@ -227,7 +193,7 @@ def test_wrangling_force_flat(tmpdir):
     skip_str_file = "- {}".format(
         join(
             OUTPUT_DIR,
-            "ts_CMIP_historical_r2i1p1f2_unspecified_leaf_area_index_World.mat"
+            "ts_CMIP_historical_r2i1p1f2_unspecified_leaf_area_index_World.mat",
         )
     )
     assert skip_str_file in result_skip.output
@@ -255,12 +221,5 @@ def test_wrangling_default_drs_error(tmpdir):
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
-    result = runner.invoke(
-        wrangle_openscm_csvs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--flat",
-        ],
-    )
+    result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--flat"])
     assert result.exit_code != 0
