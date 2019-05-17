@@ -263,7 +263,14 @@ def crunch_data(
     show_default=True,
     help="Format to re-write csvs into.",
 )
-def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format):
+@click.option(
+    "--force/--do-not-force",
+    "-f",
+    help="Overwrite any existing files.",
+    default=False,
+    show_default=True,
+)
+def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, force):
     """
     Wrangle OpenSCM csv files into other formats and directory structures
 
@@ -302,6 +309,16 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format):
         click.echo("Making output directory: {}\n".format(dst))
         makedirs(dst)
 
+    if nested:
+        _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force)
+    else:
+        for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
+            if filenames:
+                import pdb
+                pdb.set_trace()
+
+
+def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
     var_regexp = re.compile(var_to_wrangle)
 
     format_custom_text = progressbar.FormatCustomText(
@@ -325,27 +342,13 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format):
             tmp_ts["unit"] = tmp_ts["unit"].astype(str)
             openscmdf = ScmDataFrame(tmp_ts)
 
-            if nested:
-                out_filedir = dirpath.replace(src, dst)
-                if not path.exists(out_filedir):
-                    makedirs(out_filedir)
+            out_filedir = dirpath.replace(src, dst)
+            if not path.exists(out_filedir):
+                makedirs(out_filedir)
 
-                if out_format == "tuningstrucs":
-                    out_file = join(out_filedir, "ts")
-                    click.echo("Wrangling {} to {}".format(filenames, out_file))
-                    convert_scmdf_to_tuningstruc(openscmdf, out_file)
-                else:
-                    raise ValueError("Unsupported format: {}".format(out_format))
+            if out_format == "tuningstrucs":
+                out_file = join(out_filedir, "ts")
+                click.echo("Wrangling {} to {}".format(filenames, out_file))
+                convert_scmdf_to_tuningstruc(openscmdf, out_file)
             else:
-                try:
-                    collected = collected.append(openscmdf)
-                except NameError:
-                    collected = openscmdf
-
-    if not nested:
-        if out_format == "tuningstrucs":
-            out_file = join(dst, "ts")
-            click.echo("Wrangling everything to {}".format(dst))
-            convert_scmdf_to_tuningstruc(collected, out_file)
-        else:
-            raise ValueError("Unsupported format: {}".format(out_format))
+                raise ValueError("Unsupported format: {}".format(out_format))
