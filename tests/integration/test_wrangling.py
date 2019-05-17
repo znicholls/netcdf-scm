@@ -146,13 +146,31 @@ def test_wrangling_force(tmpdir):
     skip_str_header = (
         "Skipped (already exist, not overwriting)\n"
         "========================================\n"
-        "- "
     )
     assert skip_str_header in result_skip.output
+    assert "-" in result_skip.output
 
-    skip_str_file = "cmip6/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r2i1p1f2/Lmon/lai/gr/v20181126/ts_filename"
+    skip_str_file = "- {}".format(
+        join(
+            OUTPUT_DIR,
+            "cmip6/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r2i1p1f2/Lmon/lai/gr/v20181126/ts_CMIP_historical_r2i1p1f2_unspecified_leaf_area_index_World_Southern_Hemisphere_Ocean.mat"
+        )
+    )
+    assert skip_str_file in result_skip.output
 
-    assert skip_str in result_skip.output
+    result_force = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-wrangle",
+            ".*lai.*",
+            "-f",
+        ],
+    )
+    assert result_force.exit_code == 0
+    assert skip_str_header in result_force.output
+    assert skip_str_file not in result_force.output
 
 
 def test_wrangling_force_flat(tmpdir):
@@ -165,6 +183,8 @@ def test_wrangling_force_flat(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
+            "--var-to-wrangle",
+            ".*lai.*",
             "-f",
             "--flat",
         ],
@@ -176,6 +196,8 @@ def test_wrangling_force_flat(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
+            "--var-to-wrangle",
+            ".*lai.*",
             "--flat",
         ],
     )
@@ -184,10 +206,29 @@ def test_wrangling_force_flat(tmpdir):
     skip_str_header = (
         "Skipped (already exist, not overwriting)\n"
         "========================================\n"
-        "- "
     )
     assert skip_str_header in result_skip.output
+    assert "-" in result_skip.output
 
-    skip_str_file = "cmip6/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r2i1p1f2/Lmon/lai/gr/v20181126/ts_filename"
+    skip_str_file = "- {}".format(
+        join(
+            OUTPUT_DIR,
+            "ts_CMIP_historical_r2i1p1f2_unspecified_leaf_area_index_World.mat"
+        )
+    )
+    assert skip_str_file in result_skip.output
 
-    assert skip_str in result_skip.output
+    result_force = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-wrangle",
+            ".*lai.*",
+            "-f",
+            "--flat",
+        ],
+    )
+    assert result_force.exit_code == 0
+    assert skip_str_header in result_force.output
+    assert skip_str_file not in result_force.output
