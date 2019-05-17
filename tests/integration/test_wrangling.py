@@ -105,3 +105,51 @@ def test_wrangling_handles_integer_units(tmpdir):
     assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
 
     assert "lai" in result.output
+
+
+def test_wrangling_force(tmpdir):
+    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    OUTPUT_DIR = str(tmpdir)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-wrangle",
+            ".*lai.*",
+            "-f",
+        ],
+    )
+    assert result.exit_code == 0
+
+    result_skip = runner.invoke(
+        wrangle_openscm_csvs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--var-to-wrangle",
+            ".*lai.*",
+        ],
+    )
+    assert result_skip.exit_code == 0
+
+    skip_str = (
+        "Skipped (already exist, not overwriting)\n"
+        "========================================\n"
+        "- {}".format(
+            join(
+                OUTPUT_DIR,
+                DATA_SUB_DIR,
+                "cmip5",
+                "1pctCO2",
+                "Amon",
+                "fco2antt",
+                "CanESM2",
+                "r1i1p1",
+                "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.csv",
+            )
+        )
+    )
+    assert skip_str in result_skip.output
