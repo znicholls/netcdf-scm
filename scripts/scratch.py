@@ -7,7 +7,7 @@ result = runner.invoke(
     crunch_data,
     [
         "tests/test-data/marble-cmip5/cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1",
-        "/home/zebedee/Desktop/tmp",
+        "/tmp",
         "--cube-type",
         "MarbleCMIP5",
         "-f",
