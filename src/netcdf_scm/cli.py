@@ -1,6 +1,5 @@
 """Command line interface
 """
-import os
 from os import walk, makedirs, path
 from os.path import join, isfile, dirname
 import re
@@ -321,7 +320,9 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
 
     already_exist_files = []
     if nested:
-        here_skipped = _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force)
+        here_skipped = _do_wrangling(
+            src, dst, var_to_wrangle, nested, out_format, force
+        )
         if here_skipped:
             already_exist_files += here_skipped
     else:
@@ -335,27 +336,33 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
                     if any([r.match(dirpath) for r in considered_regexps]):
                         continue
 
-                openscmdf = df_append([join(dirpath, f) for f in filenames])
-
                 if drs == "None":
                     raise NotImplementedError("Raise an issue if you need this")
 
                 scmcube = _CUBES[drs]()
                 ids = {
-                    k: v if any([s in k for s in ["variable", "experiment", "activity", "mip"]]) else ".*"
+                    k: v
+                    if any(
+                        [s in k for s in ["variable", "experiment", "activity", "mip"]]
+                    )
+                    else ".*"
                     for k, v in scmcube.process_path(dirpath).items()
-
                 }
 
-                regexp = re.compile(dirname(scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)))
-                here_skipped = _do_wrangling(src, dst, regexp, nested, out_format, force)
+                regexp = re.compile(
+                    dirname(
+                        scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)
+                    )
+                )
+                here_skipped = _do_wrangling(
+                    src, dst, regexp, nested, out_format, force
+                )
                 if here_skipped:
                     already_exist_files += here_skipped
 
                 considered_regexps.append(regexp)
 
     header_underline = "="
-    msg_underline = "-"
 
     already_exist_header = "Skipped (already exist, not overwriting)"
     if already_exist_files:
@@ -367,9 +374,7 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
         len(already_exist_header) * header_underline,
         already_exist_files_string,
     )
-    output_string = "\n\n{}".format(
-        already_exist_string
-    )
+    output_string = "\n\n{}".format(already_exist_string)
     click.echo(output_string)
 
 
@@ -405,10 +410,10 @@ def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
 
                 if out_format == "tuningstrucs":
                     out_file = join(out_filedir, "ts")
-                    click.echo(
-                        "Wrangling {} to {}".format(filenames, out_file)
+                    click.echo("Wrangling {} to {}".format(filenames, out_file))
+                    skipped_files = convert_scmdf_to_tuningstruc(
+                        openscmdf, out_file, force=force
                     )
-                    skipped_files = convert_scmdf_to_tuningstruc(openscmdf, out_file, force=force)
                     if skipped_files:
                         already_exist_files.append(skipped_files)
 
@@ -425,13 +430,12 @@ def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
             out_file = join(dst, "ts")
             first_region = collected["region"].unique()[0]
             out_file_base = get_tuningstruc_name_from_df(
-                collected.filter(
-                    region=first_region,
-                ).timeseries(),
-                out_file
+                collected.filter(region=first_region).timeseries(), out_file
             ).replace(first_region, "<region>")
             click.echo("Wrangling {} to {}".format(var_to_wrangle, out_file_base))
-            skipped_files = convert_scmdf_to_tuningstruc(collected, out_file, force=force)
+            skipped_files = convert_scmdf_to_tuningstruc(
+                collected, out_file, force=force
+            )
             if skipped_files:
                 already_exist_files.append(skipped_files)
 

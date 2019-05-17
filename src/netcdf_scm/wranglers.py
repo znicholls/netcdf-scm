@@ -190,6 +190,7 @@ def get_tuningstruc_name_from_df(df, outpath):
         A name cannot be determined because e.g. more than one scenario is contained
         in the dataframe
     """
+
     def _get_col(col):
         try:
             vals = df[col].unique()
