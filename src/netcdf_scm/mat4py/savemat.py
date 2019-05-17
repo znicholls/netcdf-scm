@@ -344,11 +344,7 @@ def guess_header(array, name=""):
     """
     header = {}
 
-    if isinstance(array, Sequence) and len(array) == 1:
-        # sequence with only one element, assume user wants cell
-        header.update({"mclass": "mxCELL_CLASS", "dims": (1, 1)})
-
-    elif isinstance(array, basestring):
+    if isinstance(array, basestring):
         header.update(
             {
                 "mclass": "mxCHAR_CLASS",
@@ -356,6 +352,10 @@ def guess_header(array, name=""):
                 "dims": (1 if len(array) > 0 else 0, len(array)),
             }
         )
+
+    elif isinstance(array, Sequence) and len(array) == 1:
+        # sequence with only one element, assume user wants cell
+        header.update({"mclass": "mxCELL_CLASS", "dims": (1, 1)})
 
     elif isinstance(array, Sequence) and len(array) == 0:
         # empty (int) array
