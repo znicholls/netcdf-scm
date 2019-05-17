@@ -30,7 +30,7 @@ except ModuleNotFoundError:
 
     raise_no_iris_warning()
 
-from .masks import broadcast_onto_lat_lon_grid, CubeMasker, DEFAULT_REGIONS
+from .masks import CubeMasker, DEFAULT_REGIONS
 from .utils import (
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
@@ -38,6 +38,7 @@ from .utils import (
     take_lat_lon_mean,
     apply_mask,
     unify_lat_lon,
+    broadcast_onto_lat_lon_grid,
     _vector_cftime_conversion,
 )
 
