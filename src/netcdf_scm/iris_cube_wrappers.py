@@ -30,7 +30,7 @@ except ModuleNotFoundError:
 
     raise_no_iris_warning()
 
-from .masks import broadcast_onto_lat_lon_grid, get_land_mask, get_nh_mask
+from .masks import broadcast_onto_lat_lon_grid, CubeMasker, DEFAULT_REGIONS
 from .utils import (
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
@@ -705,74 +705,12 @@ class SCMCube(object):
         -------
         dict
         """
-        nh_mask = get_nh_mask(self)
-        hemisphere_masks = {
-            "World": np.full(nh_mask.shape, False),
-            "World|Northern Hemisphere": nh_mask,
-            "World|Southern Hemisphere": ~nh_mask,
-        }
-
-        try:
-            land_mask = get_land_mask(self,
-                sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
-            )
-            land_masks = {
-                "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
-                "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
-                "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
-                "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
-                "World|Land": land_mask,
-                "World|Ocean": ~land_mask,
-            }
-
-            return {**hemisphere_masks, **land_masks}
-
-        except OSError:
-            warn_msg = (
-                "Land surface fraction (sftlf) data not available, only returning "
-                "global and hemispheric masks."
-            )
-            warnings.warn(warn_msg)
-            return hemisphere_masks
-
-    def _get_land_mask(self, sftlf_cube=None, land_mask_threshold=50):
-        """Get the land mask.
-
-        Returns
-        -------
-        np.ndarray
-        """
-        if sftlf_cube is None:
-            sftlf_cube = self.get_metadata_cube(self.sftlf_var)
-
-        if not isinstance(sftlf_cube, SCMCube):
-            raise TypeError("sftlf_cube must be an SCMCube instance")
-
-        sftlf_data = sftlf_cube.cube.data
-
-        land_mask = np.where(
-            sftlf_data > land_mask_threshold,
-            False,  # where it's land, return False i.e. don't mask
-            True,  # otherwise True
+        masker = CubeMasker(
+            self,
+            sftlf_cube=sftlf_cube,
+            land_mask_threshold=land_mask_threshold
         )
-
-        return broadcast_onto_lat_lon_grid(self, land_mask)
-
-    def _get_nh_mask(self):
-        mask_nh_lat = np.array(
-            [cell < 0 for cell in self.cube.coord(self.lat_name).cells()]
-        )
-        mask_all_lon = np.full(self.cube.coord(self.lon_name).points.shape, False)
-
-        # Here we make a grid which we can use as a mask. We have to use all
-        # of these nots so that our product (which uses AND logic) gives us
-        # False in the NH and True in the SH (another way to think of this is
-        # that we have to flip everything so False goes to True and True goes
-        # to False, do all our operations with AND logic, then flip everything
-        # back).
-        mask_nh = ~np.outer(~mask_nh_lat, ~mask_all_lon)
-
-        return broadcast_onto_lat_lon_grid(self, mask_nh)
+        return masker.get_masks(DEFAULT_REGIONS)
 
     def _get_area_weights(self, areacella_scmcube=None):
         use_self_area_weights = True
