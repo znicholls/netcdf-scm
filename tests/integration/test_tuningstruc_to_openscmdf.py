@@ -99,7 +99,7 @@ def test_convert_scmdf_to_tuningstruc_single_char_unit(tmpdir):
             "scenario": "test",
             "model": "test",
             "climate_model": "test",
-        }
+        },
     )
 
     convert_scmdf_to_tuningstruc(test_df, tbase)
