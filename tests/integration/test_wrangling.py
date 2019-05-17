@@ -83,7 +83,7 @@ def test_wrangling_flat(tmpdir):
 
     assert "everything" in result.output
 
-    assert len(listdir(OUTPUT_DIR)) == 12
+    assert len(listdir(OUTPUT_DIR)) == 21
 
 
 def test_wrangling_handles_integer_units(tmpdir):
