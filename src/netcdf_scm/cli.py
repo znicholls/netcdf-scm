@@ -309,13 +309,33 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, force):
         click.echo("Making output directory: {}\n".format(dst))
         makedirs(dst)
 
+    var_regexp = re.compile(var_to_wrangle)
+
     if nested:
         _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force)
     else:
+        considered_regexps = []
         for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
             if filenames:
-                import pdb
-                pdb.set_trace()
+                if not var_regexp.match(dirpath):
+                    continue
+
+                if considered_regexps:
+                    if any([r.match(dirpath) for r in considered_regexps]):
+                        import pdb
+                        pdb.set_trace()
+                        continue
+
+                openscmdf = df_append([join(dirpath, f) for f in filenames])
+                climate_model = openscmdf["climate_model"].unique()
+                if len(climate_model) != 1:
+                    raise NotImplementedError
+                climate_model = climate_model[0]
+
+                regexp = re.compile(dirpath.replace(climate_model, ".*"))
+                _do_wrangling(src, dst, regexp, nested, out_format, force)
+
+                considered_regexps.append(regexp)
 
 
 def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
@@ -342,13 +362,27 @@ def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
             tmp_ts["unit"] = tmp_ts["unit"].astype(str)
             openscmdf = ScmDataFrame(tmp_ts)
 
-            out_filedir = dirpath.replace(src, dst)
-            if not path.exists(out_filedir):
-                makedirs(out_filedir)
+            if nested:
+                out_filedir = dirpath.replace(src, dst)
+                if not path.exists(out_filedir):
+                    makedirs(out_filedir)
 
-            if out_format == "tuningstrucs":
-                out_file = join(out_filedir, "ts")
-                click.echo("Wrangling {} to {}".format(filenames, out_file))
-                convert_scmdf_to_tuningstruc(openscmdf, out_file)
+                if out_format == "tuningstrucs":
+                    out_file = join(out_filedir, "ts")
+                    click.echo("Wrangling {} to {}".format(filenames, out_file))
+                    convert_scmdf_to_tuningstruc(openscmdf, out_file)
+                else:
+                    raise ValueError("Unsupported format: {}".format(out_format))
             else:
-                raise ValueError("Unsupported format: {}".format(out_format))
+                try:
+                    collected = collected.append(openscmdf)
+                except NameError:
+                    collected = openscmdf
+
+    if not nested:
+        if out_format == "tuningstrucs":
+            out_file = join(dst, "ts")
+            click.echo("Wrangling {} to {}".format(var_to_wrangle, dst))
+            convert_scmdf_to_tuningstruc(collected, out_file)
+        else:
+            raise ValueError("Unsupported format: {}".format(out_format))
