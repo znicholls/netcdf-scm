@@ -130,7 +130,7 @@ def crunch_data(
             prefix="Visiting directory ",
         ).start()
         for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-            if not dirnames:
+            if filenames:
                 if not var_regexp.match(dirpath):
                     continue
                 format_custom_text.update_mapping(curr_dir=dirpath)
@@ -313,7 +313,7 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format):
         prefix="Visiting directory ",
     ).start()
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-        if not dirnames:
+        if filenames:
             if not var_regexp.match(dirpath):
                 continue
 
