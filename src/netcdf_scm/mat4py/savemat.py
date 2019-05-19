@@ -12,7 +12,7 @@ import sys
 import time
 import zlib
 
-from collections import Sequence, Mapping
+from collections.abc import Sequence, Mapping
 from itertools import chain, tee
 
 try:

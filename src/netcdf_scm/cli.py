@@ -42,10 +42,10 @@ _CUBES = {
     help="Cube to use for crunching.",
 )
 @click.option(
-    "--var-to-crunch",
+    "--regexp",
     default=".*",
     show_default=True,
-    help="Variable to crunch (uses regexp syntax, matches on filepaths).",
+    help="Regular expression to apply to filepath (only crunches matches).",
 )
 @click.option(
     "--land-mask-threshold",
@@ -67,7 +67,7 @@ _CUBES = {
     show_default=True,
 )
 def crunch_data(
-    src, dst, cube_type, var_to_crunch, land_mask_threshold, data_sub_dir, force
+    src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, force
 ):
     """
     Crunch data in ``src`` to OpenSCM csv's in ``dst``.
@@ -92,7 +92,7 @@ def crunch_data(
         "cube-type: {}\n"
         "source: {}\n"
         "destination: {}\n"
-        "var-to-crunch: {}\n"
+        "regexp: {}\n"
         "land-mask-threshold: {}\n"
         "force: {}\n\n"
         "".format(
@@ -103,7 +103,7 @@ def crunch_data(
             cube_type,
             src,
             out_dir,
-            var_to_crunch,
+            regexp,
             land_mask_threshold,
             force,
         )
@@ -116,7 +116,7 @@ def crunch_data(
 
     already_exist_files = []
 
-    var_regexp = re.compile(var_to_crunch)
+    regexp_compiled = re.compile(regexp)
 
     # really should use a logger here
     with warnings.catch_warnings(record=True) as recorded_warns:
@@ -131,7 +131,7 @@ def crunch_data(
         ).start()
         for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
             if filenames:
-                if not var_regexp.match(dirpath):
+                if not regexp_compiled.match(dirpath):
                     continue
                 format_custom_text.update_mapping(curr_dir=dirpath)
                 bar.update(i)
@@ -245,10 +245,10 @@ def crunch_data(
     "dst", type=click.Path(file_okay=False, writable=True, resolve_path=True)
 )
 @click.option(
-    "--var-to-wrangle",
+    "--regexp",
     default=".*",
     show_default=True,
-    help="Variable to wrangle (uses regexp syntax, matches on filepaths).",
+    help="Regular expression to apply to filepath (only wrangles matches).",
 )
 @click.option(
     "--nested/--flat",
@@ -277,7 +277,7 @@ def crunch_data(
     default=False,
     show_default=True,
 )
-def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, force):
+def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
     """
     Wrangle OpenSCM csv files into other formats and directory structures
 
@@ -295,7 +295,7 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
         "time: {}\n"
         "source: {}\n"
         "destination: {}\n"
-        "var-to-wrangle: {}\n"
+        "regexp: {}\n"
         "nested: {}\n"
         "out-format: {}\n\n"
         "".format(
@@ -305,7 +305,7 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
             timestamp,
             src,
             dst,
-            var_to_wrangle,
+            regexp,
             nested,
             out_format,
         )
@@ -316,12 +316,12 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
         click.echo("Making output directory: {}\n".format(dst))
         makedirs(dst)
 
-    var_regexp = re.compile(var_to_wrangle)
+    regexp_compiled = re.compile(regexp)
 
     already_exist_files = []
     if nested:
         here_skipped = _do_wrangling(
-            src, dst, var_to_wrangle, nested, out_format, force
+            src, dst, regexp, nested, out_format, force
         )
         if here_skipped:
             already_exist_files += here_skipped
@@ -329,7 +329,7 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
         considered_regexps = []
         for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
             if filenames:
-                if not var_regexp.match(dirpath):
+                if not regexp_compiled.match(dirpath):
                     continue
 
                 if considered_regexps:
@@ -349,19 +349,19 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
                     for k, v in scmcube.process_path(dirpath).items()
                 }
 
-                regexp = re.compile(
+                regexp_here = re.compile(
                     dirname(
                         scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)
                     )
                 )
-                click.echo("Wrangling {}".format(regexp))
+                click.echo("Wrangling {}".format(regexp_here))
                 here_skipped = _do_wrangling(
-                    src, dst, regexp, nested, out_format, force
+                    src, dst, regexp_here, nested, out_format, force
                 )
                 if here_skipped:
                     already_exist_files += here_skipped
 
-                considered_regexps.append(regexp)
+                considered_regexps.append(regexp_here)
 
     header_underline = "="
 
@@ -379,8 +379,8 @@ def wrangle_openscm_csvs(src, dst, var_to_wrangle, nested, out_format, drs, forc
     click.echo(output_string)
 
 
-def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
-    var_regexp = re.compile(var_to_wrangle)
+def _do_wrangling(src, dst, regexp, nested, out_format, force):
+    regexp_compiled = re.compile(regexp)
 
     format_custom_text = progressbar.FormatCustomText(
         "Current directory :: %(curr_dir)-400s", {"curr_dir": "uninitialised"}
@@ -393,7 +393,7 @@ def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
     already_exist_files = []
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
         if filenames:
-            if not var_regexp.match(dirpath):
+            if not regexp_compiled.match(dirpath):
                 continue
 
             format_custom_text.update_mapping(curr_dir=dirpath)
@@ -429,7 +429,7 @@ def _do_wrangling(src, dst, var_to_wrangle, nested, out_format, force):
     if not nested:
         if out_format == "tuningstrucs":
             out_file = join(dst, "ts")
-            click.echo("Wrangling {} to {}*.mat".format(var_to_wrangle, out_file))
+            click.echo("Wrangling {} to {}*.mat".format(regexp, out_file))
             skipped_files = convert_scmdf_to_tuningstruc(
                 collected, out_file, force=force
             )
