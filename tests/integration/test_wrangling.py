@@ -46,7 +46,7 @@ def test_wrangling_var(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
-            "--var-to-wrangle",
+            "--regexp",
             VAR_TO_WRANGLE,
             "--nested",
             "--out-format",
@@ -100,7 +100,7 @@ def test_wrangling_handles_integer_units(tmpdir):
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--var-to-wrangle", ".*lai.*"]
+        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*"]
     )
     assert result.exit_code == 0
 
@@ -116,12 +116,12 @@ def test_wrangling_force(tmpdir):
     runner = CliRunner()
     result = runner.invoke(
         wrangle_openscm_csvs,
-        [INPUT_DIR, OUTPUT_DIR, "--var-to-wrangle", ".*lai.*", "-f"],
+        [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f"],
     )
     assert result.exit_code == 0
 
     result_skip = runner.invoke(
-        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--var-to-wrangle", ".*lai.*"]
+        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*"]
     )
     assert result_skip.exit_code == 0
 
@@ -142,7 +142,7 @@ def test_wrangling_force(tmpdir):
 
     result_force = runner.invoke(
         wrangle_openscm_csvs,
-        [INPUT_DIR, OUTPUT_DIR, "--var-to-wrangle", ".*lai.*", "-f"],
+        [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f"],
     )
     assert result_force.exit_code == 0
     assert skip_str_header in result_force.output
@@ -159,7 +159,7 @@ def test_wrangling_force_flat(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
-            "--var-to-wrangle",
+            "--regexp",
             ".*lai.*",
             "-f",
             "--flat",
@@ -174,7 +174,7 @@ def test_wrangling_force_flat(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
-            "--var-to-wrangle",
+            "--regexp",
             ".*lai.*",
             "--flat",
             "--drs",
@@ -203,7 +203,7 @@ def test_wrangling_force_flat(tmpdir):
         [
             INPUT_DIR,
             OUTPUT_DIR,
-            "--var-to-wrangle",
+            "--regexp",
             ".*lai.*",
             "-f",
             "--flat",
