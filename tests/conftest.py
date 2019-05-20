@@ -267,7 +267,7 @@ def run_crunching_comparison(res, expected, update=False):
     """
     paths_to_walk = [expected, res] if not update else [res]
     for p in paths_to_walk:
-        for dirpath, dirnames, filenames in walk(p):
+        for dirpath, _, filenames in walk(p):
             if filenames:
                 if update:
                     path_to_check = dirpath.replace(res, expected)
