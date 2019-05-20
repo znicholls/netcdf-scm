@@ -53,7 +53,7 @@ REQUIREMENTS_NOTEBOOKS = ["pyam-iamc>=0.2.0", "notebook", "nbval", "expectexcept
 REQUIREMENTS_DOCS = ["sphinx>=1.4", "sphinx_rtd_theme", "sphinx-click"]
 REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
 requirements_dev = [
-    *["flake8", "black", "isort"],
+    *["flake8", "black", "isort", "bandit"],
     *REQUIREMENTS_TESTS,
     *REQUIREMENTS_NOTEBOOKS,
     *REQUIREMENTS_DOCS,

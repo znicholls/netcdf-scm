@@ -229,7 +229,8 @@ class SCMCube(object):
         gregorian_year_zero_cube = (
             year_zero_cube_time_dim.units.calendar == "gregorian"
         ) and str(year_zero_cube_time_dim.units).startswith("days since 0-1-1")
-        assert gregorian_year_zero_cube, "This function is not setup for other cases"
+        if not gregorian_year_zero_cube:
+            raise AssertionError("This function is not setup for other cases")
 
         new_unit_str = "days since 1-1-1"
         # converting with the new units means we're actually converting with the wrong
@@ -410,7 +411,8 @@ class SCMCube(object):
             len(file_timestamp_bits_prev["timestart_str"])
         ]["datetime_str"]
         for found_file in found_files[1:]:
-            assert re.match(base_regexp, found_file), assertion_error_msg
+            if not re.match(base_regexp, found_file):
+                raise AssertionError(assertion_error_msg)
 
             file_timestamp_bits = self._get_timestamp_bits_from_filename(found_file)
             end_time_prev = datetime.strptime(
@@ -420,9 +422,8 @@ class SCMCube(object):
                 file_timestamp_bits["timestart_str"], time_format
             )
 
-            assert (
-                relativedelta(start_time, end_time_prev) == expected_timestep
-            ), assertion_error_msg
+            if relativedelta(start_time, end_time_prev) != expected_timestep:
+                raise AssertionError(assertion_error_msg)
 
             file_timestamp_bits_prev = file_timestamp_bits
 
@@ -1420,9 +1421,8 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         )
 
     def _check_self_consistency(self):
-        assert (
-            self.institution_id in self.source_id
-        ), "source_id must contain institution_id"
+        if self.institution_id not in self.source_id:
+            raise AssertionError("source_id must contain institution_id")
 
     def _get_metadata_load_arguments(self, metadata_variable):
         return {
