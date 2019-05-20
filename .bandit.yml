@@ -1,1 +1,1 @@
-skips: ["B101"]
+exclude: ./tests
