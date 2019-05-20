@@ -43,7 +43,7 @@ _CUBES = {
 )
 @click.option(
     "--regexp",
-    default=".*",
+    default="^((?!fx).)*$",
     show_default=True,
     help="Regular expression to apply to filepath (only crunches matches).",
 )
@@ -238,7 +238,7 @@ def crunch_data(
 )
 @click.option(
     "--regexp",
-    default=".*",
+    default="^((?!fx).)*$",
     show_default=True,
     help="Regular expression to apply to filepath (only wrangles matches).",
 )
