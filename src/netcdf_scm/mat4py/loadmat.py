@@ -10,8 +10,8 @@ __all__ = ["loadmat"]
 import struct
 import sys
 import zlib
-
 from collections.abc import Sequence
+from io import BytesIO
 from itertools import tee
 
 try:
@@ -22,7 +22,6 @@ except ImportError:
     izip = zip
     basestring = str
     ispy2 = False
-from io import BytesIO
 
 
 # encode a string to bytes and vice versa

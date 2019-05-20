@@ -1,25 +1,22 @@
+import datetime
+import re
 import warnings
 from unittest.mock import patch
 
-
-import pytest
-import re
-import numpy as np
-import datetime
-import iris
 import cf_units
-
-
+import iris
+import numpy as np
+import pytest
+from conftest import tdata_required
 from netcdf_scm.utils import (
     _assert_only_cube_dim_coord_is_time,
+    apply_mask,
+    assert_all_time_axes_same,
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
-    assert_all_time_axes_same,
     take_lat_lon_mean,
-    apply_mask,
     unify_lat_lon,
 )
-from conftest import tdata_required
 
 
 @tdata_required
