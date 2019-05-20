@@ -36,7 +36,7 @@ try:
     from iris.exceptions import CoordinateNotFoundError
     import cftime
     import cf_units
-except ModuleNotFoundError:
+except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from .errors import raise_no_iris_warning
 
     raise_no_iris_warning()
@@ -217,7 +217,7 @@ class SCMCube(object):
         gregorian_year_zero_cube = (
             year_zero_cube_time_dim.units.calendar == "gregorian"
         ) and str(year_zero_cube_time_dim.units).startswith("days since 0-1-1")
-        if not gregorian_year_zero_cube:
+        if not gregorian_year_zero_cube:  # pragma: no cover # emergency valve
             raise AssertionError("This function is not setup for other cases")
 
         new_unit_str = "days since 1-1-1"
