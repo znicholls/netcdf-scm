@@ -5,6 +5,7 @@ master
 ------
 
 - (`#49 <https://github.com/znicholls/netcdf-scm/pull/49>`_) Make bandit only check ``src``
+- (`#48 <https://github.com/znicholls/netcdf-scm/pull/48>`_) Add ``isort`` to checks
 - (`#47 <https://github.com/znicholls/netcdf-scm/pull/47>`_) Add regression tests on crunching output to ensure stability. Also:
 
     - fixes minor docs bug
