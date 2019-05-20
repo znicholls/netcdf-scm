@@ -1,22 +1,20 @@
 import re
 import warnings
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import iris
 import numpy as np
 import pytest
+from conftest import create_sftlf_cube
 from iris.util import broadcast_to_shape
-
 from netcdf_scm.masks import (
-    CubeMasker,
     DEFAULT_REGIONS,
     MASKS,
+    CubeMasker,
+    get_area_mask,
     get_land_mask,
     get_nh_mask,
-    get_area_mask,
 )
-
-from conftest import create_sftlf_cube
 
 
 @patch("netcdf_scm.masks.get_land_mask")

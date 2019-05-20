@@ -5,17 +5,16 @@ from os import makedirs, path, walk
 from os.path import abspath, dirname, isdir, join
 
 import cf_units as unit
-
-from netcdf_scm.iris_cube_wrappers import (
-    SCMCube,
-    MarbleCMIP5Cube,
-    CMIP6Input4MIPsCube,
-    CMIP6OutputCube,
-)
 import iris
 import numpy as np
 import pandas as pd
 import pytest
+from netcdf_scm.iris_cube_wrappers import (
+    CMIP6Input4MIPsCube,
+    CMIP6OutputCube,
+    MarbleCMIP5Cube,
+    SCMCube,
+)
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test-data")
 
