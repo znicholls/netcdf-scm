@@ -6,6 +6,7 @@ arrays, where ``True`` values are excluded.
 import warnings
 
 import numpy as np
+
 from netcdf_scm.utils import broadcast_onto_lat_lon_grid
 
 DEFAULT_REGIONS = (
