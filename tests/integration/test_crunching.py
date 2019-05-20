@@ -1,14 +1,14 @@
 from os import walk
 from os.path import isdir, isfile, join
 
-import netcdf_scm
 import numpy as np
 import pandas as pd
 from click.testing import CliRunner
 from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
-from netcdf_scm.cli import crunch_data
-
 from openscm.scmdataframe import ScmDataFrame
+
+import netcdf_scm
+from netcdf_scm.cli import crunch_data
 
 
 def test_crunching(tmpdir):

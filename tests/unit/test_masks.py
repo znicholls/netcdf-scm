@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from conftest import create_sftlf_cube
 from iris.util import broadcast_to_shape
+
 from netcdf_scm.masks import (
     DEFAULT_REGIONS,
     MASKS,

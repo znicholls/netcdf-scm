@@ -1,7 +1,6 @@
 from os.path import isfile
 
 import numpy as np
-
 from openscm.scmdataframe import ScmDataFrame
 
 from . import mat4py
