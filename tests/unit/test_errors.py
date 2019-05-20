@@ -1,6 +1,5 @@
 import warnings
 
-
 from netcdf_scm.errors import raise_no_iris_warning
 
 

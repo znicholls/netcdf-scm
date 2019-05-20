@@ -5,17 +5,27 @@ For example, finding surface land fraction files, applying masks to data and
 returning timeseries in key regions for simple climate models.
 """
 import os
-from os.path import join, dirname, basename, splitext
 import re
-import warnings
 import traceback
+import warnings
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-
+from os.path import basename, dirname, join, splitext
 
 import numpy as np
 import pandas as pd
+from dateutil.relativedelta import relativedelta
+
 from openscm.scmdataframe import ScmDataFrame
+
+from .utils import (
+    _vector_cftime_conversion,
+    apply_mask,
+    assert_all_time_axes_same,
+    get_cube_timeseries_data,
+    get_scm_cube_time_axis_in_calendar,
+    take_lat_lon_mean,
+    unify_lat_lon,
+)
 
 try:
     import iris
@@ -29,6 +39,7 @@ except ModuleNotFoundError:
     from .errors import raise_no_iris_warning
 
     raise_no_iris_warning()
+
 
 from .masks import CubeMasker, DEFAULT_REGIONS
 from .utils import (

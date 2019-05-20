@@ -3,6 +3,7 @@
 For example, applying masks to cubes, taking latitude-longitude means and getting timeseries from a cube as datetime values.
 """
 import datetime as dt
+
 import numpy as np
 
 try:

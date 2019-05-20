@@ -1,20 +1,17 @@
-from os.path import join
 import datetime as dt
 import re
+from os.path import join
 
-
-import pytest
-import pandas as pd
 import numpy as np
-from openscm.scmdataframe import ScmDataFrame
-
-
+import pandas as pd
+import pytest
 from conftest import TEST_DATA_ROOT_DIR
 from netcdf_scm.wranglers import (
-    convert_tuningstruc_to_scmdf,
     convert_scmdf_to_tuningstruc,
+    convert_tuningstruc_to_scmdf,
 )
 
+from openscm.scmdataframe import ScmDataFrame
 
 TEST_DATA_TUNINGSTRUCS_DIR = join(TEST_DATA_ROOT_DIR, "tuningstrucs")
 

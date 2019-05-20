@@ -1,31 +1,28 @@
-from os.path import join, dirname, basename
-from unittest.mock import patch, MagicMock, call
-import warnings
 import itertools
-
-
-import pytest
 import re
+import warnings
+from os.path import basename, dirname, join
+from unittest.mock import MagicMock, call, patch
+
+import iris
 import numpy as np
 import pandas as pd
-from pandas.testing import assert_frame_equal, assert_index_equal
-import iris
-from iris.exceptions import ConstraintMismatchError
-from iris.util import broadcast_to_shape
-
-
-from netcdf_scm.iris_cube_wrappers import (
-    SCMCube,
-    MarbleCMIP5Cube,
-    CMIP6Input4MIPsCube,
-    CMIP6OutputCube,
-)
+import pytest
 from conftest import (
+    TEST_AREACELLA_FILE,
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_TAS_FILE,
-    TEST_AREACELLA_FILE,
     tdata_required,
 )
+from iris.exceptions import ConstraintMismatchError
+from iris.util import broadcast_to_shape
+from netcdf_scm.iris_cube_wrappers import (
+    CMIP6Input4MIPsCube,
+    CMIP6OutputCube,
+    MarbleCMIP5Cube,
+    SCMCube,
+)
+from pandas.testing import assert_frame_equal, assert_index_equal
 
 
 class TestSCMCube(object):

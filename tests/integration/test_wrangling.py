@@ -1,14 +1,10 @@
 from os import listdir
 from os.path import isdir, join
 
-from click.testing import CliRunner
-
-
 import netcdf_scm
-from netcdf_scm.cli import wrangle_openscm_csvs
-
-
+from click.testing import CliRunner
 from conftest import TEST_DATA_OPENSCMCSVS_DIR
+from netcdf_scm.cli import wrangle_openscm_csvs
 
 
 def test_wrangling_defaults(tmpdir):

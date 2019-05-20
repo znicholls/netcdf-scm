@@ -1,18 +1,12 @@
 from os.path import join
 
-
 from click.testing import CliRunner
-
-
-from netcdf_scm.cli import crunch_data
-
-
 from conftest import (
     TEST_DATA_ROOT_DIR,
     TEST_DATA_CMIP6Output_DIR,
     run_crunching_comparison,
 )
-
+from netcdf_scm.cli import crunch_data
 
 EXPECTED_FILES_DIR = join(TEST_DATA_ROOT_DIR, "expected-crunching-output")
 
