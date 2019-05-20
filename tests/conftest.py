@@ -4,7 +4,6 @@ import warnings
 from os import makedirs, path, walk
 from os.path import abspath, dirname, isdir, join
 
-import pandas as pandas
 import cf_units as unit
 
 from netcdf_scm.iris_cube_wrappers import (
@@ -15,6 +14,7 @@ from netcdf_scm.iris_cube_wrappers import (
 )
 import iris
 import numpy as np
+import pandas as pd
 import pytest
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test-data")
