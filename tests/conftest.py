@@ -7,6 +7,7 @@ import filecmp
 
 import pytest
 import numpy as np
+import pandas as pd
 import iris
 import cf_units as unit
 
@@ -279,6 +280,14 @@ def run_crunching_comparison(res, expected, update=False):
                     if update:
                         shutil.copy(res_f, exp_f)
                     else:
+                        res_df = pd.read_csv(res_f)
+                        exp_df = pd.read_csv(exp_f)
+                        pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
+                        with pytest.raises(AssertionError):
+                            pd.testing.assert_frame_equal(res_df, exp_df*2, check_like=True)
+
+                        # overly restrictive test, leave for now to see just how
+                        # stable things are but if it becomes too annoying then remove
                         assert filecmp.cmp(res_f, exp_f, shallow=False)
 
     if update:
