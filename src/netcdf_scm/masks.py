@@ -105,11 +105,9 @@ def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwarg
             sftlf_cube = cube.get_metadata_cube(cube.sftlf_var)
         except OSError:
             warn_msg = (
-                "Land surface fraction (sftlf) data not available, only returning "
-                "global and hemispheric masks."
+                "Land surface fraction (sftlf) data not available"
             )
-            warnings.warn(warn_msg)
-            raise InvalidMask()
+            raise InvalidMask(warn_msg)
 
     if not isinstance(sftlf_cube, SCMCube):
         raise TypeError("sftlf_cube must be an SCMCube instance")
@@ -147,16 +145,16 @@ def get_nh_mask(masker, cube, **kwargs):
 
 def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
     """
-    Mask a subset of the globe
+    Mask a subset of the globe using latitudes and longitudes in degrees East
 
     Circular coordinates (longitude) can cross the 0E.
 
     Parameters
     ----------
-    lower_lat: int or float
-    left_lon: int or float
-    upper_lat: int or float
-    right_lon: int or float
+    lower_lat: int or float of degrees North
+    left_lon: int or float of degrees East
+    upper_lat: int or float of degrees North
+    right_lon: int or float of degrees East
 
     Returns
     -------
@@ -236,7 +234,7 @@ MASKS = {
     "World|Southern Hemisphere|Ocean": or_masks(
         "World|Southern Hemisphere", "World|Ocean"
     ),
-    "World|North Atlantic|Ocean": or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean"),
+    "World|North Atlantic Ocean": or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean"),
 }
 
 
@@ -315,12 +313,12 @@ class CubeMasker:
 
     def get_masks(self, mask_names):
         """
-        Get arbitary masks
+        Get a number of masks
 
         Parameters
         ----------
         mask_names: list of str
-            The masks to calculate
+            List of masks to attempt to load/calculate.
 
         Returns
         -------
@@ -333,6 +331,7 @@ class CubeMasker:
             try:
                 mask = self.get_mask(name)
                 masks[name] = mask
-            except InvalidMask:
+            except InvalidMask as e:
+                warnings.warn('Failed to create {} mask: {}'.format(name, str(e)))
                 pass
         return masks
