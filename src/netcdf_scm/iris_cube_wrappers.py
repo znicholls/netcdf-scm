@@ -17,10 +17,12 @@ from dateutil.relativedelta import relativedelta
 
 from openscm.scmdataframe import ScmDataFrame
 
+from .masks import DEFAULT_REGIONS, CubeMasker
 from .utils import (
     _vector_cftime_conversion,
     apply_mask,
     assert_all_time_axes_same,
+    broadcast_onto_lat_lon_grid,
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
     take_lat_lon_mean,
@@ -39,19 +41,6 @@ except ModuleNotFoundError:
     from .errors import raise_no_iris_warning
 
     raise_no_iris_warning()
-
-
-from .masks import CubeMasker, DEFAULT_REGIONS
-from .utils import (
-    get_cube_timeseries_data,
-    get_scm_cube_time_axis_in_calendar,
-    assert_all_time_axes_same,
-    take_lat_lon_mean,
-    apply_mask,
-    unify_lat_lon,
-    broadcast_onto_lat_lon_grid,
-    _vector_cftime_conversion,
-)
 
 
 class SCMCube(object):
