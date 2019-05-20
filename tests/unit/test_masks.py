@@ -7,13 +7,20 @@ import numpy as np
 import pytest
 from iris.util import broadcast_to_shape
 
-from netcdf_scm.masks import CubeMasker, DEFAULT_REGIONS, MASKS, get_land_mask, get_nh_mask, get_area_mask
+from netcdf_scm.masks import (
+    CubeMasker,
+    DEFAULT_REGIONS,
+    MASKS,
+    get_land_mask,
+    get_nh_mask,
+    get_area_mask,
+)
 
 from conftest import create_sftlf_cube
 
 
-@patch('netcdf_scm.masks.get_land_mask')
-@patch('netcdf_scm.masks.get_nh_mask')
+@patch("netcdf_scm.masks.get_land_mask")
+@patch("netcdf_scm.masks.get_nh_mask")
 def test_get_scm_masks(mock_nh_mask, mock_land_mask, test_all_cubes):
     tsftlf_cube = "mocked 124"
     tland_mask_threshold = "mocked 51"
@@ -58,20 +65,33 @@ def test_get_scm_masks(mock_nh_mask, mock_land_mask, test_all_cubes):
         "World|Southern Hemisphere": ~nh_mask,
     }
 
-    with patch.dict(MASKS, {
-        "World|Northern Hemisphere": mock_nh_mask,
-        "World|Land": mock_land_mask,
-    }):
-        masker = CubeMasker(test_all_cubes, sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold)
+    with patch.dict(
+        MASKS, {"World|Northern Hemisphere": mock_nh_mask, "World|Land": mock_land_mask}
+    ):
+        masker = CubeMasker(
+            test_all_cubes,
+            sftlf_cube=tsftlf_cube,
+            land_mask_threshold=tland_mask_threshold,
+        )
         result = masker.get_masks(DEFAULT_REGIONS)
 
     for label, array in expected.items():
         np.testing.assert_array_equal(array, result[label])
-    mock_land_mask.assert_called_with(masker, test_all_cubes, sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold)
-    mock_nh_mask.assert_called_with(masker, test_all_cubes, sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold)
+    mock_land_mask.assert_called_with(
+        masker,
+        test_all_cubes,
+        sftlf_cube=tsftlf_cube,
+        land_mask_threshold=tland_mask_threshold,
+    )
+    mock_nh_mask.assert_called_with(
+        masker,
+        test_all_cubes,
+        sftlf_cube=tsftlf_cube,
+        land_mask_threshold=tland_mask_threshold,
+    )
 
 
-@patch('netcdf_scm.masks.get_nh_mask')
+@patch("netcdf_scm.masks.get_nh_mask")
 def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes):
     test_all_cubes.get_metadata_cube = MagicMock(side_effect=OSError)
 
@@ -93,9 +113,7 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes):
         "Land surface fraction (sftlf) data not available, only returning "
         "global and hemispheric masks."
     )
-    with patch.dict(MASKS, {
-        "World|Northern Hemisphere": mock_nh_mask,
-    }):
+    with patch.dict(MASKS, {"World|Northern Hemisphere": mock_nh_mask}):
         masker = CubeMasker(test_all_cubes)
         with warnings.catch_warnings(record=True) as no_sftlf_warns:
             result = masker.get_masks(DEFAULT_REGIONS)
@@ -116,34 +134,31 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes):
     [(None), (0), (10), (30), (49), (49.9), (50), (50.1), (51), (60), (75), (100)],
 )
 def test_get_land_mask(
-        test_all_cubes,
-        test_threshold,
-        input_format,
-        sftlf_var,
-        transpose,
+    test_all_cubes, test_threshold, input_format, sftlf_var, transpose
 ):
     sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
     test_all_cubes.sftlf_var = sftlf_var
     original_data = sftlf_cube.cube.data
 
     if transpose:
-        sftlf_cube.cube = iris.cube.Cube(
-            data=np.transpose(sftlf_cube.cube.data)
-        )
+        sftlf_cube.cube = iris.cube.Cube(data=np.transpose(sftlf_cube.cube.data))
     test_all_cubes.get_metadata_cube = MagicMock(return_value=sftlf_cube)
 
-    test_land_fraction_input = (
-        sftlf_cube if input_format == "scmcube" else None
-    )
+    test_land_fraction_input = sftlf_cube if input_format == "scmcube" else None
 
     masker = CubeMasker(test_all_cubes)
     if test_threshold is None:
-        result = get_land_mask(masker, test_all_cubes, sftlf_cube=test_land_fraction_input)
+        result = get_land_mask(
+            masker, test_all_cubes, sftlf_cube=test_land_fraction_input
+        )
         # test that default land fraction is 50%
         test_threshold = 50
     else:
-        result = get_land_mask(masker, test_all_cubes,
-            sftlf_cube=test_land_fraction_input, land_mask_threshold=test_threshold
+        result = get_land_mask(
+            masker,
+            test_all_cubes,
+            sftlf_cube=test_land_fraction_input,
+            land_mask_threshold=test_threshold,
         )
 
     # having got the result, we can now update test_land_fraction_input
@@ -217,11 +232,7 @@ def test_nao_mask(test_all_cubes):
     result = masker.get_mask("World|North Atlantic|Ocean")
 
     expected_base = np.array(
-        [
-            [True, True, True, False],
-            [True, True, True, True],
-            [True, True, True, True],
-        ]
+        [[True, True, True, False], [True, True, True, True], [True, True, True, True]]
     )
     expected = broadcast_to_shape(
         expected_base,
@@ -237,11 +248,7 @@ def test_area_mask(test_all_cubes):
     result = get_area_mask(-20, 100, 20, 250)(None, test_all_cubes)
 
     expected_base = np.array(
-        [
-            [True, True, True, True],
-            [True, False, False, True],
-            [True, True, True, True],
-        ]
+        [[True, True, True, True], [True, False, False, True], [True, True, True, True]]
     )
     expected = broadcast_to_shape(
         expected_base,
@@ -256,11 +263,7 @@ def test_area_mask_wrapped_lons(test_all_cubes):
     result = get_area_mask(0, -80, 65, 0)(None, test_all_cubes)
 
     expected_base = np.array(
-        [
-            [True, True, True, False],
-            [True, True, True, False],
-            [True, True, True, True],
-        ]
+        [[True, True, True, False], [True, True, True, False], [True, True, True, True]]
     )
     expected = broadcast_to_shape(
         expected_base,

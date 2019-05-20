@@ -707,9 +707,7 @@ class SCMCube(object):
         dict
         """
         masker = CubeMasker(
-            self,
-            sftlf_cube=sftlf_cube,
-            land_mask_threshold=land_mask_threshold
+            self, sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
         return masker.get_masks(DEFAULT_REGIONS)
 
