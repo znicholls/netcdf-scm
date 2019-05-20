@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#49 <https://github.com/znicholls/netcdf-scm/pull/49>`_) Make bandit only check ``src``
 - (`#47 <https://github.com/znicholls/netcdf-scm/pull/47>`_) Add regression tests on crunching output to ensure stability. Also:
 
     - fixes minor docs bug
