@@ -16,13 +16,14 @@ from conftest import (
 )
 from iris.exceptions import ConstraintMismatchError
 from iris.util import broadcast_to_shape
+from pandas.testing import assert_frame_equal, assert_index_equal
+
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
     MarbleCMIP5Cube,
     SCMCube,
 )
-from pandas.testing import assert_frame_equal, assert_index_equal
 
 
 class TestSCMCube(object):

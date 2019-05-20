@@ -1,9 +1,10 @@
 from os import listdir
 from os.path import isdir, join
 
-import netcdf_scm
 from click.testing import CliRunner
 from conftest import TEST_DATA_OPENSCMCSVS_DIR
+
+import netcdf_scm
 from netcdf_scm.cli import wrangle_openscm_csvs
 
 

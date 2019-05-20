@@ -8,6 +8,7 @@ import iris
 import numpy as np
 import pytest
 from conftest import tdata_required
+
 from netcdf_scm.utils import (
     _assert_only_cube_dim_coord_is_time,
     apply_mask,
