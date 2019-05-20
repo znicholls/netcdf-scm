@@ -182,12 +182,12 @@ def test_get_land_mask(
         test_all_cubes.get_metadata_cube.assert_not_called()
 
 
-@pytest.mark.parametrize("input", ["fail string", np.array([[1, 2], [3, 4]])])
-def test_get_land_mask_input_type_errors(test_all_cubes, input):
+@pytest.mark.parametrize("inp", ["fail string", np.array([[1, 2], [3, 4]])])
+def test_get_land_mask_input_type_errors(test_all_cubes, inp):
     error_msg = re.escape(r"sftlf_cube must be an SCMCube instance")
     masker = CubeMasker(test_all_cubes)
     with pytest.raises(TypeError, match=error_msg):
-        get_land_mask(masker, test_all_cubes, sftlf_cube=input)
+        get_land_mask(masker, test_all_cubes, sftlf_cube=inp)
 
 
 def test_get_land_mask_shape_errors(test_all_cubes):

@@ -200,7 +200,8 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
         "the sftlf_cube data must be the same shape as the "
         "cube's longitude-latitude grid"
     )
-    assert array_in.shape == base_shape, shape_assert_msg
+    if array_in.shape != base_shape:
+        raise AssertionError(shape_assert_msg)
 
     return broadcast_to_shape(array_in, cube.cube.shape, dim_order)
 
