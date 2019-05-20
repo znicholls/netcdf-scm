@@ -129,7 +129,7 @@ tdata_required = pytest.mark.skipif(
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--update-expected-file",
+        "--update-expected-files",
         action="store_true",
         default=False,
         help="Overwrite expected files",
@@ -137,8 +137,8 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture
-def update_expected_file(request):
-    return request.config.getoption("--update-expected-file")
+def update_expected_files(request):
+    return request.config.getoption("--update-expected-files")
 
 
 def get_test_cube_lon():
@@ -264,21 +264,22 @@ def run_crunching_comparison(res, expected, update=False):
         If ``update`` is ``False`` and ``res`` and ``expected``
         are not identical.
     """
-    path_to_walk = expected if not update else res
-    for dirpath, dirnames, filenames in walk(path_to_walk):
-        if filenames:
-            if update:
-                path_to_check = dirpath.replace(res, expected)
-                if not path.exists(path_to_check):
-                    makedirs(path_to_check)
-
-            for f in filenames:
-                res_f = join(dirpath, f)
-                exp_f = res_f.replace(res, expected)
+    paths_to_walk = [expected, res] if not update else [res]
+    for p in paths_to_walk:
+        for dirpath, dirnames, filenames in walk(p):
+            if filenames:
                 if update:
-                    shutil.copy(res_f, exp_f)
-                else:
-                    assert filecmp.cmp(res_f, exp_f, shallow=False)
+                    path_to_check = dirpath.replace(res, expected)
+                    if not path.exists(path_to_check):
+                        makedirs(path_to_check)
+
+                for f in filenames:
+                    res_f = join(dirpath, f)
+                    exp_f = res_f.replace(res, expected)
+                    if update:
+                        shutil.copy(res_f, exp_f)
+                    else:
+                        assert filecmp.cmp(res_f, exp_f, shallow=False)
 
     if update:
         print("Updated {}".format(expected))
