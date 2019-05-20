@@ -24,15 +24,15 @@ from conftest import (
 )
 from dateutil import parser
 from iris.util import broadcast_to_shape
+from openscm.scmdataframe import ScmDataFrame
+from pandas.testing import assert_frame_equal
+
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
     MarbleCMIP5Cube,
     SCMCube,
 )
-from pandas.testing import assert_frame_equal
-
-from openscm.scmdataframe import ScmDataFrame
 
 
 class _SCMCubeIntegrationTester(object):

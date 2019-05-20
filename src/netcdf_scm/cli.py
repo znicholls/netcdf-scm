@@ -8,10 +8,10 @@ from os.path import dirname, isfile, join
 from time import gmtime, strftime
 
 import click
-import netcdf_scm
 import progressbar
-
 from openscm.scmdataframe import ScmDataFrame, df_append
+
+import netcdf_scm
 
 from .iris_cube_wrappers import (
     CMIP6Input4MIPsCube,

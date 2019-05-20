@@ -9,6 +9,7 @@ import iris
 import numpy as np
 import pandas as pd
 import pytest
+
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,

@@ -14,7 +14,6 @@ from os.path import basename, dirname, join, splitext
 import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-
 from openscm.scmdataframe import ScmDataFrame
 
 from .masks import DEFAULT_REGIONS, CubeMasker

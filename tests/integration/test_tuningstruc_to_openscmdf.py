@@ -6,12 +6,12 @@ import numpy as np
 import pandas as pd
 import pytest
 from conftest import TEST_DATA_ROOT_DIR
+from openscm.scmdataframe import ScmDataFrame
+
 from netcdf_scm.wranglers import (
     convert_scmdf_to_tuningstruc,
     convert_tuningstruc_to_scmdf,
 )
-
-from openscm.scmdataframe import ScmDataFrame
 
 TEST_DATA_TUNINGSTRUCS_DIR = join(TEST_DATA_ROOT_DIR, "tuningstrucs")
 
