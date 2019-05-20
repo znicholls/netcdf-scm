@@ -29,6 +29,7 @@ class InvalidMask(Exception):
     This error usually propogates. For example, if a child mask used in the calculation of a parent mask fails then the parent mask
     should also raise an InvalidMask exception (unless it can be satisfactorily handled).
     """
+
     pass
 
 
@@ -47,6 +48,7 @@ def invert(mask_to_invert):
     -------
     MaskFunc
     """
+
     def f(masker, cube, **kwargs):
         return ~masker.get_mask(mask_to_invert)
 
@@ -71,9 +73,18 @@ def or_masks(mask_a, mask_b):
     -------
     MaskFunc
     """
+
     def f(masker, cube, **kwargs):
-        a = mask_a(masker, cube, **kwargs) if callable(mask_a) else masker.get_mask(mask_a)
-        b = mask_b(masker, cube, **kwargs) if callable(mask_b) else masker.get_mask(mask_b)
+        a = (
+            mask_a(masker, cube, **kwargs)
+            if callable(mask_a)
+            else masker.get_mask(mask_a)
+        )
+        b = (
+            mask_b(masker, cube, **kwargs)
+            if callable(mask_b)
+            else masker.get_mask(mask_b)
+        )
         return np.logical_or(a, b)
 
     return f
@@ -88,6 +99,7 @@ def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwarg
     """
     # Lazy loaded to avoid cyclic dependency
     from .iris_cube_wrappers import SCMCube
+
     if sftlf_cube is None:
         try:
             sftlf_cube = cube.get_metadata_cube(cube.sftlf_var)
@@ -150,6 +162,7 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
     -------
     MaskFunc
     """
+
     def f(masker, cube, **kwargs):
         def mask_dim(dim, lower, upper):
             # Finds any cells where the bounds overlaps with the range (lower, upper)
@@ -158,16 +171,27 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
                 if lower % max_val > upper % max_val:
                     # Handle case where it wraps around 0
                     return ~np.array(
-                        [(lower % max_val < cell).any() or (cell < upper % max_val).any() for cell in dim.bounds]
+                        [
+                            (lower % max_val < cell).any()
+                            or (cell < upper % max_val).any()
+                            for cell in dim.bounds
+                        ]
                     )
                 else:
                     return ~np.array(
-                        [(lower % max_val < cell).any() and (cell < upper % max_val).any() for cell in dim.bounds]
+                        [
+                            (lower % max_val < cell).any()
+                            and (cell < upper % max_val).any()
+                            for cell in dim.bounds
+                        ]
                     )
 
             else:
                 return ~np.array(
-                    [(lower < cell).any() and (cell < upper).any() for cell in dim.bounds]
+                    [
+                        (lower < cell).any() and (cell < upper).any()
+                        for cell in dim.bounds
+                    ]
                 )
 
         mask_lat = mask_dim(cube.lat_dim, lower_lat, upper_lat)
@@ -182,6 +206,7 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
         mask = ~np.outer(~mask_lat, ~mask_lon)
 
         return broadcast_onto_lat_lon_grid(cube, mask)
+
     return f
 
 
@@ -212,11 +237,19 @@ MASKS = {
     "World|Southern Hemisphere": invert("World|Northern Hemisphere"),
     "World|Land": get_land_mask,
     "World|Ocean": invert("World|Land"),
-    "World|Northern Hemisphere|Land": or_masks("World|Northern Hemisphere", "World|Land"),
-    "World|Southern Hemisphere|Land": or_masks("World|Southern Hemisphere", "World|Land"),
-    "World|Northern Hemisphere|Ocean": or_masks("World|Northern Hemisphere", "World|Ocean"),
-    "World|Southern Hemisphere|Ocean": or_masks("World|Southern Hemisphere", "World|Ocean"),
-    "World|North Atlantic|Ocean": or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")
+    "World|Northern Hemisphere|Land": or_masks(
+        "World|Northern Hemisphere", "World|Land"
+    ),
+    "World|Southern Hemisphere|Land": or_masks(
+        "World|Southern Hemisphere", "World|Land"
+    ),
+    "World|Northern Hemisphere|Ocean": or_masks(
+        "World|Northern Hemisphere", "World|Ocean"
+    ),
+    "World|Southern Hemisphere|Ocean": or_masks(
+        "World|Southern Hemisphere", "World|Ocean"
+    ),
+    "World|North Atlantic|Ocean": or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean"),
 }
 
 
@@ -279,7 +312,7 @@ class CubeMasker:
                 mask = mask_func(self, self.cube, **self.kwargs)
                 self._masks[mask_name] = mask
             except KeyError:
-                raise InvalidMask('Unknown mask: {}'.format(mask_name))
+                raise InvalidMask("Unknown mask: {}".format(mask_name))
             except InvalidMask:
                 raise
 

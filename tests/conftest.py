@@ -12,7 +12,12 @@ import iris
 import cf_units as unit
 
 
-from netcdf_scm.iris_cube_wrappers import SCMCube, MarbleCMIP5Cube, CMIP6Input4MIPsCube, CMIP6OutputCube
+from netcdf_scm.iris_cube_wrappers import (
+    SCMCube,
+    MarbleCMIP5Cube,
+    CMIP6Input4MIPsCube,
+    CMIP6OutputCube,
+)
 
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test-data")
@@ -220,7 +225,10 @@ def test_cube(request):
     return create_cube(request.cls.tclass)
 
 
-@pytest.fixture(scope="function", params=[SCMCube, MarbleCMIP5Cube, CMIP6Input4MIPsCube, CMIP6OutputCube])
+@pytest.fixture(
+    scope="function",
+    params=[SCMCube, MarbleCMIP5Cube, CMIP6Input4MIPsCube, CMIP6OutputCube],
+)
 def test_all_cubes(request):
     return create_cube(request.param)
 
