@@ -110,15 +110,14 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes):
         "World|Southern Hemisphere": ~nh_mask,
     }
     expected_warn = (
-        "Land surface fraction (sftlf) data not available, only returning "
-        "global and hemispheric masks."
+        "Failed to create World|Land mask: Land surface fraction (sftlf) data not available"
     )
     with patch.dict(MASKS, {"World|Northern Hemisphere": mock_nh_mask}):
         masker = CubeMasker(test_all_cubes)
         with warnings.catch_warnings(record=True) as no_sftlf_warns:
             result = masker.get_masks(DEFAULT_REGIONS)
 
-    assert len(no_sftlf_warns) == 1
+    assert len(no_sftlf_warns) == 6
     assert str(no_sftlf_warns[0].message) == expected_warn
 
     for label, array in expected.items():
@@ -229,7 +228,7 @@ def test_get_nh_mask(test_all_cubes):
 def test_nao_mask(test_all_cubes):
     sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
     masker = CubeMasker(test_all_cubes, sftlf_cube=sftlf_cube, land_mask_threshold=50.5)
-    result = masker.get_mask("World|North Atlantic|Ocean")
+    result = masker.get_mask("World|North Atlantic Ocean")
 
     expected_base = np.array(
         [[True, True, True, False], [True, True, True, True], [True, True, True, True]]
