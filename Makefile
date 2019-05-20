@@ -69,9 +69,27 @@ $(DOCS_DIR)/build/html/index.html: $(DOCS_DIR)/source/*.py $(DOCS_DIR)/source/_t
 	cp $(LATEX_LOGO) $(LATEX_BUILD_STATIC_DIR)
 	cd $(DOCS_DIR); make html
 
+.PHONY: checks
+checks:  ## run all checks - formatting and tests (not docs yet...)
+	$(VENV_DIR)/bin/black --check --exclude _version.py --target-version py37 $(FILES_TO_FORMAT_PYTHON)
+	$(VENV_DIR)/bin/flake8 $(FILES_TO_FORMAT_PYTHON)
+	$(VENV_DIR)/bin/isort --check-only --quiet --recursive $(FILES_TO_FORMAT_PYTHON)
+	$(VENV_DIR)/bin/pytest --cov -r a --cov-report term-missing
+	$(VENV_DIR)/bin/pytest -r a --nbval $(NOTEBOOKS_DIR) --sanitize $(NOTEBOOKS_SANITIZE_FILE)
+
+.PHONY: format
+format:  ## re-format files and run any formatting tests
+	make flake8
+	make isort
+	make black
+
 .PHONY: flake8
 flake8: $(VENV_DIR)  ## check compliance with pep8
 	$(VENV_DIR)/bin/flake8 $(FILES_TO_FORMAT_PYTHON)
+
+.PHONY: isort
+isort: $(VENV_DIR)  ## format the imports in the source and tests
+	$(VENV_DIR)/bin/isort --recursive $(FILES_TO_FORMAT_PYTHON)
 
 .PHONY: black
 black: $(VENV_DIR)  ## use black to autoformat code
@@ -89,11 +107,11 @@ test-all:  ## run the testsuite and test the notebooks
 
 .PHONY: test
 test: $(VENV_DIR)  ## run the testsuite
-	$(VENV_DIR)/bin/pytest --cov -rfsxEX --cov-report term-missing
+	$(VENV_DIR)/bin/pytest --cov -r a --cov-report term-missing
 
 .PHONY: test-notebooks
 test-notebooks: $(VENV_DIR)  ## test the notebooks
-	$(VENV_DIR)/bin/pytest -rfsxEX --nbval $(NOTEBOOKS_DIR) --sanitize $(NOTEBOOKS_SANITIZE_FILE)
+	$(VENV_DIR)/bin/pytest -r a --nbval $(NOTEBOOKS_DIR) --sanitize $(NOTEBOOKS_SANITIZE_FILE)
 
 .PHONY: new-release
 new-release:  ## make a new release

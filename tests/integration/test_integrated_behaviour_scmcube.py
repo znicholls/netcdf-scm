@@ -1,40 +1,38 @@
-from os.path import join
-from unittest.mock import patch, MagicMock
+import datetime
 import re
 import warnings
-import datetime
-from dateutil import parser
+from os.path import join
+from unittest.mock import MagicMock, patch
 
-
-import pytest
-import numpy as np
-import pandas as pd
-from pandas.testing import assert_frame_equal
-import iris
-from iris.util import broadcast_to_shape
 import cf_units
 import cftime
-from openscm.scmdataframe import ScmDataFrame
-
-
-from netcdf_scm.iris_cube_wrappers import (
-    SCMCube,
-    MarbleCMIP5Cube,
-    CMIP6Input4MIPsCube,
-    CMIP6OutputCube,
-)
+import iris
+import numpy as np
+import pandas as pd
+import pytest
 from conftest import (
-    TEST_TAS_FILE,
-    TEST_SFTLF_FILE,
-    TEST_AREACELLA_FILE,
     TEST_ACCESS_CMIP5_FILE,
-    tdata_required,
-    TEST_DATA_MARBLE_CMIP5_DIR,
+    TEST_AREACELLA_FILE,
     TEST_CMIP6_HISTORICAL_CONCS_FILE,
     TEST_CMIP6_OUTPUT_FILE,
-    TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
     TEST_CMIP6_OUTPUT_FILE_1_UNIT,
+    TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
+    TEST_DATA_MARBLE_CMIP5_DIR,
+    TEST_SFTLF_FILE,
+    TEST_TAS_FILE,
+    tdata_required,
 )
+from dateutil import parser
+from iris.util import broadcast_to_shape
+from netcdf_scm.iris_cube_wrappers import (
+    CMIP6Input4MIPsCube,
+    CMIP6OutputCube,
+    MarbleCMIP5Cube,
+    SCMCube,
+)
+from pandas.testing import assert_frame_equal
+
+from openscm.scmdataframe import ScmDataFrame
 
 
 class _SCMCubeIntegrationTester(object):

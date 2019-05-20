@@ -1,25 +1,25 @@
 """Command line interface
 """
-from os import walk, makedirs, path
-from os.path import join, isfile, dirname
 import re
-import warnings
 import traceback
+import warnings
+from os import makedirs, path, walk
+from os.path import dirname, isfile, join
 from time import gmtime, strftime
 
 import click
-from openscm.scmdataframe import ScmDataFrame, df_append
-
 import netcdf_scm
-from .iris_cube_wrappers import (
-    SCMCube,
-    MarbleCMIP5Cube,
-    CMIP6Input4MIPsCube,
-    CMIP6OutputCube,
-)
-from .wranglers import convert_scmdf_to_tuningstruc
 import progressbar
 
+from openscm.scmdataframe import ScmDataFrame, df_append
+
+from .iris_cube_wrappers import (
+    CMIP6Input4MIPsCube,
+    CMIP6OutputCube,
+    MarbleCMIP5Cube,
+    SCMCube,
+)
+from .wranglers import convert_scmdf_to_tuningstruc
 
 _CUBES = {
     "Scm": SCMCube,
