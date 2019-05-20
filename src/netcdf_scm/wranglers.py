@@ -134,7 +134,7 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath, force=False):
                 '["climate_model", "model", "scenario", "variable", '
                 '"region", "unit"] combination'
             )
-            if cmdf.shape[0] != 1:
+            if cmdf.shape[0] != 1:  # pragma: no cover # emergency valve
                 raise AssertionError(error_msg)
 
             dataset["tuningdata"]["modelcodes"].append(climate_model)
