@@ -104,9 +104,7 @@ def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwarg
         try:
             sftlf_cube = cube.get_metadata_cube(cube.sftlf_var)
         except OSError:
-            warn_msg = (
-                "Land surface fraction (sftlf) data not available"
-            )
+            warn_msg = "Land surface fraction (sftlf) data not available"
             raise InvalidMask(warn_msg)
 
     if not isinstance(sftlf_cube, SCMCube):
@@ -332,6 +330,6 @@ class CubeMasker:
                 mask = self.get_mask(name)
                 masks[name] = mask
             except InvalidMask as e:
-                warnings.warn('Failed to create {} mask: {}'.format(name, str(e)))
+                warnings.warn("Failed to create {} mask: {}".format(name, str(e)))
                 pass
         return masks
