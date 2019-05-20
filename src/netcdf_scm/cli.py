@@ -80,7 +80,7 @@ def crunch_data(
     title = "NetCDF Crunching"
     output_prefix = "netcdf-scm"
     separator = "_"
-    timestamp = strftime("%Y%m%d %H%M%S", gmtime())
+    timestamp = _get_timestamp()
     out_dir = join(dst, data_sub_dir)
 
     metadata_header = (
@@ -110,9 +110,7 @@ def crunch_data(
     )
     click.echo(metadata_header)
 
-    if not path.exists(out_dir):
-        click.echo("Making output directory: {}\n".format(out_dir))
-        makedirs(out_dir)
+    _make_path_if_not_exists(out_dir)
 
     already_exist_files = []
 
@@ -121,14 +119,8 @@ def crunch_data(
     # really should use a logger here
     with warnings.catch_warnings(record=True) as recorded_warns:
         failures = []
-        format_custom_text = progressbar.FormatCustomText(
-            "Current directory :: %(curr_dir)-400s", {"curr_dir": "uninitialised"}
-        )
-        bar = progressbar.ProgressBar(
-            widgets=[progressbar.SimpleProgress(), ". ", format_custom_text],
-            max_value=len([w for w in walk(src)]),
-            prefix="Visiting directory ",
-        ).start()
+        format_custom_text = _get_format_custom_text()
+        bar = _get_progressbar(text=format_custom_text, max_value=len([w for w in walk(src)]))
         for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
             if filenames:
                 if not regexp_compiled.match(dirpath):
@@ -146,8 +138,9 @@ def crunch_data(
                             scmcube.root_dir, out_dir
                         )
                         out_filepath = join(out_filedir, out_filename)
-                        if not path.exists(out_filedir):
-                            makedirs(out_filedir)
+
+                        _make_path_if_not_exists(out_filedir)
+
                         if not force and isfile(out_filepath):
                             already_exist_files.append(out_filepath)
                             continue
@@ -164,8 +157,7 @@ def crunch_data(
                             scmcube.root_dir, out_dir
                         )
                         out_filepath = join(out_filedir, out_filename)
-                        if not path.exists(out_filedir):
-                            makedirs(out_filedir)
+                        _make_path_if_not_exists(out_filedir)
 
                         if not force and isfile(out_filepath):
                             already_exist_files.append(out_filepath)
@@ -285,7 +277,7 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
     found.
     """
     title = "NetCDF Wrangling"
-    timestamp = strftime("%Y%m%d %H%M%S", gmtime())
+    timestamp = _get_timestamp()
 
     metadata_header = (
         "{}\n"
@@ -297,6 +289,7 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
         "destination: {}\n"
         "regexp: {}\n"
         "nested: {}\n"
+        "drs: {}\n"
         "out-format: {}\n\n"
         "".format(
             title,
@@ -307,14 +300,13 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
             dst,
             regexp,
             nested,
+            drs,
             out_format,
         )
     )
     click.echo(metadata_header)
 
-    if not path.exists(dst):
-        click.echo("Making output directory: {}\n".format(dst))
-        makedirs(dst)
+    _make_path_if_not_exists(dst)
 
     regexp_compiled = re.compile(regexp)
 
@@ -382,14 +374,8 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
 def _do_wrangling(src, dst, regexp, nested, out_format, force):
     regexp_compiled = re.compile(regexp)
 
-    format_custom_text = progressbar.FormatCustomText(
-        "Current directory :: %(curr_dir)-400s", {"curr_dir": "uninitialised"}
-    )
-    bar = progressbar.ProgressBar(
-        widgets=[progressbar.SimpleProgress(), ". ", format_custom_text],
-        max_value=len([w for w in walk(src)]),
-        prefix="Visiting directory ",
-    ).start()
+    format_custom_text = _get_format_custom_text()
+    bar = _get_progressbar(text=format_custom_text, max_value=len([w for w in walk(src)]))
     already_exist_files = []
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
         if filenames:
@@ -406,8 +392,7 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
 
             if nested:
                 out_filedir = dirpath.replace(src, dst)
-                if not path.exists(out_filedir):
-                    makedirs(out_filedir)
+                _make_path_if_not_exists(out_filedir)
 
                 if out_format == "tuningstrucs":
                     out_file = join(out_filedir, "ts")
@@ -440,3 +425,28 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
             raise ValueError("Unsupported format: {}".format(out_format))
 
     return skipped_files
+
+
+def _get_timestamp():
+    return strftime("%Y%m%d %H%M%S", gmtime())
+
+
+def _make_path_if_not_exists(path_to_check):
+    if not path.exists(path_to_check):
+        click.echo("Making output directory: {}\n".format(path_to_check))
+        makedirs(path_to_check)
+
+
+def _get_format_custom_text():
+    return progressbar.FormatCustomText(
+        "Current directory :: %(curr_dir)-400s", {"curr_dir": "uninitialised"}
+    )
+
+
+def _get_progressbar(text, max_value):
+
+    return progressbar.ProgressBar(
+        widgets=[progressbar.SimpleProgress(), ". ", text],
+        max_value=max_value,
+        prefix="Visiting directory ",
+    ).start()
