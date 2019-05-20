@@ -57,8 +57,10 @@ def get_scm_cube_time_axis_in_calendar(scm_cube, calendar):
 
 def _assert_only_cube_dim_coord_is_time(scm_cube):
     assert_msg = "Should only have time coordinate here"
-    assert len(scm_cube.cube.dim_coords) == 1, assert_msg
-    assert scm_cube.cube.dim_coords[0].standard_name == "time", assert_msg
+    if len(scm_cube.cube.dim_coords) != 1:
+        raise AssertionError(assert_msg)
+    if scm_cube.cube.dim_coords[0].standard_name != "time":
+        raise AssertionError(assert_msg)
 
 
 def assert_all_time_axes_same(time_axes):

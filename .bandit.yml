@@ -1,1 +1,3 @@
+exclude_dirs:
+  - src/netcdf_scm/_version.py
 exclude: ./tests
