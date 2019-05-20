@@ -68,14 +68,18 @@ def test_convert_tuningstruc_to_scmdf(test_file_info, model):
         assert (res["model"] == model).all()
 
     for cm, v in test_file_info["climate_model_2100_values"].items():
-        rv = res.filter(
+        rv = (
+            res.filter(
                 climate_model=cm,
                 year=2100,
                 variable=tvar,
                 region=tregion,
                 scenario=tscen,
                 unit=tunit,
-            ).timeseries().values
+            )
+            .timeseries()
+            .values
+        )
         np.testing.assert_allclose(rv, v)
 
 
@@ -118,9 +122,15 @@ def test_convert_scmdf_to_tuningstruc(test_file_info, tmpdir):
     tunit = test_file_info["unit"]
     tscen = test_file_info["scenario"]
     tmodel = "iam"
-    start = convert_tuningstruc_to_scmdf(test_file, tvar, tregion, tunit, tscen, model=tmodel)
+    start = convert_tuningstruc_to_scmdf(
+        test_file, tvar, tregion, tunit, tscen, model=tmodel
+    )
 
-    expected_outfile = "{}_{}_{}_{}_{}.mat".format(tbase, tscen, tmodel, tvar, tregion).replace(" ", "_").replace("|", "_")
+    expected_outfile = (
+        "{}_{}_{}_{}_{}.mat".format(tbase, tscen, tmodel, tvar, tregion)
+        .replace(" ", "_")
+        .replace("|", "_")
+    )
     convert_scmdf_to_tuningstruc(start, tbase)
     res = convert_tuningstruc_to_scmdf(expected_outfile)
 
