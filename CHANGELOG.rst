@@ -13,6 +13,7 @@ master
 
 
 - (`#46 <https://github.com/znicholls/netcdf-scm/pull/46>`_) Fix a number of bugs in ``netcdf-scm-wrangle``'s data handling when converting to tuningstrucs
+- (`#45 <https://github.com/znicholls/netcdf-scm/pull/45>`_) Refactor the masking of regions into a module allowing for more regions to be added as needed
 
 v0.7.3
 ------
