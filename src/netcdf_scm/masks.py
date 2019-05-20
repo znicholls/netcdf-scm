@@ -217,20 +217,7 @@ def get_world_mask(masker, cube, **kwargs):
     return np.full(masker.get_mask("World|Northern Hemisphere").shape, False)
 
 
-"""
-A list of known masks
-
-This is a mapping between mask name and a MaskFunc. These MaskFunc's are called by an instance of ``CubeMasker``.
-
-A MaskFunc is a function which takes a ScmCube, CubeMasker and any additional keyword arguments. The function should return a numpy
-array of boolean's with the same dimensionality as the ScmCube. Where True values are returned, data will be masked out (excluded)
-from any calculations. The "World|Northern Hemisphere|Land" mask should be True everywhere except for land cells in the Northern 
-Hemisphere.
-
-These MaskFunc's can be composed together to create more complex functionality. For example 
-`or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")` will the return the result of an 'or' operation between a subsetted area and 
-an ocean mask.
-"""
+# Known masks
 MASKS = {
     "World": get_world_mask,
     "World|Northern Hemisphere": get_nh_mask,
@@ -263,7 +250,15 @@ class CubeMasker:
     Adding new masks
     ----------------
 
-    Additional masks can be added to the MASKS array above. The values in the ``MASKS`` array should be MaskFunc's
+    Additional masks can be added to the MASKS array above. The values in the ``MASKS`` array should be MaskFunc's. A MaskFunc is a
+    function which takes a ScmCube, CubeMasker and any additional keyword arguments. The function should return a numpy
+    array of boolean's with the same dimensionality as the ScmCube. Where True values are returned, data will be masked out (excluded)
+    from any calculations. The "World|Northern Hemisphere|Land" mask should be True everywhere except for land cells in the Northern
+    Hemisphere.
+
+    These MaskFunc's can be composed together to create more complex functionality. For example
+    `or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")` will the return the result of an 'or' operation between a subsetted area and
+    an ocean mask.
 
     Parameters
     ----------
