@@ -182,11 +182,11 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
     """Broadcast an array onto the latitude-longitude grid of ``cube``.
 
     Here, broadcasting means taking the array and 'duplicating' it so that it
-    has the same number of dimensions as the cube's underlying data. For example,
-    if our cube has a time dimension of length 3, a latitude dimension of length 4
-    and a longitude dimension of length 2 then if we are given in a 4x2 array, we
-    broadcast this onto a 3x4x2 array where each slice in the broadcasted array's
-    time dimension is identical to the input array.
+    has the same number of dimensions as the cube's underlying data.
+
+    For example, given a cube with a time dimension of length 3, a latitude dimension of length 4
+    and a longitude dimension of length 2 (shape 3x4x2) and ``array_in`` of shape 4x2, results in
+    a 3x4x2 array where each slice in the broadcasted array's time dimension is identical to ``array_in``.
     """
     lat_length = len(cube.lat_dim.points)
     lon_length = len(cube.lon_dim.points)
@@ -203,6 +203,7 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
     assert array_in.shape == base_shape, shape_assert_msg
 
     return broadcast_to_shape(array_in, cube.cube.shape, dim_order)
+
 
 def _cftime_conversion(t):
     return dt.datetime(

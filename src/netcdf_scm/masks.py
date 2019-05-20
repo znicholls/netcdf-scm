@@ -203,7 +203,8 @@ from any calculations. The "World|Northern Hemisphere|Land" mask should be True 
 Hemisphere.
 
 These MaskFunc's can be composed together to create more complex functionality. For example 
-`or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")` will return a mask consisting of an or between a subsetted area and an ocean mask.
+`or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")` will the return the result of an 'or' operation between a subsetted area and 
+an ocean mask.
 """
 MASKS = {
     "World": get_world_mask,
