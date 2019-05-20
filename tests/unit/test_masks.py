@@ -109,9 +109,7 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes):
         "World|Northern Hemisphere": nh_mask,
         "World|Southern Hemisphere": ~nh_mask,
     }
-    expected_warn = (
-        "Failed to create World|Land mask: Land surface fraction (sftlf) data not available"
-    )
+    expected_warn = "Failed to create World|Land mask: Land surface fraction (sftlf) data not available"
     with patch.dict(MASKS, {"World|Northern Hemisphere": mock_nh_mask}):
         masker = CubeMasker(test_all_cubes)
         with warnings.catch_warnings(record=True) as no_sftlf_warns:
