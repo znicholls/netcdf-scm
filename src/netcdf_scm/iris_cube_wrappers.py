@@ -830,6 +830,8 @@ class SCMCube(object):
             time_axis = _vector_cftime_conversion(time_axis)
         elif isinstance(time_axis[0], datetime):
             pass
+        else:  # pragma: no cover # emergency valve
+            raise TypeError("unrecognised time axis format: {}".format(type(time_axis[0])))
 
         # As we sometimes have to deal with long timeseries, we force the index to be
         # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
