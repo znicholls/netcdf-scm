@@ -1,5 +1,4 @@
 from click.testing import CliRunner
-
 from netcdf_scm.cli import crunch_data
 
 runner = CliRunner()

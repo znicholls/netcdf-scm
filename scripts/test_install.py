@@ -5,7 +5,6 @@ Thanks https://stackoverflow.com/a/25562415/10473080
 import importlib
 import pkgutil
 
-
 import netcdf_scm
 
 

@@ -11,8 +11,8 @@ import struct
 import sys
 import time
 import zlib
-
-from collections.abc import Sequence, Mapping
+from collections.abc import Mapping, Sequence
+from io import BytesIO
 from itertools import chain, tee
 
 try:
@@ -23,7 +23,6 @@ except ImportError:
     izip = zip
     basestring = str
     ispy2 = False
-from io import BytesIO
 
 
 # encode a string to bytes and vice versa
