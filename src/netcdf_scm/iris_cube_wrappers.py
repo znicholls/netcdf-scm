@@ -828,15 +828,8 @@ class SCMCube(object):
                     "of time between dates".format(out_calendar)
                 )
             time_axis = _vector_cftime_conversion(time_axis)
-        elif isinstance(time_axis[0], datetime):
-            pass
-        elif isinstance(time_axis[0], int):
-            # TODO: put in openscm
-            warnings.warn("Integer time axis will be put on 1st Jan of each year")
-        elif isinstance(time_axis[0], float):
-            pass
-        else:  # pragma: no cover # emergency valve
-            raise TypeError("unrecognised time axis format: {}".format(type(time_axis[0])))
+        else:
+            pass  # leave openscm to handle from here
 
         # As we sometimes have to deal with long timeseries, we force the index to be
         # pd.Index and not pd.DatetimeIndex. We can't use DatetimeIndex because of a
