@@ -115,8 +115,7 @@ def test_wrangling_force(tmpdir):
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_openscm_csvs,
-        [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f"],
+        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f"]
     )
     assert result.exit_code == 0
 
@@ -141,8 +140,7 @@ def test_wrangling_force(tmpdir):
     assert skip_str_file in result_skip.output
 
     result_force = runner.invoke(
-        wrangle_openscm_csvs,
-        [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f"],
+        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f"]
     )
     assert result_force.exit_code == 0
     assert skip_str_header in result_force.output

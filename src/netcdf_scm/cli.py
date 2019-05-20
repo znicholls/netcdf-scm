@@ -66,9 +66,7 @@ _CUBES = {
     default=False,
     show_default=True,
 )
-def crunch_data(
-    src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, force
-):
+def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, force):
     """
     Crunch data in ``src`` to OpenSCM csv's in ``dst``.
 
@@ -120,7 +118,9 @@ def crunch_data(
     with warnings.catch_warnings(record=True) as recorded_warns:
         failures = []
         format_custom_text = _get_format_custom_text()
-        bar = _get_progressbar(text=format_custom_text, max_value=len([w for w in walk(src)]))
+        bar = _get_progressbar(
+            text=format_custom_text, max_value=len([w for w in walk(src)])
+        )
         for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
             if filenames:
                 if not regexp_compiled.match(dirpath):
@@ -312,9 +312,7 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
 
     already_exist_files = []
     if nested:
-        here_skipped = _do_wrangling(
-            src, dst, regexp, nested, out_format, force
-        )
+        here_skipped = _do_wrangling(src, dst, regexp, nested, out_format, force)
         if here_skipped:
             already_exist_files += here_skipped
     else:
@@ -375,7 +373,9 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
     regexp_compiled = re.compile(regexp)
 
     format_custom_text = _get_format_custom_text()
-    bar = _get_progressbar(text=format_custom_text, max_value=len([w for w in walk(src)]))
+    bar = _get_progressbar(
+        text=format_custom_text, max_value=len([w for w in walk(src)])
+    )
     already_exist_files = []
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
         if filenames:

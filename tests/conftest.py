@@ -133,7 +133,7 @@ def pytest_addoption(parser):
         action="store_true",
         default=False,
         help="Overwrite expected files",
-)
+    )
 
 
 @pytest.fixture
