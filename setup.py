@@ -43,13 +43,14 @@ ENTRY_POINTS = {
 REQUIREMENTS_INSTALL = [
     "numpy",
     "pandas",
+    "pyam-iamc>=0.2.0",
     "python-dateutil",
     "progressbar2",
     "openscm>=0.1.0a",
     "click",
 ]
 REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0"]
-REQUIREMENTS_NOTEBOOKS = ["pyam-iamc>=0.2.0", "notebook", "nbval", "expectexception"]
+REQUIREMENTS_NOTEBOOKS = ["notebook", "nbval", "expectexception"]
 REQUIREMENTS_DOCS = ["sphinx>=1.4", "sphinx_rtd_theme", "sphinx-click"]
 REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
 requirements_dev = [
