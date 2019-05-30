@@ -32,23 +32,24 @@ _CUBES = {
 }
 
 
-def init_logging(params, out_filename=None, **kwargs):
+def init_logging(params, out_filename=None, level=None):
     """
     Set up the root logger
 
-    The logger has a number of
-    * All WARNING messages and greater are written to stderr
-    * If an ``out_filename`` is provided all recorded log messages are written to disk
+    All INFO messages and greater are written to stderr
+    If an ``out_filename`` is provided, all recorded log messages are also written to
+    disk.
+
     Parameters
     ----------
     params : list
         A list of key values to write at the start of the log
+
     out_filename : str
         Name of the log file which is written to disk
 
-    Returns
-    -------
-
+    level : int
+        If not `None`, sets the level of the root logger
     """
     handlers = []
     if out_filename:
@@ -67,11 +68,11 @@ def init_logging(params, out_filename=None, **kwargs):
         if h.formatter is None:
             h.setFormatter(fmt)
         root.addHandler(h)
-    level = kwargs.pop("level", None)
+
     if level is not None:
         root.setLevel(level)
-    logging.captureWarnings(True)
 
+    logging.captureWarnings(True)
     logger.info("netcdf-scm: {}".format(netcdf_scm.__version__))
     for k, v in params:
         logger.info("{}: {}".format(k, v))
