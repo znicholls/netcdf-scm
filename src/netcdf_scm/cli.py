@@ -122,9 +122,9 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
         logger.debug('Entering '.format(dirpath))
         if filenames:
-            logger.info('Attempting to process: {}'.format(filenames))
             if not regexp_compiled.match(dirpath):
                 continue
+            logger.info('Attempting to process: {}'.format(filenames))
             format_custom_text.update_mapping(curr_dir=dirpath)
             bar.update(i)
             scmcube = _CUBES[cube_type]()
@@ -152,7 +152,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
                 _make_path_if_not_exists(out_filedir)
 
                 if not force and isfile(out_filepath):
-                    logger.info('{} already exists'.format(out_filepath))
+                    logger.info('Skipped (already exist, not overwriting) {}'.format(out_filepath))
                     continue
                 results = scmcube.get_scm_timeseries(
                     land_mask_threshold=land_mask_threshold
