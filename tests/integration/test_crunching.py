@@ -6,15 +6,17 @@ import pandas as pd
 from click.testing import CliRunner
 from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
 from openscm.scmdataframe import ScmDataFrame
-
+from logging import INFO
 import netcdf_scm
 from netcdf_scm.cli import crunch_data
 
 
-def test_crunching(tmpdir):
+def test_crunching(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*tas.*"
+
+    caplog.set_level(INFO)
 
     runner = CliRunner()
     result = runner.invoke(
@@ -30,8 +32,8 @@ def test_crunching(tmpdir):
         ],
     )
     assert result.exit_code == 0
-    assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
-    assert "Making output directory:" in result.output
+    assert caplog.messages[0] == "netcdf-scm: {}".format(netcdf_scm.__version__)
+    assert "Making output directory: {}/netcdf-scm-crunched".format(OUTPUT_DIR) in caplog.messages
 
     THRESHOLD_PERCENTAGE_DIFF = 10 ** -1
     files_found = 0

@@ -4,6 +4,7 @@ These classes automate handling of a number of netCDF processing steps.
 For example, finding surface land fraction files, applying masks to data and
 returning timeseries in key regions for simple climate models.
 """
+import logging
 import os
 import re
 import traceback
@@ -40,6 +41,8 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from .errors import raise_no_iris_warning
 
     raise_no_iris_warning()
+
+logger = logging.getLogger(__name__)
 
 
 class SCMCube(object):
@@ -188,6 +191,8 @@ class SCMCube(object):
         return self.cube.coord_dims(self.time_name)[0]
 
     def _load_cube(self, filepath, constraint=None):
+        logger.info('loading cube {}'.format(filepath))
+        # Raises Warning and Exceptions
         self.cube = iris.load_cube(filepath, constraint=constraint)
         self._check_cube()
 
@@ -207,7 +212,7 @@ class SCMCube(object):
                 "units to 'days since 1-1-1'. If you want other behaviour, you will "
                 "need to use another package."
             )
-            warnings.warn(warn_msg)
+            logger.warning(warn_msg)
             self._adjust_gregorian_year_zero_units()
 
     def _adjust_gregorian_year_zero_units(self):
@@ -215,8 +220,8 @@ class SCMCube(object):
         year_zero_cube_time_dim = self.time_dim
 
         gregorian_year_zero_cube = (
-            year_zero_cube_time_dim.units.calendar == "gregorian"
-        ) and str(year_zero_cube_time_dim.units).startswith("days since 0-1-1")
+                                           year_zero_cube_time_dim.units.calendar == "gregorian"
+                                   ) and str(year_zero_cube_time_dim.units).startswith("days since 0-1-1")
         if not gregorian_year_zero_cube:  # pragma: no cover # emergency valve
             raise AssertionError("This function is not setup for other cases")
 
@@ -457,6 +462,8 @@ class SCMCube(object):
             filepath of the file to load and the variable constraint to use.
         """
         with warnings.catch_warnings(record=True) as w:
+            # iris v2.2.0 under py3.7 raises a DeprecationWarning
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
             self._load_cube(
                 self.get_filepath_from_load_data_from_identifiers_args(**kwargs),
                 self.get_variable_constraint_from_load_data_from_identifiers_args(
@@ -474,15 +481,9 @@ class SCMCube(object):
                 try:
                     self._add_areacella_measure()
                 except Exception:
-                    custom_warn = (
-                        "Tried to add areacella cube, failed as shown:\n"
-                        + traceback.format_exc()
-                    )
-                    warnings.warn(custom_warn)
-                    warn_message = "\n\nareacella warning:\n" + str(warn.message)
-                    warnings.warn(warn_message)
+                    logger.exception(str(warn.message) + ". Tried to add areacella cube but another exception was raised:")
             else:
-                warnings.warn(warn.message)
+                logger.warning(warn.message)
 
     def _add_areacella_measure(self):
         areacella_cube = self.get_metadata_cube(self.areacella_var).cube
@@ -604,7 +605,7 @@ class SCMCube(object):
         raise NotImplementedError()
 
     def get_scm_timeseries(
-        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
+            self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
     ):
         """Get SCM relevant timeseries from ``self``.
 
@@ -638,7 +639,7 @@ class SCMCube(object):
         return self._convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
     def get_scm_timeseries_cubes(
-        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
+            self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
     ):
         """Get SCM relevant cubes from the ``self``.
 
@@ -712,29 +713,24 @@ class SCMCube(object):
         return masker.get_masks(DEFAULT_REGIONS)
 
     def _get_area_weights(self, areacella_scmcube=None):
-        use_self_area_weights = True
         if areacella_scmcube is None:
-            with warnings.catch_warnings(record=True) as w:
-                areacella_scmcube = self._get_areacella_scmcube()
-            if w:
-                use_self_area_weights = False
-                for warn in w:
-                    warnings.warn(warn.message)
+            # Try to load areacella
+            areacella_scmcube = self._get_areacella_scmcube()
 
-        if use_self_area_weights:
+        if areacella_scmcube is not None:
             try:
                 areacella_cube = areacella_scmcube.cube
                 return broadcast_onto_lat_lon_grid(self, areacella_cube.data)
-            except AssertionError as exc:
-                warnings.warn(str(exc))
+            except AssertionError:
+                logger.exception('Could not broadcast onto lat lon grid')
 
-        warnings.warn(
+        logger.warning(
             "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
         )
         try:
             return iris.analysis.cartography.area_weights(self.cube)
         except ValueError:
-            warnings.warn("Guessing latitude and longitude bounds")
+            logger.warning("Guessing latitude and longitude bounds")
             self.cube.coord("latitude").guess_bounds()
             self.cube.coord("longitude").guess_bounds()
             return iris.analysis.cartography.area_weights(self.cube)
@@ -743,22 +739,16 @@ class SCMCube(object):
         try:
             areacella_scmcube = self.get_metadata_cube(self.areacella_var)
             if not isinstance(areacella_scmcube.cube, iris.cube.Cube):
-                warnings.warn(
+                logger.warning(
                     "areacella cube which was found has cube attribute which isn't an iris cube"
                 )
             else:
                 return areacella_scmcube
-        except iris.exceptions.ConstraintMismatchError as exc:
-            warnings.warn(str(exc))
-        except AttributeError as exc:
-            warnings.warn(str(exc))
-        except OSError as exc:
-            warnings.warn(str(exc))
-        except NotImplementedError as exc:
-            warnings.warn(str(exc))
+        except (iris.exceptions.ConstraintMismatchError,AttributeError, OSError, NotImplementedError) as exc:
+            logger.exception('Could not calculate areacella')
 
     def _convert_scm_timeseries_cubes_to_openscmdata(
-        self, scm_timeseries_cubes, out_calendar=None
+            self, scm_timeseries_cubes, out_calendar=None
     ):
         data = []
         regions = []
@@ -800,14 +790,14 @@ class SCMCube(object):
                 "Could not determine appropriate climate_model scenario combination, "
                 "filling with 'unspecified'"
             )
-            warnings.warn(warn_msg)
+            logger.warning(warn_msg)
             climate_model = "unspecified"
             scenario = "unspecified"
 
         return climate_model, scenario
 
     def _get_openscmdata_time_axis_and_calendar(
-        self, scm_timeseries_cubes, out_calendar
+            self, scm_timeseries_cubes, out_calendar
     ):
         if out_calendar is None:
             out_calendar = self.cube.coords("time")[0].units.calendar
@@ -822,7 +812,7 @@ class SCMCube(object):
         if isinstance(time_axis[0], cftime.datetime):
             # inspired by xarray, should make a PR back in there...
             if out_calendar not in {"standard", "gregorian", "proleptic_gregorian"}:
-                warnings.warn(
+                logger.warning(
                     "Performing lazy conversion to datetime for calendar: {}. This "
                     "may cause subtle errors in operations that depend on the length "
                     "of time between dates".format(out_calendar)
@@ -1022,16 +1012,16 @@ class MarbleCMIP5Cube(_CMIPCube):
         }
 
     def get_filepath_from_load_data_from_identifiers_args(
-        self,
-        root_dir=".",
-        activity="activity",
-        experiment="experiment",
-        modeling_realm="modeling-realm",
-        variable_name="variable-name",
-        model="model",
-        ensemble_member="ensemble-member",
-        time_period=None,
-        file_ext=".nc",
+            self,
+            root_dir=".",
+            activity="activity",
+            experiment="experiment",
+            modeling_realm="modeling-realm",
+            variable_name="variable-name",
+            model="model",
+            ensemble_member="ensemble-member",
+            time_period=None,
+            file_ext=".nc",
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
@@ -1110,7 +1100,7 @@ class MarbleCMIP5Cube(_CMIPCube):
         return "_".join(bits_to_join) + self.file_ext
 
     def get_variable_constraint_from_load_data_from_identifiers_args(
-        self, variable_name="tas", **kwargs
+            self, variable_name="tas", **kwargs
     ):
         """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
 
@@ -1254,21 +1244,21 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         }
 
     def get_filepath_from_load_data_from_identifiers_args(
-        self,
-        root_dir=".",
-        activity_id="activity-id",
-        mip_era="mip-era",
-        target_mip="target-mip",
-        institution_id="institution-id",
-        source_id="source-id-including-institution-id",
-        realm="realm",
-        frequency="frequency",
-        variable_id="variable-id",
-        grid_label="grid-label",
-        version="version",
-        dataset_category="dataset-category",
-        time_range=None,
-        file_ext="file-ext",
+            self,
+            root_dir=".",
+            activity_id="activity-id",
+            mip_era="mip-era",
+            target_mip="target-mip",
+            institution_id="institution-id",
+            source_id="source-id-including-institution-id",
+            realm="realm",
+            frequency="frequency",
+            variable_id="variable-id",
+            grid_label="grid-label",
+            version="version",
+            dataset_category="dataset-category",
+            time_range=None,
+            file_ext="file-ext",
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
@@ -1345,7 +1335,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         return join(self._get_data_directory(), self._get_data_filename())
 
     def get_variable_constraint_from_load_data_from_identifiers_args(
-        self, variable_id="tas", **kwargs
+            self, variable_id="tas", **kwargs
     ):
         """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
 
@@ -1544,20 +1534,20 @@ class CMIP6OutputCube(_CMIPCube):
         }
 
     def get_filepath_from_load_data_from_identifiers_args(
-        self,
-        root_dir=".",
-        mip_era="mip-era",
-        activity_id="activity-id",
-        institution_id="institution-id",
-        source_id="source-id",
-        experiment_id="experiment-id",
-        member_id="member-id",
-        table_id="table-id",
-        variable_id="variable-id",
-        grid_label="grid-label",
-        version="version",
-        time_range=None,
-        file_ext="file-ext",
+            self,
+            root_dir=".",
+            mip_era="mip-era",
+            activity_id="activity-id",
+            institution_id="institution-id",
+            source_id="source-id",
+            experiment_id="experiment-id",
+            member_id="member-id",
+            table_id="table-id",
+            variable_id="variable-id",
+            grid_label="grid-label",
+            version="version",
+            time_range=None,
+            file_ext="file-ext",
     ):
         """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
@@ -1625,7 +1615,7 @@ class CMIP6OutputCube(_CMIPCube):
         return join(self._get_data_directory(), self._get_data_filename())
 
     def get_variable_constraint_from_load_data_from_identifiers_args(
-        self, variable_id="tas", **kwargs
+            self, variable_id="tas", **kwargs
     ):
         """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
 
@@ -1741,7 +1731,7 @@ class CMIP6OutputCube(_CMIPCube):
                 "Could not determine appropriate climate_model scenario combination, "
                 "filling with 'unspecified'"
             )
-            warnings.warn(warn_msg)
+            logger.warning(warn_msg)
             climate_model = "unspecified"
             scenario = "unspecified"
 

@@ -3,11 +3,13 @@
 These masks are applied to data fields to exclude unwanted parts of the globe. The convention used here is the same as numpy masked
 arrays, where ``True`` values are excluded.
 """
-import warnings
+import logging
 
 import numpy as np
 
 from netcdf_scm.utils import broadcast_onto_lat_lon_grid
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_REGIONS = (
     "World",
@@ -330,6 +332,5 @@ class CubeMasker:
                 mask = self.get_mask(name)
                 masks[name] = mask
             except InvalidMask as e:
-                warnings.warn("Failed to create {} mask: {}".format(name, str(e)))
-                pass
+                logger.warning("Failed to create {} mask: {}".format(name, str(e)))
         return masks

@@ -6,6 +6,7 @@ import warnings
 from os import makedirs, path, walk
 from os.path import dirname, isfile, join
 from time import gmtime, strftime
+import logging
 
 import click
 import progressbar
@@ -21,12 +22,23 @@ from .iris_cube_wrappers import (
 )
 from .wranglers import convert_scmdf_to_tuningstruc
 
+logger = logging.getLogger('netcdf-scm')
+
 _CUBES = {
     "Scm": SCMCube,
     "MarbleCMIP5": MarbleCMIP5Cube,
     "CMIP6Input4MIPs": CMIP6Input4MIPsCube,
     "CMIP6Output": CMIP6OutputCube,
 }
+
+
+def init_logging(params, out_filename=None):
+    logging.basicConfig(level='INFO')
+    logging.captureWarnings(True)
+
+    logger.info('netcdf-scm: {}'.format(netcdf_scm.__version__))
+    for k, v in params:
+        logger.info('{}: {}'.format(k, v))
 
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})
@@ -75,160 +87,86 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
 
     Failures and warnings are recorded and written into a text file in ``dst``.
     """
-    title = "NetCDF Crunching"
+
     output_prefix = "netcdf-scm"
     separator = "_"
     timestamp = _get_timestamp()
     out_dir = join(dst, data_sub_dir)
 
-    metadata_header = (
-        "{}\n"
-        "{}\n"
-        "NetCDF SCM version: {}\n"
-        "\n"
-        "time: {}\n"
-        "cube-type: {}\n"
-        "source: {}\n"
-        "destination: {}\n"
-        "regexp: {}\n"
-        "land-mask-threshold: {}\n"
-        "force: {}\n\n"
-        "".format(
-            title,
-            "=" * len(title),
-            netcdf_scm.__version__,
-            timestamp,
-            cube_type,
-            src,
-            out_dir,
-            regexp,
-            land_mask_threshold,
-            force,
-        )
-    )
-    click.echo(metadata_header)
-
-    _make_path_if_not_exists(out_dir)
-
-    already_exist_files = []
-
-    regexp_compiled = re.compile(regexp)
-
-    # really should use a logger here
-    with warnings.catch_warnings(record=True) as recorded_warns:
-        failures = []
-        format_custom_text = _get_format_custom_text()
-        bar = _get_progressbar(
-            text=format_custom_text, max_value=len([w for w in walk(src)])
-        )
-        for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-            if filenames:
-                if not regexp_compiled.match(dirpath):
-                    continue
-                format_custom_text.update_mapping(curr_dir=dirpath)
-                bar.update(i)
-                scmcube = _CUBES[cube_type]()
-                try:
-                    if len(filenames) == 1:
-                        out_filename = separator.join(
-                            [output_prefix, filenames[0].replace(".nc", ".csv")]
-                        )
-                        scmcube.load_data_from_path(join(dirpath, filenames[0]))
-                        out_filedir = scmcube._get_data_directory().replace(
-                            scmcube.root_dir, out_dir
-                        )
-                        out_filepath = join(out_filedir, out_filename)
-
-                        _make_path_if_not_exists(out_filedir)
-
-                        if not force and isfile(out_filepath):
-                            already_exist_files.append(out_filepath)
-                            continue
-                    else:
-                        scmcube.load_data_in_directory(dirpath)
-                        out_filename = separator.join(
-                            [
-                                output_prefix,
-                                scmcube._get_data_filename().replace(".nc", ".csv"),
-                            ]
-                        )
-
-                        out_filedir = scmcube._get_data_directory().replace(
-                            scmcube.root_dir, out_dir
-                        )
-                        out_filepath = join(out_filedir, out_filename)
-                        _make_path_if_not_exists(out_filedir)
-
-                        if not force and isfile(out_filepath):
-                            already_exist_files.append(out_filepath)
-                            continue
-
-                    results = scmcube.get_scm_timeseries(
-                        land_mask_threshold=land_mask_threshold
-                    )
-                    results.to_csv(out_filepath)
-
-                except Exception:
-                    header = "Exception"
-                    exc_string = (
-                        header
-                        + "\n"
-                        + "-" * len(header)
-                        + "\n"
-                        + traceback.format_exc()
-                    )
-
-                    # ideally would write to a logger here
-                    failures.append("{}\n{}\n{}".format(dirpath, filenames, exc_string))
-                    continue
-
-        bar.finish()
-
-    header_underline = "="
-    msg_underline = "-"
-
-    warnings_together = "\n\n{}\n\n".format(15 * msg_underline).join(
-        [str(rw.message) for rw in recorded_warns]
-    )
-
-    warnings_header = "Warnings"
-    warnings_string = "{}\n{}\n{}".format(
-        warnings_header, len(warnings_header) * header_underline, warnings_together
-    )
-
-    failures_header = "Failures"
-    failures_string = "{}\n{}\n{}".format(
-        failures_header,
-        len(failures_header) * header_underline,
-        msg_underline.join(failures),
-    )
-
-    already_exist_header = "Skipped (already exist, not overwriting)"
-    if already_exist_files:
-        already_exist_files_string = "- {}\n".format("\n- ".join(already_exist_files))
-    else:
-        already_exist_files_string = ""
-    already_exist_string = "{}\n{}\n{}".format(
-        already_exist_header,
-        len(already_exist_header) * header_underline,
-        already_exist_files_string,
-    )
-
-    output_string = "\n\n{}\n\n{}\n\n{}\n\n{}".format(
-        metadata_header, failures_string, warnings_string, already_exist_string
-    )
-    click.echo(output_string)
-    summary_file = join(
+    log_params = [
+        ('cube-type', cube_type),
+        ('source', src),
+        ('destination', out_dir),
+        ('regexp', regexp),
+        ('land_mask_threshold', land_mask_threshold),
+        ('force', force),
+    ]
+    summary_filename = join(
         out_dir,
         "{}-failures-and-warnings.txt".format(
             timestamp.replace(" ", "_").replace(":", "")
         ),
     )
-    with open(summary_file, "w") as ef:
-        ef.write(output_string)
+    init_logging(log_params, out_filename=summary_filename)
+
+    _make_path_if_not_exists(out_dir)
+
+    failures = False
+
+    regexp_compiled = re.compile(regexp)
+
+    format_custom_text = _get_format_custom_text()
+    bar = _get_progressbar(
+        text=format_custom_text, max_value=len([w for w in walk(src)])
+    )
+    for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
+        logger.debug('Entering '.format(dirpath))
+        if filenames:
+            logger.info('Attempting to process: {}'.format(filenames))
+            if not regexp_compiled.match(dirpath):
+                continue
+            format_custom_text.update_mapping(curr_dir=dirpath)
+            bar.update(i)
+            scmcube = _CUBES[cube_type]()
+            try:
+                if len(filenames) == 1:
+                    out_filename = separator.join(
+                        [output_prefix, filenames[0].replace(".nc", ".csv")]
+                    )
+                    scmcube.load_data_from_path(join(dirpath, filenames[0]))
+
+                else:
+                    scmcube.load_data_in_directory(dirpath)
+                    out_filename = separator.join(
+                        [
+                            output_prefix,
+                            scmcube._get_data_filename().replace(".nc", ".csv"),
+                        ]
+                    )
+
+                out_filedir = scmcube._get_data_directory().replace(
+                    scmcube.root_dir, out_dir
+                )
+                out_filepath = join(out_filedir, out_filename)
+
+                _make_path_if_not_exists(out_filedir)
+
+                if not force and isfile(out_filepath):
+                    logger.info('{} already exists'.format(out_filepath))
+                    continue
+                results = scmcube.get_scm_timeseries(
+                    land_mask_threshold=land_mask_threshold
+                )
+                results.to_csv(out_filepath)
+
+            except Exception:
+                logger.exception('Failed to process: {}'.format(filenames))
+                failures = True
+
+        bar.finish()
 
     if failures:
-        raise click.ClickException("Failures were found")
+        raise click.ClickException("Some files failed to process. See {} for more details".format(out_filename))
 
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})
@@ -433,7 +371,7 @@ def _get_timestamp():
 
 def _make_path_if_not_exists(path_to_check):
     if not path.exists(path_to_check):
-        click.echo("Making output directory: {}\n".format(path_to_check))
+        logger.info("Making output directory: {}".format(path_to_check))
         makedirs(path_to_check)
 
 
