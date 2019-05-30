@@ -99,18 +99,13 @@ def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwarg
     -------
     np.ndarray
     """
-    # Lazy loaded to avoid cyclic dependency
-    from .iris_cube_wrappers import SCMCube
-
+    warn_msg = "Land surface fraction (sftlf) data not available"
+    try:
+        sftlf_cube = cube.get_metadata_cube(cube.sftlf_var, cube=sftlf_cube)
+    except OSError:
+        raise InvalidMask(warn_msg)
     if sftlf_cube is None:
-        try:
-            sftlf_cube = cube.get_metadata_cube(cube.sftlf_var)
-        except OSError:
-            warn_msg = "Land surface fraction (sftlf) data not available"
-            raise InvalidMask(warn_msg)
-
-    if not isinstance(sftlf_cube, SCMCube):
-        raise TypeError("sftlf_cube must be an SCMCube instance")
+        raise InvalidMask(warn_msg)
 
     sftlf_data = sftlf_cube.cube.data
 
