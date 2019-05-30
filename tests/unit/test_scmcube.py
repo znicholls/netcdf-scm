@@ -8,16 +8,16 @@ import iris
 import numpy as np
 import pandas as pd
 import pytest
+from iris.exceptions import ConstraintMismatchError
+from iris.util import broadcast_to_shape
+from pandas.testing import assert_frame_equal, assert_index_equal
+
 from conftest import (
     TEST_AREACELLA_FILE,
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_TAS_FILE,
     tdata_required,
 )
-from iris.exceptions import ConstraintMismatchError
-from iris.util import broadcast_to_shape
-from pandas.testing import assert_frame_equal, assert_index_equal
-
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -30,7 +30,7 @@ class TestSCMCube(object):
     tclass = SCMCube
 
     def run_test_of_method_to_overload(
-        self, test_cube, method_to_overload, junk_args={}
+            self, test_cube, method_to_overload, junk_args={}
     ):
         if type(test_cube) is SCMCube:
             with pytest.raises(NotImplementedError):
@@ -93,7 +93,7 @@ class TestSCMCube(object):
         test_cube._process_load_data_from_identifiers_warnings.assert_not_called()
         test_cube._check_cube.assert_called()
 
-    def test_process_load_data_from_identifiers_warnings(self, test_cube):
+    def test_process_load_data_from_identifiers_warnings(self, test_cube, caplog):
         warn_1 = "warning 1"
         warn_2 = "warning 2"
         warn_area = (
@@ -103,29 +103,34 @@ class TestSCMCube(object):
             warnings.warn(warn_1)
             warnings.warn(warn_2)
 
-        with warnings.catch_warnings(record=True) as mock_warn_no_area_result:
-            test_cube._process_load_data_from_identifiers_warnings(mock_warn_no_area)
+        caplog.clear()
+        test_cube._process_load_data_from_identifiers_warnings(mock_warn_no_area)
 
-        assert len(mock_warn_no_area_result) == 2  # just rethrow warnings
-        assert str(mock_warn_no_area_result[0].message) == warn_1
-        assert str(mock_warn_no_area_result[1].message) == warn_2
+        assert len(caplog.messages) == 2  # just rethrow warnings
+        assert caplog.messages[0] == warn_1
+        assert caplog.messages[1] == warn_2
+        for record in caplog.records:
+            assert record.levelname == 'WARNING'
 
         with warnings.catch_warnings(record=True) as mock_warn_area:
             warnings.warn(warn_1)
             warnings.warn(warn_2)
             warnings.warn(warn_area)
 
-        with warnings.catch_warnings(record=True) as mock_warn_area_result:
-            test_cube._process_load_data_from_identifiers_warnings(mock_warn_area)
+        caplog.clear()
+        test_cube._process_load_data_from_identifiers_warnings(mock_warn_area)
 
-        assert len(mock_warn_area_result) == 4  # warnings plus extra one
-        assert str(mock_warn_area_result[0].message) == warn_1
-        assert str(mock_warn_area_result[1].message) == warn_2
-        assert "Tried to add areacella cube, failed" in str(
-            mock_warn_area_result[2].message
-        )
+        assert len(caplog.messages) == 3  # warnings plus extra one exception
+        assert caplog.messages[0] == warn_1
+        assert caplog.records[0].levelname == 'WARNING'
+        assert caplog.messages[1] == warn_2
+        assert caplog.records[1].levelname == 'WARNING'
+        assert caplog.records[2].levelname == 'ERROR'
         assert "Missing CF-netCDF measure variable" in str(
-            mock_warn_area_result[3].message
+            caplog.records[2].message
+        )
+        assert "Tried to add areacella cube but another exception was raised:" in str(
+            caplog.records[2].message
         )
 
     @tdata_required
@@ -179,7 +184,7 @@ class TestSCMCube(object):
         )
 
     def test_get_variable_constraint_from_load_data_from_identifiers_args(
-        self, test_cube
+            self, test_cube
     ):
         self.run_test_of_method_to_overload(
             test_cube, "get_variable_constraint_from_load_data_from_identifiers_args"
@@ -256,18 +261,18 @@ class TestSCMCube(object):
 
         assert_frame_equal(result, test_conversion_return)
 
-    def test_get_climate_model_scenario(self, test_cube):
+    def test_get_climate_model_scenario(self, test_cube, caplog):
         warn_msg = (
             "Could not determine appropriate climate_model scenario combination, "
             "filling with 'unspecified'"
         )
-        with warnings.catch_warnings(record=True) as recorded_warnings:
-            model, scenario = test_cube._get_climate_model_scenario()
+        model, scenario = test_cube._get_climate_model_scenario()
 
         assert model == "unspecified"
         assert scenario == "unspecified"
-        assert len(recorded_warnings) == 1
-        assert str(recorded_warnings[0].message) == warn_msg
+        assert len(caplog.messages) == 1
+        assert str(caplog.messages[0]) == warn_msg
+
 
         tmodel = "ABCD"
         tactivity = "rcpmip"
@@ -348,7 +353,7 @@ class TestSCMCube(object):
     @pytest.mark.parametrize("input_format", ["scmcube", None])
     @pytest.mark.parametrize("areacella_var", ["areacella", "area_other"])
     def test_get_area_weights(
-        self, test_cube, test_sftlf_cube, areacella_var, input_format, transpose
+            self, test_cube, test_sftlf_cube, areacella_var, input_format, transpose
     ):
         test_cube.areacella_var = areacella_var
 
@@ -380,7 +385,7 @@ class TestSCMCube(object):
     )
     @pytest.mark.parametrize("areacella_var", ["areacella", "area_other"])
     def test_get_area_weights_workarounds(
-        self, test_cube, test_sftlf_cube, areacella_var, areacella
+            self, test_cube, test_sftlf_cube, areacella_var, areacella, caplog
     ):
         test_cube.areacella_var = areacella_var
 
@@ -410,8 +415,12 @@ class TestSCMCube(object):
             no_file_msg = "No file message here"
             test_cube.get_metadata_cube = MagicMock(side_effect=OSError(no_file_msg))
 
+        caplog.clear()
+
+        # Function under test
         with pytest.warns(None) as record:
             result = test_cube._get_area_weights()
+
         test_cube.get_metadata_cube.assert_called_with(areacella_var)
 
         fallback_warn = re.escape(
@@ -420,25 +429,33 @@ class TestSCMCube(object):
         )
         radius_warn = re.escape("Using DEFAULT_SPHERICAL_EARTH_RADIUS.")
         if areacella == "iris_error":
-            specific_warn = re.escape(iris_error_msg)
+            specific_warn = 'Could not calculate areacella'
+            exc_info = re.escape(iris_error_msg)
         elif areacella == "misshaped":
-            specific_warn = re.escape(
+            specific_warn = 'Could not broadcast onto lat lon grid'
+            exc_info = re.escape(
                 "the sftlf_cube data must be the same shape as the cube's "
                 "longitude-latitude grid"
             )
+            exc_info = None
         elif areacella == "not a cube":
-            specific_warn = re.escape("'str' object has no attribute 'cube'")
+            specific_warn = 'Could not calculate areacella'
+            exc_info = re.escape("'str' object has no attribute 'cube'")
         elif areacella == "cube attr not a cube":
             specific_warn = re.escape(
                 "areacella cube which was found has cube attribute which isn't an iris cube"
             )
+            exc_info = None
         elif areacella == "no file":
-            specific_warn = re.escape(no_file_msg)
+            specific_warn = 'Could not calculate areacella'
+            exc_info = re.escape(no_file_msg)
 
-        assert len(record) == 3
-        assert re.match(radius_warn, str(record[2].message))
-        assert re.match(fallback_warn, str(record[1].message))
-        assert re.match(specific_warn, str(record[0].message))
+        assert len(caplog.messages) == 2
+        assert re.match(radius_warn, str(record[0].message))
+        assert re.match(fallback_warn, str(caplog.messages[1]))
+        assert re.match(specific_warn, caplog.messages[0])
+        if exc_info is not None:
+            assert re.match(exc_info, str(caplog.records[0].exc_info[1]))  # the actual message is stored in the exception
 
         np.testing.assert_array_equal(result, expected)
 
@@ -542,18 +559,18 @@ class _CMIPCubeTester(TestSCMCube):
         test_cube.process_path = MagicMock(return_value={"model": "CanESM2"})
         test_cube.process_filename = MagicMock(return_value={"model": "HadGem3"})
         error_msg = (
-            re.escape("Path and filename do not agree:")
-            + "\n"
-            + re.escape("    - path model: CanESM2")
-            + "\n"
-            + re.escape("    - filename model: HadGem3")
-            + "\n"
+                re.escape("Path and filename do not agree:")
+                + "\n"
+                + re.escape("    - path model: CanESM2")
+                + "\n"
+                + re.escape("    - filename model: HadGem3")
+                + "\n"
         )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
     def _run_test_add_time_period_from_files_in_directory(
-        self, mock_listdir, files_in_path, expected_time_period, test_cube
+            self, mock_listdir, files_in_path, expected_time_period, test_cube
     ):
         mock_listdir.return_value = files_in_path
         tdir = "mocked"
@@ -565,7 +582,7 @@ class _CMIPCubeTester(TestSCMCube):
         test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
 
     def _run_test_get_filepath_from_load_data_from_identifiers_args(
-        self, test_cube, tkwargs_list
+            self, test_cube, tkwargs_list
     ):
         tkwargs = {k: getattr(self, "t" + k) for k in tkwargs_list}
 
@@ -608,25 +625,25 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         "files_in_path, expected_time_period",
         [
             (
-                [
-                    "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
-                    "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
-                    "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
-                ],
-                "200601-203812",
+                    [
+                        "tas_Amon_HadCM3_rcp45_r1i1p1_203601-203812.nc",
+                        "tas_Amon_HadCM3_rcp45_r1i1p1_200601-203012.nc",
+                        "tas_Amon_HadCM3_rcp45_r1i1p1_203101-203512.nc",
+                    ],
+                    "200601-203812",
             ),
             (
-                [
-                    "tas_Amon_HadCM3_rcp45_r1i1p1_103601-103812.nc",
-                    "tas_Amon_HadCM3_rcp45_r1i1p1_003101-103512.nc",
-                    "tas_Amon_HadCM3_rcp45_r1i1p1_000601-003012.nc",
-                ],
-                "000601-103812",
+                    [
+                        "tas_Amon_HadCM3_rcp45_r1i1p1_103601-103812.nc",
+                        "tas_Amon_HadCM3_rcp45_r1i1p1_003101-103512.nc",
+                        "tas_Amon_HadCM3_rcp45_r1i1p1_000601-003012.nc",
+                    ],
+                    "000601-103812",
             ),
         ],
     )
     def test_add_time_period_from_files_in_directory(
-        self, mock_listdir, files_in_path, expected_time_period, test_cube
+            self, mock_listdir, files_in_path, expected_time_period, test_cube
     ):
         self._run_test_add_time_period_from_files_in_directory(
             mock_listdir, files_in_path, expected_time_period, test_cube
@@ -736,17 +753,17 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 
     def test_get_data_filename(self, test_cube):
         expected = (
-            "_".join(
-                [
-                    self.tvariable_name,
-                    self.tmodeling_realm,
-                    self.tmodel,
-                    self.texperiment,
-                    self.tensemble_member,
-                    self.ttime_period,
-                ]
-            )
-            + self.tfile_ext
+                "_".join(
+                    [
+                        self.tvariable_name,
+                        self.tmodeling_realm,
+                        self.tmodel,
+                        self.texperiment,
+                        self.tensemble_member,
+                        self.ttime_period,
+                    ]
+                )
+                + self.tfile_ext
         )
 
         atts_to_set = [
@@ -767,16 +784,16 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 
     def test_get_data_filename_no_time(self, test_cube):
         expected = (
-            "_".join(
-                [
-                    self.tvariable_name,
-                    self.tmodeling_realm,
-                    self.tmodel,
-                    self.texperiment,
-                    self.tensemble_member,
-                ]
-            )
-            + self.tfile_ext
+                "_".join(
+                    [
+                        self.tvariable_name,
+                        self.tmodeling_realm,
+                        self.tmodel,
+                        self.texperiment,
+                        self.tensemble_member,
+                    ]
+                )
+                + self.tfile_ext
         )
 
         atts_to_set = [
@@ -797,7 +814,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         assert result == expected
 
     def test_get_variable_constraint_from_load_data_from_identifiers_args(
-        self, test_cube
+            self, test_cube
     ):
         tkwargs_list = [
             "root_dir",
@@ -881,25 +898,25 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         "files_in_path, expected_time_period",
         [
             (
-                [
-                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_200601-201012.nc",
-                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_201401-203812.nc",
-                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_201101-201312.nc",
-                ],
-                "200601-203812",
+                    [
+                        "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_200601-201012.nc",
+                        "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_201401-203812.nc",
+                        "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_201101-201312.nc",
+                    ],
+                    "200601-203812",
             ),
             (
-                [
-                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_010009-103812.nc",
-                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_000601-009912.nc",
-                    "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_010001-010008.nc",
-                ],
-                "000601-103812",
+                    [
+                        "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_010009-103812.nc",
+                        "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_000601-009912.nc",
+                        "multiple-states_input4MIPs_landState_ScenarioMIP_UofMD-AIM-ssp370-2-1-f_gn_010001-010008.nc",
+                    ],
+                    "000601-103812",
             ),
         ],
     )
     def test_add_time_period_from_files_in_directory(
-        self, mock_listdir, files_in_path, expected_time_period, test_cube
+            self, mock_listdir, files_in_path, expected_time_period, test_cube
     ):
         self._run_test_add_time_period_from_files_in_directory(
             mock_listdir, files_in_path, expected_time_period, test_cube
@@ -1042,17 +1059,17 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
 
     def test_get_data_filename(self, test_cube):
         expected = (
-            "_".join(
-                [
-                    self.tvariable_id,
-                    self.tactivity_id,
-                    self.tdataset_category,
-                    self.ttarget_mip,
-                    self.tsource_id,
-                    self.tgrid_label,
-                ]
-            )
-            + self.tfile_ext
+                "_".join(
+                    [
+                        self.tvariable_id,
+                        self.tactivity_id,
+                        self.tdataset_category,
+                        self.ttarget_mip,
+                        self.tsource_id,
+                        self.tgrid_label,
+                    ]
+                )
+                + self.tfile_ext
         )
 
         test_cube.time_range = None
@@ -1072,18 +1089,18 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         assert result == expected
 
         expected = (
-            "_".join(
-                [
-                    self.tvariable_id,
-                    self.tactivity_id,
-                    self.tdataset_category,
-                    self.ttarget_mip,
-                    self.tsource_id,
-                    self.tgrid_label,
-                    self.ttime_range,
-                ]
-            )
-            + self.tfile_ext
+                "_".join(
+                    [
+                        self.tvariable_id,
+                        self.tactivity_id,
+                        self.tdataset_category,
+                        self.ttarget_mip,
+                        self.tsource_id,
+                        self.tgrid_label,
+                        self.ttime_range,
+                    ]
+                )
+                + self.tfile_ext
         )
 
         atts_to_set = ["time_range"]
@@ -1129,7 +1146,7 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         assert result == expected
 
     def test_get_variable_constraint_from_load_data_from_identifiers_args(
-        self, test_cube
+            self, test_cube
     ):
         # TODO and refactor to make attribute of self
         tkwargs_list = [
@@ -1185,25 +1202,25 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         "files_in_path, expected_time_period",
         [
             (
-                [
-                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_200601-201012.nc",
-                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_201401-203812.nc",
-                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_201101-201312.nc",
-                ],
-                "200601-203812",
+                    [
+                        "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_200601-201012.nc",
+                        "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_201401-203812.nc",
+                        "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_201101-201312.nc",
+                    ],
+                    "200601-203812",
             ),
             (
-                [
-                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_010009-103812.nc",
-                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_000601-009912.nc",
-                    "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_010001-010008.nc",
-                ],
-                "000601-103812",
+                    [
+                        "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_010009-103812.nc",
+                        "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_000601-009912.nc",
+                        "pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f1_gn_010001-010008.nc",
+                    ],
+                    "000601-103812",
             ),
         ],
     )
     def test_add_time_period_from_files_in_directory(
-        self, mock_listdir, files_in_path, expected_time_period, test_cube
+            self, mock_listdir, files_in_path, expected_time_period, test_cube
     ):
         self._run_test_add_time_period_from_files_in_directory(
             mock_listdir, files_in_path, expected_time_period, test_cube
@@ -1332,17 +1349,17 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
 
     def test_get_data_filename(self, test_cube):
         expected = (
-            "_".join(
-                [
-                    self.tvariable_id,
-                    self.ttable_id,
-                    self.tsource_id,
-                    self.texperiment_id,
-                    self.tmember_id,
-                    self.tgrid_label,
-                ]
-            )
-            + self.tfile_ext
+                "_".join(
+                    [
+                        self.tvariable_id,
+                        self.ttable_id,
+                        self.tsource_id,
+                        self.texperiment_id,
+                        self.tmember_id,
+                        self.tgrid_label,
+                    ]
+                )
+                + self.tfile_ext
         )
 
         test_cube.time_range = None
@@ -1362,18 +1379,18 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         assert result == expected
 
         expected = (
-            "_".join(
-                [
-                    self.tvariable_id,
-                    self.ttable_id,
-                    self.tsource_id,
-                    self.texperiment_id,
-                    self.tmember_id,
-                    self.tgrid_label,
-                    self.ttime_range,
-                ]
-            )
-            + self.tfile_ext
+                "_".join(
+                    [
+                        self.tvariable_id,
+                        self.ttable_id,
+                        self.tsource_id,
+                        self.texperiment_id,
+                        self.tmember_id,
+                        self.tgrid_label,
+                        self.ttime_range,
+                    ]
+                )
+                + self.tfile_ext
         )
 
         atts_to_set = ["time_range"]
@@ -1419,7 +1436,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         assert result == expected
 
     def test_get_variable_constraint_from_load_data_from_identifiers_args(
-        self, test_cube
+            self, test_cube
     ):
         # TODO and refactor to make attribute of self
         tkwargs_list = [
@@ -1453,18 +1470,17 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         )
         assert isinstance(result, iris.Constraint)
 
-    def test_get_climate_model_scenario(self, test_cube):
+    def test_get_climate_model_scenario(self, test_cube, caplog):
         warn_msg = (
             "Could not determine appropriate climate_model scenario combination, "
             "filling with 'unspecified'"
         )
-        with warnings.catch_warnings(record=True) as recorded_warnings:
-            model, scenario = test_cube._get_climate_model_scenario()
+        model, scenario = test_cube._get_climate_model_scenario()
 
         assert model == "unspecified"
         assert scenario == "unspecified"
-        assert len(recorded_warnings) == 1
-        assert str(recorded_warnings[0].message) == warn_msg
+        assert len(caplog.messages) == 1
+        assert str(caplog.messages[0]) == warn_msg
 
         tmodel = "ABCD"
         tactivity = "rcpmip"

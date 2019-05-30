@@ -365,18 +365,18 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
             with pytest.raises(KeyError):
                 test_cube.cube.attributes[removed_attribute]
 
-    def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
+    def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog):
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
             "rectify this by removing all data before year 1 and changing the units "
             "to 'days since 1-1-1'. If you want other behaviour, you will need to use "
             "another package."
         )
-        with warnings.catch_warnings(record=True) as adjust_warnings:
-            test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+        test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
 
-        assert len(adjust_warnings) == 1
-        assert str(adjust_warnings[0].message) == expected_warn
+        assert len(caplog.messages) == 1
+        assert caplog.messages[0] == expected_warn
+        assert caplog.records[0].levelname == 'WARNING'
 
         obs_time = test_cube.cube.dim_coords[0]
         assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
@@ -575,18 +575,18 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
 class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     tclass = CMIP6Input4MIPsCube
 
-    def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube):
+    def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog):
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
             "rectify this by removing all data before year 1 and changing the units "
             "to 'days since 1-1-1'. If you want other behaviour, you will need to use "
             "another package."
         )
-        with warnings.catch_warnings(record=True) as adjust_warnings:
-            test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+        test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
 
-        assert len(adjust_warnings) == 1
-        assert str(adjust_warnings[0].message) == expected_warn
+        assert len(caplog.messages) == 1
+        assert caplog.messages[0] == expected_warn
+        assert caplog.records[0].levelname == 'WARNING'
 
         obs_time = test_cube.cube.dim_coords[0]
         assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
