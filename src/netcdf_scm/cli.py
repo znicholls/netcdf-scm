@@ -1,19 +1,17 @@
 """Command line interface
 """
+import logging
 import re
-import traceback
-import warnings
+import sys
 from os import makedirs, path, walk
 from os.path import dirname, isfile, join
 from time import gmtime, strftime
-import logging
 
 import click
 import progressbar
 from openscm.scmdataframe import ScmDataFrame, df_append
 
 import netcdf_scm
-
 from .iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -32,8 +30,44 @@ _CUBES = {
 }
 
 
-def init_logging(params, out_filename=None):
-    logging.basicConfig(level='INFO')
+def init_logging(params, out_filename=None, **kwargs):
+    """
+    Set up the root logger
+
+    The logger has a number of
+    * All WARNING messages and greater are written to stderr
+    * If an ``out_filename`` is provided all recorded log messages are written to disk
+    Parameters
+    ----------
+    params : list
+        A list of key values to write at the start of the log
+    out_filename : str
+        Name of the log file which is written to disk
+
+    Returns
+    -------
+
+    """
+    handlers = []
+    if out_filename:
+        h = logging.FileHandler(out_filename, 'a')
+        h.setLevel(logging.DEBUG)
+        handlers.append(h)
+
+    # Write logs to stderr
+    h = logging.StreamHandler(sys.stderr)
+    h.setLevel(logging.INFO)
+    handlers.append(h)
+
+    root = logging.root
+    fmt = logging.Formatter('{asctime} {levelname}:{name}:{message}', style='{')
+    for h in handlers:
+        if h.formatter is None:
+            h.setFormatter(fmt)
+        root.addHandler(h)
+    level = kwargs.pop("level", None)
+    if level is not None:
+        root.setLevel(level)
     logging.captureWarnings(True)
 
     logger.info('netcdf-scm: {}'.format(netcdf_scm.__version__))
@@ -101,15 +135,14 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
         ('land_mask_threshold', land_mask_threshold),
         ('force', force),
     ]
-    summary_filename = join(
+    log_file = join(
         out_dir,
-        "{}-failures-and-warnings.txt".format(
+        "{}-crunch.log".format(
             timestamp.replace(" ", "_").replace(":", "")
         ),
     )
-    init_logging(log_params, out_filename=summary_filename)
-
     _make_path_if_not_exists(out_dir)
+    init_logging(log_params, out_filename=log_file)
 
     failures = False
 
@@ -120,7 +153,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
         text=format_custom_text, max_value=len([w for w in walk(src)])
     )
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-        logger.debug('Entering '.format(dirpath))
+        logger.debug('Entering {}'.format(dirpath))
         if filenames:
             if not regexp_compiled.match(dirpath):
                 continue
@@ -382,7 +415,6 @@ def _get_format_custom_text():
 
 
 def _get_progressbar(text, max_value):
-
     return progressbar.ProgressBar(
         widgets=[progressbar.SimpleProgress(), ". ", text],
         max_value=max_value,
