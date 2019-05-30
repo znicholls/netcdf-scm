@@ -93,6 +93,8 @@ class TestSCMCube(object):
         test_cube._process_load_data_from_identifiers_warnings.assert_not_called()
         test_cube._check_cube.assert_called()
 
+        assert test_cube._loaded_cubes == [tfile]
+
     def test_process_load_data_from_identifiers_warnings(self, test_cube, caplog):
         warn_1 = "warning 1"
         warn_2 = "warning 2"
@@ -217,6 +219,7 @@ class TestSCMCube(object):
         assert type(result) == type(test_cube)
 
         test_cube._get_metadata_load_arguments.assert_called_with(tvar)
+        assert test_cube._metadata_cubes[tvar] == result
         mock_load_data_from_identifiers.assert_called_with(**tload_arg_dict)
 
     def test_get_metadata_load_arguments(self, test_cube):
@@ -371,8 +374,9 @@ class TestSCMCube(object):
         test_areacella_input = test_sftlf_cube if input_format == "scmcube" else None
 
         result = test_cube._get_area_weights(areacella_scmcube=test_areacella_input)
-        if input_format is None:
-            test_cube.get_metadata_cube.assert_called_with(areacella_var)
+        test_cube.get_metadata_cube.assert_called_with(
+            areacella_var, cube=test_areacella_input
+        )
 
         np.testing.assert_array_equal(result, expected)
 
@@ -418,7 +422,7 @@ class TestSCMCube(object):
         with pytest.warns(None) as record:
             result = test_cube._get_area_weights()
 
-        test_cube.get_metadata_cube.assert_called_with(areacella_var)
+        test_cube.get_metadata_cube.assert_called_with(areacella_var, cube=None)
 
         fallback_warn = re.escape(
             "Couldn't find/use areacella_cube, falling back to "
@@ -523,6 +527,19 @@ class TestSCMCube(object):
         )
         with pytest.raises(ValueError, match=expected_error_msg):
             test_cube._check_time_period_valid(invalid_time_period_str)
+
+    def test_cube_info(self, test_cube, test_sftlf_cube):
+        test_cube._loaded_cubes = ["test.nc"]
+        test_cube._metadata_cubes = {"sftlf": test_sftlf_cube}
+        res = test_cube.info
+
+        assert test_sftlf_cube.info == {
+            "files": ["test_sftlf.nc"]  # this value comes from test_sftlf_cube
+        }
+
+        exp = {"files": ["test.nc"], "metadata": {"sftlf": test_sftlf_cube.info}}
+
+        assert res == exp
 
 
 class _CMIPCubeTester(TestSCMCube):
