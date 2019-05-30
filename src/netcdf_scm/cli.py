@@ -251,37 +251,21 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
     ``src`` is searched recursively and netcdf-scm will attemp to wrangle all the files
     found.
     """
-    title = "NetCDF Wrangling"
-    timestamp = _get_timestamp()
-
-    metadata_header = (
-        "{}\n"
-        "{}\n"
-        "NetCDF SCM version: {}\n"
-        "\n"
-        "time: {}\n"
-        "source: {}\n"
-        "destination: {}\n"
-        "regexp: {}\n"
-        "nested: {}\n"
-        "drs: {}\n"
-        "out-format: {}\n\n"
-        "".format(
-            title,
-            "=" * len(title),
-            netcdf_scm.__version__,
-            timestamp,
-            src,
-            dst,
-            regexp,
-            nested,
-            drs,
-            out_format,
-        )
+    log_params = [
+        ("source", src),
+        ("destination", dst),
+        ("regexp", regexp),
+        ("land_mask_threshold", nested),
+        ("drs", drs),
+        ("out_format", out_format),
+        ("force", force),
+    ]
+    log_file = join(
+        dst,
+        "{}-wrangle.log".format(_get_timestamp().replace(" ", "_").replace(":", "")),
     )
-    click.echo(metadata_header)
-
     _make_path_if_not_exists(dst)
+    init_logging(log_params, out_filename=log_file)
 
     regexp_compiled = re.compile(regexp)
 
@@ -319,7 +303,7 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
                         scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)
                     )
                 )
-                click.echo("Wrangling {}".format(regexp_here))
+                logger.info("Wrangling {}".format(regexp_here))
                 here_skipped = _do_wrangling(
                     src, dst, regexp_here, nested, out_format, force
                 )
@@ -327,21 +311,6 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
                     already_exist_files += here_skipped
 
                 considered_regexps.append(regexp_here)
-
-    header_underline = "="
-
-    already_exist_header = "Skipped (already exist, not overwriting)"
-    if already_exist_files:
-        already_exist_files_string = "- {}\n".format("\n- ".join(already_exist_files))
-    else:
-        already_exist_files_string = ""
-    already_exist_string = "{}\n{}\n{}".format(
-        already_exist_header,
-        len(already_exist_header) * header_underline,
-        already_exist_files_string,
-    )
-    output_string = "\n\n{}".format(already_exist_string)
-    click.echo(output_string)
 
 
 def _do_wrangling(src, dst, regexp, nested, out_format, force):
@@ -371,11 +340,16 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
 
                 if out_format == "tuningstrucs":
                     out_file = join(out_filedir, "ts")
-                    click.echo("Wrangling {} to {}".format(filenames, out_file))
+                    logger.info("Wrangling {} to {}".format(filenames, out_file))
                     skipped_files = convert_scmdf_to_tuningstruc(
                         openscmdf, out_file, force=force
                     )
                     if skipped_files:
+                        logging.warning(
+                            "Skipped writing {} files for {}".format(
+                                len(skipped_files), out_file
+                            )
+                        )
                         already_exist_files.append(skipped_files)
 
                 else:
@@ -389,11 +363,16 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
     if not nested:
         if out_format == "tuningstrucs":
             out_file = join(dst, "ts")
-            click.echo("Wrangling {} to {}*.mat".format(regexp, out_file))
+            logger.info("Wrangling {} to {}*.mat".format(regexp, out_file))
             skipped_files = convert_scmdf_to_tuningstruc(
                 collected, out_file, force=force
             )
             if skipped_files:
+                logging.warning(
+                    "Skipped writing {} files for {}".format(
+                        len(skipped_files), out_file
+                    )
+                )
                 already_exist_files.append(skipped_files)
 
         else:
