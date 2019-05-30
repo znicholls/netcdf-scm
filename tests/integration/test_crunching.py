@@ -1,3 +1,4 @@
+from glob import glob
 from os import walk
 from os.path import isdir, isfile, join
 
@@ -16,23 +17,33 @@ def test_crunching(tmpdir, caplog):
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*tas.*"
 
-    runner = CliRunner()
-    with caplog.at_level('INFO'):
-        result = runner.invoke(
-            crunch_data,
-            [
-                INPUT_DIR,
-                OUTPUT_DIR,
-                "--cube-type",
-                "MarbleCMIP5",
-                "--regexp",
-                VAR_TO_CRUNCH,
-                "-f",
-            ],
-        )
+    runner = CliRunner(mix_stderr=False)
+    result = runner.invoke(
+        crunch_data,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "--cube-type",
+            "MarbleCMIP5",
+            "--regexp",
+            VAR_TO_CRUNCH,
+            "-f",
+        ],
+    )
     assert result.exit_code == 0
-    assert caplog.messages[0] == "netcdf-scm: {}".format(netcdf_scm.__version__)
+    assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
     assert "Making output directory: {}/netcdf-scm-crunched".format(OUTPUT_DIR) in caplog.messages
+
+    # Check that there is a log file  which contains 'INFO' log messages
+    log_fnames = glob(join(OUTPUT_DIR, 'netcdf-scm-crunched', '*.log'))
+    assert len(log_fnames) == 1
+
+    with open(log_fnames[0]) as fh:
+        log_file = fh.read()
+        assert 'DEBUG' in log_file
+    # Check that the logs are also written to stderr
+    assert 'DEBUG' not in result.stderr
+    assert 'INFO' in result.stderr
 
     THRESHOLD_PERCENTAGE_DIFF = 10 ** -1
     files_found = 0
@@ -125,7 +136,7 @@ def test_crunching_arguments(tmpdir, caplog):
         )
     assert result.exit_code == 0
 
-    assert caplog.messages[0] == "netcdf-scm: {}".format(netcdf_scm.__version__)
+    assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
     assert "Making output directory: {}/custom-name".format(OUTPUT_DIR) in caplog.messages
 
     assert "fco2antt" in caplog.text
