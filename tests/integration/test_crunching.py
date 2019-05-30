@@ -1,3 +1,4 @@
+import json
 from glob import glob
 from os import walk
 from os.path import isdir, isfile, join
@@ -48,6 +49,18 @@ def test_crunching(tmpdir, caplog):
     # Check that the logs are also written to stderr
     assert "DEBUG" not in result.stderr
     assert "INFO" in result.stderr
+
+    # Check the output_tracker file
+    with open(
+        join(OUTPUT_DIR, "netcdf-scm-crunched", "netcdf-scm_crunched.jsonl")
+    ) as fh:
+        lines = fh.readlines()
+        assert len(lines) == 5
+
+        # Check that the first item has an areacella file
+        d = json.loads(lines[0])
+        assert len(d["metadata"]["areacella"]["files"]) == 1
+        assert len(d["metadata"]["sftlf"]["files"]) == 1
 
     THRESHOLD_PERCENTAGE_DIFF = 10 ** -1
     files_found = 0

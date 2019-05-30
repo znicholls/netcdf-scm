@@ -155,12 +155,6 @@ def test_get_land_mask(
             land_mask_threshold=test_threshold,
         )
 
-    # having got the result, we can now update test_land_fraction_input
-    # for our assertions
-    if test_land_fraction_input is None:
-        test_all_cubes.get_metadata_cube.assert_called_with(test_all_cubes.sftlf_var)
-        test_land_fraction_input = sftlf_cube
-
     # where it's land return False, otherwise True to match with masking
     # convention that True means masked
     expected = broadcast_to_shape(
@@ -169,16 +163,15 @@ def test_get_land_mask(
         [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
     )
     np.testing.assert_array_equal(result, expected)
-
-    if input_format is None:
-        test_all_cubes.get_metadata_cube.assert_called_with(sftlf_var)
-    else:
-        test_all_cubes.get_metadata_cube.assert_not_called()
+    # Check that the sftlf meta cube is always registered
+    test_all_cubes.get_metadata_cube.assert_called_with(
+        sftlf_var, cube=test_land_fraction_input
+    )
 
 
 @pytest.mark.parametrize("inp", ["fail string", np.array([[1, 2], [3, 4]])])
 def test_get_land_mask_input_type_errors(test_all_cubes, inp):
-    error_msg = re.escape(r"sftlf_cube must be an SCMCube instance")
+    error_msg = re.escape(r"cube must be an SCMCube instance")
     masker = CubeMasker(test_all_cubes)
     with pytest.raises(TypeError, match=error_msg):
         get_land_mask(masker, test_all_cubes, sftlf_cube=inp)

@@ -232,6 +232,7 @@ def test_all_cubes(request):
 
 def create_sftlf_cube(cube_cls):
     c = cube_cls()
+    c._loaded_cubes.append("test_sftlf.nc")
 
     test_data = np.ma.masked_array(
         [[90, 49.9, 50.0, 50.1], [100, 49, 50, 51], [51, 30, 10, 0]], mask=False
