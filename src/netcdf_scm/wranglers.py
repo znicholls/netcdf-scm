@@ -1,9 +1,12 @@
+import logging
 from os.path import isfile
 
 import numpy as np
 from openscm.scmdataframe import ScmDataFrame
 
 from . import mat4py
+
+logger = logging.getLogger(__name__)
 
 
 def convert_tuningstruc_to_scmdf(
@@ -159,8 +162,10 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath, force=False):
         outfile = get_tuningstruc_name_from_df(df, outpath)
 
         if isfile(outfile) and not force:
+            logger.info("Skipped (already exist, not overwriting) {}".format(outfile))
             already_written.append(outfile)
         else:
+            logger.info("Writing {}".format(outfile))
             mat4py.savemat(outfile, dataset)
 
     return already_written
