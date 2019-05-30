@@ -91,7 +91,7 @@ def test_get_scm_masks(mock_nh_mask, mock_land_mask, test_all_cubes):
 
 
 @patch("netcdf_scm.masks.get_nh_mask")
-def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes):
+def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes, caplog):
     test_all_cubes.get_metadata_cube = MagicMock(side_effect=OSError)
 
     nh_mask = np.array(
@@ -111,11 +111,10 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes):
     expected_warn = "Failed to create World|Land mask: Land surface fraction (sftlf) data not available"
     with patch.dict(MASKS, {"World|Northern Hemisphere": mock_nh_mask}):
         masker = CubeMasker(test_all_cubes)
-        with warnings.catch_warnings(record=True) as no_sftlf_warns:
-            result = masker.get_masks(DEFAULT_REGIONS)
+        result = masker.get_masks(DEFAULT_REGIONS)
 
-    assert len(no_sftlf_warns) == 6
-    assert str(no_sftlf_warns[0].message) == expected_warn
+    assert len(caplog.messages) == 6
+    assert caplog.messages[0] == expected_warn
 
     for label, array in expected.items():
         np.testing.assert_array_equal(array, result[label])
