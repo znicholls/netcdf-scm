@@ -4,10 +4,10 @@ from os.path import isdir, isfile, join
 import numpy as np
 import pandas as pd
 from click.testing import CliRunner
-from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
 from openscm.scmdataframe import ScmDataFrame
-from logging import INFO
+
 import netcdf_scm
+from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
 from netcdf_scm.cli import crunch_data
 
 
@@ -16,21 +16,20 @@ def test_crunching(tmpdir, caplog):
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*tas.*"
 
-    caplog.set_level(INFO)
-
     runner = CliRunner()
-    result = runner.invoke(
-        crunch_data,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--cube-type",
-            "MarbleCMIP5",
-            "--regexp",
-            VAR_TO_CRUNCH,
-            "-f",
-        ],
-    )
+    with caplog.at_level('INFO'):
+        result = runner.invoke(
+            crunch_data,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "--cube-type",
+                "MarbleCMIP5",
+                "--regexp",
+                VAR_TO_CRUNCH,
+                "-f",
+            ],
+        )
     assert result.exit_code == 0
     assert caplog.messages[0] == "netcdf-scm: {}".format(netcdf_scm.__version__)
     assert "Making output directory: {}/netcdf-scm-crunched".format(OUTPUT_DIR) in caplog.messages
@@ -64,10 +63,10 @@ def test_crunching(tmpdir, caplog):
             crunched_data = ScmDataFrame(join(dirpath, filename))
             comparison_data = (
                 crunched_data.filter(region="World")
-                .timeseries()
-                .stack()
-                .to_frame()
-                .reset_index()[["time", 0]]
+                    .timeseries()
+                    .stack()
+                    .to_frame()
+                    .reset_index()[["time", 0]]
             )
             comparison_data = comparison_data.rename({0: "value"}, axis="columns")
 
@@ -86,7 +85,7 @@ def test_crunching(tmpdir, caplog):
                 filename, THRESHOLD_PERCENTAGE_DIFF
             )
             all_close = (
-                np.abs(rel_difference.values) < THRESHOLD_PERCENTAGE_DIFF / 100
+                    np.abs(rel_difference.values) < THRESHOLD_PERCENTAGE_DIFF / 100
             ).all()
             assert all_close, assert_message
 
@@ -99,7 +98,7 @@ def test_crunching(tmpdir, caplog):
     assert files_found == 5
 
 
-def test_crunching_arguments(tmpdir):
+def test_crunching_arguments(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*fco2antt.*"
@@ -107,55 +106,57 @@ def test_crunching_arguments(tmpdir):
     LAND_MASK_TRESHHOLD = 45
 
     runner = CliRunner()
-    result = runner.invoke(
-        crunch_data,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--cube-type",
-            "MarbleCMIP5",
-            "--regexp",
-            VAR_TO_CRUNCH,
-            "--data-sub-dir",
-            DATA_SUB_DIR,
-            "--land-mask-threshold",
-            LAND_MASK_TRESHHOLD,
-            "-f",
-        ],
-    )
+    with caplog.at_level('INFO'):
+        result = runner.invoke(
+            crunch_data,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "--cube-type",
+                "MarbleCMIP5",
+                "--regexp",
+                VAR_TO_CRUNCH,
+                "--data-sub-dir",
+                DATA_SUB_DIR,
+                "--land-mask-threshold",
+                LAND_MASK_TRESHHOLD,
+                "-f",
+            ],
+        )
     assert result.exit_code == 0
 
-    assert "NetCDF SCM version: {}".format(netcdf_scm.__version__) in result.output
-    assert "Making output directory:" in result.output
+    assert caplog.messages[0] == "netcdf-scm: {}".format(netcdf_scm.__version__)
+    assert "Making output directory: {}/custom-name".format(OUTPUT_DIR) in caplog.messages
 
-    assert "fco2antt" in result.output
-    assert "tas" not in result.output
+    assert "fco2antt" in caplog.text
+    assert "tas" not in caplog.text
 
     assert isdir(join(OUTPUT_DIR, DATA_SUB_DIR, "cmip5"))
 
-    assert "land-mask-threshold: {}".format(LAND_MASK_TRESHHOLD) in result.output
+    assert "land_mask_threshold: {}".format(LAND_MASK_TRESHHOLD) in caplog.text
 
-    result_skip = runner.invoke(
-        crunch_data,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--cube-type",
-            "MarbleCMIP5",
-            "--regexp",
-            VAR_TO_CRUNCH,
-            "--data-sub-dir",
-            DATA_SUB_DIR,
-            "--land-mask-threshold",
-            LAND_MASK_TRESHHOLD,
-        ],
-    )
+    caplog.clear()
+
+    with caplog.at_level('INFO'):
+        result_skip = runner.invoke(
+            crunch_data,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "--cube-type",
+                "MarbleCMIP5",
+                "--regexp",
+                VAR_TO_CRUNCH,
+                "--data-sub-dir",
+                DATA_SUB_DIR,
+                "--land-mask-threshold",
+                LAND_MASK_TRESHHOLD,
+            ],
+        )
     assert result_skip.exit_code == 0
 
     skip_str = (
-        "Skipped (already exist, not overwriting)\n"
-        "========================================\n"
-        "- {}".format(
+        "Skipped (already exist, not overwriting) {}".format(
             join(
                 OUTPUT_DIR,
                 DATA_SUB_DIR,
@@ -169,16 +170,17 @@ def test_crunching_arguments(tmpdir):
             )
         )
     )
-    assert skip_str in result_skip.output
+    assert skip_str in caplog.text
 
 
-def test_crunching_other_cube(tmpdir):
+def test_crunching_other_cube(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = str(tmpdir)
     CUBE = "CMIP6Output"
 
     runner = CliRunner()
-    result = runner.invoke(crunch_data, [INPUT_DIR, OUTPUT_DIR, "--cube-type", CUBE])
+    with caplog.at_level('INFO'):
+        result = runner.invoke(crunch_data, [INPUT_DIR, OUTPUT_DIR, "--cube-type", CUBE])
     assert result.exit_code  # non-zero exit code
 
-    assert "cube-type: {}".format(CUBE) in result.output
+    assert "cube-type: {}".format(CUBE) in caplog.text
