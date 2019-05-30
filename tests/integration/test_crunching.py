@@ -5,10 +5,10 @@ from os.path import isdir, isfile, join
 import numpy as np
 import pandas as pd
 from click.testing import CliRunner
+from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
 from openscm.scmdataframe import ScmDataFrame
 
 import netcdf_scm
-from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
 from netcdf_scm.cli import crunch_data
 
 
@@ -32,18 +32,21 @@ def test_crunching(tmpdir, caplog):
     )
     assert result.exit_code == 0
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
-    assert "Making output directory: {}/netcdf-scm-crunched".format(OUTPUT_DIR) in caplog.messages
+    assert (
+        "Making output directory: {}/netcdf-scm-crunched".format(OUTPUT_DIR)
+        in caplog.messages
+    )
 
     # Check that there is a log file  which contains 'INFO' log messages
-    log_fnames = glob(join(OUTPUT_DIR, 'netcdf-scm-crunched', '*.log'))
+    log_fnames = glob(join(OUTPUT_DIR, "netcdf-scm-crunched", "*.log"))
     assert len(log_fnames) == 1
 
     with open(log_fnames[0]) as fh:
         log_file = fh.read()
-        assert 'DEBUG' in log_file
+        assert "DEBUG" in log_file
     # Check that the logs are also written to stderr
-    assert 'DEBUG' not in result.stderr
-    assert 'INFO' in result.stderr
+    assert "DEBUG" not in result.stderr
+    assert "INFO" in result.stderr
 
     THRESHOLD_PERCENTAGE_DIFF = 10 ** -1
     files_found = 0
@@ -74,10 +77,10 @@ def test_crunching(tmpdir, caplog):
             crunched_data = ScmDataFrame(join(dirpath, filename))
             comparison_data = (
                 crunched_data.filter(region="World")
-                    .timeseries()
-                    .stack()
-                    .to_frame()
-                    .reset_index()[["time", 0]]
+                .timeseries()
+                .stack()
+                .to_frame()
+                .reset_index()[["time", 0]]
             )
             comparison_data = comparison_data.rename({0: "value"}, axis="columns")
 
@@ -96,7 +99,7 @@ def test_crunching(tmpdir, caplog):
                 filename, THRESHOLD_PERCENTAGE_DIFF
             )
             all_close = (
-                    np.abs(rel_difference.values) < THRESHOLD_PERCENTAGE_DIFF / 100
+                np.abs(rel_difference.values) < THRESHOLD_PERCENTAGE_DIFF / 100
             ).all()
             assert all_close, assert_message
 
@@ -117,7 +120,7 @@ def test_crunching_arguments(tmpdir, caplog):
     LAND_MASK_TRESHHOLD = 45
 
     runner = CliRunner()
-    with caplog.at_level('INFO'):
+    with caplog.at_level("INFO"):
         result = runner.invoke(
             crunch_data,
             [
@@ -137,7 +140,9 @@ def test_crunching_arguments(tmpdir, caplog):
     assert result.exit_code == 0
 
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
-    assert "Making output directory: {}/custom-name".format(OUTPUT_DIR) in caplog.messages
+    assert (
+        "Making output directory: {}/custom-name".format(OUTPUT_DIR) in caplog.messages
+    )
 
     assert "fco2antt" in caplog.text
     assert "tas" not in caplog.text
@@ -148,7 +153,7 @@ def test_crunching_arguments(tmpdir, caplog):
 
     caplog.clear()
 
-    with caplog.at_level('INFO'):
+    with caplog.at_level("INFO"):
         result_skip = runner.invoke(
             crunch_data,
             [
@@ -166,19 +171,17 @@ def test_crunching_arguments(tmpdir, caplog):
         )
     assert result_skip.exit_code == 0
 
-    skip_str = (
-        "Skipped (already exist, not overwriting) {}".format(
-            join(
-                OUTPUT_DIR,
-                DATA_SUB_DIR,
-                "cmip5",
-                "1pctCO2",
-                "Amon",
-                "fco2antt",
-                "CanESM2",
-                "r1i1p1",
-                "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.csv",
-            )
+    skip_str = "Skipped (already exist, not overwriting) {}".format(
+        join(
+            OUTPUT_DIR,
+            DATA_SUB_DIR,
+            "cmip5",
+            "1pctCO2",
+            "Amon",
+            "fco2antt",
+            "CanESM2",
+            "r1i1p1",
+            "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.csv",
         )
     )
     assert skip_str in caplog.text
@@ -190,8 +193,10 @@ def test_crunching_other_cube(tmpdir, caplog):
     CUBE = "CMIP6Output"
 
     runner = CliRunner()
-    with caplog.at_level('INFO'):
-        result = runner.invoke(crunch_data, [INPUT_DIR, OUTPUT_DIR, "--cube-type", CUBE])
+    with caplog.at_level("INFO"):
+        result = runner.invoke(
+            crunch_data, [INPUT_DIR, OUTPUT_DIR, "--cube-type", CUBE]
+        )
     assert result.exit_code  # non-zero exit code
 
     assert "cube-type: {}".format(CUBE) in caplog.text
