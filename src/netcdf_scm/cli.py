@@ -12,6 +12,7 @@ import progressbar
 from openscm.scmdataframe import ScmDataFrame, df_append
 
 import netcdf_scm
+
 from .iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -20,7 +21,7 @@ from .iris_cube_wrappers import (
 )
 from .wranglers import convert_scmdf_to_tuningstruc
 
-logger = logging.getLogger('netcdf-scm')
+logger = logging.getLogger("netcdf-scm")
 
 _CUBES = {
     "Scm": SCMCube,
@@ -50,7 +51,7 @@ def init_logging(params, out_filename=None, **kwargs):
     """
     handlers = []
     if out_filename:
-        h = logging.FileHandler(out_filename, 'a')
+        h = logging.FileHandler(out_filename, "a")
         h.setLevel(logging.DEBUG)
         handlers.append(h)
 
@@ -60,7 +61,7 @@ def init_logging(params, out_filename=None, **kwargs):
     handlers.append(h)
 
     root = logging.root
-    fmt = logging.Formatter('{asctime} {levelname}:{name}:{message}', style='{')
+    fmt = logging.Formatter("{asctime} {levelname}:{name}:{message}", style="{")
     for h in handlers:
         if h.formatter is None:
             h.setFormatter(fmt)
@@ -70,9 +71,9 @@ def init_logging(params, out_filename=None, **kwargs):
         root.setLevel(level)
     logging.captureWarnings(True)
 
-    logger.info('netcdf-scm: {}'.format(netcdf_scm.__version__))
+    logger.info("netcdf-scm: {}".format(netcdf_scm.__version__))
     for k, v in params:
-        logger.info('{}: {}'.format(k, v))
+        logger.info("{}: {}".format(k, v))
 
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})
@@ -128,18 +129,15 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
     out_dir = join(dst, data_sub_dir)
 
     log_params = [
-        ('cube-type', cube_type),
-        ('source', src),
-        ('destination', out_dir),
-        ('regexp', regexp),
-        ('land_mask_threshold', land_mask_threshold),
-        ('force', force),
+        ("cube-type", cube_type),
+        ("source", src),
+        ("destination", out_dir),
+        ("regexp", regexp),
+        ("land_mask_threshold", land_mask_threshold),
+        ("force", force),
     ]
     log_file = join(
-        out_dir,
-        "{}-crunch.log".format(
-            timestamp.replace(" ", "_").replace(":", "")
-        ),
+        out_dir, "{}-crunch.log".format(timestamp.replace(" ", "_").replace(":", ""))
     )
     _make_path_if_not_exists(out_dir)
     init_logging(log_params, out_filename=log_file)
@@ -153,11 +151,11 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
         text=format_custom_text, max_value=len([w for w in walk(src)])
     )
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-        logger.debug('Entering {}'.format(dirpath))
+        logger.debug("Entering {}".format(dirpath))
         if filenames:
             if not regexp_compiled.match(dirpath):
                 continue
-            logger.info('Attempting to process: {}'.format(filenames))
+            logger.info("Attempting to process: {}".format(filenames))
             format_custom_text.update_mapping(curr_dir=dirpath)
             bar.update(i)
             scmcube = _CUBES[cube_type]()
@@ -185,7 +183,11 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
                 _make_path_if_not_exists(out_filedir)
 
                 if not force and isfile(out_filepath):
-                    logger.info('Skipped (already exist, not overwriting) {}'.format(out_filepath))
+                    logger.info(
+                        "Skipped (already exist, not overwriting) {}".format(
+                            out_filepath
+                        )
+                    )
                     continue
                 results = scmcube.get_scm_timeseries(
                     land_mask_threshold=land_mask_threshold
@@ -193,13 +195,15 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
                 results.to_csv(out_filepath)
 
             except Exception:
-                logger.exception('Failed to process: {}'.format(filenames))
+                logger.exception("Failed to process: {}".format(filenames))
                 failures = True
 
         bar.finish()
 
     if failures:
-        raise click.ClickException("Some files failed to process. See {} for more details".format(out_filename))
+        raise click.ClickException(
+            "Some files failed to process. See {} for more details".format(out_filename)
+        )
 
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})

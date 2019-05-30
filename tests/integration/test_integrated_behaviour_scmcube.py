@@ -376,7 +376,7 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
 
         assert len(caplog.messages) == 1
         assert caplog.messages[0] == expected_warn
-        assert caplog.records[0].levelname == 'WARNING'
+        assert caplog.records[0].levelname == "WARNING"
 
         obs_time = test_cube.cube.dim_coords[0]
         assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
@@ -586,7 +586,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
 
         assert len(caplog.messages) == 1
         assert caplog.messages[0] == expected_warn
-        assert caplog.records[0].levelname == 'WARNING'
+        assert caplog.records[0].levelname == "WARNING"
 
         obs_time = test_cube.cube.dim_coords[0]
         assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
