@@ -18,18 +18,19 @@ def test_crunching(tmpdir, caplog):
     VAR_TO_CRUNCH = ".*tas.*"
 
     runner = CliRunner(mix_stderr=False)
-    result = runner.invoke(
-        crunch_data,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "--cube-type",
-            "MarbleCMIP5",
-            "--regexp",
-            VAR_TO_CRUNCH,
-            "-f",
-        ],
-    )
+    with caplog.at_level("DEBUG"):
+        result = runner.invoke(
+            crunch_data,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "--cube-type",
+                "MarbleCMIP5",
+                "--regexp",
+                VAR_TO_CRUNCH,
+                "-f",
+            ],
+        )
     assert result.exit_code == 0
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
     assert (
