@@ -99,6 +99,10 @@ class SCMCube(object):
     }
     _timestamp_definitions = None
 
+    def __init__(self):
+        self._loaded_cubes = []
+        self._metadata_cubes = {}
+
     @property
     def time_period_regex(self):
         """:obj:`_sre.SRE_Pattern`: Regular expression which captures the timeseries identifier in input data files.
@@ -189,8 +193,17 @@ class SCMCube(object):
         """
         return self.cube.coord_dims(self.time_name)[0]
 
+    @property
+    def info(self):
+        r = {"files": self._loaded_cubes}
+        if len(self._metadata_cubes):
+            #  Get the info dict for each of the metadata cubes
+            r["metadata"] = {k: v.info for k, v in self._metadata_cubes.items()}
+        return r
+
     def _load_cube(self, filepath, constraint=None):
         logger.info("loading cube {}".format(filepath))
+        self._loaded_cubes.append(filepath)
         # Raises Warning and Exceptions
         self.cube = iris.load_cube(filepath, constraint=constraint)
         self._check_cube()
@@ -565,25 +578,32 @@ class SCMCube(object):
         """
         raise NotImplementedError()
 
-    def get_metadata_cube(self, metadata_variable):
+    def get_metadata_cube(self, metadata_variable, cube=None):
         """Load a metadata cube from self's attributes.
 
         Parameters
         ----------
         metadata_variable : str
             the name of the metadata variable to get, as it appears in the filename.
-
+        cube : SCMCube
+            Optionally, pass in an already loaded metadata cube to link it to currently loaded cube
         Returns
         -------
         :obj:`type(self)`
             instance of self which has been loaded from the file containing the metadata variable of interest.
         """
-        load_args = self._get_metadata_load_arguments(metadata_variable)
+        if cube is None:
+            load_args = self._get_metadata_load_arguments(metadata_variable)
 
-        metadata_cube = type(self)()
-        metadata_cube.load_data_from_identifiers(**load_args)
+            cube = type(self)()
+            cube.load_data_from_identifiers(**load_args)
 
-        return metadata_cube
+        if not isinstance(cube, SCMCube):
+            raise TypeError("cube must be an SCMCube instance")
+
+        self._metadata_cubes[metadata_variable] = cube
+
+        return cube
 
     def _get_metadata_load_arguments(self, metadata_variable):
         """Get the arguments to load a metadata file from self's attributes.
@@ -715,9 +735,7 @@ class SCMCube(object):
         return masker.get_masks(DEFAULT_REGIONS)
 
     def _get_area_weights(self, areacella_scmcube=None):
-        if areacella_scmcube is None:
-            # Try to load areacella
-            areacella_scmcube = self._get_areacella_scmcube()
+        areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
 
         if areacella_scmcube is not None:
             try:
@@ -737,9 +755,11 @@ class SCMCube(object):
             self.cube.coord("longitude").guess_bounds()
             return iris.analysis.cartography.area_weights(self.cube)
 
-    def _get_areacella_scmcube(self):
+    def _get_areacella_scmcube(self, areacella_scmcube):
         try:
-            areacella_scmcube = self.get_metadata_cube(self.areacella_var)
+            areacella_scmcube = self.get_metadata_cube(
+                self.areacella_var, cube=areacella_scmcube
+            )
             if not isinstance(areacella_scmcube.cube, iris.cube.Cube):
                 logger.warning(
                     "areacella cube which was found has cube attribute which isn't an iris cube"
