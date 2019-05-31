@@ -474,7 +474,7 @@ class SCMCube(object):
             filepath of the file to load and the variable constraint to use.
         """
         with warnings.catch_warnings(record=True) as w:
-            # iris v2.2.0 under py3.7 raises a DeprecationWarning about using collections, see
+            # iris v2.2.0 under py3.7 raises a DeprecationWarning about using collections, see https://github.com/SciTools/iris/pull/3320
             warnings.filterwarnings(
                 "ignore",
                 category=DeprecationWarning,
