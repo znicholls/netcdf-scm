@@ -206,7 +206,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
 
     if failures:
         raise click.ClickException(
-            "Some files failed to process. See {} for more details".format(out_filename)
+            "Some files failed to process. See {} for more details".format(log_file)
         )
 
 
