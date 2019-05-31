@@ -57,8 +57,9 @@ def test_crunching(tmpdir, caplog):
         lines = fh.readlines()
         assert len(lines) == 5
 
-        # Check that the first item has an areacella file
-        d = json.loads(lines[0])
+        # Check that the second item has an areacella file (first item has no metadata
+        # files available)
+        d = json.loads(lines[1])
         assert len(d["metadata"]["areacella"]["files"]) == 1
         assert len(d["metadata"]["sftlf"]["files"]) == 1
 
