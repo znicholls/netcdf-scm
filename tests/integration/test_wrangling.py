@@ -89,10 +89,6 @@ def test_wrangling_flat(tmpdir, caplog):
     assert ".mat" in result.output
 
     assert len(glob(join(OUTPUT_DIR, "*.mat"))) == 27
-    assert (
-        "ts_CMIP_1pctCO2_r1i1p1f1_unspecified_toa_outgoing_shortwave_flux_World.mat"
-        not in result.output
-    )
 
 
 def test_wrangling_handles_integer_units(tmpdir, caplog):
