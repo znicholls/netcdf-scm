@@ -93,7 +93,7 @@ class TestSCMCube(object):
         test_cube._process_load_data_from_identifiers_warnings.assert_not_called()
         test_cube._check_cube.assert_called()
 
-        assert test_cube._loaded_cubes == [tfile]
+        assert test_cube._loaded_paths == [tfile]
 
     def test_process_load_data_from_identifiers_warnings(self, test_cube, caplog):
         warn_1 = "warning 1"
@@ -529,7 +529,7 @@ class TestSCMCube(object):
             test_cube._check_time_period_valid(invalid_time_period_str)
 
     def test_cube_info(self, test_cube, test_sftlf_cube):
-        test_cube._loaded_cubes = ["test.nc"]
+        test_cube._loaded_paths = ["test.nc"]
         test_cube._metadata_cubes = {"sftlf": test_sftlf_cube}
         res = test_cube.info
 
