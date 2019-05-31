@@ -474,8 +474,12 @@ class SCMCube(object):
             filepath of the file to load and the variable constraint to use.
         """
         with warnings.catch_warnings(record=True) as w:
-            # iris v2.2.0 under py3.7 raises a DeprecationWarning
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            # iris v2.2.0 under py3.7 raises a DeprecationWarning about using collections, see
+            warnings.filterwarnings(
+                "ignore",
+                category=DeprecationWarning,
+                module=r".*collections.",
+            )
             self._load_cube(
                 self.get_filepath_from_load_data_from_identifiers_args(**kwargs),
                 self.get_variable_constraint_from_load_data_from_identifiers_args(
