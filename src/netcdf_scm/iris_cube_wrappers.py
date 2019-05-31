@@ -100,7 +100,7 @@ class SCMCube(object):
     _timestamp_definitions = None
 
     def __init__(self):
-        self._loaded_cubes = []
+        self._loaded_paths = []
         self._metadata_cubes = {}
 
     @property
@@ -195,7 +195,7 @@ class SCMCube(object):
 
     @property
     def info(self):
-        r = {"files": self._loaded_cubes}
+        r = {"files": self._loaded_paths}
         if len(self._metadata_cubes):
             #  Get the info dict for each of the metadata cubes
             r["metadata"] = {k: v.info for k, v in self._metadata_cubes.items()}
@@ -203,7 +203,7 @@ class SCMCube(object):
 
     def _load_cube(self, filepath, constraint=None):
         logger.info("loading cube {}".format(filepath))
-        self._loaded_cubes.append(filepath)
+        self._loaded_paths.append(filepath)
         # Raises Warning and Exceptions
         self.cube = iris.load_cube(filepath, constraint=constraint)
         self._check_cube()
