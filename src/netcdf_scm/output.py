@@ -7,19 +7,19 @@ from os.path import exists, join
 logger = logging.getLogger(__name__)
 
 
-class OutputTracker(object):
+class OutputFileDatabase(object):
     """
-    Holds a list of output files which have been written, including the source files which
+    Holds a list of output files which have been written.
 
-    These
+    Also keeps track of the source files used to create each output file.
     """
 
     filename = "netcdf-scm_crunched.jsonl"
 
     def __init__(self, out_dir):
         self.out_dir = out_dir
-        # Choosing a OrderedDict because it's time complexity for checking if an item already exists is constant, while being able
-        # to keep the items in time order
+        # Choosing a OrderedDict because it's time complexity for checking if an item
+        # already exists is constant, while being able to keep the items in time order
         self._data = OrderedDict()
         self._fp = self.load_from_file()
 
@@ -60,9 +60,6 @@ class OutputTracker(object):
         self._data[out_fname] = r
         self._write_line(r)
         self._fp.flush()
-
-    def should_write(self, info):
-        return True
 
     def _write_line(self, line):
         """
