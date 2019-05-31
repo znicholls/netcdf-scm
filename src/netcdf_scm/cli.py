@@ -19,7 +19,7 @@ from .iris_cube_wrappers import (
     MarbleCMIP5Cube,
     SCMCube,
 )
-from .output import OutputTracker
+from .output import OutputFileDatabase
 from .wranglers import convert_scmdf_to_tuningstruc
 
 logger = logging.getLogger("netcdf-scm")
@@ -152,7 +152,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
     bar = _get_progressbar(
         text=format_custom_text, max_value=len([w for w in walk(src)])
     )
-    tracker = OutputTracker(out_dir)
+    tracker = OutputFileDatabase(out_dir)
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
         logger.debug("Entering {}".format(dirpath))
         if filenames:
