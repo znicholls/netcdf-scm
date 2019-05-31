@@ -34,14 +34,13 @@ class OutputFileDatabase(object):
 
         fp = open(fname, "r+")
         lines = fp.readlines()
-
         for l in lines:
             info = json.loads(l)
             k = info["filename"]
             if k in self._data:
                 raise ValueError(
                     "Corrupted output file: duplicate entries for {}".format(k)
-                )  # pragma: no cover # emergency valve
+                )
             self._data[info["filename"]] = info
 
         logger.info("Read in {} items from cru".format(len(self._data)))
