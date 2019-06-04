@@ -190,7 +190,7 @@ def test_crunching_arguments(tmpdir, caplog):
         )
     assert result_skip.exit_code == 0
 
-    skip_str = "Skipped (already exist, not overwriting) {}".format(
+    skip_str = "Skipped (already exists, not overwriting) {}".format(
         join(
             OUTPUT_DIR,
             DATA_SUB_DIR,

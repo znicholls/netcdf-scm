@@ -185,7 +185,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
 
                 _make_path_if_not_exists(out_filedir)
 
-                if not force and out_filepath in tracker._data:
+                if not force and tracker.contains_file(out_filepath):
                     logger.info(
                         "Skipped (already exists, not overwriting) {}".format(
                             out_filepath
