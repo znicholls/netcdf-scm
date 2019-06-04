@@ -17,6 +17,15 @@ class OutputFileDatabase(object):
     filename = "netcdf-scm_crunched.jsonl"
 
     def __init__(self, out_dir):
+        """
+        Initialise.
+
+        Parameters
+        ----------
+        out_dir : str
+            Directory in which to save the database (filename is given by
+            ``self.filename``)
+        """
         self.out_dir = out_dir
         # Choosing a OrderedDict because it's time complexity for checking if an item
         # already exists is constant, while being able to keep the items in time order
@@ -27,6 +36,14 @@ class OutputFileDatabase(object):
         return len(self._data)
 
     def load_from_file(self):
+        """
+        Load database from ``self.out_dir``
+
+        Raises
+        ------
+        ValueError
+            The loaded file contains more than one entry for a given filename
+        """
         fname = join(self.out_dir, self.filename)
         if not exists(fname):
             logger.warning("No output tracking file available. Creating new file")
@@ -49,6 +66,17 @@ class OutputFileDatabase(object):
         return fp
 
     def register(self, out_fname, info):
+        """
+        Register a filepath with info in the database
+
+        Parameters
+        ----------
+        out_fname : str
+            Filepath to register
+
+        info : dict
+            ``out_fname``'s metadata
+        """
         if out_fname in self._data:
             # Need to dump the new order of the contents to file
             del self._data[out_fname]
@@ -64,15 +92,7 @@ class OutputFileDatabase(object):
 
     def _write_line(self, line):
         """
-        Flush out a line
-
-        Parameters
-        ----------
-        line
-
-        Returns
-        -------
-
+        Flush out a line to file
         """
         self._fp.write("{}\n".format(json.dumps(line)))
 
