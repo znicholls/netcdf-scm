@@ -1,9 +1,9 @@
-import re
-
 import json
-import pytest
+import re
 from os.path import exists, join
 from unittest.mock import Mock
+
+import pytest
 
 from netcdf_scm.output import OutputFileDatabase
 
@@ -30,12 +30,15 @@ def test_existing_tracker(tmpdir):
 
 def test_existing_tracker_corrupted(tmpdir):
     tracker_fname = join(tmpdir, "netcdf-scm_crunched.jsonl")
+    corrupt_fname = "corrupt/test"
     with open(tracker_fname, "w") as fh:
-        fh.write("{}\n".format(json.dumps({"filename": "test"})))
-        fh.write("{}\n".format(json.dumps({"filename": "test"})))
+        fh.write("{}\n".format(json.dumps({"filename": corrupt_fname})))
+        fh.write("{}\n".format(json.dumps({"filename": corrupt_fname})))
 
-    error_msg = re.escape("Corrupted output file: duplicate entries for filename")
-    with pytest.raises(ValueError):
+    error_msg = re.escape(
+        "Corrupted output file: duplicate entries for {}".format(corrupt_fname)
+    )
+    with pytest.raises(ValueError, match=error_msg):
         OutputFileDatabase(tmpdir)
 
 
