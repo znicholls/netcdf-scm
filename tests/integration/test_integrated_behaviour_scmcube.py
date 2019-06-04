@@ -212,7 +212,7 @@ class _SCMCubeIntegrationTester(object):
                 ["unspecified"],
                 ["unspecified"],
             ],
-            names=["variable", "unit", "region", "climate_model", "scenario", "model"],
+            names=["variable", "unit", "region", "climate_model", "scenario", "model", "activity_id", "member_id"],
         )
         expected_df = (
             expected_df.unstack().reset_index().rename({0: "value"}, axis="columns")
@@ -840,7 +840,9 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
 
         ts = test_cube.get_scm_timeseries()
         assert (ts["model"] == "unspecified").all()
-        assert (ts["scenario"] == "CMIP_1pctCO2_r1i1p1f1").all()
+        assert (ts["scenario"] == "1pctCO2").all()
+        assert (ts["activity_id"] == "CMIP").all()
+        assert (ts["member_id"] == "r1i1p1f1").all()
         assert (
             ts["region"]
             == ["World", "World|Northern Hemisphere", "World|Southern Hemisphere"]
@@ -875,7 +877,9 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
 
         ts = test_cube.get_scm_timeseries()
         assert (ts["model"] == "unspecified").all()
-        assert (ts["scenario"] == "ScenarioMIP_ssp126_r1i1p1f1").all()
+        assert (ts["scenario"] == "ssp126").all()
+        assert (ts["activity_id"] == "ScenarioMIP").all()
+        assert (ts["member_id"] == "r1i1p1f1").all()
         assert sorted(ts["region"].tolist()) == sorted(
             [
                 "World",
