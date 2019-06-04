@@ -87,3 +87,19 @@ class OutputFileDatabase(object):
         for _, l in self._data.items():
             self._write_line(l)
         self._fp.flush()
+
+    def contains_file(self, filepath):
+        """
+        Return whether a filepath exists in the database
+
+        Parameters
+        ----------
+        filepath : str
+            Filepath to check (use absolute paths to be safe)
+
+        Returns
+        -------
+        bool
+            If the file is in the database, True, otherwise False
+        """
+        return filepath in self._data
