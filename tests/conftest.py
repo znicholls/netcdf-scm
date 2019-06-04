@@ -308,3 +308,4 @@ def run_crunching_comparison(res, expected, update=False):
 
     if update:
         print("Updated {}".format(expected))
+        pytest.skip()
