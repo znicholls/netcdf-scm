@@ -57,13 +57,21 @@ extensions = [
     "sphinx_click.ext",
 ]
 
-autodoc_default_options = {
-    "members": True,
-    "undoc-members": True,
-    "private-members": False,
-    "inherited-members": True,
-    "show-inheritance": True,
-}
+autodoc_default_flags = [
+    "members",
+    # "undoc-members",
+    # "private-members",
+    "inherited-members",
+    "show-inheritance",
+]
+# change to below when upgrading to Sphinx >= 2.1
+# autodoc_default_options = {
+#     "undoc-members": False,
+#     "private-members": False,
+#     "special-members": False,
+#     "inherited-members": False,
+#     "show-inheritance": False,
+# }
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
