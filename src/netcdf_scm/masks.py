@@ -240,8 +240,7 @@ class CubeMasker:
     Previously calculated masks are cached so each mask is only calculated once. This implementation trades off some additional
     memory overhead for the ability to generate arbitary masks.
 
-    Adding new masks
-    ----------------
+    **Adding new masks**
 
     Additional masks can be added to the MASKS array above. The values in the ``MASKS`` array should be MaskFunc's. A MaskFunc is a
     function which takes a ScmCube, CubeMasker and any additional keyword arguments. The function should return a numpy
