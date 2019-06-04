@@ -826,6 +826,7 @@ class SCMCube(object):
                 warn_msg = (
                     "Could not determine {}, filling with 'unspecified'".format(k)
                 )
+                logger.warning(warn_msg)
                 output[k] = "unspecified"
 
         return output
@@ -1771,6 +1772,7 @@ class CMIP6OutputCube(_CMIPCube):
                 warn_msg = (
                     "Could not determine {}, filling with 'unspecified'".format(k)
                 )
+                logger.warning(warn_msg)
                 output[k] = "unspecified"
 
         return output
