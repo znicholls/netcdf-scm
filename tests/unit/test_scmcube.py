@@ -262,7 +262,9 @@ class TestSCMCube(object):
 
         assert_frame_equal(result, test_conversion_return)
 
-    def test_get_climate_model_scenario_activity_id_member_id_warnings(self, test_cube, caplog):
+    def test_get_climate_model_scenario_activity_id_member_id_warnings(
+        self, test_cube, caplog
+    ):
         warn_msg = re.compile("Could not determine .*, filling with 'unspecified'")
         res = test_cube._get_climate_model_scenario_activity_id_member_id()
 

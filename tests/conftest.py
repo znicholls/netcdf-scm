@@ -1,4 +1,4 @@
-import filecmp
+# import filecmp  # bring back if pyam csv writing becomes stable
 import shutil
 import warnings
 from os import makedirs, path, walk
@@ -302,9 +302,9 @@ def run_crunching_comparison(res, expected, update=False):
                         exp_df = pd.read_csv(exp_f)
                         pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
 
-                        # overly restrictive test, leave for now to see just how
-                        # stable things are but if it becomes too annoying then remove
-                        assert filecmp.cmp(res_f, exp_f, shallow=False)
+                        # very restrictive test, has to be turned off as pyam does
+                        # not sort before writing to disk
+                        # assert filecmp.cmp(res_f, exp_f, shallow=False), "{} and {} differ".format(res_f, exp_f)
 
     if update:
         print("Updated {}".format(expected))
