@@ -211,6 +211,8 @@ class _SCMCubeIntegrationTester(object):
                 ["unspecified"],
                 ["unspecified"],
                 ["unspecified"],
+                ["unspecified"],
+                ["unspecified"],
             ],
             names=["variable", "unit", "region", "climate_model", "scenario", "model", "activity_id", "member_id"],
         )
