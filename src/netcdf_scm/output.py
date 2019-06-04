@@ -43,7 +43,9 @@ class OutputFileDatabase(object):
                 )
             self._data[info["filename"]] = info
 
-        logger.info("Read in {} items from database {}".format(len(self._data), self.filename))
+        logger.info(
+            "Read in {} items from database {}".format(len(self._data), self.filename)
+        )
         return fp
 
     def register(self, out_fname, info):
