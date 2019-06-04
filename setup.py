@@ -51,7 +51,7 @@ REQUIREMENTS_INSTALL = [
 ]
 REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0"]
 REQUIREMENTS_NOTEBOOKS = ["notebook", "nbval", "expectexception"]
-REQUIREMENTS_DOCS = ["sphinx>=1.4", "sphinx_rtd_theme", "sphinx-click"]
+REQUIREMENTS_DOCS = ["sphinx>=1.4,<2.1", "sphinx_rtd_theme", "sphinx-click"]
 REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
 requirements_dev = [
     *["flake8", "black", "isort", "bandit"],
