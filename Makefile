@@ -71,7 +71,7 @@ $(DOCS_DIR)/build/html/index.html: $(DOCS_DIR)/source/*.py $(DOCS_DIR)/source/_t
 
 .PHONY: checks
 checks: $(VENV_DIR)  ## run all checks - formatting and tests (not docs yet...)
-	$(VENV_DIR)/bin/bandit -c .bandit.yml -r src
+	$(VENV_DIR)/bin/bandit -c bandit.yml -r src
 	$(VENV_DIR)/bin/black --check --exclude _version.py --target-version py37 $(FILES_TO_FORMAT_PYTHON)
 	$(VENV_DIR)/bin/flake8 $(FILES_TO_FORMAT_PYTHON)
 	$(VENV_DIR)/bin/isort --check-only --quiet --recursive $(FILES_TO_FORMAT_PYTHON)
