@@ -790,18 +790,18 @@ class SCMCube(object):
         time_index, out_calendar = self._get_openscmdata_time_axis_and_calendar(
             scm_timeseries_cubes, out_calendar=out_calendar
         )
-
-        climate_model, scenario = self._get_climate_model_scenario()
+        run_ids = self._get_climate_model_scenario_activity_id_member_id()
         output = ScmDataFrame(
             data,
             index=time_index,
             columns={
-                "variable": self.cube.standard_name,
-                "unit": str(self.cube.units).replace("-", "^-"),
-                "region": regions,
-                "climate_model": climate_model,
-                "scenario": scenario,
-                "model": "unspecified",
+                **{
+                    "variable": self.cube.standard_name,
+                    "unit": str(self.cube.units).replace("-", "^-"),
+                    "region": regions,
+                    "model": "unspecified",
+                },
+                **run_ids
             },
         )
         try:
@@ -811,20 +811,24 @@ class SCMCube(object):
 
         return output
 
-    def _get_climate_model_scenario(self):
-        try:
-            climate_model = self.model
-            scenario = "_".join([self.activity, self.experiment, self.ensemble_member])
-        except AttributeError:
-            warn_msg = (
-                "Could not determine appropriate climate_model scenario combination, "
-                "filling with 'unspecified'"
-            )
-            logger.warning(warn_msg)
-            climate_model = "unspecified"
-            scenario = "unspecified"
+    def _get_climate_model_scenario_activity_id_member_id(self):
+        ids = {
+            "climate_model": "model",
+            "scenario": "experiment",
+            "activity_id": "activity",
+            "member_id": "ensemble_member",
+        }
+        output = {}
+        for k, v in ids.items():
+            try:
+                output[k] = getattr(self, v)
+            except AttributeError:
+                warn_msg = (
+                    "Could not determine {}, filling with 'unspecified'".format(k)
+                )
+                output[k] = "unspecified"
 
-        return climate_model, scenario
+        return output
 
     def _get_openscmdata_time_axis_and_calendar(
         self, scm_timeseries_cubes, out_calendar
@@ -1752,17 +1756,21 @@ class CMIP6OutputCube(_CMIPCube):
             self.version,
         )
 
-    def _get_climate_model_scenario(self):
-        try:
-            climate_model = self.source_id
-            scenario = "_".join([self.activity_id, self.experiment_id, self.member_id])
-        except AttributeError:
-            warn_msg = (
-                "Could not determine appropriate climate_model scenario combination, "
-                "filling with 'unspecified'"
-            )
-            logger.warning(warn_msg)
-            climate_model = "unspecified"
-            scenario = "unspecified"
+    def _get_climate_model_scenario_activity_id_member_id(self):
+        ids = {
+            "climate_model": "source_id",
+            "scenario": "experiment_id",
+            "activity_id": "activity_id",
+            "member_id": "member_id",
+        }
+        output = {}
+        for k, v in ids.items():
+            try:
+                output[k] = getattr(self, v)
+            except AttributeError:
+                warn_msg = (
+                    "Could not determine {}, filling with 'unspecified'".format(k)
+                )
+                output[k] = "unspecified"
 
-        return climate_model, scenario
+        return output
