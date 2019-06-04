@@ -57,11 +57,15 @@ def test_crunching(tmpdir, caplog):
         lines = fh.readlines()
         assert len(lines) == 5
 
-        # Check that the second item has an areacella file (first item has no metadata
-        # files available)
-        d = json.loads(lines[1])
-        assert len(d["metadata"]["areacella"]["files"]) == 1
-        assert len(d["metadata"]["sftlf"]["files"]) == 1
+        # check that CanESM2 has areacella file
+        for l in lines:
+            d = json.loads(l)
+            if "tas_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc" in d["files"][0]:
+                checked_metadata = True
+                assert len(d["metadata"]["areacella"]["files"]) == 1
+                assert len(d["metadata"]["sftlf"]["files"]) == 1
+
+    assert checked_metadata
 
     THRESHOLD_PERCENTAGE_DIFF = 10 ** -1
     files_found = 0
