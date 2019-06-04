@@ -7,19 +7,19 @@ from os.path import exists, join
 logger = logging.getLogger(__name__)
 
 
-class OutputTracker(object):
+class OutputFileDatabase(object):
     """
-    Holds a list of output files which have been written, including the source files which
+    Holds a list of output files which have been written.
 
-    These
+    Also keeps track of the source files used to create each output file.
     """
 
     filename = "netcdf-scm_crunched.jsonl"
 
     def __init__(self, out_dir):
         self.out_dir = out_dir
-        # Choosing a OrderedDict because it's time complexity for checking if an item already exists is constant, while being able
-        # to keep the items in time order
+        # Choosing a OrderedDict because it's time complexity for checking if an item
+        # already exists is constant, while being able to keep the items in time order
         self._data = OrderedDict()
         self._fp = self.load_from_file()
 
@@ -34,17 +34,16 @@ class OutputTracker(object):
 
         fp = open(fname, "r+")
         lines = fp.readlines()
-
         for l in lines:
             info = json.loads(l)
             k = info["filename"]
             if k in self._data:
                 raise ValueError(
                     "Corrupted output file: duplicate entries for {}".format(k)
-                )  # pragma: no cover # emergency valve
+                )
             self._data[info["filename"]] = info
 
-        logger.info("Read in {} items from cru".format(len(self._data)))
+        logger.info("Read in {} items from database {}".format(len(self._data), self.filename))
         return fp
 
     def register(self, out_fname, info):
@@ -60,9 +59,6 @@ class OutputTracker(object):
         self._data[out_fname] = r
         self._write_line(r)
         self._fp.flush()
-
-    def should_write(self, info):
-        return True
 
     def _write_line(self, line):
         """

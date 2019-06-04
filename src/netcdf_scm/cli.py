@@ -19,7 +19,7 @@ from .iris_cube_wrappers import (
     MarbleCMIP5Cube,
     SCMCube,
 )
-from .output import OutputTracker
+from .output import OutputFileDatabase
 from .wranglers import convert_scmdf_to_tuningstruc
 
 logger = logging.getLogger("netcdf-scm")
@@ -32,23 +32,24 @@ _CUBES = {
 }
 
 
-def init_logging(params, out_filename=None, **kwargs):
+def init_logging(params, out_filename=None, level=None):
     """
     Set up the root logger
 
-    The logger has a number of
-    * All WARNING messages and greater are written to stderr
-    * If an ``out_filename`` is provided all recorded log messages are written to disk
+    All INFO messages and greater are written to stderr
+    If an ``out_filename`` is provided, all recorded log messages are also written to
+    disk.
+
     Parameters
     ----------
     params : list
         A list of key values to write at the start of the log
+
     out_filename : str
         Name of the log file which is written to disk
 
-    Returns
-    -------
-
+    level : int
+        If not `None`, sets the level of the root logger
     """
     handlers = []
     if out_filename:
@@ -67,11 +68,11 @@ def init_logging(params, out_filename=None, **kwargs):
         if h.formatter is None:
             h.setFormatter(fmt)
         root.addHandler(h)
-    level = kwargs.pop("level", None)
+
     if level is not None:
         root.setLevel(level)
-    logging.captureWarnings(True)
 
+    logging.captureWarnings(True)
     logger.info("netcdf-scm: {}".format(netcdf_scm.__version__))
     for k, v in params:
         logger.info("{}: {}".format(k, v))
@@ -151,7 +152,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
     bar = _get_progressbar(
         text=format_custom_text, max_value=len([w for w in walk(src)])
     )
-    tracker = OutputTracker(out_dir)
+    tracker = OutputFileDatabase(out_dir)
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
         logger.debug("Entering {}".format(dirpath))
         if filenames:
@@ -205,7 +206,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
 
     if failures:
         raise click.ClickException(
-            "Some files failed to process. See {} for more details".format(out_filename)
+            "Some files failed to process. See {} for more details".format(log_file)
         )
 
 
