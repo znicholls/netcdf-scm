@@ -4,7 +4,7 @@ import logging
 import re
 import sys
 from os import makedirs, path, walk
-from os.path import dirname, isfile, join
+from os.path import dirname, join
 from time import gmtime, strftime
 
 import click

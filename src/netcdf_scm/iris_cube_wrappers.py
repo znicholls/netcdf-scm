@@ -801,7 +801,7 @@ class SCMCube(object):
                     "region": regions,
                     "model": "unspecified",
                 },
-                **run_ids
+                **run_ids,
             },
         )
         try:
@@ -823,8 +823,8 @@ class SCMCube(object):
             try:
                 output[k] = getattr(self, v)
             except AttributeError:
-                warn_msg = (
-                    "Could not determine {}, filling with 'unspecified'".format(k)
+                warn_msg = "Could not determine {}, filling with 'unspecified'".format(
+                    k
                 )
                 logger.warning(warn_msg)
                 output[k] = "unspecified"
@@ -1769,8 +1769,8 @@ class CMIP6OutputCube(_CMIPCube):
             try:
                 output[k] = getattr(self, v)
             except AttributeError:
-                warn_msg = (
-                    "Could not determine {}, filling with 'unspecified'".format(k)
+                warn_msg = "Could not determine {}, filling with 'unspecified'".format(
+                    k
                 )
                 logger.warning(warn_msg)
                 output[k] = "unspecified"
