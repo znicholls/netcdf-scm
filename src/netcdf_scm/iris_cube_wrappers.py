@@ -1,4 +1,5 @@
-"""This module contains our wrappers of the iris cube.
+"""
+This module contains our wrappers of the iris cube.
 
 These classes automate handling of a number of netCDF processing steps.
 For example, finding surface land fraction files, applying masks to data and
