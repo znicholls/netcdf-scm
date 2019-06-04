@@ -262,31 +262,33 @@ class TestSCMCube(object):
 
         assert_frame_equal(result, test_conversion_return)
 
-    def test_get_climate_model_scenario(self, test_cube, caplog):
-        warn_msg = (
-            "Could not determine appropriate climate_model scenario combination, "
-            "filling with 'unspecified'"
-        )
-        model, scenario = test_cube._get_climate_model_scenario()
+    def test_get_climate_model_scenario_activity_id_member_id_warnings(self, test_cube, caplog):
+        warn_msg = re.compile("Could not determine .*, filling with 'unspecified'")
+        res = test_cube._get_climate_model_scenario_activity_id_member_id()
 
-        assert model == "unspecified"
-        assert scenario == "unspecified"
-        assert len(caplog.messages) == 1
-        assert str(caplog.messages[0]) == warn_msg
+        assert res["climate_model"] == "unspecified"
+        assert res["scenario"] == "unspecified"
+        assert res["activity_id"] == "unspecified"
+        assert res["member_id"] == "unspecified"
+        assert len(caplog.messages) == 4
+        for m in caplog.messages:
+            assert warn_msg.match(str(m))
 
+    def test_get_climate_model_scenario_activity_id_member_id(self, test_cube, caplog):
         tmodel = "ABCD"
         tactivity = "rcpmip"
-        texperiment = "oscvolcanicrf"
         tensemble_member = "r1i3p10"
-        tscenario = "_".join([tactivity, texperiment, tensemble_member])
+        tscenario = "oscvolcanicrf"
         test_cube.model = tmodel
         test_cube.activity = tactivity
-        test_cube.experiment = texperiment
+        test_cube.experiment = tscenario
         test_cube.ensemble_member = tensemble_member
 
-        model, scenario = test_cube._get_climate_model_scenario()
-        assert model == tmodel
-        assert scenario == tscenario
+        res = test_cube._get_climate_model_scenario_activity_id_member_id()
+        assert res["climate_model"] == tmodel
+        assert res["scenario"] == tscenario
+        assert res["activity_id"] == tactivity
+        assert res["member_id"] == tensemble_member
 
     @patch("netcdf_scm.iris_cube_wrappers.take_lat_lon_mean")
     def test_get_scm_timeseries_cubes(self, mock_take_lat_lon_mean, test_cube):
@@ -1486,28 +1488,18 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         )
         assert isinstance(result, iris.Constraint)
 
-    def test_get_climate_model_scenario(self, test_cube, caplog):
-        warn_msg = (
-            "Could not determine appropriate climate_model scenario combination, "
-            "filling with 'unspecified'"
-        )
-        model, scenario = test_cube._get_climate_model_scenario()
-
-        assert model == "unspecified"
-        assert scenario == "unspecified"
-        assert len(caplog.messages) == 1
-        assert str(caplog.messages[0]) == warn_msg
-
+    def test_get_climate_model_scenario_activity_id_member_id(self, test_cube, caplog):
         tmodel = "ABCD"
         tactivity = "rcpmip"
-        texperiment = "oscvolcanicrf"
         tensemble_member = "r1i3p10"
-        tscenario = "_".join([tactivity, texperiment, tensemble_member])
+        tscenario = "oscvolcanicrf"
         test_cube.source_id = tmodel
         test_cube.activity_id = tactivity
-        test_cube.experiment_id = texperiment
+        test_cube.experiment_id = tscenario
         test_cube.member_id = tensemble_member
 
-        model, scenario = test_cube._get_climate_model_scenario()
-        assert model == tmodel
-        assert scenario == tscenario
+        res = test_cube._get_climate_model_scenario_activity_id_member_id()
+        assert res["climate_model"] == tmodel
+        assert res["scenario"] == tscenario
+        assert res["activity_id"] == tactivity
+        assert res["member_id"] == tensemble_member
