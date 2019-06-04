@@ -476,9 +476,7 @@ class SCMCube(object):
         with warnings.catch_warnings(record=True) as w:
             # iris v2.2.0 under py3.7 raises a DeprecationWarning about using collections, see https://github.com/SciTools/iris/pull/3320
             warnings.filterwarnings(
-                "ignore",
-                category=DeprecationWarning,
-                module=r".*collections.",
+                "ignore", category=DeprecationWarning, module=r".*collections.*"
             )
             self._load_cube(
                 self.get_filepath_from_load_data_from_identifiers_args(**kwargs),

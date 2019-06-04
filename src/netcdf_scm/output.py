@@ -43,7 +43,9 @@ class OutputFileDatabase(object):
                 )
             self._data[info["filename"]] = info
 
-        logger.info("Read in {} items from database {}".format(len(self._data), self.filename))
+        logger.info(
+            "Read in {} items from database {}".format(len(self._data), self.filename)
+        )
         return fp
 
     def register(self, out_fname, info):
@@ -85,3 +87,19 @@ class OutputFileDatabase(object):
         for _, l in self._data.items():
             self._write_line(l)
         self._fp.flush()
+
+    def contains_file(self, filepath):
+        """
+        Return whether a filepath exists in the database
+
+        Parameters
+        ----------
+        filepath : str
+            Filepath to check (use absolute paths to be safe)
+
+        Returns
+        -------
+        bool
+            If the file is in the database, True, otherwise False
+        """
+        return filepath in self._data
