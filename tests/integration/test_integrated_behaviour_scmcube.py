@@ -214,7 +214,16 @@ class _SCMCubeIntegrationTester(object):
                 ["unspecified"],
                 ["unspecified"],
             ],
-            names=["variable", "unit", "region", "climate_model", "scenario", "model", "activity_id", "member_id"],
+            names=[
+                "variable",
+                "unit",
+                "region",
+                "climate_model",
+                "scenario",
+                "model",
+                "activity_id",
+                "member_id",
+            ],
         )
         expected_df = (
             expected_df.unstack().reset_index().rename({0: "value"}, axis="columns")
