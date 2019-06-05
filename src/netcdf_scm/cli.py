@@ -228,9 +228,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
     show_default=True,
 )
 @click.option(
-    "--prefix",
-    default=None,
-    help="Prefix to apply to output file names (not paths).",
+    "--prefix", default=None, help="Prefix to apply to output file names (not paths)."
 )
 @click.option(
     "--out-format",
@@ -303,9 +301,7 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
             scmcube = _CUBES[drs]()
             ids = {
                 k: v
-                if any(
-                    [s in k for s in ["variable", "experiment", "activity", "mip"]]
-                )
+                if any([s in k for s in ["variable", "experiment", "activity", "mip"]])
                 else ".*"
                 for k, v in scmcube.process_path(dirpath).items()
             }
@@ -338,7 +334,9 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
 
                     collected.append(openscmdf)
 
-            _tuningstrucs_wrangling(dst, regexp, df_append(collected), force, prefix, blend_models=True)
+            _tuningstrucs_wrangling(
+                dst, regexp, df_append(collected), force, prefix, blend_models=True
+            )
 
             considered_regexps.append(regexp_here)
 
@@ -367,18 +365,27 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
             _make_path_if_not_exists(out_filedir)
 
             if out_format == "tuningstrucs":
-                _tuningstrucs_wrangling(out_filedir, filenames, openscmdf, force, prefix)
+                _tuningstrucs_wrangling(
+                    out_filedir, filenames, openscmdf, force, prefix
+                )
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))
 
 
-def _tuningstrucs_wrangling(out_root_dir, source_info, source_openscmdf, force, prefix, blend_models=False):
-    sdf_iter = [source_openscmdf] if blend_models else [source_openscmdf.filter(climate_model=m) for m in source_openscmdf["climate_model"]]
+def _tuningstrucs_wrangling(
+    out_root_dir, source_info, source_openscmdf, force, prefix, blend_models=False
+):
+    sdf_iter = (
+        [source_openscmdf]
+        if blend_models
+        else [
+            source_openscmdf.filter(climate_model=m)
+            for m in source_openscmdf["climate_model"]
+        ]
+    )
     for sdf in sdf_iter:
         logger.info("Wrangling {}".format(source_info))
-        convert_scmdf_to_tuningstruc(
-            sdf, out_root_dir, force=force, prefix=prefix,
-        )
+        convert_scmdf_to_tuningstruc(sdf, out_root_dir, force=force, prefix=prefix)
 
 
 def _get_timestamp():
