@@ -358,31 +358,13 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
             tmp_ts["unit"] = tmp_ts["unit"].astype(str)
             openscmdf = ScmDataFrame(tmp_ts)
 
-            if nested:
-                out_filedir = dirpath.replace(src, dst)
-                _make_path_if_not_exists(out_filedir)
+            out_filedir = dirpath.replace(src, dst) if nested else dst
+            _make_path_if_not_exists(out_filedir)
 
-                if out_format == "tuningstrucs":
-                    skipped_files = _tuningstrucs_wrangling(out_filedir, filenames, openscmdf, force, "ts")
-                elif out_format == "tuningstrucs-blend-model":
-                    skipped_files = _tuningstrucs_blend_model_wrangling(out_filedir, filenames, openscmdf, force, "ts")
-                else:
-                    raise ValueError("Unsupported format: {}".format(out_format))
+            if out_format == "tuningstrucs":
+                _tuningstrucs_wrangling(out_filedir, filenames, openscmdf, force, "ts")
             else:
-                try:
-                    collected = collected.append(openscmdf)
-                except NameError:
-                    collected = openscmdf
-
-    if not nested:
-        if out_format == "tuningstrucs":
-            skipped_files = _tuningstrucs_wrangling(dst, regexp, collected, force, "ts")
-        elif out_format == "tuningstrucs-blend-model":
-            skipped_files = _tuningstrucs_blend_model_wrangling(dst, regexp, collected, force, "ts")
-        else:
-            raise ValueError("Unsupported format: {}".format(out_format))
-
-    return skipped_files
+                raise ValueError("Unsupported format: {}".format(out_format))
 
 
 def _tuningstrucs_wrangling(out_root_dir, source_info, source_openscmdf, force, prefix, blend_models=False):
@@ -401,7 +383,6 @@ def _tuningstrucs_wrangling(out_root_dir, source_info, source_openscmdf, force, 
                 )
             )
 
-    return skipped_files
 
 def _get_timestamp():
     return strftime("%Y%m%d %H%M%S", gmtime())
