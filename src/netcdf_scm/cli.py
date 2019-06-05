@@ -228,6 +228,11 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
     show_default=True,
 )
 @click.option(
+    "--prefix",
+    default=None,
+    help="Prefix to apply to output file names (not paths).",
+)
+@click.option(
     "--out-format",
     default="tuningstrucs",
     type=click.Choice(["tuningstrucs", "tuningstrucs-blend-model"]),
@@ -248,7 +253,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
     default=False,
     show_default=True,
 )
-def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
+def wrangle_openscm_csvs(src, dst, regexp, nested, prefix, out_format, drs, force):
     """
     Wrangle OpenSCM csv files into other formats and directory structures
 
@@ -275,12 +280,12 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
     init_logging(log_params, out_filename=log_file)
 
     if out_format == "tuningstrucs-blend-model":
-        _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs)
+        _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
     else:
-        _do_wrangling(src, dst, regexp, nested, out_format, force)
+        _do_wrangling(src, dst, regexp, nested, out_format, force, prefix)
 
 
-def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs):
+def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
     regexp_compiled = re.compile(regexp)
     considered_regexps = []
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
@@ -333,12 +338,12 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs):
 
                     collected.append(openscmdf)
 
-            _tuningstrucs_wrangling(dst, regexp, df_append(collected), force, "ts", blend_models=True)
+            _tuningstrucs_wrangling(dst, regexp, df_append(collected), force, prefix, blend_models=True)
 
             considered_regexps.append(regexp_here)
 
 
-def _do_wrangling(src, dst, regexp, nested, out_format, force):
+def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
     regexp_compiled = re.compile(regexp)
 
     format_custom_text = _get_format_custom_text()
@@ -362,26 +367,18 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
             _make_path_if_not_exists(out_filedir)
 
             if out_format == "tuningstrucs":
-                _tuningstrucs_wrangling(out_filedir, filenames, openscmdf, force, "ts")
+                _tuningstrucs_wrangling(out_filedir, filenames, openscmdf, force, prefix)
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))
 
 
 def _tuningstrucs_wrangling(out_root_dir, source_info, source_openscmdf, force, prefix, blend_models=False):
-    out_file = join(out_root_dir, prefix)
-    # TODO: make logging say where files are actually going
     sdf_iter = [source_openscmdf] if blend_models else [source_openscmdf.filter(climate_model=m) for m in source_openscmdf["climate_model"]]
     for sdf in sdf_iter:
-        logger.info("Wrangling {} to {}*.mat".format(source_info, out_file))
-        skipped_files = convert_scmdf_to_tuningstruc(
+        logger.info("Wrangling {}".format(source_info))
+        convert_scmdf_to_tuningstruc(
             sdf, out_root_dir, force=force, prefix=prefix,
         )
-        if skipped_files:
-            logging.warning(
-                "Skipped writing {} files for {}".format(
-                    len(skipped_files), out_file
-                )
-            )
 
 
 def _get_timestamp():
