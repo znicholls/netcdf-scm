@@ -230,7 +230,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
 @click.option(
     "--out-format",
     default="tuningstrucs",
-    type=click.Choice(["tuningstrucs"]),
+    type=click.Choice(["tuningstrucs", "tuningstrucs-blend-model"]),
     show_default=True,
     help="Format to re-write csvs into.",
 )
@@ -271,50 +271,48 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
     _make_path_if_not_exists(dst)
     init_logging(log_params, out_filename=log_file)
 
-    regexp_compiled = re.compile(regexp)
-
-    already_exist_files = []
-    if nested:
-        here_skipped = _do_wrangling(src, dst, regexp, nested, out_format, force)
-        if here_skipped:
-            already_exist_files += here_skipped
+    if out_format == "tuningstrucs-blend-model":
+        _tuningstrucs_blended_model_wrangling(src, dst, regexp, nested, out_format, force, drs)
     else:
-        considered_regexps = []
-        for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-            if filenames:
-                if not regexp_compiled.match(dirpath):
+        _do_wrangling(src, dst, regexp, nested, out_format, force)
+
+
+def _tuningstrucs_blended_model_wrangling(src, dst, regexp, nested, out_format, force, drs):
+    regexp_compiled = re.compile(regexp)
+    considered_regexps = []
+    for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
+        if filenames:
+            if not regexp_compiled.match(dirpath):
+                continue
+
+            if considered_regexps:
+                if any([r.match(dirpath) for r in considered_regexps]):
                     continue
 
-                if considered_regexps:
-                    if any([r.match(dirpath) for r in considered_regexps]):
-                        continue
+            if drs == "None":
+                raise NotImplementedError("Raise an issue if you need this")
 
-                if drs == "None":
-                    raise NotImplementedError("Raise an issue if you need this")
-
-                scmcube = _CUBES[drs]()
-                ids = {
-                    k: v
-                    if any(
-                        [s in k for s in ["variable", "experiment", "activity", "mip"]]
-                    )
-                    else ".*"
-                    for k, v in scmcube.process_path(dirpath).items()
-                }
-
-                regexp_here = re.compile(
-                    dirname(
-                        scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)
-                    )
+            scmcube = _CUBES[drs]()
+            ids = {
+                k: v
+                if any(
+                    [s in k for s in ["variable", "experiment", "activity", "mip"]]
                 )
-                logger.info("Wrangling {}".format(regexp_here))
-                here_skipped = _do_wrangling(
-                    src, dst, regexp_here, nested, out_format, force
-                )
-                if here_skipped:
-                    already_exist_files += here_skipped
+                else ".*"
+                for k, v in scmcube.process_path(dirpath).items()
+            }
 
-                considered_regexps.append(regexp_here)
+            regexp_here = re.compile(
+                dirname(
+                    scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)
+                )
+            )
+            logger.info("Wrangling {}".format(regexp_here))
+            _do_wrangling(
+                src, dst, regexp_here, nested, out_format, force
+            )
+
+            considered_regexps.append(regexp_here)
 
 
 def _do_wrangling(src, dst, regexp, nested, out_format, force):
@@ -324,7 +322,6 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
     bar = _get_progressbar(
         text=format_custom_text, max_value=len([w for w in walk(src)])
     )
-    already_exist_files = []
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
         if filenames:
             if not regexp_compiled.match(dirpath):
@@ -354,8 +351,18 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
                                 len(skipped_files), out_file
                             )
                         )
-                        already_exist_files.append(skipped_files)
-
+                elif out_format == "tuningstrucs-blend-model":
+                    out_file = join(out_filedir, "ts")
+                    logger.info("Wrangling {} to {}".format(filenames, out_file))
+                    skipped_files = convert_scmdf_to_tuningstruc(
+                        openscmdf, out_filedir, force=force, prefix="ts",
+                    )
+                    if skipped_files:
+                        logging.warning(
+                            "Skipped writing {} files for {}".format(
+                                len(skipped_files), out_file
+                            )
+                        )
                 else:
                     raise ValueError("Unsupported format: {}".format(out_format))
             else:
@@ -377,8 +384,18 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
                         len(skipped_files), out_file
                     )
                 )
-                already_exist_files.append(skipped_files)
-
+        elif out_format == "tuningstrucs-blend-model":
+            out_file = join(dst, "ts")
+            logger.info("Wrangling {} to {}*.mat".format(regexp, out_file))
+            skipped_files = convert_scmdf_to_tuningstruc(
+                collected, dst, force=force, prefix="ts",
+            )
+            if skipped_files:
+                logging.warning(
+                    "Skipped writing {} files for {}".format(
+                        len(skipped_files), out_file
+                    )
+                )
         else:
             raise ValueError("Unsupported format: {}".format(out_format))
 
