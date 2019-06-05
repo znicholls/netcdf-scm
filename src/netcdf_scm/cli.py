@@ -366,9 +366,10 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
             _make_path_if_not_exists(out_filedir)
 
             if out_format == "magicc-input-files":
-                import pdb
+                # import pdb
 
-                pdb.set_trace()
+                # pdb.set_trace()
+                pass
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))
 
