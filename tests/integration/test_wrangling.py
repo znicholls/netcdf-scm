@@ -209,3 +209,13 @@ def test_wrangling_blended_models_default_drs_error(tmpdir):
     runner = CliRunner()
     result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--flat", "--out-format", "tuningstrucs-blend-model"])
     assert result.exit_code != 0
+
+
+def test_wrangling_blended_models_not_flat_error(tmpdir):
+    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    OUTPUT_DIR = str(tmpdir)
+
+    runner = CliRunner()
+    result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--nested", "--out-format", "tuningstrucs-blend-model"])
+
+    assert result.exit_code != 0
