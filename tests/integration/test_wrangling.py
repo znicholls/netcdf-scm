@@ -69,9 +69,18 @@ def test_wrangling_handles_integer_units(tmpdir, caplog):
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
-            wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*",
+            wrangle_openscm_csvs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "--regexp",
+                ".*lai.*",
                 "--out-format",
-                "tuningstrucs-blend-model", "--flat", "--drs", "CMIP6Output"]
+                "tuningstrucs-blend-model",
+                "--flat",
+                "--drs",
+                "CMIP6Output",
+            ],
         )
     assert result.exit_code == 0
 
@@ -87,7 +96,7 @@ def test_wrangling_force(tmpdir, caplog):
     runner = CliRunner()
     result = runner.invoke(
         wrangle_openscm_csvs,
-        [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f", "--prefix", "test-prefix",],
+        [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f", "--prefix", "test-prefix"],
     )
     assert result.exit_code == 0
 
@@ -95,7 +104,7 @@ def test_wrangling_force(tmpdir, caplog):
     with caplog.at_level("INFO"):
         result_skip = runner.invoke(
             wrangle_openscm_csvs,
-            [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "--prefix", "test-prefix",],
+            [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "--prefix", "test-prefix"],
         )
     assert result_skip.exit_code == 0
 
@@ -141,8 +150,8 @@ def test_wrangling_force_flat(tmpdir, caplog):
             "--flat",
             "--drs",
             "CMIP6Output",
-                "--out-format",
-                "tuningstrucs-blend-model",
+            "--out-format",
+            "tuningstrucs-blend-model",
         ],
     )
     assert result.exit_code == 0
@@ -183,8 +192,8 @@ def test_wrangling_force_flat(tmpdir, caplog):
             "--flat",
             "--drs",
             "CMIP6Output",
-                "--out-format",
-                "tuningstrucs-blend-model",
+            "--out-format",
+            "tuningstrucs-blend-model",
         ],
     )
     assert result_force.exit_code == 0

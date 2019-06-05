@@ -233,7 +233,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
 @click.option(
     "--out-format",
     default="magicc-input-files",
-    type=click.Choice(["tuningstrucs-blend-model"]),
+    type=click.Choice(["magicc-input-files", "tuningstrucs-blend-model"]),
     show_default=True,
     help="Format to re-write csvs into.",
 )
@@ -334,8 +334,9 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
 
                     collected.append(openscmdf)
 
-            _tuningstrucs_wrangling(
-                dst, regexp, df_append(collected), force, prefix, blend_models=True
+            logger.info("Wrangling {}".format(source_info))
+            convert_scmdf_to_tuningstruc(
+                source_openscmdf, out_root_dir, force=force, prefix=prefix
             )
 
             considered_regexps.append(regexp_here)
@@ -364,28 +365,12 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
             out_filedir = dirpath.replace(src, dst) if nested else dst
             _make_path_if_not_exists(out_filedir)
 
-            if out_format == "tuningstrucs":
-                _tuningstrucs_wrangling(
-                    out_filedir, filenames, openscmdf, force, prefix
-                )
+            if out_format == "magicc-input-files":
+                import pdb
+
+                pdb.set_trace()
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))
-
-
-def _tuningstrucs_wrangling(
-    out_root_dir, source_info, source_openscmdf, force, prefix, blend_models=False
-):
-    sdf_iter = (
-        [source_openscmdf]
-        if blend_models
-        else [
-            source_openscmdf.filter(climate_model=m)
-            for m in source_openscmdf["climate_model"]
-        ]
-    )
-    for sdf in sdf_iter:
-        logger.info("Wrangling {}".format(source_info))
-        convert_scmdf_to_tuningstruc(sdf, out_root_dir, force=force, prefix=prefix)
 
 
 def _get_timestamp():
