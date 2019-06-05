@@ -1,5 +1,5 @@
 import logging
-from os.path import isfile
+from os.path import isfile, join
 
 import numpy as np
 from openscm.scmdataframe import ScmDataFrame
@@ -94,7 +94,7 @@ def convert_tuningstruc_to_scmdf(
     return ref_df
 
 
-def convert_scmdf_to_tuningstruc(scmdf, outpath, force=False):
+def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
     """Convert an ScmDataFrame to a matlab tuningstruc
 
     One tuningstruc file will be created for each unique
@@ -106,9 +106,13 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath, force=False):
     scmdf : :obj: `ScmDataFrame`
         ScmDataFrame to convert to a tuningstruc
 
-    outpath : str
-        Base path in which to save the tuningstruc. The rest of the pathname is
-        generated from the metadata. `.mat` is also appended automatically.
+    outdir : str
+        Directory in which to save the tuningstruc. 
+
+    prefix : str
+        Prefix for the filename. The rest of the filename is generated from the 
+        metadata. `.mat` is also appended automatically. If ``None``, no prefix
+        is used.
 
     force : bool
         If True, overwrite any existing files
@@ -159,7 +163,7 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath, force=False):
             ]
             dataset["tuningdata"]["model"][m]["col_code"] = ["YEARS", variable]
 
-        outfile = get_tuningstruc_name_from_df(df, outpath)
+        outfile = get_tuningstruc_name_from_df(df, outdir, prefix)
 
         if isfile(outfile) and not force:
             logger.info("Skipped (already exist, not overwriting) {}".format(outfile))
@@ -171,7 +175,7 @@ def convert_scmdf_to_tuningstruc(scmdf, outpath, force=False):
     return already_written
 
 
-def get_tuningstruc_name_from_df(df, outpath):
+def get_tuningstruc_name_from_df(df, outdir, prefix):
     """
     Get the name of a tuningstruc from a ``pd.DataFrame``
 
@@ -180,8 +184,11 @@ def get_tuningstruc_name_from_df(df, outpath):
     df : :obj: `pd.DataFrame`
         *pandas* DataFrame to convert to a tuningstruc
 
-    outpath : str
+    outdir : str
         Base path on which to append the metadata and `.mat`.
+    
+    prefix : str
+        Prefix to prepend to the name. If ``None``, no prefix is prepended.
 
     Returns
     -------
@@ -210,8 +217,15 @@ def get_tuningstruc_name_from_df(df, outpath):
     variable = _get_col("variable")
     region = _get_col("region")
 
-    return (
-        "{}_{}_{}_{}_{}.mat".format(outpath, scenario, model, variable, region)
+    raw_name = (
+        "{}_{}_{}_{}.mat".format(scenario, model, variable, region)
         .replace(" ", "_")
         .replace("|", "_")
     )
+    if prefix is not None:
+        return join(
+            outdir,
+            "{}_{}".format(prefix, raw_name)
+        )
+
+    return join(outdir, raw_name)

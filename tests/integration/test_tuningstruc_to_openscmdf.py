@@ -84,8 +84,6 @@ def test_convert_tuningstruc_to_scmdf(test_file_info, model):
 
 
 def test_convert_scmdf_to_tuningstruc_single_char_unit(tmpdir):
-    tbase = join(tmpdir, "test_tuningstruc")
-
     test_df = ScmDataFrame(
         np.array([1, 2, 3]),
         index=[dt.datetime(y, 1, 1) for y in [1990, 1991, 1992]],
@@ -99,7 +97,7 @@ def test_convert_scmdf_to_tuningstruc_single_char_unit(tmpdir):
         },
     )
 
-    convert_scmdf_to_tuningstruc(test_df, tbase)
+    convert_scmdf_to_tuningstruc(test_df, tmpdir, prefix="test_tuningstruc")
     expected_outfile = join(tmpdir, "test_tuningstruc_test_test_var_World.mat")
 
     reread = convert_tuningstruc_to_scmdf(expected_outfile)
