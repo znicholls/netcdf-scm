@@ -334,9 +334,9 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
 
                     collected.append(openscmdf)
 
-            logger.info("Wrangling {}".format(source_info))
+            logger.info("Wrangling {}".format(regexp_here))
             convert_scmdf_to_tuningstruc(
-                source_openscmdf, out_root_dir, force=force, prefix=prefix
+                df_append(collected), dst, force=force, prefix=prefix
             )
 
             considered_regexps.append(regexp_here)
