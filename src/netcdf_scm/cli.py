@@ -10,6 +10,7 @@ from time import gmtime, strftime
 import click
 import progressbar
 from openscm.scmdataframe import ScmDataFrame, df_append
+from pymagicc.io import MAGICCData
 
 import netcdf_scm
 
@@ -366,10 +367,8 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
             _make_path_if_not_exists(out_filedir)
 
             if out_format == "magicc-input-files":
-                # import pdb
-
-                # pdb.set_trace()
-                pass
+                writer = MAGICCData(openscmdf)
+                writer.write("/home/zebedee/Desktop/TEST.SCEN7", magicc_version=7)
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))
 
