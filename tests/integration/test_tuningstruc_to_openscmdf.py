@@ -114,8 +114,6 @@ def test_convert_tuningstruc_to_scmdf_errors(test_file_info):
 
 
 def test_convert_scmdf_to_tuningstruc(test_file_info, tmpdir):
-    tbase = join(tmpdir, "test_tuningstruc")
-
     test_file = test_file_info["location"]
     tvar = test_file_info["var"]
     tregion = "World|Northern Hemisphere|Ocean"
@@ -126,12 +124,11 @@ def test_convert_scmdf_to_tuningstruc(test_file_info, tmpdir):
         test_file, tvar, tregion, tunit, tscen, model=tmodel
     )
 
-    expected_outfile = (
-        "{}_{}_{}_{}_{}.mat".format(tbase, tscen, tmodel, tvar, tregion)
-        .replace(" ", "_")
-        .replace("|", "_")
+    expected_outfile = join(
+        tmpdir,
+        "{}_{}_{}_{}.mat".format(tscen, tmodel, tvar, tregion).replace(" ", "_").replace("|", "_")
     )
-    convert_scmdf_to_tuningstruc(start, tbase)
+    convert_scmdf_to_tuningstruc(start, tmpdir)
     res = convert_tuningstruc_to_scmdf(expected_outfile)
 
     pd.testing.assert_frame_equal(start.timeseries(), res.timeseries())
