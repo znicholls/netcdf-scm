@@ -124,7 +124,9 @@ def test_convert_scmdf_to_tuningstruc(test_file_info, tmpdir):
 
     expected_outfile = join(
         tmpdir,
-        "{}_{}_{}_{}.mat".format(tscen, tmodel, tvar, tregion).replace(" ", "_").replace("|", "_")
+        "{}_{}_{}_{}.mat".format(tscen, tmodel, tvar, tregion)
+        .replace(" ", "_")
+        .replace("|", "_"),
     )
     convert_scmdf_to_tuningstruc(start, tmpdir)
     res = convert_tuningstruc_to_scmdf(expected_outfile)

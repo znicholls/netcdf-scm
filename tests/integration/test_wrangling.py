@@ -78,7 +78,15 @@ def test_wrangling_flat_blend_models(tmpdir, caplog):
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_openscm_csvs,
-            [INPUT_DIR, OUTPUT_DIR, "--flat", "--drs", "CMIP6Output", "--out-format", "tuningstrucs-blend-model"],
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "--flat",
+                "--drs",
+                "CMIP6Output",
+                "--out-format",
+                "tuningstrucs-blend-model",
+            ],
         )
     assert result.exit_code == 0, result.output
 
@@ -113,14 +121,16 @@ def test_wrangling_force(tmpdir, caplog):
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f", "--prefix", "test-prefix"]
+        wrangle_openscm_csvs,
+        [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f", "--prefix", "test-prefix"],
     )
     assert result.exit_code == 0
 
     caplog.clear()
     with caplog.at_level("INFO"):
         result_skip = runner.invoke(
-            wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "--prefix", "test-prefix"]
+            wrangle_openscm_csvs,
+            [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "--prefix", "test-prefix"],
         )
     assert result_skip.exit_code == 0
 
@@ -135,7 +145,16 @@ def test_wrangling_force(tmpdir, caplog):
     caplog.clear()
     with caplog.at_level("INFO"):
         result_force = runner.invoke(
-            wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f", "--prefix", "test-prefix"]
+            wrangle_openscm_csvs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "--regexp",
+                ".*lai.*",
+                "-f",
+                "--prefix",
+                "test-prefix",
+            ],
         )
     assert result_force.exit_code == 0
     assert skip_str_file not in result_force.output
@@ -179,8 +198,7 @@ def test_wrangling_force_flat(tmpdir, caplog):
 
     skip_str_file = "Skipped (already exist, not overwriting) {}".format(
         join(
-            OUTPUT_DIR,
-            "CMIP_historical_r2i1p1f2_unspecified_leaf_area_index_World.mat",
+            OUTPUT_DIR, "CMIP_historical_r2i1p1f2_unspecified_leaf_area_index_World.mat"
         )
     )
     assert skip_str_file in result_skip.output
@@ -207,7 +225,10 @@ def test_wrangling_blended_models_default_drs_error(tmpdir):
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
-    result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--flat", "--out-format", "tuningstrucs-blend-model"])
+    result = runner.invoke(
+        wrangle_openscm_csvs,
+        [INPUT_DIR, OUTPUT_DIR, "--flat", "--out-format", "tuningstrucs-blend-model"],
+    )
     assert result.exit_code != 0
 
 
@@ -216,6 +237,9 @@ def test_wrangling_blended_models_not_flat_error(tmpdir):
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
-    result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--nested", "--out-format", "tuningstrucs-blend-model"])
+    result = runner.invoke(
+        wrangle_openscm_csvs,
+        [INPUT_DIR, OUTPUT_DIR, "--nested", "--out-format", "tuningstrucs-blend-model"],
+    )
 
     assert result.exit_code != 0

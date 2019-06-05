@@ -107,10 +107,10 @@ def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
         ScmDataFrame to convert to a tuningstruc
 
     outdir : str
-        Directory in which to save the tuningstruc. 
+        Directory in which to save the tuningstruc
 
     prefix : str
-        Prefix for the filename. The rest of the filename is generated from the 
+        Prefix for the filename. The rest of the filename is generated from the
         metadata. `.mat` is also appended automatically. If ``None``, no prefix
         is used.
 
@@ -186,7 +186,7 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
 
     outdir : str
         Base path on which to append the metadata and `.mat`.
-    
+
     prefix : str
         Prefix to prepend to the name. If ``None``, no prefix is prepended.
 
@@ -223,9 +223,6 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
         .replace("|", "_")
     )
     if prefix is not None:
-        return join(
-            outdir,
-            "{}_{}".format(prefix, raw_name)
-        )
+        return join(outdir, "{}_{}".format(prefix, raw_name))
 
     return join(outdir, raw_name)
