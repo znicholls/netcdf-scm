@@ -346,7 +346,7 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
                     out_file = join(out_filedir, "ts")
                     logger.info("Wrangling {} to {}".format(filenames, out_file))
                     skipped_files = convert_scmdf_to_tuningstruc(
-                        openscmdf, out_file, force=force
+                        openscmdf, out_filedir, force=force, prefix="ts",
                     )
                     if skipped_files:
                         logging.warning(
@@ -369,7 +369,7 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
             out_file = join(dst, "ts")
             logger.info("Wrangling {} to {}*.mat".format(regexp, out_file))
             skipped_files = convert_scmdf_to_tuningstruc(
-                collected, out_file, force=force
+                collected, dst, force=force, prefix="ts",
             )
             if skipped_files:
                 logging.warning(
