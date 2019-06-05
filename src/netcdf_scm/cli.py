@@ -255,6 +255,9 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
     ``src`` is searched recursively and netcdf-scm will attemp to wrangle all the files
     found.
     """
+    if out_format == "tuningstrucs-blend-model" and nested:
+        raise ValueError("Cannot wrangle to nested tuningstrucs with blended models")
+
     log_params = [
         ("source", src),
         ("destination", dst),
@@ -272,12 +275,12 @@ def wrangle_openscm_csvs(src, dst, regexp, nested, out_format, drs, force):
     init_logging(log_params, out_filename=log_file)
 
     if out_format == "tuningstrucs-blend-model":
-        _tuningstrucs_blended_model_wrangling(src, dst, regexp, nested, out_format, force, drs)
+        _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs)
     else:
         _do_wrangling(src, dst, regexp, nested, out_format, force)
 
 
-def _tuningstrucs_blended_model_wrangling(src, dst, regexp, nested, out_format, force, drs):
+def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs):
     regexp_compiled = re.compile(regexp)
     considered_regexps = []
     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
@@ -308,9 +311,29 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, nested, out_format, 
                 )
             )
             logger.info("Wrangling {}".format(regexp_here))
-            _do_wrangling(
-                src, dst, regexp_here, nested, out_format, force
+            regexp_compiled = re.compile(regexp)
+
+            format_custom_text = _get_format_custom_text()
+            bar = _get_progressbar(
+                text=format_custom_text, max_value=len([w for w in walk(src)])
             )
+            collected = []
+            for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
+                if filenames:
+                    if not regexp_compiled.match(dirpath):
+                        continue
+
+                    format_custom_text.update_mapping(curr_dir=dirpath)
+                    bar.update(i)
+
+                    openscmdf = df_append([join(dirpath, f) for f in filenames])
+                    tmp_ts = openscmdf.timeseries().reset_index()
+                    tmp_ts["unit"] = tmp_ts["unit"].astype(str)
+                    openscmdf = ScmDataFrame(tmp_ts)
+
+                    collected.append(openscmdf)
+
+            _tuningstrucs_wrangling(dst, regexp, df_append(collected), force, "ts", blend_models=True)
 
             considered_regexps.append(regexp_here)
 
@@ -340,29 +363,9 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
                 _make_path_if_not_exists(out_filedir)
 
                 if out_format == "tuningstrucs":
-                    out_file = join(out_filedir, "ts")
-                    logger.info("Wrangling {} to {}".format(filenames, out_file))
-                    skipped_files = convert_scmdf_to_tuningstruc(
-                        openscmdf, out_filedir, force=force, prefix="ts",
-                    )
-                    if skipped_files:
-                        logging.warning(
-                            "Skipped writing {} files for {}".format(
-                                len(skipped_files), out_file
-                            )
-                        )
+                    skipped_files = _tuningstrucs_wrangling(out_filedir, filenames, openscmdf, force, "ts")
                 elif out_format == "tuningstrucs-blend-model":
-                    out_file = join(out_filedir, "ts")
-                    logger.info("Wrangling {} to {}".format(filenames, out_file))
-                    skipped_files = convert_scmdf_to_tuningstruc(
-                        openscmdf, out_filedir, force=force, prefix="ts",
-                    )
-                    if skipped_files:
-                        logging.warning(
-                            "Skipped writing {} files for {}".format(
-                                len(skipped_files), out_file
-                            )
-                        )
+                    skipped_files = _tuningstrucs_blend_model_wrangling(out_filedir, filenames, openscmdf, force, "ts")
                 else:
                     raise ValueError("Unsupported format: {}".format(out_format))
             else:
@@ -373,34 +376,32 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force):
 
     if not nested:
         if out_format == "tuningstrucs":
-            out_file = join(dst, "ts")
-            logger.info("Wrangling {} to {}*.mat".format(regexp, out_file))
-            skipped_files = convert_scmdf_to_tuningstruc(
-                collected, dst, force=force, prefix="ts",
-            )
-            if skipped_files:
-                logging.warning(
-                    "Skipped writing {} files for {}".format(
-                        len(skipped_files), out_file
-                    )
-                )
+            skipped_files = _tuningstrucs_wrangling(dst, regexp, collected, force, "ts")
         elif out_format == "tuningstrucs-blend-model":
-            out_file = join(dst, "ts")
-            logger.info("Wrangling {} to {}*.mat".format(regexp, out_file))
-            skipped_files = convert_scmdf_to_tuningstruc(
-                collected, dst, force=force, prefix="ts",
-            )
-            if skipped_files:
-                logging.warning(
-                    "Skipped writing {} files for {}".format(
-                        len(skipped_files), out_file
-                    )
-                )
+            skipped_files = _tuningstrucs_blend_model_wrangling(dst, regexp, collected, force, "ts")
         else:
             raise ValueError("Unsupported format: {}".format(out_format))
 
     return skipped_files
 
+
+def _tuningstrucs_wrangling(out_root_dir, source_info, source_openscmdf, force, prefix, blend_models=False):
+    out_file = join(out_root_dir, prefix)
+    # TODO: make logging say where files are actually going
+    sdf_iter = [source_openscmdf] if blend_models else [source_openscmdf.filter(climate_model=m) for m in source_openscmdf["climate_model"]]
+    for sdf in sdf_iter:
+        logger.info("Wrangling {} to {}*.mat".format(source_info, out_file))
+        skipped_files = convert_scmdf_to_tuningstruc(
+            sdf, out_root_dir, force=force, prefix=prefix,
+        )
+        if skipped_files:
+            logging.warning(
+                "Skipped writing {} files for {}".format(
+                    len(skipped_files), out_file
+                )
+            )
+
+    return skipped_files
 
 def _get_timestamp():
     return strftime("%Y%m%d %H%M%S", gmtime())
