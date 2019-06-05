@@ -70,7 +70,7 @@ def test_wrangling_var(tmpdir, caplog):
     )
 
 
-def test_wrangling_flat(tmpdir, caplog):
+def test_wrangling_flat_blend_models(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
     OUTPUT_DIR = str(tmpdir)
 
@@ -78,9 +78,9 @@ def test_wrangling_flat(tmpdir, caplog):
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_openscm_csvs,
-            [INPUT_DIR, OUTPUT_DIR, "--flat", "--drs", "CMIP6Output"],
+            [INPUT_DIR, OUTPUT_DIR, "--flat", "--drs", "CMIP6Output", "--out-format", "tuningstrucs-blend-model"],
         )
-    assert result.exit_code == 0
+    assert result.exit_code == 0, result.output
 
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
 
@@ -202,10 +202,10 @@ def test_wrangling_force_flat(tmpdir, caplog):
     assert skip_str_file not in result_force.output
 
 
-def test_wrangling_default_drs_error(tmpdir):
+def test_wrangling_blended_models_default_drs_error(tmpdir):
     INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
-    result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--flat"])
+    result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR, "--flat", "--out-format", "tuningstrucs-blend-model"])
     assert result.exit_code != 0
