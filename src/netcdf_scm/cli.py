@@ -232,7 +232,7 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
 )
 @click.option(
     "--out-format",
-    default="tuningstrucs",
+    default="magicc-input-files",
     type=click.Choice(["tuningstrucs-blend-model"]),
     show_default=True,
     help="Format to re-write csvs into.",
