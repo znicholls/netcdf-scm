@@ -33,43 +33,6 @@ def test_wrangling_defaults(tmpdir, caplog):
     assert isdir(join(OUTPUT_DIR, "cmip6/CMIP6/ScenarioMIP/MRI"))
 
 
-def test_wrangling_var(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
-    OUTPUT_DIR = str(tmpdir)
-    VAR_TO_WRANGLE = ".*rsut.*"
-
-    runner = CliRunner()
-    with caplog.at_level("INFO"):
-        result = runner.invoke(
-            wrangle_openscm_csvs,
-            [
-                INPUT_DIR,
-                OUTPUT_DIR,
-                "--regexp",
-                VAR_TO_WRANGLE,
-                "--nested",
-                "--out-format",
-                "tuningstrucs",
-            ],
-        )
-    assert result.exit_code == 0
-
-    assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
-
-    assert "rsut" in result.output
-    assert "rlut" not in result.output
-
-    assert isdir(
-        join(OUTPUT_DIR, "cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/1pctCO2/r1i1p1f1/Amon/rsut")
-    )
-    assert isdir(
-        join(
-            OUTPUT_DIR,
-            "cmip6/CMIP6/ScenarioMIP/MRI/MRI-ESM2-0/ssp126/r1i1p1f1/Amon/rsut",
-        )
-    )
-
-
 def test_wrangling_flat_blend_models(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
     OUTPUT_DIR = str(tmpdir)
