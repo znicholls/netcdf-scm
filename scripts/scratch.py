@@ -1,6 +1,9 @@
+import datetime as dt
 import os
 import os.path
 
+import netcdf_scm
+import pymagicc
 from openscm.scmdataframe import ScmDataFrame
 from pymagicc.io import MAGICCData
 
@@ -31,14 +34,6 @@ for i, (path, folders, files) in enumerate(os.walk(IN_DIR)):
          
         pb = files[0].split("_")
         variable = pb[1]
-        try:
-            VARIABLE_MAPPING[variable]
-        except KeyError:
-            if variable not in ignored_vars:
-                print("ignoring {}".format(variable))
-                ignored_vars.append(variable)
-            continue
-
         exp_id = pb[4]
         source_id = pb[3]
         variant = pb[5]
@@ -48,7 +43,37 @@ for i, (path, folders, files) in enumerate(os.walk(IN_DIR)):
         d = MAGICCData(ScmDataFrame(os.path.join(path, files[0]))).timeseries()
         d = d.subtract(d.iloc[:, 0], axis='rows')
 
-        print("write .MAG file here")
+        mag_name = "{}.MAG".format(base_name).upper()
+        print(mag_name)
+        mag_writer = MAGICCData(d)
+        mag_writer["todo"] = "SET"
+        mag_writer.metadata["timeseriestype"] = "MONTHLY"
+        mag_writer.metadata["header"] = (
+            "Date: {}\n"
+            "Crunched by: Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>\n"
+            "Writer: pymagicc v{} (available at github.com/openclimatedata/pymagicc)\n"
+            "Cruncher: netcdf-scm v{} (available at github.com/znicholls/netcdf-scm)\n"
+            "Affiliation: Climate & Energy College, The University of Melbourne, Australia".format(
+                dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                pymagicc.__version__,
+                netcdf_scm.__version__,
+            )
+        )
+        mag_writer.metadata["other metadata"] = "will go here"
+        mag_writer["variable"] = variable  # TODO: fix cruncher so it uses cf names
+        try:
+            mag_writer.write(os.path.join(OUT_DIR, mag_name), magicc_version=7)
+        except TypeError:
+            print("Not happy: {}".format(files[0]))
+            continue
+
+        try:
+            VARIABLE_MAPPING[variable]
+        except KeyError:
+            if variable not in ignored_vars:
+                print("not writing in files for {}".format(variable))
+                ignored_vars.append(variable)
+            continue
 
         for r, regions in REGIONMODES.items():
             m = MAGICCData(d).filter(region=regions)
@@ -59,13 +84,17 @@ for i, (path, folders, files) in enumerate(os.walk(IN_DIR)):
             m.metadata = {"header": "testing file only"}
             try:
                 m = m.filter(month=12)
-            except TypeError:
+            except KeyError:
                 print("Not happy {}".format(files[0]))
                 continue
 
             out_name = "{}_{}_SURFACE_TEMP.IN".format(base_name, r).upper()
             print("wrote {}".format(out_name))
-            m.write(os.path.join(OUT_DIR, out_name), magicc_version=7)
+            try:
+                m.write(os.path.join(OUT_DIR, out_name), magicc_version=7)
+            except (TypeError, IndexError):
+                print("Not happy {}".format(files[0]))
 
-print("ignored variables:\n{}".format("\n".join(ignored_vars)))
+
+print("did not write IN files for:\n{}".format("\n".join(ignored_vars)))
 
