@@ -4,13 +4,21 @@ These masks are applied to data fields to exclude unwanted parts of the globe. T
 arrays, where ``True`` values are excluded.
 """
 import logging
+import os
 
 import numpy as np
+try:
+    import iris
+except ModuleNotFoundError:  # pragma: no cover # emergency valve
+    from ..errors import raise_no_iris_warning
 
-from netcdf_scm.utils import broadcast_onto_lat_lon_grid
+    raise_no_iris_warning()
+
+from ..utils import broadcast_onto_lat_lon_grid
 
 logger = logging.getLogger(__name__)
 
+_DEFAULT_SFTLF_FILE = "default_land_ocean_mask.nc"
 DEFAULT_REGIONS = (
     "World",
     "World|Land",
@@ -92,20 +100,30 @@ def or_masks(mask_a, mask_b):
     return f
 
 
+def get_default_sftlf_cube():
+    return iris.load_cube(os.path.join(os.path.dirname(__file__), _DEFAULT_SFTLF_FILE))
+
 def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwargs):
-    """Get the land mask.
+    """
+    Get the land mask
 
     Returns
     -------
     np.ndarray
     """
-    warn_msg = "Land surface fraction (sftlf) data not available"
+    warn_msg = "Land surface fraction (sftlf) data not available, using default instead"
     try:
         sftlf_cube = cube.get_metadata_cube(cube.sftlf_var, cube=sftlf_cube)
     except OSError:
-        raise InvalidMask(warn_msg)
+        logger.warning(warn_msg)
+        import pdb
+        pdb.set_trace()
+        sftlf_cube = get_default_sftlf_cube()
     if sftlf_cube is None:
-        raise InvalidMask(warn_msg)
+        logger.warning(warn_msg)
+        import pdb
+        pdb.set_trace()
+        sftlf_cube = get_default_sftlf_cube()
 
     sftlf_data = sftlf_cube.cube.data
 
