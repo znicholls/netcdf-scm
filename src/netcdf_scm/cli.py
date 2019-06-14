@@ -367,8 +367,10 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
             _make_path_if_not_exists(out_filedir)
 
             if out_format == "magicc-input-files":
+                # TODO: fix this from here
                 writer = MAGICCData(openscmdf)
-                writer.write("/home/zebedee/Desktop/TEST.SCEN7", magicc_version=7)
+                writer["todo"] = "SET"
+                writer.write("/home/zebedee/Desktop/TEST.MAG", magicc_version=7)
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))
 
