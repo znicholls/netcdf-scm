@@ -856,7 +856,17 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         assert (ts["member_id"] == "r1i1p1f1").all()
         assert (
             ts["region"]
-            == ["World", "World|Northern Hemisphere", "World|Southern Hemisphere"]
+            == [
+                "World", 
+                "World|Land", 
+                "World|Ocean", 
+                "World|Northern Hemisphere", 
+                "World|Southern Hemisphere",
+                "World|Northern Hemisphere|Land", 
+                "World|Southern Hemisphere|Land",
+                "World|Northern Hemisphere|Ocean", 
+                "World|Southern Hemisphere|Ocean",
+            ]
         ).all()
         assert (ts["variable"] == "toa_outgoing_longwave_flux").all()
         assert (ts["unit"] == "W m^-2").all()
