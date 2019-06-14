@@ -114,18 +114,15 @@ def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwarg
     warn_msg = "Land surface fraction (sftlf) data not available, using default instead"
     try:
         sftlf_cube = cube.get_metadata_cube(cube.sftlf_var, cube=sftlf_cube)
+        sftlf_data = sftlf_cube.cube.data
     except OSError:
         logger.warning(warn_msg)
-        import pdb
-        pdb.set_trace()
-        sftlf_cube = get_default_sftlf_cube()
+        def_cube_regridded = get_default_sftlf_cube().regrid(cube.cube, iris.analysis.Linear())
+        sftlf_data = def_cube_regridded.data
     if sftlf_cube is None:
         logger.warning(warn_msg)
-        import pdb
-        pdb.set_trace()
-        sftlf_cube = get_default_sftlf_cube()
-
-    sftlf_data = sftlf_cube.cube.data
+        sftlf_cube = get_default_sftlf_cube().regrid(cube.cube, iris.analysis.Linear())
+        sftlf_data = def_cube_regridded.data
 
     land_mask = np.where(
         sftlf_data > land_mask_threshold,
