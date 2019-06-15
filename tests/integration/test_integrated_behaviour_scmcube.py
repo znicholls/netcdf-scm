@@ -112,6 +112,10 @@ class _SCMCubeIntegrationTester(object):
 
         mocked_masks = {
             "World": np.full(nh_mask.shape, False),
+            "World|Land": land_mask,
+            "World|Ocean": ~land_mask,
+            "World|Northern Hemisphere": nh_mask,
+            "World|Southern Hemisphere": ~nh_mask,
             "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
             "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
             "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
@@ -124,6 +128,23 @@ class _SCMCubeIntegrationTester(object):
             test_cube.cube.shape,
             [test_cube.lat_dim_number, test_cube.lon_dim_number],
         )
+        total_area = mocked_weights[0, :, :].sum()
+        # do this calculation by hand to be doubly sure, can automate in future if it
+        # becomes too annoyting
+        ocean_area = 2 + 3 + 4 + 9 + 1
+        land_frac = (
+            (total_area - ocean_area)
+            / total_area
+        )
+        land_frac_nh = (
+            ((~land_mask & ~nh_mask).astype(int) * mocked_weights[0, :, :]).sum()
+            / ((~nh_mask).astype(int) * mocked_weights[0, :, :]).sum()
+        )
+        land_frac_sh = (
+            ((~land_mask & nh_mask).astype(int) * mocked_weights[0, :, :]).sum()
+            / ((nh_mask).astype(int) * mocked_weights[0, :, :]).sum()
+        )
+
 
         test_cube._get_area_weights = MagicMock(return_value=mocked_weights)
 
@@ -136,6 +157,21 @@ class _SCMCubeIntegrationTester(object):
             exp_cube.cube = rcube.collapsed(
                 ["latitude", "longitude"], iris.analysis.MEAN, weights=mocked_weights
             )
+            exp_cube.cube.add_aux_coord(iris.coords.AuxCoord(
+                land_frac,
+                long_name="land_fraction",
+                units=1,
+            ))
+            exp_cube.cube.add_aux_coord(iris.coords.AuxCoord(
+                land_frac_nh,
+                long_name="land_fraction_northern_hemisphere",
+                units=1,
+            ))
+            exp_cube.cube.add_aux_coord(iris.coords.AuxCoord(
+                land_frac_sh,
+                long_name="land_fraction_southern_hemisphere",
+                units=1,
+            ))
             expected[label] = exp_cube
 
         result = test_cube.get_scm_timeseries_cubes(
@@ -144,9 +180,9 @@ class _SCMCubeIntegrationTester(object):
 
         for label, cube in expected.items():
             assert cube.cube == result[label].cube
-            assert result[label].cube.coord("land_fraction") == 34
-            assert result[label].cube.coord("land_fraction_northern_hemisphere") == 49
-            assert result[label].cube.coord("land_fraction_southern_hemisphere") == 24
+            assert result[label].cube.coord("land_fraction").points == land_frac
+            assert result[label].cube.coord("land_fraction_northern_hemisphere").points == land_frac_nh
+            assert result[label].cube.coord("land_fraction_southern_hemisphere").points == land_frac_sh
 
         test_cube._get_scm_masks.assert_called_with(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold

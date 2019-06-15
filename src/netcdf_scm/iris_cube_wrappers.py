@@ -693,10 +693,60 @@ class SCMCube(object):
         scm_cubes = self.get_scm_cubes(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
-        return {
+        timeseries_cubes = {
             k: take_lat_lon_mean(scm_cube, area_weights)
             for k, scm_cube in scm_cubes.items()
         }
+
+        add_land_frac = True
+        try:
+            regions_to_calculate = [
+                "World",
+                "World|Land",
+                "World|Northern Hemisphere",
+                "World|Northern Hemisphere|Land",
+                "World|Southern Hemisphere",
+                "World|Southern Hemisphere|Land",
+            ]
+            def get_area(c):
+                time_slice = [slice(None)] * len(c.cube.shape)
+                time_slice[c.time_dim_number] = 0
+                a = (
+                    (~c.cube.data[time_slice].mask).astype(int)
+                    * area_weights[time_slice]
+                ).sum()
+
+                return a
+
+            area = {r: get_area(scm_cubes[r]) for r in regions_to_calculate}
+
+        except KeyError:
+            logger.warning(
+                "Not calculating land fractions as all required cubes are not "
+                "available"
+            )
+            add_land_frac = False
+
+        if add_land_frac:
+            extensions = {
+                "land_fraction": "",
+                "land_fraction_northern_hemisphere": "|Northern Hemisphere",
+                "land_fraction_southern_hemisphere": "|Southern Hemisphere",
+            }
+            fractions = {
+                k: area["World{}|Land".format(ext)] / area["World{}".format(ext)]
+                for k, ext in extensions.items()
+            }
+
+            for cube in timeseries_cubes.values():
+                for k, v in fractions.items():
+                    cube.cube.add_aux_coord(iris.coords.AuxCoord(
+                        v,
+                        long_name=k,
+                        units=1,
+                    ))
+
+        return timeseries_cubes
 
     def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50):
         """Get SCM relevant cubes from the ``self``.
@@ -723,7 +773,9 @@ class SCMCube(object):
         # force the data to realise so it's not read 9 times while applying masks
         self.cube.data
 
-        return {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
+        cubes = {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
+
+        return cubes
 
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
         """Get the scm masks.
