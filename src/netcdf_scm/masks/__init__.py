@@ -7,6 +7,9 @@ import logging
 import os
 
 import numpy as np
+
+from ..utils import broadcast_onto_lat_lon_grid
+
 try:
     import iris
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
@@ -14,7 +17,6 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
 
     raise_no_iris_warning()
 
-from ..utils import broadcast_onto_lat_lon_grid
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +105,7 @@ def or_masks(mask_a, mask_b):
 def get_default_sftlf_cube():
     return iris.load_cube(os.path.join(os.path.dirname(__file__), _DEFAULT_SFTLF_FILE))
 
+
 def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwargs):
     """
     Get the land mask
@@ -117,7 +120,9 @@ def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwarg
         sftlf_data = sftlf_cube.cube.data
     except OSError:
         logger.warning(warn_msg)
-        def_cube_regridded = get_default_sftlf_cube().regrid(cube.cube, iris.analysis.Linear())
+        def_cube_regridded = get_default_sftlf_cube().regrid(
+            cube.cube, iris.analysis.Linear()
+        )
         sftlf_data = def_cube_regridded.data
     if sftlf_cube is None:
         logger.warning(warn_msg)

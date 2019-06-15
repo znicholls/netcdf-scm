@@ -107,7 +107,9 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes, caplog):
         "World|Northern Hemisphere": nh_mask,
         "World|Southern Hemisphere": ~nh_mask,
     }
-    expected_warn = "Land surface fraction (sftlf) data not available, using default instead"
+    expected_warn = (
+        "Land surface fraction (sftlf) data not available, using default instead"
+    )
     with patch.dict(MASKS, {"World|Northern Hemisphere": mock_nh_mask}):
         masker = CubeMasker(test_all_cubes)
         result = masker.get_masks(DEFAULT_REGIONS)

@@ -857,14 +857,14 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         assert (
             ts["region"]
             == [
-                "World", 
-                "World|Land", 
-                "World|Ocean", 
-                "World|Northern Hemisphere", 
+                "World",
+                "World|Land",
+                "World|Ocean",
+                "World|Northern Hemisphere",
                 "World|Southern Hemisphere",
-                "World|Northern Hemisphere|Land", 
+                "World|Northern Hemisphere|Land",
                 "World|Southern Hemisphere|Land",
-                "World|Northern Hemisphere|Ocean", 
+                "World|Northern Hemisphere|Ocean",
                 "World|Southern Hemisphere|Ocean",
             ]
         ).all()
