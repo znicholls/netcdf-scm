@@ -27,6 +27,7 @@ from iris.util import broadcast_to_shape
 from openscm.scmdataframe import ScmDataFrame
 from pandas.testing import assert_frame_equal
 
+import netcdf_scm
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -164,6 +165,9 @@ class _SCMCubeIntegrationTester(object):
                     land_frac_sh, long_name="land_fraction_southern_hemisphere", units=1
                 )
             )
+            exp_cube.cube.attributes["crunch_land_mask_threshold"] = tland_mask_threshold
+            exp_cube.cube.attributes["crunch_netcdf_scm_version"] = "{} (more info at github.com/znicholls/netcdf-scm)".format(netcdf_scm.__version__)
+            exp_cube.cube.attributes["crunch_source_files"] = "Files: []"
             expected[label] = exp_cube
 
         result = test_cube.get_scm_timeseries_cubes(
@@ -171,6 +175,7 @@ class _SCMCubeIntegrationTester(object):
         )
 
         for label, cube in expected.items():
+            assert cube.cube.attributes == result[label].cube.attributes
             assert cube.cube == result[label].cube
             assert result[label].cube.coord("land_fraction").points == land_frac
             assert (
