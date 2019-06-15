@@ -47,7 +47,7 @@ REQUIREMENTS_INSTALL = [
     "python-dateutil",
     "progressbar2",
     "openscm>=0.1.0a",
-    "pymagicc>=2.0.0b",
+    "pymagicc>=2.0.0b1",
     "click",
 ]
 REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0"]
