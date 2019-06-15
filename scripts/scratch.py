@@ -2,10 +2,11 @@ import datetime as dt
 import os
 import os.path
 
-import netcdf_scm
 import pymagicc
 from openscm.scmdataframe import ScmDataFrame
 from pymagicc.io import MAGICCData
+
+import netcdf_scm
 
 IN_DIR = "/data/marble/sandbox/share/cmip6-crunched/netcdf-scm-crunched/CMIP6"
 OUT_DIR = "/data/marble/sandbox/share/cmip6-wrangled-ipsl-sandbox"
@@ -17,21 +18,19 @@ REGIONMODES = {
         "World|Southern Hemisphere|Land",
         "World|Southern Hemisphere|Ocean",
     ],
-    "GLOBAL": ["World"]
+    "GLOBAL": ["World"],
 }
 
-VARIABLE_MAPPING = {
-    "tas": "Surface Temperature",
-}
+VARIABLE_MAPPING = {"tas": "Surface Temperature"}
 
 ignored_vars = []
 
 for i, (path, folders, files) in enumerate(os.walk(IN_DIR)):
     if "IPSL" not in path:
         continue
-    if files: 
+    if files:
         assert len(files) == 1, files
-         
+
         pb = files[0].split("_")
         variable = pb[1]
         exp_id = pb[4]
@@ -41,7 +40,7 @@ for i, (path, folders, files) in enumerate(os.walk(IN_DIR)):
         base_name = "_".join([variable, exp_id, source_id, variant, time_id])
 
         d = MAGICCData(ScmDataFrame(os.path.join(path, files[0]))).timeseries()
-        d = d.subtract(d.iloc[:, 0], axis='rows')
+        d = d.subtract(d.iloc[:, 0], axis="rows")
 
         mag_name = "{}.MAG".format(base_name).upper()
         print(mag_name)
@@ -97,4 +96,3 @@ for i, (path, folders, files) in enumerate(os.walk(IN_DIR)):
 
 
 print("did not write IN files for:\n{}".format("\n".join(ignored_vars)))
-
