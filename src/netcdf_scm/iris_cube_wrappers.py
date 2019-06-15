@@ -712,8 +712,8 @@ class SCMCube(object):
                 time_slice = [slice(None)] * len(c.cube.shape)
                 time_slice[c.time_dim_number] = 0
                 a = (
-                    (~c.cube.data[time_slice].mask).astype(int)
-                    * area_weights[time_slice]
+                    (~c.cube.data[tuple(time_slice)].mask).astype(int)
+                    * area_weights[tuple(time_slice)]
                 ).sum()
 
                 return a
