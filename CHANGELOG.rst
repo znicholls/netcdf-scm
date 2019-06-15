@@ -4,6 +4,11 @@ Changelog
 master
 ------
 
+- (`#58 <https://github.com/znicholls/netcdf-scm/pull/58>`_) Lock tuningstruc wrangling so it can only wrangle to flat tuningstrucs, also includes:
+
+    - turning off all wrangling in preparation for re-doing crunching format
+    - adding default sftlf cube
+
 - (`#55 <https://github.com/znicholls/netcdf-scm/pull/55>`_) Hotfix docs so they build properly
 - (`#50 <https://github.com/znicholls/netcdf-scm/pull/50>`_) Make pyam-iamc a core dependency
 
