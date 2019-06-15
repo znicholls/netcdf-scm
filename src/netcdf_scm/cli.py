@@ -5,14 +5,11 @@ import logging
 import re
 import sys
 from os import makedirs, path, walk
-from os.path import dirname, join, splitext, isfile
+from os.path import join
 from time import gmtime, strftime
 
 import click
-import numpy as np
 import progressbar
-from openscm.scmdataframe import ScmDataFrame, df_append
-from pymagicc.io import MAGICCData
 
 import netcdf_scm
 
@@ -23,7 +20,6 @@ from .iris_cube_wrappers import (
     SCMCube,
 )
 from .output import OutputFileDatabase
-from .wranglers import convert_scmdf_to_tuningstruc
 
 logger = logging.getLogger("netcdf-scm")
 
@@ -408,25 +404,25 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
 #                 raise ValueError("Unsupported format: {}".format(out_format))
 
 
-# def _get_timestamp():
-#     return strftime("%Y%m%d %H%M%S", gmtime())
+def _get_timestamp():
+    return strftime("%Y%m%d %H%M%S", gmtime())
 
 
-# def _make_path_if_not_exists(path_to_check):
-#     if not path.exists(path_to_check):
-#         logger.info("Making output directory: {}".format(path_to_check))
-#         makedirs(path_to_check)
+def _make_path_if_not_exists(path_to_check):
+    if not path.exists(path_to_check):
+        logger.info("Making output directory: {}".format(path_to_check))
+        makedirs(path_to_check)
 
 
-# def _get_format_custom_text():
-#     return progressbar.FormatCustomText(
-#         "Current directory :: %(curr_dir)-400s", {"curr_dir": "uninitialised"}
-#     )
+def _get_format_custom_text():
+    return progressbar.FormatCustomText(
+        "Current directory :: %(curr_dir)-400s", {"curr_dir": "uninitialised"}
+    )
 
 
-# def _get_progressbar(text, max_value):
-#     return progressbar.ProgressBar(
-#         widgets=[progressbar.SimpleProgress(), ". ", text],
-#         max_value=max_value,
-#         prefix="Visiting directory ",
-#     ).start()
+def _get_progressbar(text, max_value):
+    return progressbar.ProgressBar(
+        widgets=[progressbar.SimpleProgress(), ". ", text],
+        max_value=max_value,
+        prefix="Visiting directory ",
+    ).start()
