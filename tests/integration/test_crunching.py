@@ -93,7 +93,7 @@ def test_crunching(tmpdir, caplog):
             knmi_data["month"] = knmi_data["month"].astype(int)
             knmi_data = knmi_data.set_index(["year", "month"])
 
-            crunched_data = ScmDataFrame(join(dirpath, filename))
+            crunched_data = load_scmdataframe(join(dirpath, filename))
             comparison_data = (
                 crunched_data.filter(region="World")
                 .timeseries()
@@ -200,7 +200,7 @@ def test_crunching_arguments(tmpdir, caplog):
             "fco2antt",
             "CanESM2",
             "r1i1p1",
-            "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.csv",
+            "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
         )
     )
     assert skip_str in caplog.text
