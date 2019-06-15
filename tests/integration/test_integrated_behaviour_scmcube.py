@@ -144,6 +144,9 @@ class _SCMCubeIntegrationTester(object):
 
         for label, cube in expected.items():
             assert cube.cube == result[label].cube
+            assert result[label].cube.coord("land_fraction") == 34
+            assert result[label].cube.coord("land_fraction_northern_hemisphere") == 49
+            assert result[label].cube.coord("land_fraction_southern_hemisphere") == 24
 
         test_cube._get_scm_masks.assert_called_with(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
