@@ -45,32 +45,39 @@ def load_scmdataframe(path):
     :obj:`ScmDataFrame`
         :obj:`ScmDataFrame` containing the data in ``path``.
     """
-    helper = SCMCube()
+    helper, scm_cubes = _load_helper_and_scm_cubes(path)
+    scmdf = helper._convert_scm_timeseries_cubes_to_openscmdata(scm_cubes)
+    scmdf.metadata = {
+        k:v for k, v in helper.cube.attributes.items() if k != "region"
+    }
+    for coord in helper.cube.coords():
+        if coord.standard_name in ["time", "latitude", "longitude", "height"]:
+            continue
+        elif coord.long_name.startswith("land_fraction"):
+            scmdf.metadata[coord.long_name] = coord.points.squeeze()
+        else:
+            # this is really how it should work for land_fraction too but we don't
+            # have a stable solution for parameter handling in OpenSCMDataFrame yet so
+            # I've done the above instead
+            extra_str = "{} ({})".format(coord.long_name, str(coord.units))
+            scmdf[extra_str] = coord.points.squeeze()
+
+    return scmdf
+
+
+def _load_helper_and_scm_cubes(path):
     cube_list = iris.load(path)
+
+    loaded = SCMCube()
     scm_cubes = {}
-    for v in cube_list:
+    for i, v in enumerate(cube_list):
         region = v.attributes["region"]
         scm_cubes[region] = SCMCube()
         scm_cubes[region].cube = v
+        # take any cube as base for now, not sure how to really handle this so will
+        # leave like this for now and only make this method public when I work it
+        # out...
+        if i == 0:
+            loaded.cube = v
 
-    helper.cube = v  # need any cube to get e.g. variable attributes
-
-    return helper._convert_scm_timeseries_cubes_to_openscmdata(scm_cubes)
-
-
-def load_netcdf_scm_nc(path):
-    """
-    Load data from a NetCDF-SCM ``.nc`` file
-
-    Parameters
-    ----------
-    path : str
-        Path from which to load the data
-
-    Returns
-    -------
-    dict
-        Dictionary of "region name"-:obj:`ScmCube` key-value pairs.
-    """
-    import pdb
-    pdb.set_trace()
+    return loaded, scm_cubes
