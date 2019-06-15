@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#61 <https://github.com/znicholls/netcdf-scm/pull/61>`_) Add land fraction when crunching scm timeseries cubes
 - (`#58 <https://github.com/znicholls/netcdf-scm/pull/58>`_) Lock tuningstruc wrangling so it can only wrangle to flat tuningstrucs, also includes:
 
     - turning off all wrangling in preparation for re-doing crunching format
