@@ -1,3 +1,4 @@
+import copy
 import itertools
 import re
 import warnings
@@ -18,6 +19,7 @@ from iris.exceptions import ConstraintMismatchError
 from iris.util import broadcast_to_shape
 from pandas.testing import assert_frame_equal, assert_index_equal
 
+import netcdf_scm
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -335,15 +337,23 @@ class TestSCMCube(object):
         tscm_masks = {"mask 1": 12, "mask 2": 83}
         test_cube._get_scm_masks = MagicMock(return_value=tscm_masks)
 
-        tapply_mask = 3.14
-        mock_apply_mask.return_value = tapply_mask
+        mock_apply_mask.return_value = copy.deepcopy(test_cube)
 
-        expected = {k: tapply_mask for k in tscm_masks}
+        expected = {k: test_cube for k in tscm_masks}
+        for scmc in expected.values():
+            scmc.cube.attributes["crunch_land_mask_threshold"] = tland_mask_threshold
+            scmc.cube.attributes["crunch_netcdf_scm_version"] = "{} (more info at github.com/znicholls/netcdf-scm)".format(netcdf_scm.__version__)
+            scmc.cube.attributes["crunch_source_files"] = "Files: []"
+
         result = test_cube.get_scm_cubes(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
         )
 
-        assert result == expected
+        for k, res in result.items():
+            exp = expected[k]
+            np.testing.assert_allclose(res.cube.data, exp.cube.data)
+            assert res.cube.attributes == exp.cube.attributes
+
         test_cube._get_scm_masks.assert_called_with(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
         )

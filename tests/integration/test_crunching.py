@@ -11,12 +11,14 @@ from openscm.scmdataframe import ScmDataFrame
 
 import netcdf_scm
 from netcdf_scm.cli import crunch_data
+from netcdf_scm.io import load_scmdataframe
 
 
 def test_crunching(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*tas.*"
+    crunch_contact = "knmi-verification"
 
     runner = CliRunner(mix_stderr=False)
     with caplog.at_level("DEBUG"):
@@ -25,6 +27,7 @@ def test_crunching(tmpdir, caplog):
             [
                 INPUT_DIR,
                 OUTPUT_DIR,
+                crunch_contact,
                 "--cube-type",
                 "MarbleCMIP5",
                 "--regexp",
@@ -94,6 +97,8 @@ def test_crunching(tmpdir, caplog):
             knmi_data = knmi_data.set_index(["year", "month"])
 
             crunched_data = load_scmdataframe(join(dirpath, filename))
+            assert crunched_data.metadata["crunch_contact"] == crunch_contact
+
             comparison_data = (
                 crunched_data.filter(region="World")
                 .timeseries()
@@ -137,6 +142,7 @@ def test_crunching_arguments(tmpdir, caplog):
     VAR_TO_CRUNCH = ".*fco2antt.*"
     DATA_SUB_DIR = "custom-name"
     LAND_MASK_TRESHHOLD = 45
+    CRUNCH_CONTACT = "test crunch contact info <email>"
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
@@ -145,6 +151,7 @@ def test_crunching_arguments(tmpdir, caplog):
             [
                 INPUT_DIR,
                 OUTPUT_DIR,
+                CRUNCH_CONTACT,
                 "--cube-type",
                 "MarbleCMIP5",
                 "--regexp",
@@ -170,6 +177,8 @@ def test_crunching_arguments(tmpdir, caplog):
 
     assert "land_mask_threshold: {}".format(LAND_MASK_TRESHHOLD) in caplog.text
 
+    assert False, "Load output data and check it saved as desired here and make a separate test to double check reading/writing netcdf-scm nc files"
+
     caplog.clear()
 
     with caplog.at_level("INFO"):
@@ -178,6 +187,7 @@ def test_crunching_arguments(tmpdir, caplog):
             [
                 INPUT_DIR,
                 OUTPUT_DIR,
+                "test",
                 "--cube-type",
                 "MarbleCMIP5",
                 "--regexp",
@@ -214,7 +224,7 @@ def test_crunching_other_cube(tmpdir, caplog):
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
-            crunch_data, [INPUT_DIR, OUTPUT_DIR, "--cube-type", CUBE]
+            crunch_data, [INPUT_DIR, OUTPUT_DIR, "test", "--cube-type", CUBE]
         )
     assert result.exit_code  # non-zero exit code
 
