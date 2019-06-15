@@ -17,6 +17,7 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 from openscm.scmdataframe import ScmDataFrame
 
+from . import __version__
 from .masks import DEFAULT_REGIONS, CubeMasker
 from .utils import (
     _vector_cftime_conversion,
@@ -785,6 +786,23 @@ class SCMCube(object):
         self.cube.data
 
         cubes = {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
+
+        source_file_info = "Files: {}".format(
+            [basename(p) for p in self.info['files']],
+        )
+        if "metadata" in self.info:
+            source_file_info = "{}; {}".format(
+                source_file_info,
+                "; ".join([
+                    "{}: {}".format(k, v["files"])
+                    for k, v in self.info["metadata"].items()
+                ])
+            )
+
+        for _, c in cubes.items():
+            c.cube.attributes["crunch_land_mask_threshold"] = land_mask_threshold
+            c.cube.attributes["crunch_netcdf_scm_version"] = "{} (more info at github.com/znicholls/netcdf-scm)".format(__version__)
+            c.cube.attributes["crunch_source_files"] = source_file_info
 
         return cubes
 

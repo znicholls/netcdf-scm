@@ -12,6 +12,7 @@ import click
 import progressbar
 
 import netcdf_scm
+from netcdf_scm.io import save_netcdf_scm_nc
 
 from .iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
@@ -82,6 +83,7 @@ def init_logging(params, out_filename=None, level=None):
 @click.argument(
     "dst", type=click.Path(file_okay=False, writable=True, resolve_path=True)
 )
+@click.argument("crunch_contact")
 @click.option(
     "--cube-type",
     default="Scm",
@@ -108,20 +110,29 @@ def init_logging(params, out_filename=None, level=None):
     help="Sub-directory of ``dst`` to save data in.",
 )
 @click.option(
+    "--crunch-contact",
+    default="None",
+    show_default=False,
+    help="Information to write in ``crunch_contact`` attribute of output ``.nc`` files",
+)
+@click.option(
     "--force/--do-not-force",
     "-f",
     help="Overwrite any existing files.",
     default=False,
     show_default=True,
 )
-def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, force):
+def crunch_data(src, dst, crunch_contact, cube_type, regexp, land_mask_threshold, data_sub_dir, force):
     """
-    Crunch data in ``src`` to OpenSCM csv's in ``dst``.
+    Crunch data in ``src`` to NetCDF-SCM ``.nc`` files in ``dst``.
 
     ``src`` is searched recursively and netcdf-scm will attempt to crunch all the files
     found. The directory structure in ``src`` will be mirrored in ``dst``.
 
     Failures and warnings are recorded and written into a text file in ``dst``.
+
+    ``crunch_contact`` is written into the output ``.nc`` files' ``crunch_contact``
+    attribute.
     """
 
     output_prefix = "netcdf-scm"
@@ -163,19 +174,16 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
             scmcube = _CUBES[cube_type]()
             try:
                 if len(filenames) == 1:
-                    out_filename = separator.join(
-                        [output_prefix, filenames[0].replace(".nc", ".csv")]
-                    )
                     scmcube.load_data_from_path(join(dirpath, filenames[0]))
-
                 else:
                     scmcube.load_data_in_directory(dirpath)
-                    out_filename = separator.join(
-                        [
-                            output_prefix,
-                            scmcube._get_data_filename().replace(".nc", ".csv"),
-                        ]
-                    )
+
+                out_filename = separator.join(
+                    [
+                        output_prefix,
+                        scmcube._get_data_filename(),
+                    ]
+                )
 
                 out_filedir = scmcube._get_data_directory().replace(
                     scmcube.root_dir, out_dir
@@ -191,11 +199,17 @@ def crunch_data(src, dst, cube_type, regexp, land_mask_threshold, data_sub_dir, 
                         )
                     )
                     continue
-                results = scmcube.get_scm_timeseries(
+
+                results = scmcube.get_scm_timeseries_cubes(
                     land_mask_threshold=land_mask_threshold
                 )
+                for _, c in results.items():
+                    if "crunch_contact" in c.cube.attributes:
+                        logger.warning("Overwriting `crunch_contact` attribute")  # pragma: no cover # emergency valve
+                    c.cube.attributes["crunch_contact"] = crunch_contact
+
                 tracker.register(out_filepath, scmcube.info)
-                results.to_csv(out_filepath)
+                save_netcdf_scm_nc(results, out_filepath)
 
             except Exception:
                 logger.exception("Failed to process: {}".format(filenames))
