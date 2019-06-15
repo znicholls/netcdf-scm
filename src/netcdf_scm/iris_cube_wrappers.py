@@ -708,6 +708,7 @@ class SCMCube(object):
                 "World|Southern Hemisphere",
                 "World|Southern Hemisphere|Land",
             ]
+
             def get_area(c):
                 time_slice = [slice(None)] * len(c.cube.shape)
                 time_slice[c.time_dim_number] = 0
@@ -740,11 +741,9 @@ class SCMCube(object):
 
             for cube in timeseries_cubes.values():
                 for k, v in fractions.items():
-                    cube.cube.add_aux_coord(iris.coords.AuxCoord(
-                        v,
-                        long_name=k,
-                        units=1,
-                    ))
+                    cube.cube.add_aux_coord(
+                        iris.coords.AuxCoord(v, long_name=k, units=1)
+                    )
 
         return timeseries_cubes
 
