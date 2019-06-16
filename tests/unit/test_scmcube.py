@@ -264,35 +264,39 @@ class TestSCMCube(object):
 
         assert_frame_equal(result, test_conversion_return)
 
-    def test_get_climate_model_scenario_activity_id_member_id_warnings(
+    def test_get_scm_timeseries_ids_warnings(
         self, test_cube, caplog
     ):
         warn_msg = re.compile("Could not determine .*, filling with 'unspecified'")
-        res = test_cube._get_climate_model_scenario_activity_id_member_id()
+        res = test_cube._get_scm_timeseries_ids()
 
         assert res["climate_model"] == "unspecified"
         assert res["scenario"] == "unspecified"
         assert res["activity_id"] == "unspecified"
         assert res["member_id"] == "unspecified"
-        assert len(caplog.messages) == 4
+        assert res["mip_era"] == "unspecified"
+        assert len(caplog.messages) == 5
         for m in caplog.messages:
             assert warn_msg.match(str(m))
 
-    def test_get_climate_model_scenario_activity_id_member_id(self, test_cube, caplog):
+    def test_get_scm_timeseries_ids(self, test_cube, caplog):
         tmodel = "ABCD"
         tactivity = "rcpmip"
         tensemble_member = "r1i3p10"
         tscenario = "oscvolcanicrf"
+        tmip_era = "CMIP3"
         test_cube.model = tmodel
         test_cube.activity = tactivity
         test_cube.experiment = tscenario
         test_cube.ensemble_member = tensemble_member
+        test_cube.mip_era = tmip_era
 
-        res = test_cube._get_climate_model_scenario_activity_id_member_id()
+        res = test_cube._get_scm_timeseries_ids()
         assert res["climate_model"] == tmodel
         assert res["scenario"] == tscenario
         assert res["activity_id"] == tactivity
         assert res["member_id"] == tensemble_member
+        assert res["mip_era"] == tmip_era
 
     @patch("netcdf_scm.iris_cube_wrappers.take_lat_lon_mean")
     def test_get_scm_timeseries_cubes(self, mock_take_lat_lon_mean, test_cube):
@@ -340,10 +344,12 @@ class TestSCMCube(object):
         mock_apply_mask.return_value = copy.deepcopy(test_cube)
 
         expected = {k: test_cube for k in tscm_masks}
-        for scmc in expected.values():
+        for region, scmc in expected.items():
             scmc.cube.attributes["crunch_land_mask_threshold"] = tland_mask_threshold
             scmc.cube.attributes["crunch_netcdf_scm_version"] = "{} (more info at github.com/znicholls/netcdf-scm)".format(netcdf_scm.__version__)
             scmc.cube.attributes["crunch_source_files"] = "Files: []"
+            scmc.cube.attributes["region"] = region
+            scmc.cube.attributes.update(test_cube._get_scm_timeseries_ids())
 
         result = test_cube.get_scm_cubes(
             sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
@@ -904,6 +910,21 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         result = test_cube._get_metadata_load_arguments(tmetadata_var)
 
         assert result == expected
+
+    def test_get_scm_timeseries_ids_warnings(
+        self, test_cube, caplog
+    ):
+        warn_msg = re.compile("Could not determine .*, filling with 'unspecified'")
+        res = test_cube._get_scm_timeseries_ids()
+
+        assert res["climate_model"] == "unspecified"
+        assert res["scenario"] == "unspecified"
+        assert res["activity_id"] == "unspecified"
+        assert res["member_id"] == "unspecified"
+        assert res["mip_era"] == "CMIP5"
+        assert len(caplog.messages) == 4
+        for m in caplog.messages:
+            assert warn_msg.match(str(m))
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
@@ -1500,18 +1521,21 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         )
         assert isinstance(result, iris.Constraint)
 
-    def test_get_climate_model_scenario_activity_id_member_id(self, test_cube, caplog):
+    def test_get_scm_timeseries_ids(self, test_cube, caplog):
         tmodel = "ABCD"
         tactivity = "rcpmip"
         tensemble_member = "r1i3p10"
         tscenario = "oscvolcanicrf"
+        tmip_era = "CMIP6test"
         test_cube.source_id = tmodel
         test_cube.activity_id = tactivity
         test_cube.experiment_id = tscenario
         test_cube.member_id = tensemble_member
+        test_cube.mip_era = tmip_era
 
-        res = test_cube._get_climate_model_scenario_activity_id_member_id()
+        res = test_cube._get_scm_timeseries_ids()
         assert res["climate_model"] == tmodel
         assert res["scenario"] == tscenario
         assert res["activity_id"] == tactivity
         assert res["member_id"] == tensemble_member
+        assert res["mip_era"] == tmip_era
