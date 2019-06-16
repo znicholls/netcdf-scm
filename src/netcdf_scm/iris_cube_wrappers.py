@@ -18,6 +18,7 @@ from dateutil.relativedelta import relativedelta
 from openscm.scmdataframe import ScmDataFrame
 
 from . import __version__
+from .definitions import _SCM_TIMESERIES_META_COLUMNS
 from .masks import DEFAULT_REGIONS, CubeMasker
 from .utils import (
     _vector_cftime_conversion,
@@ -741,18 +742,18 @@ class SCMCube(object):
             )
             add_land_frac = False
 
-        if add_land_frac:
-            extensions = {
-                "land_fraction": "",
-                "land_fraction_northern_hemisphere": "|Northern Hemisphere",
-                "land_fraction_southern_hemisphere": "|Southern Hemisphere",
-            }
-            fractions = {
-                k: area["World{}|Land".format(ext)] / area["World{}".format(ext)]
-                for k, ext in extensions.items()
-            }
+        for cube in timeseries_cubes.values():
 
-            for cube in timeseries_cubes.values():
+            if add_land_frac:
+                extensions = {
+                    "land_fraction": "",
+                    "land_fraction_northern_hemisphere": "|Northern Hemisphere",
+                    "land_fraction_southern_hemisphere": "|Southern Hemisphere",
+                }
+                fractions = {
+                    k: area["World{}|Land".format(ext)] / area["World{}".format(ext)]
+                    for k, ext in extensions.items()
+                }
                 for k, v in fractions.items():
                     cube.cube.add_aux_coord(
                         iris.coords.AuxCoord(v, long_name=k, units=1)
@@ -799,10 +800,16 @@ class SCMCube(object):
                 ])
             )
 
-        for _, c in cubes.items():
+        for region, c in cubes.items():
             c.cube.attributes["crunch_land_mask_threshold"] = land_mask_threshold
-            c.cube.attributes["crunch_netcdf_scm_version"] = "{} (more info at github.com/znicholls/netcdf-scm)".format(__version__)
+            c.cube.attributes["crunch_netcdf_scm_version"] = (
+                "{} (more info at github.com/znicholls/netcdf-scm)".format(
+                    __version__
+                )
+            )
             c.cube.attributes["crunch_source_files"] = source_file_info
+            c.cube.attributes["region"] = region
+            c.cube.attributes.update(self._get_scm_timeseries_ids())
 
         return cubes
 
@@ -862,16 +869,17 @@ class SCMCube(object):
         self, scm_timeseries_cubes, out_calendar=None
     ):
         data = []
-        regions = []
-        for k, v in scm_timeseries_cubes.items():
-            data.append(get_cube_timeseries_data(v))
-            regions.append(k)
+        metadata = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
+        for region, scm_cube in scm_timeseries_cubes.items():
+            data.append(get_cube_timeseries_data(scm_cube))
+            for metadata_column, metadata_values in metadata.items():
+                metadata_values.append(scm_cube.cube.attributes[metadata_column])
+
         data = np.vstack(data).T
 
         time_index, out_calendar = self._get_openscmdata_time_axis_and_calendar(
             scm_timeseries_cubes, out_calendar=out_calendar
         )
-        run_ids = self._get_climate_model_scenario_activity_id_member_id()
         output = ScmDataFrame(
             data,
             index=time_index,
@@ -879,10 +887,9 @@ class SCMCube(object):
                 **{
                     "variable": self.cube.standard_name,
                     "unit": str(self.cube.units).replace("-", "^-"),
-                    "region": regions,
                     "model": "unspecified",
                 },
-                **run_ids,
+                **metadata,
             },
         )
         try:
@@ -892,7 +899,7 @@ class SCMCube(object):
 
         return output
 
-    def _get_climate_model_scenario_activity_id_member_id(self):
+    def _get_scm_timeseries_ids(self):
         ids = {
             "climate_model": "model",
             "scenario": "experiment",
@@ -900,9 +907,11 @@ class SCMCube(object):
             "member_id": "ensemble_member",
         }
         output = {}
-        for k, v in ids.items():
+        for k in _SCM_TIMESERIES_META_COLUMNS:
+            if k == "region":
+                continue  # handled in self.get_scm_cubes
             try:
-                output[k] = getattr(self, v)
+                output[k] = getattr(self, ids[k])
             except AttributeError:
                 warn_msg = "Could not determine {}, filling with 'unspecified'".format(
                     k
@@ -1838,17 +1847,20 @@ class CMIP6OutputCube(_CMIPCube):
             self.version,
         )
 
-    def _get_climate_model_scenario_activity_id_member_id(self):
+    def _get_scm_timeseries_ids(self):
         ids = {
             "climate_model": "source_id",
             "scenario": "experiment_id",
             "activity_id": "activity_id",
             "member_id": "member_id",
+            "mip_era": "mip_era",
         }
         output = {}
-        for k, v in ids.items():
+        for k in _SCM_TIMESERIES_META_COLUMNS:
+            if k == "region":
+                continue  # handled in self.get_scm_cubes
             try:
-                output[k] = getattr(self, v)
+                output[k] = getattr(self, ids[k])
             except AttributeError:
                 warn_msg = "Could not determine {}, filling with 'unspecified'".format(
                     k
