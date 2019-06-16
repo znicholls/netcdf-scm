@@ -5,10 +5,8 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
 
     raise_no_iris_warning()
 
-from netcdf_scm.iris_cube_wrappers import SCMCube
-
-
-_IO_LOCAL_KEYS = ["region"]
+from .iris_cube_wrappers import SCMCube
+from .definitions import _SCM_TIMESERIES_META_COLUMNS
 
 def save_netcdf_scm_nc(cubes, out_path):
     """
@@ -25,10 +23,9 @@ def save_netcdf_scm_nc(cubes, out_path):
     save_cubes = []
     for region, scm_cube in cubes.items():
         cube = scm_cube.cube
-        cube.attributes["region"] = region
         save_cubes.append(cube)
 
-    iris.save(save_cubes, out_path, local_keys=_IO_LOCAL_KEYS)
+    iris.save(save_cubes, out_path, local_keys=_SCM_TIMESERIES_META_COLUMNS)
 
 
 def load_scmdataframe(path):
