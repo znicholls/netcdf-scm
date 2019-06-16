@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 
+import netcdf_scm
 from netcdf_scm.io import load_scmdataframe, save_netcdf_scm_nc
 from netcdf_scm.iris_cube_wrappers import CMIP6OutputCube
 
@@ -26,7 +27,8 @@ def test_load_scmdataframe():
     assert (loaded["variable"] == "surface_temperature").all()
     assert (loaded["unit"] == "K").all()
     assert (loaded["member_id"] == "r1i1p1").all()
-    assert (loaded["mip"] == "CMIP5").all()
+    assert (loaded["mip_era"] == "CMIP5").all()
+    assert (loaded["activity_id"] == "CMIP5").all()
 
     _assert_scm_dataframe(
         loaded,
@@ -78,39 +80,43 @@ def test_save_cube_and_load_scmdataframe(tmpdir):
     assert (loaded["unit"] == "W m^-2").all()
     assert (loaded["activity_id"] == "CMIP").all()
     assert (loaded["member_id"] == "r1i1p1f1").all()
-    assert (loaded["mip"] == "CMIP6").all()
+    assert (loaded["mip_era"] == "CMIP6").all()
+    assert (loaded["activity_id"] == "CMIP").all()
 
     _assert_scm_dataframe(
         loaded,
-        285.06777954,
+        236.569464,
         region="World",
-        year=2006,
-        month=1
+        year=1859,
+        month=12
     )
     _assert_scm_dataframe(
         loaded,
-        281.885468,
+        243.04121,
         region="World|Ocean",
-        year=2006,
-        month=1
+        year=1856,
+        month=10
     )
     _assert_scm_dataframe(
         loaded,
-        296.85611,
+        234.635548,
         region="World|Southern Hemisphere",
-        year=2006,
-        month=1
+        year=1853,
+        month=6
     )
     _assert_scm_dataframe(
         loaded,
-        293.116852,
+        234.28444,
         region="World|Southern Hemisphere|Land",
-        year=2006,
+        year=1850,
         month=1
     )
 
     assert loaded.metadata["crunch_netcdf_scm_version"] == "{} (more info at github.com/znicholls/netcdf-scm)".format(netcdf_scm.__version__)
     assert loaded.metadata["institution"] == "Beijing Climate Center, Beijing 100081, China"
     assert loaded.metadata["title"] == "BCC-CSM2-MR output prepared for CMIP6"
-    assert loaded.metadata["land_fraction_northern_hemisphere"] == 0.38029161
+    np.testing.assert_allclose(
+        loaded.metadata["land_fraction_northern_hemisphere"],
+        0.38029161
+    )
     assert loaded.metadata["source"] == "BCC-CSM 2 MR (2017):   aerosol: none  atmos: BCC_AGCM3_MR (T106; 320 x 160 longitude/latitude; 46 levels; top level 1.46 hPa)  atmosChem: none  land: BCC_AVIM2  landIce: none  ocean: MOM4 (1/3 deg 10S-10N, 1/3-1 deg 10-30 N/S, and 1 deg in high latitudes; 360 x 232 longitude/latitude; 40 levels; top grid cell 0-10 m)  ocnBgchem: none  seaIce: SIS2"
