@@ -905,6 +905,7 @@ class SCMCube(object):
             "scenario": "experiment",
             "activity_id": "activity",
             "member_id": "ensemble_member",
+            "mip_era": "mip_era",
         }
         output = {}
         for k in _SCM_TIMESERIES_META_COLUMNS:
@@ -1065,6 +1066,7 @@ class MarbleCMIP5Cube(_CMIPCube):
     recommended CMIP5 directory structure described in section 3.1 of the
     `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
     """
+    mip_era = "CMIP5"
 
     def process_filename(self, filename):
         """Cut a filename into its identifiers
