@@ -1605,6 +1605,7 @@ class CMIP6OutputCube(_CMIPCube):
     template' and 'Directory structure template' sections of the
     `CMIP6 Data Reference Syntax <https://goo.gl/v1drZl>`_.
     """
+
     _scm_timeseries_id_map = {
         "variable": "variable_id",
         "climate_model": "source_id",
@@ -1613,6 +1614,7 @@ class CMIP6OutputCube(_CMIPCube):
         "member_id": "member_id",
         "mip_era": "mip_era",
     }
+
     def process_filename(self, filename):
         """Cut a filename into its identifiers
 
