@@ -931,7 +931,8 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
                 "World|Southern Hemisphere|Ocean",
             ]
         ).all()
-        assert (ts["variable"] == "toa_outgoing_longwave_flux").all()
+        assert (ts["variable"] == "rlut").all()
+        assert (ts["variable_standard_name"] == "toa_outgoing_longwave_flux").all()
         assert (ts["unit"] == "W m^-2").all()
         assert (ts["climate_model"] == "BCC-CSM2-MR").all()
 
@@ -977,7 +978,8 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
                 "World|Southern Hemisphere|Ocean",
             ]
         )
-        assert (ts["variable"] == "fast_soil_pool_mass_content_of_carbon").all()
+        assert (ts["variable"] == "cSoilFast").all()
+        assert (ts["variable_standard_name"] == "fast_soil_pool_mass_content_of_carbon").all()
         assert (ts["unit"] == "kg m^-2").all()
         assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
 
