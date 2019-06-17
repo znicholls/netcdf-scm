@@ -1,6 +1,7 @@
 """
 Command line interface
 """
+import datetime as dt
 import logging
 import re
 import sys
@@ -10,6 +11,7 @@ from time import gmtime, strftime
 
 import click
 import numpy as np
+import pymagicc
 from openscm.scmdataframe import df_append, ScmDataFrame
 from pymagicc.io import MAGICCData
 
@@ -32,6 +34,11 @@ _CUBES = {
     "CMIP6Input4MIPs": CMIP6Input4MIPsCube,
     "CMIP6Output": CMIP6OutputCube,
 }
+
+_MAGICC_VARIABLE_MAP = {
+    "tas": ("Surface Temperature", "SURFACE_TEMP")
+}
+"""Mapping from CMOR variable names to MAGICC variables"""
 
 
 def init_logging(params, out_filename=None, level=None):
@@ -237,7 +244,7 @@ def crunch_data(
 @click.argument(
     "dst", type=click.Path(file_okay=False, writable=True, resolve_path=True)
 )
-@click.argument("crunch_contact")
+@click.argument("wrangle_contact")
 @click.option(
     "--regexp",
     default="^((?!fx).)*$",
@@ -256,7 +263,7 @@ def crunch_data(
 @click.option(
     "--out-format",
     default="mag-files",
-    type=click.Choice(["mag-files", "magicc-input-files", "tuningstrucs-blend-model"]),
+    type=click.Choice(["mag-files", "magicc-input-files-point-end-of-year", "tuningstrucs-blend-model"]),
     show_default=True,
     help="Format to re-write csvs into.",
 )
@@ -274,20 +281,20 @@ def crunch_data(
     default=False,
     show_default=True,
 )
-def wrangle_netcdf_scm_ncs(src, dst, crunch_contact, regexp, nested, prefix, out_format, drs, force):
+def wrangle_netcdf_scm_ncs(src, dst, wrangle_contact, regexp, nested, prefix, out_format, drs, force):
     """
     Wrangle NetCDF-SCM ``.nc`` files into other formats and directory structures.
 
     ``src`` is searched recursively and netcdf-scm will attempt to wrangle all the
     files found.
 
-    ``crunch_contact`` is written into the header of the output files.
+    ``wrangle_contact`` is written into the header of the output files.
     """
     if out_format == "tuningstrucs-blend-model" and nested:
         raise ValueError("Cannot wrangle to nested tuningstrucs with blended models")
 
     log_params = [
-        ("crunch_contact", crunch_contact),
+        ("wrangle_contact", wrangle_contact),
         ("source", src),
         ("destination", dst),
         ("regexp", regexp),
@@ -306,7 +313,7 @@ def wrangle_netcdf_scm_ncs(src, dst, crunch_contact, regexp, nested, prefix, out
     if out_format == "tuningstrucs-blend-model":
         _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
     else:
-        _do_wrangling(src, dst, regexp, nested, out_format, force, prefix)
+        _do_wrangling(src, dst, regexp, nested, out_format, force, prefix, wrangle_contact)
 
 
 def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
@@ -365,7 +372,7 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
             considered_regexps.append(regexp_here)
 
 
-def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
+def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix, wrangle_contact):
     regexp_compiled = re.compile(regexp)
 
     total_dirs = len([f for f, _, _ in walk(src) if f])
@@ -380,16 +387,29 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
                 continue
 
             openscmdf = df_append([load_scmdataframe(os.path.join(dirpath, f)) for f in filenames])
+            metadata = openscmdf.metadata
             tmp_ts = openscmdf.timeseries().reset_index()
             tmp_ts["unit"] = tmp_ts["unit"].astype(str)
             openscmdf = ScmDataFrame(tmp_ts)
 
             out_filedir = dirpath.replace(src, dst) if nested else dst
-            _make_path_if_not_exists(out_filedir)
+
+            header = (
+                "Date: {}\n"
+                "Contact: {}\n"
+                "Source data crunched with: NetCDF-SCM v{}\n"
+                "File written with: pymagicc v{} (more info at github.com/openclimatedata/pymagicc)\n".format(
+                    dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    wrangle_contact,
+                    metadata["crunch_netcdf_scm_version"],
+                    pymagicc.__version__,
+                )
+            )
 
             if out_format == "mag-files":
                 assert len(filenames) == 1, "more than one file to wrangle?"
-                out_file = os.path.join(dirpath, filenames[0]).replace(src, dst)
+                _make_path_if_not_exists(out_filedir)
+                out_file = os.path.join(out_filedir, filenames[0])
                 out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
                 if not force and os.path.isfile(out_file):
                     logger.info(
@@ -410,15 +430,74 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
                         "Please raise an issue at github.com/znicholls/netcdf-scm/"
                         "issues to discuss how to handle non-monthly data wrangling"
                     )
+                writer.metadata = metadata
                 writer.metadata["timeseriestype"] = "MONTHLY"
-                # header setting goes here
+                writer.metadata["header"] = header
                 writer.write(out_file, magicc_version=7)
-            elif out_format == "magicc-input-files":
-                # TODO: fix this from here
-                raise NotImplementedError
-                writer = MAGICCData(openscmdf)
-                writer["todo"] = "SET"
-                writer.write("/home/zebedee/Desktop/TEST.IN", magicc_version=7)
+            elif out_format == "magicc-input-files-point-end-of-year":
+                src_time_points = openscmdf.timeseries().columns
+                out_time_points = [
+                    dt.datetime(y, 12, 31)
+                    for y in range(
+                        src_time_points[0].year,
+                        src_time_points[-1].year + 1
+                    )
+                ]
+                time_id = "{}-{}".format(
+                    src_time_points[0].year,
+                    src_time_points[-1].year + 1
+                )
+                openscmdf = openscmdf.interpolate(out_time_points)
+
+                var_to_write = openscmdf["variable"].unique()[0]
+                try:
+                    magicc_var, magicc_in_file_var = _MAGICC_VARIABLE_MAP[var_to_write]
+                except KeyError:
+                    logger.exception(
+                        "I don't know which MAGICC variable to use for input "
+                        "`{}`".format(var_to_write)
+                    )
+                    continue
+
+                region_filters = {
+                    "FOURBOX": [
+                        "World|Northern Hemisphere|Land",
+                        "World|Southern Hemisphere|Land",
+                        "World|Northern Hemisphere|Ocean",
+                        "World|Southern Hemisphere|Ocean",
+                    ],
+                    "GLOBAL": ["World"],
+                }
+                for region_key, regions_to_keep in region_filters.items():
+                    out_name = (
+                        "{}_{}_{}_{}_{}_{}_{}.IN"
+                    ).format(
+                        var_to_write,
+                        openscmdf["scenario"].unique()[0],
+                        openscmdf["climate_model"].unique()[0],
+                        openscmdf["member_id"].unique()[0],
+                        time_id,
+                        region_key,
+                        magicc_in_file_var,
+                    ).upper()
+
+                    out_file = os.path.join(out_filedir, out_name)
+                    _make_path_if_not_exists(out_filedir)
+                    if not force and os.path.isfile(out_file):
+                        logger.info(
+                            "Skipped (already exists, not overwriting) {}".format(
+                                out_file
+                            )
+                        )
+                        continue
+
+                    writer = MAGICCData(openscmdf).filter(region=regions_to_keep)
+                    writer["todo"] = "SET"
+                    writer["variable"] = magicc_var
+                    writer.metadata = metadata
+                    writer.metadata["header"] = header
+                    writer.metadata["timeseriestype"] = "POINT_END_OF_YEAR"
+                    writer.write(out_file, magicc_version=7)
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))
 
