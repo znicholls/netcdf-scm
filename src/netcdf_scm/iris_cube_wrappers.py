@@ -868,7 +868,7 @@ class SCMCube(object):
     ):
         data = []
         metadata = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
-        for region, scm_cube in scm_timeseries_cubes.items():
+        for scm_cube in scm_timeseries_cubes.values():
             data.append(get_cube_timeseries_data(scm_cube))
             for metadata_column, metadata_values in metadata.items():
                 metadata_values.append(scm_cube.cube.attributes[metadata_column])

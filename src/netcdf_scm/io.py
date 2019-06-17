@@ -22,7 +22,7 @@ def save_netcdf_scm_nc(cubes, out_path):
         Path in which to save the data
     """
     save_cubes = []
-    for region, scm_cube in cubes.items():
+    for scm_cube in cubes.values():
         cube = scm_cube.cube
         save_cubes.append(cube)
 
