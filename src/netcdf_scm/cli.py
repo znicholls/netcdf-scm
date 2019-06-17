@@ -116,7 +116,16 @@ def init_logging(params, out_filename=None, level=None):
     default=False,
     show_default=True,
 )
-def crunch_data(src, dst, crunch_contact, cube_type, regexp, land_mask_threshold, data_sub_dir, force):
+def crunch_data(
+    src,
+    dst,
+    crunch_contact,
+    cube_type,
+    regexp,
+    land_mask_threshold,
+    data_sub_dir,
+    force,
+):
     """
     Crunch data in ``src`` to NetCDF-SCM ``.nc`` files in ``dst``.
 
@@ -173,10 +182,7 @@ def crunch_data(src, dst, crunch_contact, cube_type, regexp, land_mask_threshold
                     scmcube.load_data_in_directory(dirpath)
 
                 out_filename = separator.join(
-                    [
-                        output_prefix,
-                        scmcube._get_data_filename(),
-                    ]
+                    [output_prefix, scmcube._get_data_filename()]
                 )
 
                 out_filedir = scmcube._get_data_directory().replace(
@@ -199,7 +205,9 @@ def crunch_data(src, dst, crunch_contact, cube_type, regexp, land_mask_threshold
                 )
                 for _, c in results.items():
                     if "crunch_contact" in c.cube.attributes:
-                        logger.warning("Overwriting `crunch_contact` attribute")  # pragma: no cover # emergency valve
+                        logger.warning(
+                            "Overwriting `crunch_contact` attribute"
+                        )  # pragma: no cover # emergency valve
                     c.cube.attributes["crunch_contact"] = crunch_contact
 
                 tracker.register(out_filepath, scmcube.info)

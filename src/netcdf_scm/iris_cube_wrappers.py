@@ -788,25 +788,23 @@ class SCMCube(object):
 
         cubes = {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
 
-        source_file_info = "Files: {}".format(
-            [basename(p) for p in self.info['files']],
-        )
+        source_file_info = "Files: {}".format([basename(p) for p in self.info["files"]])
         if "metadata" in self.info:
             source_file_info = "{}; {}".format(
                 source_file_info,
-                "; ".join([
-                    "{}: {}".format(k, v["files"])
-                    for k, v in self.info["metadata"].items()
-                ])
+                "; ".join(
+                    [
+                        "{}: {}".format(k, v["files"])
+                        for k, v in self.info["metadata"].items()
+                    ]
+                ),
             )
 
         for region, c in cubes.items():
             c.cube.attributes["crunch_land_mask_threshold"] = land_mask_threshold
-            c.cube.attributes["crunch_netcdf_scm_version"] = (
-                "{} (more info at github.com/znicholls/netcdf-scm)".format(
-                    __version__
-                )
-            )
+            c.cube.attributes[
+                "crunch_netcdf_scm_version"
+            ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(__version__)
             c.cube.attributes["crunch_source_files"] = source_file_info
             c.cube.attributes["region"] = region
             c.cube.attributes.update(self._get_scm_timeseries_ids())
@@ -1066,6 +1064,7 @@ class MarbleCMIP5Cube(_CMIPCube):
     recommended CMIP5 directory structure described in section 3.1 of the
     `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
     """
+
     mip_era = "CMIP5"
 
     def process_filename(self, filename):

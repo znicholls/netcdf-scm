@@ -18,7 +18,15 @@ def test_crunching(tmpdir, update_expected_files):
 
     runner = CliRunner()
     result = runner.invoke(
-        crunch_data, [INPUT_DIR, OUTPUT_DIR, "cmip6output crunching regression test", "--cube-type", "CMIP6Output", "-f"]
+        crunch_data,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "cmip6output crunching regression test",
+            "--cube-type",
+            "CMIP6Output",
+            "-f",
+        ],
     )
     assert result.exit_code == 0, result.output
     run_crunching_comparison(
