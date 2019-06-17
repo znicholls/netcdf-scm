@@ -123,7 +123,12 @@ TEST_CMIP6_OUTPUT_FILE_1_UNIT = join(
     "lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.nc",
 )
 
-TEST_DATA_OPENSCMCSVS_DIR = join(TEST_DATA_ROOT_DIR, "openscmcsvs")
+TEST_DATA_CMIP6_CRUNCH_OUTPUT = join(
+    TEST_DATA_ROOT_DIR,
+    "expected-crunching-output",
+    "cmip6output"
+)
+
 TEST_DATA_NETCDFSCM_NCS_DIR = join(TEST_DATA_ROOT_DIR, "netcdf-scm-ncs")
 TEST_DATA_NETCDFSCM_NC_FILE = join(
     TEST_DATA_ROOT_DIR, "netcdf-scm_tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc"

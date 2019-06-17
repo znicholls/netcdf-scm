@@ -2,19 +2,19 @@ from glob import glob
 from os.path import isdir, join
 
 from click.testing import CliRunner
-from conftest import TEST_DATA_OPENSCMCSVS_DIR
+from conftest import TEST_DATA_CMIP6_CRUNCH_OUTPUT
 
 import netcdf_scm
-from netcdf_scm.cli import wrangle_openscm_csvs
+from netcdf_scm.cli import wrangle_netcdf_scm_ncs
 
 
 def test_wrangling_defaults(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
-        result = runner.invoke(wrangle_openscm_csvs, [INPUT_DIR, OUTPUT_DIR])
+        result = runner.invoke(wrangle_netcdf_scm_ncs, [INPUT_DIR, OUTPUT_DIR, "test-defaults"])
     assert result.exit_code == 0
 
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
@@ -34,16 +34,17 @@ def test_wrangling_defaults(tmpdir, caplog):
 
 
 def test_wrangling_flat_blend_models(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
-            wrangle_openscm_csvs,
+            wrangle_netcdf_scm_ncs,
             [
                 INPUT_DIR,
                 OUTPUT_DIR,
+                "test",
                 "--flat",
                 "--drs",
                 "CMIP6Output",
@@ -63,16 +64,17 @@ def test_wrangling_flat_blend_models(tmpdir, caplog):
 
 
 def test_wrangling_handles_integer_units(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
-            wrangle_openscm_csvs,
+            wrangle_netcdf_scm_ncs,
             [
                 INPUT_DIR,
                 OUTPUT_DIR,
+                "test",
                 "--regexp",
                 ".*lai.*",
                 "--out-format",
@@ -90,20 +92,20 @@ def test_wrangling_handles_integer_units(tmpdir, caplog):
 
 
 def test_wrangling_force(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_openscm_csvs,
-        [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "-f", "--prefix", "test-prefix"],
+        wrangle_netcdf_scm_ncs,
+        [INPUT_DIR, OUTPUT_DIR, "test", "--regexp", ".*lai.*", "-f", "--prefix", "test-prefix"],
     )
     assert result.exit_code == 0
 
     caplog.clear()
     with caplog.at_level("INFO"):
         result_skip = runner.invoke(
-            wrangle_openscm_csvs,
+            wrangle_netcdf_scm_ncs,
             [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "--prefix", "test-prefix"],
         )
     assert result_skip.exit_code == 0
@@ -119,10 +121,11 @@ def test_wrangling_force(tmpdir, caplog):
     caplog.clear()
     with caplog.at_level("INFO"):
         result_force = runner.invoke(
-            wrangle_openscm_csvs,
+            wrangle_netcdf_scm_ncs,
             [
                 INPUT_DIR,
                 OUTPUT_DIR,
+                "test",
                 "--regexp",
                 ".*lai.*",
                 "-f",
@@ -135,15 +138,16 @@ def test_wrangling_force(tmpdir, caplog):
 
 
 def test_wrangling_force_flat(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_openscm_csvs,
+        wrangle_netcdf_scm_ncs,
         [
             INPUT_DIR,
             OUTPUT_DIR,
+            "test",
             "--regexp",
             ".*lai.*",
             "-f",
@@ -159,10 +163,11 @@ def test_wrangling_force_flat(tmpdir, caplog):
     caplog.clear()
     with caplog.at_level("INFO"):
         result_skip = runner.invoke(
-            wrangle_openscm_csvs,
+            wrangle_netcdf_scm_ncs,
             [
                 INPUT_DIR,
                 OUTPUT_DIR,
+                "test",
                 "--regexp",
                 ".*lai.*",
                 "--flat",
@@ -174,18 +179,19 @@ def test_wrangling_force_flat(tmpdir, caplog):
         )
     assert result_skip.exit_code == 0
 
-    skip_str_file = "Skipped (already exist, not overwriting) {}".format(
+    skip_str_file = "Skipped (already exists, not overwriting) {}".format(
         join(
-            OUTPUT_DIR, "CMIP_historical_r2i1p1f2_unspecified_leaf_area_index_World.mat"
+            OUTPUT_DIR, "LAI_HISTORICAL_R1I1P1F2_WORLD.mat"
         )
     )
     assert skip_str_file in result_skip.output
 
     result_force = runner.invoke(
-        wrangle_openscm_csvs,
+        wrangle_netcdf_scm_ncs,
         [
             INPUT_DIR,
             OUTPUT_DIR,
+            "test",
             "--regexp",
             ".*lai.*",
             "-f",
@@ -201,25 +207,25 @@ def test_wrangling_force_flat(tmpdir, caplog):
 
 
 def test_wrangling_blended_models_default_drs_error(tmpdir):
-    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_openscm_csvs,
-        [INPUT_DIR, OUTPUT_DIR, "--flat", "--out-format", "tuningstrucs-blend-model"],
+        wrangle_netcdf_scm_ncs,
+        [INPUT_DIR, OUTPUT_DIR, "test", "--flat", "--out-format", "tuningstrucs-blend-model"],
     )
     assert result.exit_code != 0
 
 
 def test_wrangling_blended_models_not_flat_error(tmpdir):
-    INPUT_DIR = TEST_DATA_OPENSCMCSVS_DIR
+    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_openscm_csvs,
-        [INPUT_DIR, OUTPUT_DIR, "--nested", "--out-format", "tuningstrucs-blend-model"],
+        wrangle_netcdf_scm_ncs,
+        [INPUT_DIR, OUTPUT_DIR, "test", "--nested", "--out-format", "tuningstrucs-blend-model"],
     )
 
     assert result.exit_code != 0
