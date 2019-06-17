@@ -177,7 +177,17 @@ def test_crunching_arguments(tmpdir, caplog):
 
     assert "land_mask_threshold: {}".format(LAND_MASK_TRESHHOLD) in caplog.text
 
-    assert False, "Load output data and check it saved as desired here and make a separate test to double check reading/writing netcdf-scm nc files"
+    out_file = join(OUTPUT_DIR, DATA_SUB_DIR, "cmip5", "1pctCO2", "Amon", "fco2antt", "CanESM2", "r1i1p1", "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc")
+    assert isfile(out_file)
+
+    loaded = load_scmdataframe(out_file)
+    assert (loaded["scenario"] == "1pctCO2").all()
+    assert (loaded["climate_model"] == "CanESM2").all()
+    assert (loaded["variable"] == "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_anthropogenic_emission").all()
+    assert (loaded["unit"] == "kg  m^-2 s^-1").all()
+    assert (loaded["member_id"] == "r1i1p1").all()
+    assert (loaded["mip_era"] == "CMIP5").all()
+    assert (loaded["activity_id"] == "cmip5").all()
 
     caplog.clear()
 
