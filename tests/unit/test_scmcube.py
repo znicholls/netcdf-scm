@@ -264,18 +264,24 @@ class TestSCMCube(object):
 
         assert_frame_equal(result, test_conversion_return)
 
-    def test_get_scm_timeseries_ids_warnings(self, test_cube, caplog):
+    def test_get_scm_timeseries_ids_warnings(
+        self, test_cube, caplog, expected_mip_era="unspecified", expected_warns=6
+    ):
         warn_msg = re.compile("Could not determine .*, filling with 'unspecified'")
+        warn_msg_variable = "Could not determine variable, filling with standard_name"
         res = test_cube._get_scm_timeseries_ids()
 
         assert res["climate_model"] == "unspecified"
         assert res["scenario"] == "unspecified"
         assert res["activity_id"] == "unspecified"
         assert res["member_id"] == "unspecified"
-        assert res["mip_era"] == "unspecified"
-        assert len(caplog.messages) == 5
+        assert res["mip_era"] == expected_mip_era
+        assert res["variable"] == "air_temperature"
+        assert res["variable_standard_name"] == "air_temperature"
+
+        assert len(caplog.messages) == expected_warns
         for m in caplog.messages:
-            assert warn_msg.match(str(m))
+            assert warn_msg.match(str(m)) or str(m) == warn_msg_variable
 
     def test_get_scm_timeseries_ids(self, test_cube, caplog):
         tmodel = "ABCD"
@@ -913,18 +919,10 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 
         assert result == expected
 
-    def test_get_scm_timeseries_ids_warnings(self, test_cube, caplog):
-        warn_msg = re.compile("Could not determine .*, filling with 'unspecified'")
-        res = test_cube._get_scm_timeseries_ids()
-
-        assert res["climate_model"] == "unspecified"
-        assert res["scenario"] == "unspecified"
-        assert res["activity_id"] == "unspecified"
-        assert res["member_id"] == "unspecified"
-        assert res["mip_era"] == "CMIP5"
-        assert len(caplog.messages) == 4
-        for m in caplog.messages:
-            assert warn_msg.match(str(m))
+    def test_get_scm_timeseries_ids_warnings(
+        self, test_cube, caplog, expected_mip_era="CMIP5", expected_warns=5
+    ):
+        super().test_get_scm_timeseries_ids_warnings(test_cube, caplog, expected_mip_era="CMIP5", expected_warns=5)
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
