@@ -901,12 +901,15 @@ class SCMCube(object):
         time_index, out_calendar = self._get_openscmdata_time_axis_and_calendar(
             scm_timeseries_cubes, out_calendar=out_calendar
         )
+        unit = str(self.cube.units).replace("-", "^-")
+        if unit == "1":
+            unit = "dimensionless"  # ensure units behave with pint
         output = ScmDataFrame(
             data,
             index=time_index,
             columns={
                 **{
-                    "unit": str(self.cube.units).replace("-", "^-"),
+                    "unit": unit,
                     "model": "unspecified",
                 },
                 **metadata,
