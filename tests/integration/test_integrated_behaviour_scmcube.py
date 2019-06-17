@@ -206,6 +206,9 @@ class _SCMCubeIntegrationTester(object):
             else out_calendar
         )
 
+        tmip_era = "tmip"
+        test_cube.mip_era = tmip_era
+
         global_cube = type(test_cube)()
         global_cube.cube = test_cube.cube.copy()
         global_cube.cube.data = 2 * global_cube.cube.data
@@ -263,7 +266,7 @@ class _SCMCubeIntegrationTester(object):
                 ["unspecified"],
                 ["unspecified"],
                 ["unspecified"],
-                ["unspecified"],
+                [tmip_era],
             ],
             names=[
                 "variable",
