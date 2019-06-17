@@ -165,11 +165,12 @@ def crunch_data(
 
     tracker = OutputFileDatabase(out_dir)
     total_dirs = len(list([f for _, _, f in walk(src) if f]))
+    logger.info("Found {} directories with files".format(total_dirs))
     dir_counter = 1
     for dirpath, dirnames, filenames in walk(src):
         logger.debug("Entering {}".format(dirpath))
         if filenames:
-            logger.info("Possible directory {} of {}".format(dir_counter, total_dirs))
+            logger.info("Checking directory {} of {}".format(dir_counter, total_dirs))
             dir_counter += 1
             if not regexp_compiled.match(dirpath):
                 logger.debug("Skipping (did not match regexp) {}".format(dirpath))
