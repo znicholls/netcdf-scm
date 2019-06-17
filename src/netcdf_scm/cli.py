@@ -134,7 +134,9 @@ def crunch_data(
     ``src`` is searched recursively and netcdf-scm will attempt to crunch all the files
     found. The directory structure in ``src`` will be mirrored in ``dst``.
 
-    Failures and warnings are recorded and written into a text file in ``dst``.
+    Failures and warnings are recorded and written into a text file in ``dst``. We 
+    recommend examining this file using a file analysis tool such as ``grep``. We 
+    often use the command ``grep "\|WARNING\|INFO\|ERROR <log-file>``.
 
     ``crunch_contact`` is written into the output ``.nc`` files' ``crunch_contact``
     attribute.
@@ -146,9 +148,10 @@ def crunch_data(
     out_dir = join(dst, data_sub_dir)
 
     log_params = [
-        ("cube-type", cube_type),
+        ("crunch-contact", crunch_contact),
         ("source", src),
         ("destination", out_dir),
+        ("cube-type", cube_type),
         ("regexp", regexp),
         ("land_mask_threshold", land_mask_threshold),
         ("force", force),
