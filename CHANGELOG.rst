@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#63 <https://github.com/znicholls/netcdf-scm/pull/63>`_) Switch to using cmor name for variable in SCM timeseries output and put standard name in standard_variable_name
 - (`#62 <https://github.com/znicholls/netcdf-scm/pull/62>`_) Add netcdf-scm format and crunch to this by default
 - (`#61 <https://github.com/znicholls/netcdf-scm/pull/61>`_) Add land fraction when crunching scm timeseries cubes
 - (`#58 <https://github.com/znicholls/netcdf-scm/pull/58>`_) Lock tuningstruc wrangling so it can only wrangle to flat tuningstrucs, also includes:
