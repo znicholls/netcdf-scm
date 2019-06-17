@@ -102,6 +102,16 @@ class SCMCube(object):
     }
     _timestamp_definitions = None
 
+    _scm_timeseries_id_map = {
+        "climate_model": "model",
+        "scenario": "experiment",
+        "activity_id": "activity",
+        "member_id": "ensemble_member",
+        "mip_era": "mip_era",
+        "variable": "variable_name",
+    }
+    """Mapping from cube attributes (derived from read files) to SCM timeseries metadata"""
+
     def __init__(self):
         self._loaded_paths = []
         self._metadata_cubes = {}
@@ -889,7 +899,6 @@ class SCMCube(object):
             index=time_index,
             columns={
                 **{
-                    "variable_standard_name": self.cube.standard_name,
                     "unit": str(self.cube.units).replace("-", "^-"),
                     "model": "unspecified",
                 },
@@ -904,19 +913,26 @@ class SCMCube(object):
         return output
 
     def _get_scm_timeseries_ids(self):
-        ids = {
-            "climate_model": "model",
-            "scenario": "experiment",
-            "activity_id": "activity",
-            "member_id": "ensemble_member",
-            "mip_era": "mip_era",
-        }
         output = {}
         for k in _SCM_TIMESERIES_META_COLUMNS:
             if k == "region":
                 continue  # handled in self.get_scm_cubes
+            if k == "variable_standard_name":
+                output[k] = self.cube.standard_name
+                continue
+            if k == "variable":
+                try:
+                    output[k] = getattr(self, self._scm_timeseries_id_map[k])
+                except AttributeError:
+                    warn_msg = (
+                        "Could not determine {}, filling with "
+                        "standard_name".format(k)
+                    )
+                    logger.warning(warn_msg)
+                    output[k] = self.cube.standard_name
+                continue
             try:
-                output[k] = getattr(self, ids[k])
+                output[k] = getattr(self, self._scm_timeseries_id_map[k])
             except AttributeError:
                 warn_msg = "Could not determine {}, filling with 'unspecified'".format(
                     k
@@ -1589,7 +1605,14 @@ class CMIP6OutputCube(_CMIPCube):
     template' and 'Directory structure template' sections of the
     `CMIP6 Data Reference Syntax <https://goo.gl/v1drZl>`_.
     """
-
+    _scm_timeseries_id_map = {
+        "variable": "variable_id",
+        "climate_model": "source_id",
+        "scenario": "experiment_id",
+        "activity_id": "activity_id",
+        "member_id": "member_id",
+        "mip_era": "mip_era",
+    }
     def process_filename(self, filename):
         """Cut a filename into its identifiers
 
@@ -1853,36 +1876,3 @@ class CMIP6OutputCube(_CMIPCube):
             self.grid_label,
             self.version,
         )
-
-    def _get_scm_timeseries_ids(self):
-        ids = {
-            "variable": "variable_id",
-            "climate_model": "source_id",
-            "scenario": "experiment_id",
-            "activity_id": "activity_id",
-            "member_id": "member_id",
-            "mip_era": "mip_era",
-        }
-        output = {}
-        for k in _SCM_TIMESERIES_META_COLUMNS:
-            if k == "region":
-                continue  # handled in self.get_scm_cubes
-            if k == "variable":
-                try:
-                    output[k] = getattr(self, ids[k])
-                except AttributeError:
-                    warn_msg = (
-                        "Could not determine {}, filling with "
-                        "standard_name".format(k)
-                    )
-                    logger.warning(warn_msg)
-            try:
-                output[k] = getattr(self, ids[k])
-            except AttributeError:
-                warn_msg = "Could not determine {}, filling with 'unspecified'".format(
-                    k
-                )
-                logger.warning(warn_msg)
-                output[k] = "unspecified"
-
-        return output
