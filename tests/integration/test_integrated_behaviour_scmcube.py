@@ -134,9 +134,11 @@ class _SCMCubeIntegrationTester(object):
         # becomes too annoyting
         ocean_area = 2 + 3 + 4 + 9 + 1
         land_frac = (total_area - ocean_area) / total_area
+
         land_frac_nh = (
             (~land_mask & ~nh_mask).astype(int) * mocked_weights[0, :, :]
         ).sum() / ((~nh_mask).astype(int) * mocked_weights[0, :, :]).sum()
+
         land_frac_sh = (
             (~land_mask & nh_mask).astype(int) * mocked_weights[0, :, :]
         ).sum() / ((nh_mask).astype(int) * mocked_weights[0, :, :]).sum()
@@ -168,6 +170,8 @@ class _SCMCubeIntegrationTester(object):
             exp_cube.cube.attributes["crunch_land_mask_threshold"] = tland_mask_threshold
             exp_cube.cube.attributes["crunch_netcdf_scm_version"] = "{} (more info at github.com/znicholls/netcdf-scm)".format(netcdf_scm.__version__)
             exp_cube.cube.attributes["crunch_source_files"] = "Files: []"
+            exp_cube.cube.attributes["region"] = label
+            exp_cube.cube.attributes.update(test_cube._get_scm_timeseries_ids())
             expected[label] = exp_cube
 
         result = test_cube.get_scm_timeseries_cubes(
@@ -212,6 +216,8 @@ class _SCMCubeIntegrationTester(object):
             global_cube.cube = global_cube.cube.collapsed(
                 ["longitude", "latitude"], iris.analysis.MEAN
             )
+            global_cube.cube.attributes["region"] = "World"
+            global_cube.cube.attributes.update(test_cube._get_scm_timeseries_ids())
 
         sh_ocean_cube = type(test_cube)()
         sh_ocean_cube.cube = test_cube.cube.copy()
@@ -221,6 +227,8 @@ class _SCMCubeIntegrationTester(object):
             sh_ocean_cube.cube = sh_ocean_cube.cube.collapsed(
                 ["longitude", "latitude"], iris.analysis.MEAN
             )
+            sh_ocean_cube.cube.attributes["region"] = "World|Southern Hemisphere|Ocean"
+            sh_ocean_cube.cube.attributes.update(test_cube._get_scm_timeseries_ids())
 
         test_timeseries_cubes = {
             "World": global_cube,
@@ -255,6 +263,7 @@ class _SCMCubeIntegrationTester(object):
                 ["unspecified"],
                 ["unspecified"],
                 ["unspecified"],
+                ["unspecified"],
             ],
             names=[
                 "variable",
@@ -265,6 +274,7 @@ class _SCMCubeIntegrationTester(object):
                 "model",
                 "activity_id",
                 "member_id",
+                "mip_era",
             ],
         )
         expected_df = (
