@@ -1,4 +1,3 @@
-# import filecmp  # bring back if pyam csv writing becomes stable
 import shutil
 import warnings
 from os import makedirs, path, walk
