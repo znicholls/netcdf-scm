@@ -110,12 +110,6 @@ def init_logging(params, out_filename=None, level=None):
     help="Sub-directory of ``dst`` to save data in.",
 )
 @click.option(
-    "--crunch-contact",
-    default="None",
-    show_default=False,
-    help="Information to write in ``crunch_contact`` attribute of output ``.nc`` files",
-)
-@click.option(
     "--force/--do-not-force",
     "-f",
     help="Overwrite any existing files.",
