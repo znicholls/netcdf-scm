@@ -9,11 +9,9 @@ from os.path import join
 from time import gmtime, strftime
 
 import click
-import progressbar
 
-import netcdf_scm
-from netcdf_scm.io import save_netcdf_scm_nc
-
+from . import __version__
+from .io import save_netcdf_scm_nc
 from .iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -36,7 +34,7 @@ def init_logging(params, out_filename=None, level=None):
     """
     Set up the root logger
 
-    All INFO messages and greater are written to stderr
+    All INFO messages and greater are written to stderr.
     If an ``out_filename`` is provided, all recorded log messages are also written to
     disk.
 
@@ -71,9 +69,13 @@ def init_logging(params, out_filename=None, level=None):
 
     if level is not None:
         root.setLevel(level)
+    else:
+        # root has to be lowest level to allow messages, let handlers deal with the
+        # rest
+        root.setLevel(logging.DEBUG)
 
     logging.captureWarnings(True)
-    logger.info("netcdf-scm: {}".format(netcdf_scm.__version__))
+    logger.info("netcdf-scm: {}".format(__version__))
     for k, v in params:
         logger.info("{}: {}".format(k, v))
 
@@ -161,19 +163,18 @@ def crunch_data(
 
     regexp_compiled = re.compile(regexp)
 
-    format_custom_text = _get_format_custom_text()
-    bar = _get_progressbar(
-        text=format_custom_text, max_value=len([w for w in walk(src)])
-    )
     tracker = OutputFileDatabase(out_dir)
-    for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
+    total_dirs = len(list([f for _, _, f in walk(src) if f]))
+    dir_counter = 1
+    for dirpath, dirnames, filenames in walk(src):
         logger.debug("Entering {}".format(dirpath))
         if filenames:
+            logger.info("Possible directory {} of {}".format(dir_counter, total_dirs))
+            dir_counter += 1
             if not regexp_compiled.match(dirpath):
+                logger.debug("Skipping (did not match regexp) {}".format(dirpath))
                 continue
             logger.info("Attempting to process: {}".format(filenames))
-            format_custom_text.update_mapping(curr_dir=dirpath)
-            bar.update(i)
             scmcube = _CUBES[cube_type]()
             try:
                 if len(filenames) == 1:
@@ -216,8 +217,6 @@ def crunch_data(
             except Exception:
                 logger.exception("Failed to process: {}".format(filenames))
                 failures = True
-
-        bar.finish()
 
     if failures:
         raise click.ClickException(
@@ -428,17 +427,3 @@ def _make_path_if_not_exists(path_to_check):
     if not path.exists(path_to_check):
         logger.info("Making output directory: {}".format(path_to_check))
         makedirs(path_to_check)
-
-
-def _get_format_custom_text():
-    return progressbar.FormatCustomText(
-        "Current directory :: %(curr_dir)-400s", {"curr_dir": "uninitialised"}
-    )
-
-
-def _get_progressbar(text, max_value):
-    return progressbar.ProgressBar(
-        widgets=[progressbar.SimpleProgress(), ". ", text],
-        max_value=max_value,
-        prefix="Visiting directory ",
-    ).start()
