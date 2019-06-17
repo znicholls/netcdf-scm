@@ -188,6 +188,8 @@ def test_crunching_arguments(tmpdir, caplog):
     assert (loaded["member_id"] == "r1i1p1").all()
     assert (loaded["mip_era"] == "CMIP5").all()
     assert (loaded["activity_id"] == "cmip5").all()
+    # file is entirely zeros...
+    np.testing.assert_allclose(loaded.timeseries().values, 0)
 
     caplog.clear()
 

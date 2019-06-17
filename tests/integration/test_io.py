@@ -22,47 +22,47 @@ def _assert_scm_dataframe(scmdf, expected, **kwargs):
 @tdata_required
 def test_load_scmdataframe():
     loaded = load_scmdataframe(TEST_DATA_NETCDFSCM_NC_FILE)
-    assert (loaded["scenario"] == "rcp85").all()
-    assert (loaded["climate_model"] == "NorESM1-ME").all()
-    assert (loaded["variable"] == "surface_temperature").all()
+    assert (loaded["scenario"] == "rcp45").all()
+    assert (loaded["climate_model"] == "ACCESS1-0").all()
+    assert (loaded["variable"] == "air_temperature").all()
     assert (loaded["unit"] == "K").all()
     assert (loaded["member_id"] == "r1i1p1").all()
     assert (loaded["mip_era"] == "CMIP5").all()
-    assert (loaded["activity_id"] == "CMIP5").all()
+    assert (loaded["activity_id"] == "cmip5").all()
 
     _assert_scm_dataframe(
         loaded,
-        285.06777954,
+        285.521667,
         region="World",
         year=2006,
         month=1
     )
     _assert_scm_dataframe(
         loaded,
-        281.885468,
+        279.19043,
         region="World|Land",
-        year=2006,
-        month=1
+        year=2019,
+        month=3
     )
     _assert_scm_dataframe(
         loaded,
-        296.85611,
+        287.103729,
         region="World|Northern Hemisphere",
-        year=2006,
-        month=1
+        year=2032,
+        month=11
     )
     _assert_scm_dataframe(
         loaded,
-        293.116852,
+        290.850189,
         region="World|Northern Hemisphere|Ocean",
-        year=2006,
-        month=1
+        year=2049,
+        month=12
     )
 
-    assert loaded.metadata["crunch_netcdf_scm_version"] == "1.0.0+77.g426a601 (more info at github.com/znicholls/netcdf-scm)"
-    assert loaded.metadata["institution"] == "Norwegian Climate Centre"
-    assert loaded.metadata["title"] == "NorESM1-ME model output prepared for CMIP5 RCP8.5"
-    assert loaded.metadata["land_fraction_northern_hemisphere"] == 0.3839148322659226
+    assert loaded.metadata["crunch_netcdf_scm_version"] == "1.0.0+82.g71f30d2.dirty (more info at github.com/znicholls/netcdf-scm)"
+    assert loaded.metadata["institution"] == "CSIRO (Commonwealth Scientific and Industrial Research Organisation, Australia), and BOM (Bureau of Meteorology, Australia)"
+    assert loaded.metadata["title"] == "ACCESS1-0 model output prepared for CMIP5 RCP4.5"
+    np.testing.assert_allclose(loaded.metadata["land_fraction_northern_hemisphere"], 0.38912639)
 
 
 @tdata_required
