@@ -41,7 +41,7 @@ def test_load_scmdataframe():
 
     assert (
         loaded.metadata["crunch_netcdf_scm_version"]
-        == "1.0.0+82.g71f30d2.dirty (more info at github.com/znicholls/netcdf-scm)"
+        == "1.0.0+97.g6d5c5ae (more info at github.com/znicholls/netcdf-scm)"
     )
     assert (
         loaded.metadata["institution"]
