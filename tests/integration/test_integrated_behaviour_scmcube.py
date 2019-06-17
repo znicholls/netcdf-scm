@@ -265,6 +265,7 @@ class _SCMCubeIntegrationTester(object):
         expected_df.columns = pd.MultiIndex.from_product(
             [
                 [test_cube.cube.standard_name],
+                [test_cube.cube.standard_name],
                 [str(test_cube.cube.units).replace("-", "^-")],
                 expected_df.columns.tolist(),
                 ["unspecified"],
@@ -276,6 +277,7 @@ class _SCMCubeIntegrationTester(object):
             ],
             names=[
                 "variable",
+                "variable_standard_name",
                 "unit",
                 "region",
                 "climate_model",
