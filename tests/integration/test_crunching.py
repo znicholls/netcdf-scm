@@ -169,8 +169,8 @@ def test_crunching_arguments(tmpdir, caplog):
         "Making output directory: {}/custom-name".format(OUTPUT_DIR) in caplog.messages
     )
 
-    assert "fco2antt" in caplog.text
-    assert "tas" not in caplog.text
+    assert "Attempting to process: ['fco2antt" in caplog.text
+    assert "Attempting to process: ['tas" not in caplog.text
 
     assert isdir(join(OUTPUT_DIR, DATA_SUB_DIR, "cmip5"))
 
