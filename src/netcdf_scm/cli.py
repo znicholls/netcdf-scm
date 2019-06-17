@@ -9,7 +9,9 @@ import os.path
 from time import gmtime, strftime
 
 import click
+import numpy as np
 from openscm.scmdataframe import df_append, ScmDataFrame
+from pymagicc.io import MAGICCData
 
 from . import __version__
 from .io import save_netcdf_scm_nc, load_scmdataframe
@@ -377,7 +379,7 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
                 logger.debug("Skipping (did not match regexp) {}".format(dirpath))
                 continue
 
-            openscmdf = df_append([os.path.join(dirpath, f) for f in filenames])
+            openscmdf = df_append([load_scmdataframe(os.path.join(dirpath, f)) for f in filenames])
             tmp_ts = openscmdf.timeseries().reset_index()
             tmp_ts["unit"] = tmp_ts["unit"].astype(str)
             openscmdf = ScmDataFrame(tmp_ts)
@@ -388,8 +390,8 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
             if out_format == "mag-files":
                 assert len(filenames) == 1, "more than one file to wrangle?"
                 out_file = os.path.join(dirpath, filenames[0]).replace(src, dst)
-                out_file = "{}.MAG".format(splitext(out_file)[0])
-                if not force and isfile(out_file):
+                out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
+                if not force and os.path.isfile(out_file):
                     logger.info(
                         "Skipped (already exists, not overwriting) {}".format(
                             out_file

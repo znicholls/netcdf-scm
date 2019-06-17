@@ -20,17 +20,17 @@ def test_wrangling_defaults(tmpdir, caplog):
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
     assert "Making output directory: {}".format(OUTPUT_DIR) in result.output
 
-    assert "rsut" in result.output
     assert "rlut" in result.output
+    assert "lai" in result.output
+    assert "cSoilFast" in result.output
 
     assert isdir(
-        join(OUTPUT_DIR, "cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/1pctCO2/r1i1p1f1/Amon/rlut")
+        join(OUTPUT_DIR, "CMIP6/CMIP/BCC/BCC-CSM2-MR/1pctCO2/r1i1p1f1/Amon/rlut/gn/v20181015")
     )
     assert isdir(
-        join(OUTPUT_DIR, "cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/1pctCO2/r1i1p1f1/Amon/rsut")
+        join(OUTPUT_DIR, "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121")
     )
-    assert isdir(join(OUTPUT_DIR, "cmip6/CMIP6/ScenarioMIP/IPSL"))
-    assert isdir(join(OUTPUT_DIR, "cmip6/CMIP6/ScenarioMIP/MRI"))
+    assert isdir(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS"))
 
 
 def test_wrangling_flat_blend_models(tmpdir, caplog):
@@ -106,14 +106,14 @@ def test_wrangling_force(tmpdir, caplog):
     with caplog.at_level("INFO"):
         result_skip = runner.invoke(
             wrangle_netcdf_scm_ncs,
-            [INPUT_DIR, OUTPUT_DIR, "--regexp", ".*lai.*", "--prefix", "test-prefix"],
+            [INPUT_DIR, OUTPUT_DIR, "test", "--regexp", ".*lai.*", "--prefix", "test-prefix"],
         )
     assert result_skip.exit_code == 0
 
     skip_str_file = "Skipped (already exists, not overwriting) {}".format(
         join(
             OUTPUT_DIR,
-            "cmip6/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r2i1p1f2/Lmon/lai/gr/v20181126/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r2i1p1f2_gr_185001-201412.MAG",
+            "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.MAG",
         )
     )
     assert skip_str_file in result_skip.output
