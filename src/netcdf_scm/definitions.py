@@ -1,5 +1,6 @@
 _SCM_TIMESERIES_META_COLUMNS = [
     "variable",
+    "variable_standard_name",
     "region",
     "scenario",
     "climate_model",
