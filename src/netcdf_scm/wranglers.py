@@ -166,7 +166,7 @@ def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
         outfile = get_tuningstruc_name_from_df(df, outdir, prefix)
 
         if isfile(outfile) and not force:
-            logger.info("Skipped (already exist, not overwriting) {}".format(outfile))
+            logger.info("Skipped (already exists, not overwriting) {}".format(outfile))
             already_written.append(outfile)
         else:
             logger.info("Writing {}".format(outfile))
@@ -213,15 +213,15 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
         return vals[0]
 
     scenario = _get_col("scenario")
-    model = _get_col("model")
+    member_id = _get_col("member_id")
     variable = _get_col("variable")
     region = _get_col("region")
 
-    raw_name = (
-        "{}_{}_{}_{}.mat".format(scenario, model, variable, region)
+    raw_name = ((
+        "{}_{}_{}_{}".format(variable, scenario, member_id, region)
         .replace(" ", "_")
         .replace("|", "_")
-    )
+    )).upper() + ".mat"
     if prefix is not None:
         return join(outdir, "{}_{}".format(prefix, raw_name))
 
