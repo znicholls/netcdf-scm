@@ -922,7 +922,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
     def test_get_scm_timeseries_ids_warnings(
         self, test_cube, caplog, expected_mip_era="CMIP5", expected_warns=5
     ):
-        super().test_get_scm_timeseries_ids_warnings(test_cube, caplog, expected_mip_era="CMIP5", expected_warns=5)
+        super().test_get_scm_timeseries_ids_warnings(
+            test_cube, caplog, expected_mip_era="CMIP5", expected_warns=5
+        )
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
