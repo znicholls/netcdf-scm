@@ -127,8 +127,7 @@ TEST_CMIP6_OUTPUT_FILE_1_UNIT = join(
 TEST_DATA_OPENSCMCSVS_DIR = join(TEST_DATA_ROOT_DIR, "openscmcsvs")
 TEST_DATA_NETCDFSCM_NCS_DIR = join(TEST_DATA_ROOT_DIR, "netcdf-scm-ncs")
 TEST_DATA_NETCDFSCM_NC_FILE = join(
-    TEST_DATA_ROOT_DIR,
-    "netcdf-scm_tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc"
+    TEST_DATA_ROOT_DIR, "netcdf-scm_tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc"
 )
 
 tdata_required = pytest.mark.skipif(
