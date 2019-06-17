@@ -91,14 +91,15 @@ def test_convert_scmdf_to_tuningstruc_single_char_unit(tmpdir):
             "variable": "var",
             "region": "World",
             "unit": "K",
-            "scenario": "test",
-            "model": "test",
-            "climate_model": "test",
+            "scenario": "test-scenario",
+            "model": "test_model",
+            "climate_model": "test_cm",
+            "member_id": "tmember-id"
         },
     )
 
     convert_scmdf_to_tuningstruc(test_df, tmpdir, prefix="test_tuningstruc")
-    expected_outfile = join(tmpdir, "test_tuningstruc_test_test_var_World.mat")
+    expected_outfile = join(tmpdir, "test_tuningstruc_VAR_TEST-SCENARIO_TMEMBER-ID_WORLD.mat")
 
     reread = convert_tuningstruc_to_scmdf(expected_outfile)
     assert (reread["unit"] == "K").all()
@@ -124,7 +125,7 @@ def test_convert_scmdf_to_tuningstruc(test_file_info, tmpdir):
 
     expected_outfile = join(
         tmpdir,
-        "{}_{}_{}_{}.mat".format(tscen, tmodel, tvar, tregion)
+        "{}_{}_MEMBER-ID_{}.mat".format(tvar, tscen, tregion)
         .replace(" ", "_")
         .replace("|", "_"),
     )
