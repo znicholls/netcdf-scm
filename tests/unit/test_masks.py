@@ -114,7 +114,7 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes, caplog):
         masker = CubeMasker(test_all_cubes)
         result = masker.get_masks(DEFAULT_REGIONS)
 
-    assert len(caplog.messages) == 2
+    assert len(caplog.messages) == 1
     assert caplog.messages[0] == expected_warn
 
     for label, array in expected.items():
