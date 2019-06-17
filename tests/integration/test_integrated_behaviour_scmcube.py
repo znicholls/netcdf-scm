@@ -979,7 +979,9 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
             ]
         )
         assert (ts["variable"] == "cSoilFast").all()
-        assert (ts["variable_standard_name"] == "fast_soil_pool_mass_content_of_carbon").all()
+        assert (
+            ts["variable_standard_name"] == "fast_soil_pool_mass_content_of_carbon"
+        ).all()
         assert (ts["unit"] == "kg m^-2").all()
         assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
 
