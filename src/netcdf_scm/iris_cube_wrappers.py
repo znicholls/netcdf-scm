@@ -889,7 +889,7 @@ class SCMCube(object):
             index=time_index,
             columns={
                 **{
-                    "variable": self.cube.standard_name,
+                    "variable_standard_name": self.cube.standard_name,
                     "unit": str(self.cube.units).replace("-", "^-"),
                     "model": "unspecified",
                 },
@@ -1856,6 +1856,7 @@ class CMIP6OutputCube(_CMIPCube):
 
     def _get_scm_timeseries_ids(self):
         ids = {
+            "variable": "variable_id",
             "climate_model": "source_id",
             "scenario": "experiment_id",
             "activity_id": "activity_id",
@@ -1866,6 +1867,15 @@ class CMIP6OutputCube(_CMIPCube):
         for k in _SCM_TIMESERIES_META_COLUMNS:
             if k == "region":
                 continue  # handled in self.get_scm_cubes
+            if k == "variable":
+                try:
+                    output[k] = getattr(self, ids[k])
+                except AttributeError:
+                    warn_msg = (
+                        "Could not determine {}, filling with "
+                        "standard_name".format(k)
+                    )
+                    logger.warning(warn_msg)
             try:
                 output[k] = getattr(self, ids[k])
             except AttributeError:
