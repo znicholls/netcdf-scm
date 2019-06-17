@@ -192,8 +192,9 @@ def test_crunching_arguments(tmpdir, caplog):
     loaded = load_scmdataframe(out_file)
     assert (loaded["scenario"] == "1pctCO2").all()
     assert (loaded["climate_model"] == "CanESM2").all()
+    assert (loaded["variable"] == "fco2antt").all()
     assert (
-        loaded["variable"]
+        loaded["variable_standard_name"]
         == "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_anthropogenic_emission"
     ).all()
     assert (loaded["unit"] == "kg  m^-2 s^-1").all()
