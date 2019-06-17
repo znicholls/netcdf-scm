@@ -213,7 +213,10 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
         return vals[0]
 
     scenario = _get_col("scenario")
-    member_id = _get_col("member_id")
+    try:
+        member_id = _get_col("member_id")
+    except KeyError:
+        member_id = "member-id"
     variable = _get_col("variable")
     region = _get_col("region")
 
