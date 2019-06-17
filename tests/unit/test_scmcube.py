@@ -264,9 +264,7 @@ class TestSCMCube(object):
 
         assert_frame_equal(result, test_conversion_return)
 
-    def test_get_scm_timeseries_ids_warnings(
-        self, test_cube, caplog
-    ):
+    def test_get_scm_timeseries_ids_warnings(self, test_cube, caplog):
         warn_msg = re.compile("Could not determine .*, filling with 'unspecified'")
         res = test_cube._get_scm_timeseries_ids()
 
@@ -346,7 +344,11 @@ class TestSCMCube(object):
         expected = {k: test_cube for k in tscm_masks}
         for region, scmc in expected.items():
             scmc.cube.attributes["crunch_land_mask_threshold"] = tland_mask_threshold
-            scmc.cube.attributes["crunch_netcdf_scm_version"] = "{} (more info at github.com/znicholls/netcdf-scm)".format(netcdf_scm.__version__)
+            scmc.cube.attributes[
+                "crunch_netcdf_scm_version"
+            ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(
+                netcdf_scm.__version__
+            )
             scmc.cube.attributes["crunch_source_files"] = "Files: []"
             scmc.cube.attributes["region"] = region
             scmc.cube.attributes.update(test_cube._get_scm_timeseries_ids())
@@ -911,9 +913,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 
         assert result == expected
 
-    def test_get_scm_timeseries_ids_warnings(
-        self, test_cube, caplog
-    ):
+    def test_get_scm_timeseries_ids_warnings(self, test_cube, caplog):
         warn_msg = re.compile("Could not determine .*, filling with 'unspecified'")
         res = test_cube._get_scm_timeseries_ids()
 
