@@ -2,7 +2,7 @@ from glob import glob
 from os.path import isdir, join
 
 from click.testing import CliRunner
-from conftest import TEST_DATA_CMIP6_CRUNCH_OUTPUT
+from conftest import TEST_DATA_CMIP6_CRUNCH_OUTPUT, TEST_DATA_MARBLE_CMIP5_CRUNCH_OUTPUT
 
 import netcdf_scm
 from netcdf_scm.cli import wrangle_netcdf_scm_ncs
@@ -11,10 +11,11 @@ from netcdf_scm.cli import wrangle_netcdf_scm_ncs
 def test_wrangling_defaults(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
+    test_wrangler = "test-defaults"
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
-        result = runner.invoke(wrangle_netcdf_scm_ncs, [INPUT_DIR, OUTPUT_DIR, "test-defaults"])
+        result = runner.invoke(wrangle_netcdf_scm_ncs, [INPUT_DIR, OUTPUT_DIR, test_wrangler])
     assert result.exit_code == 0
 
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
@@ -31,6 +32,86 @@ def test_wrangling_defaults(tmpdir, caplog):
         join(OUTPUT_DIR, "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121")
     )
     assert isdir(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS"))
+
+    with open(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.MAG")) as f:
+        content = f.read()
+
+    assert "Contact: {}".format(test_wrangler) in content
+
+
+def test_wrangling_magicc_input_files(tmpdir, caplog):
+    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_CRUNCH_OUTPUT
+    OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
+    test_wrangler = "test wrangling magicc input point end of year files <email>"
+    runner = CliRunner()
+    with caplog.at_level("INFO"):
+        result = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                test_wrangler,
+                "--out-format",
+                "magicc-input-files-point-end-of-year",
+                "--regexp",
+                ".*tas.*",
+            ]
+        )
+    assert result.exit_code == 0
+
+    assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
+    assert "Making output directory: {}".format(OUTPUT_DIR) in result.output
+
+    assert isdir(
+        join(OUTPUT_DIR, "cmip5/1pctCO2/Amon/tas/CanESM2/r1i1p1")
+    )
+    assert isdir(
+        join(OUTPUT_DIR, "cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1")
+    )
+    assert isdir(
+        join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1")
+    )
+    assert isdir(
+        join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/ACCESS1-0/r1i1p1")
+    )
+    assert isdir(
+        join(OUTPUT_DIR, "cmip5/rcp85/Amon/tas/NorESM1-ME/r1i1p1")
+    )
+
+    with open(join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1/TAS_RCP45_HADCM3_R1I1P1_2006-2036_GLOBAL_SURFACE_TEMP.IN")) as f:
+        content = f.read()
+
+    assert "Contact: {}".format(test_wrangler) in content
+    assert "timeseriestype: POINT_END_OF_YEAR" in content  # blocked by pymagicc problems
+    assert "20006" in content
+    assert "20006." not in content
+    assert "2030" in content
+    assert "2030." not in content
+    assert "2036" in content
+    assert "2036." not in content
+
+
+def test_wrangling_magicc_input_files_error(tmpdir, caplog):
+    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
+    OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
+
+    runner = CliRunner()
+    with caplog.at_level("INFO"):
+        result = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test-defaults",
+                "--out-format",
+                "magicc-input-files-point-end-of-year",
+                "--regexp",
+                ".*lai.*",
+            ]
+        )
+    assert result.exit_code == 0
+
+    assert "ERROR:netcdf-scm:I don't know which MAGICC variable to use for input `lai`" in result.output
 
 
 def test_wrangling_flat_blend_models(tmpdir, caplog):
