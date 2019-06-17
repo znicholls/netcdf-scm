@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from click.testing import CliRunner
 from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR
-from openscm.scmdataframe import ScmDataFrame
 
 import netcdf_scm
 from netcdf_scm.cli import crunch_data
@@ -177,13 +176,26 @@ def test_crunching_arguments(tmpdir, caplog):
 
     assert "land_mask_threshold: {}".format(LAND_MASK_TRESHHOLD) in caplog.text
 
-    out_file = join(OUTPUT_DIR, DATA_SUB_DIR, "cmip5", "1pctCO2", "Amon", "fco2antt", "CanESM2", "r1i1p1", "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc")
+    out_file = join(
+        OUTPUT_DIR,
+        DATA_SUB_DIR,
+        "cmip5",
+        "1pctCO2",
+        "Amon",
+        "fco2antt",
+        "CanESM2",
+        "r1i1p1",
+        "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
+    )
     assert isfile(out_file)
 
     loaded = load_scmdataframe(out_file)
     assert (loaded["scenario"] == "1pctCO2").all()
     assert (loaded["climate_model"] == "CanESM2").all()
-    assert (loaded["variable"] == "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_anthropogenic_emission").all()
+    assert (
+        loaded["variable"]
+        == "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_anthropogenic_emission"
+    ).all()
     assert (loaded["unit"] == "kg  m^-2 s^-1").all()
     assert (loaded["member_id"] == "r1i1p1").all()
     assert (loaded["mip_era"] == "CMIP5").all()

@@ -4,6 +4,6 @@ _SCM_TIMESERIES_META_COLUMNS = [
     "climate_model",
     "member_id",
     "mip_era",
-    "activity_id"
+    "activity_id",
 ]
 """Metadata columns to include when creating SCM timeseries"""

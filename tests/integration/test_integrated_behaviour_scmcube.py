@@ -167,8 +167,14 @@ class _SCMCubeIntegrationTester(object):
                     land_frac_sh, long_name="land_fraction_southern_hemisphere", units=1
                 )
             )
-            exp_cube.cube.attributes["crunch_land_mask_threshold"] = tland_mask_threshold
-            exp_cube.cube.attributes["crunch_netcdf_scm_version"] = "{} (more info at github.com/znicholls/netcdf-scm)".format(netcdf_scm.__version__)
+            exp_cube.cube.attributes[
+                "crunch_land_mask_threshold"
+            ] = tland_mask_threshold
+            exp_cube.cube.attributes[
+                "crunch_netcdf_scm_version"
+            ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(
+                netcdf_scm.__version__
+            )
             exp_cube.cube.attributes["crunch_source_files"] = "Files: []"
             exp_cube.cube.attributes["region"] = label
             exp_cube.cube.attributes.update(test_cube._get_scm_timeseries_ids())

@@ -5,8 +5,9 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
 
     raise_no_iris_warning()
 
-from .iris_cube_wrappers import SCMCube
 from .definitions import _SCM_TIMESERIES_META_COLUMNS
+from .iris_cube_wrappers import SCMCube
+
 
 def save_netcdf_scm_nc(cubes, out_path):
     """
@@ -44,9 +45,7 @@ def load_scmdataframe(path):
     """
     helper, scm_cubes = _load_helper_and_scm_cubes(path)
     scmdf = helper._convert_scm_timeseries_cubes_to_openscmdata(scm_cubes)
-    scmdf.metadata = {
-        k:v for k, v in helper.cube.attributes.items() if k != "region"
-    }
+    scmdf.metadata = {k: v for k, v in helper.cube.attributes.items() if k != "region"}
     for coord in helper.cube.coords():
         if coord.standard_name in ["time", "latitude", "longitude", "height"]:
             continue
