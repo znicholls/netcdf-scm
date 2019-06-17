@@ -780,6 +780,13 @@ class SCMCube(object):
         cube) and SCM timeseries metadata (e.g. scenario, climate_model,
         standard_variable_name).
 
+        In particular, the timeseries'
+        `CMOR name <https://www.earthsystemcog.org/projects/wip/CMIP6DataRequest>`_
+        (see `here <http://clipc-services.ceda.ac.uk/dreq/mipVars.html>`_ for more
+        details) is put in the ``variable`` attribute whilst the timeseries` 'standard name' (see
+        `CF documentation <http://cfconventions.org/Data/cf-standard-names/66/build/cf-standard-name-table.html>`_
+        ) is put in the ``variable_standard_name`` attribute.
+
         Parameters
         ----------
         sftlf_cube : :obj:`SCMCube`, optional
