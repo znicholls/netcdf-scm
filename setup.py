@@ -35,7 +35,7 @@ CLASSIFIERS = [
 ENTRY_POINTS = {
     "console_scripts": [
         "netcdf-scm-crunch = netcdf_scm.cli:crunch_data",
-        "netcdf-scm-wrangle = netcdf_scm.cli:wrangle_openscm_csvs",
+        "netcdf-scm-wrangle = netcdf_scm.cli:wrangle_netcdf_scm_ncs",
     ]
 }
 

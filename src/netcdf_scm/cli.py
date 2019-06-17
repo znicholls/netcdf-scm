@@ -4,14 +4,15 @@ Command line interface
 import logging
 import re
 import sys
-from os import makedirs, path, walk
-from os.path import join
+from os import makedirs, walk
+import os.path
 from time import gmtime, strftime
 
 import click
+from openscm.scmdataframe import df_append, ScmDataFrame
 
 from . import __version__
-from .io import save_netcdf_scm_nc
+from .io import save_netcdf_scm_nc, load_scmdataframe
 from .iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -19,6 +20,7 @@ from .iris_cube_wrappers import (
     SCMCube,
 )
 from .output import OutputFileDatabase
+from .wranglers import convert_scmdf_to_tuningstruc
 
 logger = logging.getLogger("netcdf-scm")
 
@@ -145,7 +147,7 @@ def crunch_data(
     output_prefix = "netcdf-scm"
     separator = "_"
     timestamp = _get_timestamp()
-    out_dir = join(dst, data_sub_dir)
+    out_dir = os.path.join(dst, data_sub_dir)
 
     log_params = [
         ("crunch-contact", crunch_contact),
@@ -156,7 +158,7 @@ def crunch_data(
         ("land_mask_threshold", land_mask_threshold),
         ("force", force),
     ]
-    log_file = join(
+    log_file = os.path.join(
         out_dir, "{}-crunch.log".format(timestamp.replace(" ", "_").replace(":", ""))
     )
     _make_path_if_not_exists(out_dir)
@@ -182,7 +184,7 @@ def crunch_data(
             scmcube = _CUBES[cube_type]()
             try:
                 if len(filenames) == 1:
-                    scmcube.load_data_from_path(join(dirpath, filenames[0]))
+                    scmcube.load_data_from_path(os.path.join(dirpath, filenames[0]))
                 else:
                     scmcube.load_data_in_directory(dirpath)
 
@@ -193,7 +195,7 @@ def crunch_data(
                 out_filedir = scmcube._get_data_directory().replace(
                     scmcube.root_dir, out_dir
                 )
-                out_filepath = join(out_filedir, out_filename)
+                out_filepath = os.path.join(out_filedir, out_filename)
 
                 _make_path_if_not_exists(out_filedir)
 
@@ -228,199 +230,195 @@ def crunch_data(
         )
 
 
-# @click.command(context_settings={"help_option_names": ["-h", "--help"]})
-# @click.argument("src", type=click.Path(exists=True, readable=True, resolve_path=True))
-# @click.argument(
-#     "dst", type=click.Path(file_okay=False, writable=True, resolve_path=True)
-# )
-# @click.option(
-#     "--regexp",
-#     default="^((?!fx).)*$",
-#     show_default=True,
-#     help="Regular expression to apply to filepath (only wrangles matches).",
-# )
-# @click.option(
-#     "--nested/--flat",
-#     help="Maintain source directory structure in destination. If `flat`, writes all files to a single directory.",
-#     default=True,
-#     show_default=True,
-# )
-# @click.option(
-#     "--prefix", default=None, help="Prefix to apply to output file names (not paths)."
-# )
-# @click.option(
-#     "--out-format",
-#     default="mag-files",
-#     type=click.Choice(["mag-files", "magicc-input-files", "tuningstrucs-blend-model"]),
-#     show_default=True,
-#     help="Format to re-write csvs into.",
-# )
-# @click.option(
-#     "--drs",
-#     default="None",
-#     type=click.Choice(["None", "MarbleCMIP5", "CMIP6Input4MIPs", "CMIP6Output"]),
-#     show_default=True,
-#     help="Data reference syntax to use to decipher paths when crunching to flat and the output format is tuningstrucs. This is required to ensure the output names are unique.",
-# )
-# @click.option(
-#     "--force/--do-not-force",
-#     "-f",
-#     help="Overwrite any existing files.",
-#     default=False,
-#     show_default=True,
-# )
-# def wrangle_openscm_csvs(src, dst, regexp, nested, prefix, out_format, drs, force):
-#     """
-#     Wrangle OpenSCM csv files into other formats and directory structures
+@click.command(context_settings={"help_option_names": ["-h", "--help"]})
+@click.argument("src", type=click.Path(exists=True, readable=True, resolve_path=True))
+@click.argument(
+    "dst", type=click.Path(file_okay=False, writable=True, resolve_path=True)
+)
+@click.argument("crunch_contact")
+@click.option(
+    "--regexp",
+    default="^((?!fx).)*$",
+    show_default=True,
+    help="Regular expression to apply to filepath (only wrangles matches).",
+)
+@click.option(
+    "--nested/--flat",
+    help="Maintain source directory structure in destination. If `flat`, writes all files to a single directory.",
+    default=True,
+    show_default=True,
+)
+@click.option(
+    "--prefix", default=None, help="Prefix to apply to output file names (not paths)."
+)
+@click.option(
+    "--out-format",
+    default="mag-files",
+    type=click.Choice(["mag-files", "magicc-input-files", "tuningstrucs-blend-model"]),
+    show_default=True,
+    help="Format to re-write csvs into.",
+)
+@click.option(
+    "--drs",
+    default="None",
+    type=click.Choice(["None", "MarbleCMIP5", "CMIP6Input4MIPs", "CMIP6Output"]),
+    show_default=True,
+    help="Data reference syntax to use to decipher paths when crunching to flat and the output format is tuningstrucs. This is required to ensure the output names are unique.",
+)
+@click.option(
+    "--force/--do-not-force",
+    "-f",
+    help="Overwrite any existing files.",
+    default=False,
+    show_default=True,
+)
+def wrangle_netcdf_scm_ncs(src, dst, crunch_contact, regexp, nested, prefix, out_format, drs, force):
+    """
+    Wrangle NetCDF-SCM ``.nc`` files into other formats and directory structures.
 
-#     ``src`` is searched recursively and netcdf-scm will attemp to wrangle all the files
-#     found.
-#     """
-#     if out_format == "tuningstrucs-blend-model" and nested:
-#         raise ValueError("Cannot wrangle to nested tuningstrucs with blended models")
+    ``src`` is searched recursively and netcdf-scm will attempt to wrangle all the
+    files found.
 
-#     log_params = [
-#         ("source", src),
-#         ("destination", dst),
-#         ("regexp", regexp),
-#         ("land_mask_threshold", nested),
-#         ("drs", drs),
-#         ("out_format", out_format),
-#         ("force", force),
-#     ]
-#     log_file = join(
-#         dst,
-#         "{}-wrangle.log".format(_get_timestamp().replace(" ", "_").replace(":", "")),
-#     )
-#     _make_path_if_not_exists(dst)
-#     init_logging(log_params, out_filename=log_file)
+    ``crunch_contact`` is written into the header of the output files.
+    """
+    if out_format == "tuningstrucs-blend-model" and nested:
+        raise ValueError("Cannot wrangle to nested tuningstrucs with blended models")
 
-#     if out_format == "tuningstrucs-blend-model":
-#         _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
-#     else:
-#         _do_wrangling(src, dst, regexp, nested, out_format, force, prefix)
+    log_params = [
+        ("crunch_contact", crunch_contact),
+        ("source", src),
+        ("destination", dst),
+        ("regexp", regexp),
+        ("land_mask_threshold", nested),
+        ("drs", drs),
+        ("out_format", out_format),
+        ("force", force),
+    ]
+    log_file = os.path.join(
+        dst,
+        "{}-wrangle.log".format(_get_timestamp().replace(" ", "_").replace(":", "")),
+    )
+    _make_path_if_not_exists(dst)
+    init_logging(log_params, out_filename=log_file)
 
-
-# def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
-#     regexp_compiled = re.compile(regexp)
-#     considered_regexps = []
-#     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-#         if filenames:
-#             if not regexp_compiled.match(dirpath):
-#                 continue
-
-#             if considered_regexps:
-#                 if any([r.match(dirpath) for r in considered_regexps]):
-#                     continue
-
-#             if drs == "None":
-#                 raise NotImplementedError(
-#                     "`drs` == 'None' is not supported for wrangling to "
-#                     "tuningstrucs. Please raise an issue at "
-#                     "github.com/znicholls/netcdf-scm/ if you need this feature."
-#                 )
-
-#             scmcube = _CUBES[drs]()
-#             ids = {
-#                 k: v
-#                 if any([s in k for s in ["variable", "experiment", "activity", "mip"]])
-#                 else ".*"
-#                 for k, v in scmcube.process_path(dirpath).items()
-#             }
-
-#             regexp_here = re.compile(
-#                 dirname(
-#                     scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)
-#                 )
-#             )
-#             logger.info("Wrangling {}".format(regexp_here))
-#             regexp_compiled = re.compile(regexp)
-
-#             format_custom_text = _get_format_custom_text()
-#             bar = _get_progressbar(
-#                 text=format_custom_text, max_value=len([w for w in walk(src)])
-#             )
-#             collected = []
-#             for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-#                 if filenames:
-#                     if not regexp_compiled.match(dirpath):
-#                         continue
-
-#                     format_custom_text.update_mapping(curr_dir=dirpath)
-#                     bar.update(i)
-
-#                     openscmdf = df_append([join(dirpath, f) for f in filenames])
-#                     tmp_ts = openscmdf.timeseries().reset_index()
-#                     tmp_ts["unit"] = tmp_ts["unit"].astype(str)
-#                     openscmdf = ScmDataFrame(tmp_ts)
-
-#                     collected.append(openscmdf)
-
-#             logger.info("Wrangling {}".format(regexp_here))
-#             convert_scmdf_to_tuningstruc(
-#                 df_append(collected), dst, force=force, prefix=prefix
-#             )
-
-#             considered_regexps.append(regexp_here)
+    if out_format == "tuningstrucs-blend-model":
+        _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
+    else:
+        _do_wrangling(src, dst, regexp, nested, out_format, force, prefix)
 
 
-# def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
-#     regexp_compiled = re.compile(regexp)
+def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
+    regexp_compiled = re.compile(regexp)
+    considered_regexps = []
+    for i, (dirpath, _, filenames) in enumerate(walk(src)):
+        if filenames:
+            if not regexp_compiled.match(dirpath):
+                continue
 
-#     format_custom_text = _get_format_custom_text()
-#     bar = _get_progressbar(
-#         text=format_custom_text, max_value=len([w for w in walk(src)])
-#     )
-#     for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-#         if filenames:
-#             if not regexp_compiled.match(dirpath):
-#                 continue
+            if considered_regexps:
+                if any([r.match(dirpath) for r in considered_regexps]):
+                    continue
 
-#             format_custom_text.update_mapping(curr_dir=dirpath)
-#             bar.update(i)
+            if drs == "None":
+                raise NotImplementedError(
+                    "`drs` == 'None' is not supported for wrangling to "
+                    "tuningstrucs. Please raise an issue at "
+                    "github.com/znicholls/netcdf-scm/ if you need this feature."
+                )
 
-#             openscmdf = df_append([join(dirpath, f) for f in filenames])
-#             tmp_ts = openscmdf.timeseries().reset_index()
-#             tmp_ts["unit"] = tmp_ts["unit"].astype(str)
-#             openscmdf = ScmDataFrame(tmp_ts)
+            scmcube = _CUBES[drs]()
+            ids = {
+                k: v
+                if any([s in k for s in ["variable", "experiment", "activity", "mip"]])
+                else ".*"
+                for k, v in scmcube.process_path(dirpath).items()
+            }
 
-#             out_filedir = dirpath.replace(src, dst) if nested else dst
-#             _make_path_if_not_exists(out_filedir)
+            regexp_here = re.compile(
+                os.path.dirname(
+                    scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)
+                )
+            )
+            logger.info("Wrangling {}".format(regexp_here))
+            regexp_compiled = re.compile(regexp)
 
-#             if out_format == "mag-files":
-#                 assert len(filenames) == 1, "more than one file to wrangle?"
-#                 out_file = join(dirpath, filenames[0]).replace(src, dst)
-#                 out_file = "{}.MAG".format(splitext(out_file)[0])
-#                 if not force and isfile(out_file):
-#                     logger.info(
-#                         "Skipped (already exists, not overwriting) {}".format(
-#                             out_file
-#                         )
-#                     )
-#                     continue
+            collected = []
+            for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
+                if filenames:
+                    if not regexp_compiled.match(dirpath):
+                        continue
 
-#                 writer = MAGICCData(openscmdf)
-#                 writer["todo"] = "SET"
-#                 time_steps = (
-#                     writer.timeseries().columns[1:]
-#                     - writer.timeseries().columns[:-1]
-#                 )
-#                 if any((time_steps > np.timedelta64(32, "D")) | (time_steps < np.timedelta64(28, "D"))):
-#                     raise ValueError(
-#                         "Please raise an issue at github.com/znicholls/netcdf-scm/"
-#                         "issues to discuss how to handle non-monthly data wrangling"
-#                     )
-#                 writer.metadata["timeseriestype"] = "MONTHLY"
-#                 # header setting goes here
-#                 writer.write(out_file, magicc_version=7)
-#             elif out_format == "magicc-input-files":
-#                 # TODO: fix this from here
-#                 raise NotImplementedError
-#                 writer = MAGICCData(openscmdf)
-#                 writer["todo"] = "SET"
-#                 writer.write("/home/zebedee/Desktop/TEST.IN", magicc_version=7)
-#             else:
-#                 raise ValueError("Unsupported format: {}".format(out_format))
+                    openscmdf = df_append([load_scmdataframe(os.path.join(dirpath, f)) for f in filenames])
+                    tmp_ts = openscmdf.timeseries().reset_index()
+                    tmp_ts["unit"] = tmp_ts["unit"].astype(str)
+                    openscmdf = ScmDataFrame(tmp_ts)
+
+                    collected.append(openscmdf)
+
+            logger.info("Wrangling {}".format(regexp_here))
+            convert_scmdf_to_tuningstruc(
+                df_append(collected), dst, force=force, prefix=prefix
+            )
+
+            considered_regexps.append(regexp_here)
+
+
+def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix):
+    regexp_compiled = re.compile(regexp)
+
+    total_dirs = len([f for f, _, _ in walk(src) if f])
+    logger.info("Found {} directories with files".format(total_dirs))
+    dir_counter = 1
+    for i, (dirpath, _, filenames) in enumerate(walk(src)):
+        if filenames:
+            logger.info("Checking directory {} of {}".format(dir_counter, total_dirs))
+            dir_counter += 1
+            if not regexp_compiled.match(dirpath):
+                logger.debug("Skipping (did not match regexp) {}".format(dirpath))
+                continue
+
+            openscmdf = df_append([os.path.join(dirpath, f) for f in filenames])
+            tmp_ts = openscmdf.timeseries().reset_index()
+            tmp_ts["unit"] = tmp_ts["unit"].astype(str)
+            openscmdf = ScmDataFrame(tmp_ts)
+
+            out_filedir = dirpath.replace(src, dst) if nested else dst
+            _make_path_if_not_exists(out_filedir)
+
+            if out_format == "mag-files":
+                assert len(filenames) == 1, "more than one file to wrangle?"
+                out_file = os.path.join(dirpath, filenames[0]).replace(src, dst)
+                out_file = "{}.MAG".format(splitext(out_file)[0])
+                if not force and isfile(out_file):
+                    logger.info(
+                        "Skipped (already exists, not overwriting) {}".format(
+                            out_file
+                        )
+                    )
+                    continue
+
+                writer = MAGICCData(openscmdf)
+                writer["todo"] = "SET"
+                time_steps = (
+                    writer.timeseries().columns[1:]
+                    - writer.timeseries().columns[:-1]
+                )
+                if any((time_steps > np.timedelta64(32, "D")) | (time_steps < np.timedelta64(28, "D"))):
+                    raise ValueError(
+                        "Please raise an issue at github.com/znicholls/netcdf-scm/"
+                        "issues to discuss how to handle non-monthly data wrangling"
+                    )
+                writer.metadata["timeseriestype"] = "MONTHLY"
+                # header setting goes here
+                writer.write(out_file, magicc_version=7)
+            elif out_format == "magicc-input-files":
+                # TODO: fix this from here
+                raise NotImplementedError
+                writer = MAGICCData(openscmdf)
+                writer["todo"] = "SET"
+                writer.write("/home/zebedee/Desktop/TEST.IN", magicc_version=7)
+            else:
+                raise ValueError("Unsupported format: {}".format(out_format))
 
 
 def _get_timestamp():
@@ -428,6 +426,6 @@ def _get_timestamp():
 
 
 def _make_path_if_not_exists(path_to_check):
-    if not path.exists(path_to_check):
+    if not os.path.exists(path_to_check):
         logger.info("Making output directory: {}".format(path_to_check))
         makedirs(path_to_check)
