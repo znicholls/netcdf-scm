@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from netcdf_scm.io import load_scmdataframe
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -303,13 +304,9 @@ def run_crunching_comparison(res, expected, update=False):
                     if update:
                         shutil.copy(res_f, exp_f)
                     else:
-                        res_df = pd.read_csv(res_f)
-                        exp_df = pd.read_csv(exp_f)
+                        res_df = load_scmdataframe(res_f).timeseries().sort_index()
+                        exp_df = load_scmdataframe(exp_f).timeseries().sort_index()
                         pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
-
-                        # very restrictive test, has to be turned off as pyam does
-                        # not sort before writing to disk
-                        # assert filecmp.cmp(res_f, exp_f, shallow=False), "{} and {} differ".format(res_f, exp_f)
 
     if update:
         print("Updated {}".format(expected))
