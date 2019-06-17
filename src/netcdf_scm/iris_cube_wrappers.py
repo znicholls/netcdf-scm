@@ -764,6 +764,12 @@ class SCMCube(object):
     def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50):
         """Get SCM relevant cubes from the ``self``.
 
+        Each cube comes with extra information in its ``attributes`` property. The
+        extra information comprises of crunching information (e.g. the
+        land_mask_treshold, netcdf_scm_version and source files used to generate the
+        cube) and SCM timeseries metadata (e.g. scenario, climate_model,
+        standard_variable_name).
+
         Parameters
         ----------
         sftlf_cube : :obj:`SCMCube`, optional
