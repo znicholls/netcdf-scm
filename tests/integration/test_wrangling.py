@@ -82,12 +82,14 @@ def test_wrangling_magicc_input_files(tmpdir, caplog):
         content = f.read()
 
     assert "Contact: {}".format(test_wrangler) in content
-    assert "timeseriestype: POINT_END_OF_YEAR" in content  # blocked by pymagicc problems
-    assert "20006" in content
-    assert "20006." not in content
+    assert "timeseriestype: POINT_END_OF_YEAR" in content
+    assert "2006" in content
+    assert "2006." not in content
     assert "2030" in content
     assert "2030." not in content
-    assert "2036" in content
+    assert "2035" in content
+    assert "2035." not in content
+    assert "2036" not in content
     assert "2036." not in content
 
 
