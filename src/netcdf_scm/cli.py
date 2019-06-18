@@ -178,6 +178,7 @@ def crunch_data(
     regexp_compiled = re.compile(regexp)
 
     tracker = OutputFileDatabase(out_dir)
+    logger.info("Finding directories with files")
     total_dirs = len(list([f for _, _, f in walk(src) if f]))
     logger.info("Found {} directories with files".format(total_dirs))
     dir_counter = 1
@@ -375,7 +376,8 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
 def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix, wrangle_contact):
     regexp_compiled = re.compile(regexp)
 
-    total_dirs = len([f for f, _, _ in walk(src) if f])
+    logger.info("Finding directories with files")
+    total_dirs = len([f for _, _, f in walk(src) if f])
     logger.info("Found {} directories with files".format(total_dirs))
     dir_counter = 1
     for i, (dirpath, _, filenames) in enumerate(walk(src)):
