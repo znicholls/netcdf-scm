@@ -58,6 +58,7 @@ def load_scmdataframe(path):
             extra_str = "{} ({})".format(coord.long_name, str(coord.units))
             scmdf[extra_str] = coord.points.squeeze()
 
+    # TODO: decide whether assuming point data is a good idea or not
     return scmdf
 
 
