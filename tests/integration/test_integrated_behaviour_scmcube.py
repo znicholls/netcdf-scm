@@ -989,5 +989,5 @@ class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_1_UNIT)
 
         ts = test_cube.get_scm_timeseries()
-        assert (ts["unit"] == "1").all()
+        assert (ts["unit"] == "dimensionless").all()
         assert (ts["climate_model"] == "CNRM-CM6-1").all()
