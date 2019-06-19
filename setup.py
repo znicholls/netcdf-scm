@@ -48,7 +48,7 @@ REQUIREMENTS_INSTALL = [
     "progressbar2",
     "openscm>=0.1.0a",
     # "pymagicc>=2.0.0b1",
-    "pymagicc @ git+git://github.com/openclimatedata/pymagicc.git@9e5ad1bc3a8df2c2343221b4c5ca34243435e9c5",
+    "pymagicc @ git+git://github.com/openclimatedata/pymagicc.git@ae05404ee4c6f0be245aa9e70d004b6f506e95e2",
     "click",
 ]
 REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0"]

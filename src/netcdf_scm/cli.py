@@ -27,7 +27,7 @@ from .iris_cube_wrappers import (
 from .output import OutputFileDatabase
 from .wranglers import convert_scmdf_to_tuningstruc
 
-logger = logging.getLogger("netcdf-scm")
+logger = logging.getLogger("netcdf_scm")
 
 _CUBES = {
     "Scm": SCMCube,
@@ -70,19 +70,17 @@ def init_logging(params, out_filename=None, level=None):
     h.setLevel(logging.INFO)
     handlers.append(h)
 
-    root = logging.root
     fmt = logging.Formatter("{asctime} {levelname}:{name}:{message}", style="{")
     for h in handlers:
         if h.formatter is None:
             h.setFormatter(fmt)
-        root.addHandler(h)
+        logger.addHandler(h)
 
     if level is not None:
-        root.setLevel(level)
+        logger.setLevel(level)
     else:
-        # root sets minimum level of calls and stdout, hence put at DEBUG by default,
-        # users can bin output if they want/we can introduce verbosity flag in future
-        root.setLevel(logging.DEBUG)
+        # use DEBUG as default for now
+        logger.setLevel(logging.DEBUG)
 
     logging.captureWarnings(True)
     logger.info("netcdf-scm: {}".format(__version__))
@@ -129,14 +127,7 @@ def init_logging(params, out_filename=None, level=None):
     show_default=True,
 )
 def crunch_data(
-    src,
-    dst,
-    crunch_contact,
-    drs,
-    regexp,
-    land_mask_threshold,
-    data_sub_dir,
-    force,
+    src, dst, crunch_contact, drs, regexp, land_mask_threshold, data_sub_dir, force
 ):
     r"""
     Crunch data in ``src`` to NetCDF-SCM ``.nc`` files in ``dst``.
@@ -313,9 +304,7 @@ def wrangle_netcdf_scm_ncs(
     if out_format == "tuningstrucs-blend-model":
         _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
     else:
-        _do_wrangling(
-            src, dst, regexp, out_format, force, prefix, wrangle_contact, drs
-        )
+        _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, drs)
 
 
 def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
@@ -412,7 +401,9 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
             tmp_ts["unit"] = tmp_ts["unit"].astype(str)
             openscmdf = ScmDataFrame(tmp_ts)
 
-            out_filedir = dirpath.replace(scmcube.process_path(dirpath)["root_dir"], dst)
+            out_filedir = dirpath.replace(
+                scmcube.process_path(dirpath)["root_dir"], dst
+            )
             symlink_dir = os.path.join(dst, "flat")
             _make_path_if_not_exists(symlink_dir)
             header = (
@@ -441,10 +432,7 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
                 else:
                     if os.path.isfile(out_file):
                         os.remove(out_file)
-                        os.remove(os.path.join(
-                            symlink_dir,
-                            os.path.basename(out_file)
-                        ))
+                        os.remove(os.path.join(symlink_dir, os.path.basename(out_file)))
 
                 writer = MAGICCData(openscmdf)
                 writer["todo"] = "SET"
