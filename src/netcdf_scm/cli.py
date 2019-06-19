@@ -328,7 +328,7 @@ def wrangle_netcdf_scm_ncs(
 def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
     regexp_compiled = re.compile(regexp)
     considered_regexps = []
-    for i, (dirpath, _, filenames) in enumerate(walk(src)):
+    for dirpath, _, filenames in walk(src):
         if filenames:
             if not regexp_compiled.match(dirpath):
                 continue
@@ -361,13 +361,13 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
             regexp_compiled = re.compile(regexp)
 
             collected = []
-            for i, (dirpath, dirnames, filenames) in enumerate(walk(src)):
-                if filenames:
-                    if not regexp_compiled.match(dirpath):
+            for dirpath_inner, _, filenames_inner in walk(src):
+                if filenames_inner:
+                    if not regexp_compiled.match(dirpath_inner):
                         continue
 
                     openscmdf = df_append(
-                        [load_scmdataframe(os.path.join(dirpath, f)) for f in filenames]
+                        [load_scmdataframe(os.path.join(dirpath_inner, f)) for f in filenames_inner]
                     )
                     tmp_ts = openscmdf.timeseries().reset_index()
                     tmp_ts["unit"] = tmp_ts["unit"].astype(str)
@@ -390,7 +390,7 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix, wrangle_c
     total_dirs = len([f for _, _, f in walk(src) if f])
     logger.info("Found {} directories with files".format(total_dirs))
     dir_counter = 1
-    for i, (dirpath, _, filenames) in enumerate(walk(src)):
+    for dirpath, _, filenames in walk(src):
         if filenames:
             logger.info("Checking directory {} of {}".format(dir_counter, total_dirs))
             dir_counter += 1
