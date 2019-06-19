@@ -424,7 +424,8 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix, wrangle_c
             )
 
             if out_format == "mag-files":
-                assert len(filenames) == 1, "more than one file to wrangle?"
+                if len(filenames) > 1:
+                    raise AssertionError("more than one file to wrangle?")
                 _make_path_if_not_exists(out_filedir)
                 out_file = os.path.join(out_filedir, filenames[0])
                 out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
