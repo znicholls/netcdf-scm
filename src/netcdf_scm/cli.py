@@ -3,6 +3,7 @@ Command line interface
 """
 import datetime as dt
 import logging
+import os
 import os.path
 import re
 import sys
@@ -226,6 +227,7 @@ def crunch_data(
                     c.cube.attributes["crunch_contact"] = crunch_contact
 
                 tracker.register(out_filepath, scmcube.info)
+                logger.info("Writing file to {}".format(out_filepath))
                 save_netcdf_scm_nc(results, out_filepath)
 
             except Exception:
@@ -312,7 +314,7 @@ def wrangle_netcdf_scm_ncs(
         _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
     else:
         _do_wrangling(
-            src, dst, regexp, out_format, force, prefix, wrangle_contact
+            src, dst, regexp, out_format, force, prefix, wrangle_contact, drs
         )
 
 
@@ -377,13 +379,23 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
             considered_regexps.append(regexp_here)
 
 
-def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact):
+def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, drs):
     regexp_compiled = re.compile(regexp)
 
     logger.info("Finding directories with files")
     total_dirs = len([f for _, _, f in walk(src) if f])
     logger.info("Found {} directories with files".format(total_dirs))
     dir_counter = 1
+
+    if drs == "None":
+        raise NotImplementedError(
+            "`drs` == 'None' is not supported for wrangling to "
+            "tuningstrucs. Please raise an issue at "
+            "github.com/znicholls/netcdf-scm/ if you need this feature."
+        )
+
+    scmcube = _CUBES[drs]()
+
     for dirpath, _, filenames in walk(src):
         if filenames:
             logger.info("Checking directory {} of {}".format(dir_counter, total_dirs))
@@ -400,8 +412,9 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact):
             tmp_ts["unit"] = tmp_ts["unit"].astype(str)
             openscmdf = ScmDataFrame(tmp_ts)
 
-            out_filedir = dirpath.replace(src, dst)  # todo fix this to make symlinks and sort out maintenance of drs
-
+            out_filedir = dirpath.replace(scmcube.process_path(dirpath)["root_dir"], dst)
+            symlink_dir = os.path.join(dst, "flat")
+            _make_path_if_not_exists(symlink_dir)
             header = (
                 "Date: {}\n"
                 "Contact: {}\n"
@@ -425,6 +438,13 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact):
                         "Skipped (already exists, not overwriting) {}".format(out_file)
                     )
                     continue
+                else:
+                    if os.path.isfile(out_file):
+                        os.remove(out_file)
+                        os.remove(os.path.join(
+                            symlink_dir,
+                            os.path.basename(out_file)
+                        ))
 
                 writer = MAGICCData(openscmdf)
                 writer["todo"] = "SET"
@@ -442,7 +462,11 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact):
                 writer.metadata = metadata
                 writer.metadata["timeseriestype"] = "MONTHLY"
                 writer.metadata["header"] = header
+                logger.info("Writing file to {}".format(out_file))
                 writer.write(out_file, magicc_version=7)
+                symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
+                logger.info("Making symlink to {}".format(symlink_file))
+                os.symlink(out_file, symlink_file)
             elif out_format == "magicc-input-files-point-end-of-year":
                 src_time_points = openscmdf.timeseries().columns
                 out_time_points = [
@@ -499,6 +523,13 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact):
                             )
                         )
                         continue
+                    else:
+                        if os.path.isfile(out_file):
+                            os.remove(out_file)
+                            os.remove(os.path.join(
+                                symlink_dir,
+                                os.path.basename(out_file)
+                            ))
 
                     writer = MAGICCData(openscmdf).filter(region=regions_to_keep)
                     writer["todo"] = "SET"
@@ -507,6 +538,9 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact):
                     writer.metadata["header"] = header
                     writer.metadata["timeseriestype"] = "POINT_END_OF_YEAR"
                     writer.write(out_file, magicc_version=7)
+                    symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
+                    logger.info("Making symlink to {}".format(symlink_file))
+                    os.symlink(out_file, symlink_file)
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))
 
