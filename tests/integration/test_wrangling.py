@@ -51,6 +51,16 @@ def test_wrangling_defaults(tmpdir, caplog):
 
     assert "Contact: {}".format(test_wrangler) in content
 
+    with open(
+        join(
+            OUTPUT_DIR,
+            "flat/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.MAG",
+        )
+    ) as f:
+        content = f.read()
+
+    assert "Contact: {}".format(test_wrangler) in content
+
 
 def test_wrangling_magicc_input_files(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_CRUNCH_OUTPUT
@@ -326,24 +336,4 @@ def test_wrangling_blended_models_default_drs_error(tmpdir):
             "tuningstrucs-blend-model",
         ],
     )
-    assert result.exit_code != 0
-
-
-def test_wrangling_blended_models_not_flat_error(tmpdir):
-    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
-    OUTPUT_DIR = str(tmpdir)
-
-    runner = CliRunner()
-    result = runner.invoke(
-        wrangle_netcdf_scm_ncs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "test",
-            "--nested",
-            "--out-format",
-            "tuningstrucs-blend-model",
-        ],
-    )
-
     assert result.exit_code != 0
