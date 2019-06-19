@@ -27,7 +27,7 @@ def test_crunching(tmpdir, caplog):
                 INPUT_DIR,
                 OUTPUT_DIR,
                 crunch_contact,
-                "--cube-type",
+                "--drs",
                 "MarbleCMIP5",
                 "--regexp",
                 VAR_TO_CRUNCH,
@@ -151,7 +151,7 @@ def test_crunching_arguments(tmpdir, caplog):
                 INPUT_DIR,
                 OUTPUT_DIR,
                 CRUNCH_CONTACT,
-                "--cube-type",
+                "--drs",
                 "MarbleCMIP5",
                 "--regexp",
                 VAR_TO_CRUNCH,
@@ -213,7 +213,7 @@ def test_crunching_arguments(tmpdir, caplog):
                 INPUT_DIR,
                 OUTPUT_DIR,
                 "test",
-                "--cube-type",
+                "--drs",
                 "MarbleCMIP5",
                 "--regexp",
                 VAR_TO_CRUNCH,
@@ -241,7 +241,7 @@ def test_crunching_arguments(tmpdir, caplog):
     assert skip_str in caplog.text
 
 
-def test_crunching_other_cube(tmpdir, caplog):
+def test_crunching_wrong_cube(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
     OUTPUT_DIR = str(tmpdir)
     CUBE = "CMIP6Output"
@@ -249,8 +249,8 @@ def test_crunching_other_cube(tmpdir, caplog):
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
-            crunch_data, [INPUT_DIR, OUTPUT_DIR, "test", "--cube-type", CUBE]
+            crunch_data, [INPUT_DIR, OUTPUT_DIR, "test", "--drs", CUBE]
         )
     assert result.exit_code  # non-zero exit code
 
-    assert "cube-type: {}".format(CUBE) in caplog.text
+    assert "drs: {}".format(CUBE) in caplog.text
