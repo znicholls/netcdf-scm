@@ -23,7 +23,7 @@ def test_crunching(tmpdir, update_expected_files):
             INPUT_DIR,
             OUTPUT_DIR,
             "marblecmip5 crunching regression test",
-            "--cube-type",
+            "--drs",
             "MarbleCMIP5",
             "-f",
         ],

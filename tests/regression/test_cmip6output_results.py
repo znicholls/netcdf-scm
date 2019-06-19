@@ -23,7 +23,7 @@ def test_crunching(tmpdir, update_expected_files):
             INPUT_DIR,
             OUTPUT_DIR,
             "cmip6output crunching regression test",
-            "--cube-type",
+            "--drs",
             "CMIP6Output",
             "-f",
         ],
