@@ -810,17 +810,28 @@ class SCMCube(object):
         self.cube.data
 
         cubes = {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
-
-        source_file_info = "Files: {}".format([basename(p) for p in self.info["files"]])
+        try:
+            source_file_info = "Files: {}".format([p.replace(self.root_dir, "") for p in self.info["files"]])
+        except AttributeError:
+            source_file_info = "Files: {}".format([basename(p) for p in self.info["files"]])
         if "metadata" in self.info:
-            source_file_info = "{}; {}".format(
-                source_file_info,
-                "; ".join(
-                    [
-                        "{}: {}".format(k, v["files"])
-                        for k, v in self.info["metadata"].items()
+            source_meta = {}
+            for k, v in self.info["metadata"].items():
+                try:
+                    source_meta[k] = [
+                        "{}".format(p.replace(self.root_dir, ""))
+                        for p in v["files"]
                     ]
-                ),
+                except AttributeError:
+                    source_meta["k"] = [
+                        "{}".format(basename(p))
+                        for p in v["files"]
+                    ]
+            source_file_info = "; ".join(
+                [source_file_info]
+                + [
+                    "{}: {}".format(k, v) for k, v in source_meta.items()
+                ]
             )
 
         for region, c in cubes.items():
