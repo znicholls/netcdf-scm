@@ -251,12 +251,6 @@ def crunch_data(
     help="Regular expression to apply to filepath (only wrangles matches).",
 )
 @click.option(
-    "--nested/--flat",
-    help="Maintain source directory structure in destination. If `flat`, writes all files to a single directory.",
-    default=True,
-    show_default=True,
-)
-@click.option(
     "--prefix", default=None, help="Prefix to apply to output file names (not paths)."
 )
 @click.option(
@@ -287,7 +281,7 @@ def crunch_data(
     show_default=True,
 )
 def wrangle_netcdf_scm_ncs(
-    src, dst, wrangle_contact, regexp, nested, prefix, out_format, drs, force
+    src, dst, wrangle_contact, regexp, prefix, out_format, drs, force
 ):
     """
     Wrangle NetCDF-SCM ``.nc`` files into other formats and directory structures.
@@ -297,15 +291,12 @@ def wrangle_netcdf_scm_ncs(
 
     ``wrangle_contact`` is written into the header of the output files.
     """
-    if out_format == "tuningstrucs-blend-model" and nested:
-        raise ValueError("Cannot wrangle to nested tuningstrucs with blended models")
-
     log_params = [
         ("wrangle_contact", wrangle_contact),
         ("source", src),
         ("destination", dst),
         ("regexp", regexp),
-        ("land_mask_threshold", nested),
+        ("prefix", prefix),
         ("drs", drs),
         ("out_format", out_format),
         ("force", force),
@@ -321,7 +312,7 @@ def wrangle_netcdf_scm_ncs(
         _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
     else:
         _do_wrangling(
-            src, dst, regexp, nested, out_format, force, prefix, wrangle_contact
+            src, dst, regexp, out_format, force, prefix, wrangle_contact
         )
 
 
@@ -386,7 +377,7 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
             considered_regexps.append(regexp_here)
 
 
-def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix, wrangle_contact):
+def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact):
     regexp_compiled = re.compile(regexp)
 
     logger.info("Finding directories with files")
@@ -409,7 +400,7 @@ def _do_wrangling(src, dst, regexp, nested, out_format, force, prefix, wrangle_c
             tmp_ts["unit"] = tmp_ts["unit"].astype(str)
             openscmdf = ScmDataFrame(tmp_ts)
 
-            out_filedir = dirpath.replace(src, dst) if nested else dst
+            out_filedir = dirpath.replace(src, dst)  # todo fix this to make symlinks and sort out maintenance of drs
 
             header = (
                 "Date: {}\n"
