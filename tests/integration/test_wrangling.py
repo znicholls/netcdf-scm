@@ -16,7 +16,14 @@ def test_wrangling_defaults(tmpdir, caplog):
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
-            wrangle_netcdf_scm_ncs, [INPUT_DIR, OUTPUT_DIR, test_wrangler]
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                test_wrangler,
+                "--drs",
+                "CMIP6Output",
+        ]
         )
     assert result.exit_code == 0
 
@@ -59,6 +66,7 @@ def test_wrangling_defaults(tmpdir, caplog):
     ) as f:
         content = f.read()
 
+    assert "Making symlink to {}".format(join(OUTPUT_DIR, "flat")) in result.output
     assert "Contact: {}".format(test_wrangler) in content
 
 
@@ -78,6 +86,8 @@ def test_wrangling_magicc_input_files(tmpdir, caplog):
                 "magicc-input-files-point-end-of-year",
                 "--regexp",
                 ".*tas.*",
+                "--drs",
+                "MarbleCMIP5",
             ],
         )
     assert result.exit_code == 0
@@ -127,6 +137,8 @@ def test_wrangling_magicc_input_files_error(tmpdir, caplog):
                 "magicc-input-files-point-end-of-year",
                 "--regexp",
                 ".*lai.*",
+                "--drs",
+                "CMIP6Output",
             ],
         )
     assert result.exit_code == 0
@@ -137,7 +149,7 @@ def test_wrangling_magicc_input_files_error(tmpdir, caplog):
     )
 
 
-def test_wrangling_flat_blend_models(tmpdir, caplog):
+def test_wrangling_blend_models(tmpdir, caplog):
     INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(tmpdir)
 
@@ -209,6 +221,8 @@ def test_wrangling_force(tmpdir, caplog):
             "-f",
             "--prefix",
             "test-prefix",
+            "--drs",
+            "CMIP6Output",
         ],
     )
     assert result.exit_code == 0
@@ -225,6 +239,8 @@ def test_wrangling_force(tmpdir, caplog):
                 ".*lai.*",
                 "--prefix",
                 "test-prefix",
+                "--drs",
+                "CMIP6Output",
             ],
         )
     assert result_skip.exit_code == 0
@@ -250,72 +266,10 @@ def test_wrangling_force(tmpdir, caplog):
                 "-f",
                 "--prefix",
                 "test-prefix",
-            ],
-        )
-    assert result_force.exit_code == 0
-    assert skip_str_file not in result_force.output
-
-
-def test_wrangling_force_flat(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
-    OUTPUT_DIR = str(tmpdir)
-
-    runner = CliRunner()
-    result = runner.invoke(
-        wrangle_netcdf_scm_ncs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "test",
-            "--regexp",
-            ".*lai.*",
-            "-f",
-            "--drs",
-            "CMIP6Output",
-            "--out-format",
-            "tuningstrucs-blend-model",
-        ],
-    )
-    assert result.exit_code == 0
-
-    caplog.clear()
-    with caplog.at_level("INFO"):
-        result_skip = runner.invoke(
-            wrangle_netcdf_scm_ncs,
-            [
-                INPUT_DIR,
-                OUTPUT_DIR,
-                "test",
-                "--regexp",
-                ".*lai.*",
                 "--drs",
                 "CMIP6Output",
-                "--out-format",
-                "tuningstrucs-blend-model",
             ],
         )
-    assert result_skip.exit_code == 0
-
-    skip_str_file = "Skipped (already exists, not overwriting) {}".format(
-        join(OUTPUT_DIR, "LAI_HISTORICAL_R1I1P1F2_WORLD.mat")
-    )
-    assert skip_str_file in result_skip.output
-
-    result_force = runner.invoke(
-        wrangle_netcdf_scm_ncs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "test",
-            "--regexp",
-            ".*lai.*",
-            "-f",
-            "--drs",
-            "CMIP6Output",
-            "--out-format",
-            "tuningstrucs-blend-model",
-        ],
-    )
     assert result_force.exit_code == 0
     assert skip_str_file not in result_force.output
 
@@ -337,3 +291,24 @@ def test_wrangling_blended_models_default_drs_error(tmpdir):
         ],
     )
     assert result.exit_code != 0
+
+
+def test_wrangling_drs_replication(tmpdir):
+    INPUT_DIR = join(TEST_DATA_CMIP6_CRUNCH_OUTPUT, "CMIP6/CMIP/CNRM-CERFACS")
+    OUTPUT_DIR = str(tmpdir)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        wrangle_netcdf_scm_ncs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "test",
+            "--regexp",
+            ".*lai.*",
+            "--drs",
+            "CMIP6Output",
+        ],
+    )
+    assert result.exit_code == 0
+    assert isdir(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS"))
