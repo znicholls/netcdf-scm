@@ -308,9 +308,15 @@ def run_crunching_comparison(res, expected, update=False):
                     if update:
                         shutil.copy(res_f, exp_f)
                     else:
-                        res_df = load_scmdataframe(res_f).timeseries().sort_index()
-                        exp_df = load_scmdataframe(exp_f).timeseries().sort_index()
+                        res_scmdf = load_scmdataframe(res_f)
+                        res_df = res_scmdf.timeseries().sort_index()
+                        exp_scmdf = load_scmdataframe(exp_f)
+                        exp_df = exp_scmdf.timeseries().sort_index()
                         pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
+                        for k, v in res_scmdf.metadata.items():
+                            if k == "crunch_netcdf_scm_version":
+                                continue  # will change with version
+                            assert v == exp_scmdf.metadata[k]
 
     if update:
         print("Updated {}".format(expected))
