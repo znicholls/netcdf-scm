@@ -125,13 +125,16 @@ def test_convert_scmdf_to_tuningstruc(test_file_info, tmpdir):
         test_file, tvar, tregion, tunit, tscen, model=tmodel
     )
 
-    expected_outfile = join(
-        tmpdir,
-        "{}_{}_MEMBER-ID_{}".format(tvar, tscen, tregion)
-        .replace(" ", "_")
-        .replace("|", "_")
-        .upper(),
-    ) + ".mat"
+    expected_outfile = (
+        join(
+            tmpdir,
+            "{}_{}_MEMBER-ID_{}".format(tvar, tscen, tregion)
+            .replace(" ", "_")
+            .replace("|", "_")
+            .upper(),
+        )
+        + ".mat"
+    )
     convert_scmdf_to_tuningstruc(start, tmpdir)
     res = convert_tuningstruc_to_scmdf(expected_outfile)
 
