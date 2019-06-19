@@ -367,7 +367,10 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
                         continue
 
                     openscmdf = df_append(
-                        [load_scmdataframe(os.path.join(dirpath_inner, f)) for f in filenames_inner]
+                        [
+                            load_scmdataframe(os.path.join(dirpath_inner, f))
+                            for f in filenames_inner
+                        ]
                     )
                     tmp_ts = openscmdf.timeseries().reset_index()
                     tmp_ts["unit"] = tmp_ts["unit"].astype(str)
