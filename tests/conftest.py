@@ -124,14 +124,10 @@ TEST_CMIP6_OUTPUT_FILE_1_UNIT = join(
 )
 
 TEST_DATA_CMIP6_CRUNCH_OUTPUT = join(
-    TEST_DATA_ROOT_DIR,
-    "expected-crunching-output",
-    "cmip6output"
+    TEST_DATA_ROOT_DIR, "expected-crunching-output", "cmip6output"
 )
 TEST_DATA_MARBLE_CMIP5_CRUNCH_OUTPUT = join(
-    TEST_DATA_ROOT_DIR,
-    "expected-crunching-output",
-    "marble-cmip5"
+    TEST_DATA_ROOT_DIR, "expected-crunching-output", "marble-cmip5"
 )
 
 TEST_DATA_NETCDFSCM_NCS_DIR = join(TEST_DATA_ROOT_DIR, "netcdf-scm-ncs")
