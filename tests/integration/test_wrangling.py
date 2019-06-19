@@ -17,13 +17,7 @@ def test_wrangling_defaults(tmpdir, caplog):
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
-            [
-                INPUT_DIR,
-                OUTPUT_DIR,
-                test_wrangler,
-                "--drs",
-                "CMIP6Output",
-        ]
+            [INPUT_DIR, OUTPUT_DIR, test_wrangler, "--drs", "CMIP6Output"],
         )
     assert result.exit_code == 0
 
@@ -144,7 +138,7 @@ def test_wrangling_magicc_input_files_error(tmpdir, caplog):
     assert result.exit_code == 0
 
     assert (
-        "ERROR:netcdf-scm:I don't know which MAGICC variable to use for input `lai`"
+        "ERROR:netcdf_scm:I don't know which MAGICC variable to use for input `lai`"
         in result.output
     )
 
@@ -300,15 +294,7 @@ def test_wrangling_drs_replication(tmpdir):
     runner = CliRunner()
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "test",
-            "--regexp",
-            ".*lai.*",
-            "--drs",
-            "CMIP6Output",
-        ],
+        [INPUT_DIR, OUTPUT_DIR, "test", "--regexp", ".*lai.*", "--drs", "CMIP6Output"],
     )
     assert result.exit_code == 0
     assert isdir(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS"))

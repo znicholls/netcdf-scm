@@ -1,4 +1,5 @@
 import datetime
+import logging
 import re
 import warnings
 from os.path import join
@@ -440,6 +441,7 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
                 test_cube.cube.attributes[removed_attribute]
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog):
+        caplog.set_level(logging.WARNING)
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
             "rectify this by removing all data before year 1 and changing the units "
