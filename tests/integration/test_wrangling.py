@@ -15,7 +15,9 @@ def test_wrangling_defaults(tmpdir, caplog):
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
-        result = runner.invoke(wrangle_netcdf_scm_ncs, [INPUT_DIR, OUTPUT_DIR, test_wrangler])
+        result = runner.invoke(
+            wrangle_netcdf_scm_ncs, [INPUT_DIR, OUTPUT_DIR, test_wrangler]
+        )
     assert result.exit_code == 0
 
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
@@ -26,14 +28,25 @@ def test_wrangling_defaults(tmpdir, caplog):
     assert "cSoilFast" in result.output
 
     assert isdir(
-        join(OUTPUT_DIR, "CMIP6/CMIP/BCC/BCC-CSM2-MR/1pctCO2/r1i1p1f1/Amon/rlut/gn/v20181015")
+        join(
+            OUTPUT_DIR,
+            "CMIP6/CMIP/BCC/BCC-CSM2-MR/1pctCO2/r1i1p1f1/Amon/rlut/gn/v20181015",
+        )
     )
     assert isdir(
-        join(OUTPUT_DIR, "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121")
+        join(
+            OUTPUT_DIR,
+            "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121",
+        )
     )
     assert isdir(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS"))
 
-    with open(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.MAG")) as f:
+    with open(
+        join(
+            OUTPUT_DIR,
+            "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.MAG",
+        )
+    ) as f:
         content = f.read()
 
     assert "Contact: {}".format(test_wrangler) in content
@@ -55,30 +68,25 @@ def test_wrangling_magicc_input_files(tmpdir, caplog):
                 "magicc-input-files-point-end-of-year",
                 "--regexp",
                 ".*tas.*",
-            ]
+            ],
         )
     assert result.exit_code == 0
 
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
     assert "Making output directory: {}".format(OUTPUT_DIR) in result.output
 
-    assert isdir(
-        join(OUTPUT_DIR, "cmip5/1pctCO2/Amon/tas/CanESM2/r1i1p1")
-    )
-    assert isdir(
-        join(OUTPUT_DIR, "cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1")
-    )
-    assert isdir(
-        join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1")
-    )
-    assert isdir(
-        join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/ACCESS1-0/r1i1p1")
-    )
-    assert isdir(
-        join(OUTPUT_DIR, "cmip5/rcp85/Amon/tas/NorESM1-ME/r1i1p1")
-    )
+    assert isdir(join(OUTPUT_DIR, "cmip5/1pctCO2/Amon/tas/CanESM2/r1i1p1"))
+    assert isdir(join(OUTPUT_DIR, "cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1"))
+    assert isdir(join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1"))
+    assert isdir(join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/ACCESS1-0/r1i1p1"))
+    assert isdir(join(OUTPUT_DIR, "cmip5/rcp85/Amon/tas/NorESM1-ME/r1i1p1"))
 
-    with open(join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1/TAS_RCP45_HADCM3_R1I1P1_2006-2036_GLOBAL_SURFACE_TEMP.IN")) as f:
+    with open(
+        join(
+            OUTPUT_DIR,
+            "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1/TAS_RCP45_HADCM3_R1I1P1_2006-2036_GLOBAL_SURFACE_TEMP.IN",
+        )
+    ) as f:
         content = f.read()
 
     assert "Contact: {}".format(test_wrangler) in content
@@ -109,11 +117,14 @@ def test_wrangling_magicc_input_files_error(tmpdir, caplog):
                 "magicc-input-files-point-end-of-year",
                 "--regexp",
                 ".*lai.*",
-            ]
+            ],
         )
     assert result.exit_code == 0
 
-    assert "ERROR:netcdf-scm:I don't know which MAGICC variable to use for input `lai`" in result.output
+    assert (
+        "ERROR:netcdf-scm:I don't know which MAGICC variable to use for input `lai`"
+        in result.output
+    )
 
 
 def test_wrangling_flat_blend_models(tmpdir, caplog):
@@ -181,7 +192,16 @@ def test_wrangling_force(tmpdir, caplog):
     runner = CliRunner()
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [INPUT_DIR, OUTPUT_DIR, "test", "--regexp", ".*lai.*", "-f", "--prefix", "test-prefix"],
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "test",
+            "--regexp",
+            ".*lai.*",
+            "-f",
+            "--prefix",
+            "test-prefix",
+        ],
     )
     assert result.exit_code == 0
 
@@ -189,7 +209,15 @@ def test_wrangling_force(tmpdir, caplog):
     with caplog.at_level("INFO"):
         result_skip = runner.invoke(
             wrangle_netcdf_scm_ncs,
-            [INPUT_DIR, OUTPUT_DIR, "test", "--regexp", ".*lai.*", "--prefix", "test-prefix"],
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test",
+                "--regexp",
+                ".*lai.*",
+                "--prefix",
+                "test-prefix",
+            ],
         )
     assert result_skip.exit_code == 0
 
@@ -263,9 +291,7 @@ def test_wrangling_force_flat(tmpdir, caplog):
     assert result_skip.exit_code == 0
 
     skip_str_file = "Skipped (already exists, not overwriting) {}".format(
-        join(
-            OUTPUT_DIR, "LAI_HISTORICAL_R1I1P1F2_WORLD.mat"
-        )
+        join(OUTPUT_DIR, "LAI_HISTORICAL_R1I1P1F2_WORLD.mat")
     )
     assert skip_str_file in result_skip.output
 
@@ -296,7 +322,14 @@ def test_wrangling_blended_models_default_drs_error(tmpdir):
     runner = CliRunner()
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [INPUT_DIR, OUTPUT_DIR, "test", "--flat", "--out-format", "tuningstrucs-blend-model"],
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "test",
+            "--flat",
+            "--out-format",
+            "tuningstrucs-blend-model",
+        ],
     )
     assert result.exit_code != 0
 
@@ -308,7 +341,14 @@ def test_wrangling_blended_models_not_flat_error(tmpdir):
     runner = CliRunner()
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [INPUT_DIR, OUTPUT_DIR, "test", "--nested", "--out-format", "tuningstrucs-blend-model"],
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "test",
+            "--nested",
+            "--out-format",
+            "tuningstrucs-blend-model",
+        ],
     )
 
     assert result.exit_code != 0

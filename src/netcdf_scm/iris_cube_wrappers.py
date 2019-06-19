@@ -907,13 +907,7 @@ class SCMCube(object):
         output = ScmDataFrame(
             data,
             index=time_index,
-            columns={
-                **{
-                    "unit": unit,
-                    "model": "unspecified",
-                },
-                **metadata,
-            },
+            columns={**{"unit": unit, "model": "unspecified"}, **metadata},
         )
         try:
             output.metadata["calendar"] = out_calendar
