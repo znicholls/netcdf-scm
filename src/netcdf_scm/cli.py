@@ -80,8 +80,8 @@ def init_logging(params, out_filename=None, level=None):
     if level is not None:
         root.setLevel(level)
     else:
-        # root has to be lowest level to allow messages, let handlers deal with the
-        # rest
+        # root sets minimum level of calls and stdout, hence put at DEBUG by default,
+        # users can bin output if they want/we can introduce verbosity flag in future
         root.setLevel(logging.DEBUG)
 
     logging.captureWarnings(True)
@@ -97,11 +97,11 @@ def init_logging(params, out_filename=None, level=None):
 )
 @click.argument("crunch_contact")
 @click.option(
-    "--cube-type",
+    "--drs",
     default="Scm",
     type=click.Choice(["Scm", "MarbleCMIP5", "CMIP6Input4MIPs", "CMIP6Output"]),
     show_default=True,
-    help="Cube to use for crunching.",
+    help="Data reference syntax to use for crunching.",
 )
 @click.option(
     "--regexp",
@@ -132,7 +132,7 @@ def crunch_data(
     src,
     dst,
     crunch_contact,
-    cube_type,
+    drs,
     regexp,
     land_mask_threshold,
     data_sub_dir,
@@ -161,7 +161,7 @@ def crunch_data(
         ("crunch-contact", crunch_contact),
         ("source", src),
         ("destination", out_dir),
-        ("cube-type", cube_type),
+        ("drs", drs),
         ("regexp", regexp),
         ("land_mask_threshold", land_mask_threshold),
         ("force", force),
@@ -190,7 +190,7 @@ def crunch_data(
                 logger.debug("Skipping (did not match regexp) {}".format(dirpath))
                 continue
             logger.info("Attempting to process: {}".format(filenames))
-            scmcube = _CUBES[cube_type]()
+            scmcube = _CUBES[drs]()
             try:
                 if len(filenames) == 1:
                     scmcube.load_data_from_path(os.path.join(dirpath, filenames[0]))
@@ -515,6 +515,7 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
                     )
 
                     out_file = os.path.join(out_filedir, out_name)
+                    symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
                     _make_path_if_not_exists(out_filedir)
                     if not force and os.path.isfile(out_file):
                         logger.info(
@@ -526,10 +527,7 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
                     else:
                         if os.path.isfile(out_file):
                             os.remove(out_file)
-                            os.remove(os.path.join(
-                                symlink_dir,
-                                os.path.basename(out_file)
-                            ))
+                            os.remove(symlink_file)
 
                     writer = MAGICCData(openscmdf).filter(region=regions_to_keep)
                     writer["todo"] = "SET"
@@ -538,7 +536,6 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
                     writer.metadata["header"] = header
                     writer.metadata["timeseriestype"] = "POINT_END_OF_YEAR"
                     writer.write(out_file, magicc_version=7)
-                    symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
                     logger.info("Making symlink to {}".format(symlink_file))
                     os.symlink(out_file, symlink_file)
             else:
