@@ -56,7 +56,15 @@ REQUIREMENTS_NOTEBOOKS = ["notebook", "nbval", "expectexception"]
 REQUIREMENTS_DOCS = ["sphinx>=1.4,<2.1", "sphinx_rtd_theme", "sphinx-click"]
 REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
 requirements_dev = [
-    *["flake8", "black", "isort", "bandit"],
+    *[
+        "flake8",
+        "black",
+        "isort",
+        "bandit",
+        "mypy",
+        "pydocstyle",
+        "pylint @ git+https://github.com/PyCQA/pylint.git@b1ee385",  # TODO: change when new release comes out
+    ],
     *REQUIREMENTS_TESTS,
     *REQUIREMENTS_NOTEBOOKS,
     *REQUIREMENTS_DOCS,
