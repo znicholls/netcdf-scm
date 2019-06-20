@@ -11,6 +11,7 @@ from openscm.scmdataframe import ScmDataFrame
 from netcdf_scm.wranglers import (
     convert_scmdf_to_tuningstruc,
     convert_tuningstruc_to_scmdf,
+    get_tuningstruc_name_from_df,
 )
 
 TEST_DATA_TUNINGSTRUCS_DIR = join(TEST_DATA_ROOT_DIR, "tuningstrucs")
@@ -139,3 +140,12 @@ def test_convert_scmdf_to_tuningstruc(test_file_info, tmpdir):
     res = convert_tuningstruc_to_scmdf(expected_outfile)
 
     pd.testing.assert_frame_equal(start.timeseries(), res.timeseries())
+
+
+def test_get_tuningstruc_name_from_df_error():
+    df = pd.DataFrame(
+        ["scen_1", "scen_2"],
+        columns=["scenario"]
+    )
+    with pytest.raises(ValueError, match="More than one scenario in df"):
+        get_tuningstruc_name_from_df(df, "test", "filler")

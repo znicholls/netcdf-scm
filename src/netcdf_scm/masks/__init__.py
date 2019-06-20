@@ -321,7 +321,7 @@ class CubeMasker:
                 self._masks[mask_name] = mask
             except KeyError:
                 raise InvalidMask("Unknown mask: {}".format(mask_name))
-            except InvalidMask:
+            except InvalidMask:  # pragma: no cover # emergency valve
                 raise
 
         return mask

@@ -10,7 +10,7 @@ try:
     import iris
     from iris.util import broadcast_to_shape
     import cf_units
-except ModuleNotFoundError:
+except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from .errors import raise_no_iris_warning
 
     raise_no_iris_warning()
@@ -82,7 +82,8 @@ def assert_all_time_axes_same(time_axes):
             np.testing.assert_array_equal(
                 time_axis_to_check, time_axes[0], err_msg=assert_msg
             )
-        except AttributeError:  # handle weird numpy error
+        # handle weird numpy error in case it comes
+        except AttributeError:  # pragma: no cover
             raise AssertionError(assert_msg)
 
 
