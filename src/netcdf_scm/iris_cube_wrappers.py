@@ -826,7 +826,7 @@ class SCMCube(object):
                         "{}".format(p.replace(self.root_dir, "")) for p in v["files"]
                     ]
                 except AttributeError:
-                    source_meta["k"] = ["{}".format(basename(p)) for p in v["files"]]
+                    source_meta[k] = ["{}".format(basename(p)) for p in v["files"]]
             source_file_info = "; ".join(
                 [source_file_info]
                 + ["{}: {}".format(k, v) for k, v in source_meta.items()]
