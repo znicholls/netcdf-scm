@@ -652,6 +652,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     tclass = CMIP6Input4MIPsCube
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog):
+        caplog.set_level(logging.WARNING)
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
             "rectify this by removing all data before year 1 and changing the units "

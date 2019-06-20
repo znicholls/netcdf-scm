@@ -683,14 +683,14 @@ class SCMCube(object):
 
         If global, Northern Hemisphere and Southern Hemisphere land cubes are
         calculated, then three auxillary co-ordinates are also added to each cube:
-        `land_fraction`, `land_fraction_northern_hemisphere` and
-        `land_fraction_southern_hemisphere`. These co-ordinates document the area
+        ``land_fraction``, ``land_fraction_northern_hemisphere`` and
+        ``land_fraction_southern_hemisphere``. These co-ordinates document the area
         fraction that was considered to be land when the cubes were crunched i.e.
-        `land_fraction` is the fraction of the entire globe which was considered to be
-        land, `land_fraction_northern_hemisphere` is the fraction of the Northern
+        ``land_fraction`` is the fraction of the entire globe which was considered to
+        be land, ``land_fraction_northern_hemisphere`` is the fraction of the Northern
         Hemisphere which was considered to be land and
-        `land_fraction_southern_hemisphere`is the fraction of the Southern Hemisphere
-        which was considered to be land.
+        ``land_fraction_southern_hemisphere`` is the fraction of the Southern
+        Hemisphere which was considered to be land.
 
         Parameters
         ----------
