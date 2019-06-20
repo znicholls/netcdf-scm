@@ -51,7 +51,7 @@ def load_scmdataframe(path):
             continue
         elif coord.long_name.startswith("land_fraction"):
             scmdf.metadata[coord.long_name] = coord.points.squeeze()
-        else:
+        else:  # pragma: no cover
             # this is really how it should work for land_fraction too but we don't
             # have a stable solution for parameter handling in OpenSCMDataFrame yet so
             # I've done the above instead
