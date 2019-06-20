@@ -2,7 +2,7 @@ import datetime
 import logging
 import re
 import warnings
-from os.path import join
+from os.path import join, basename
 from unittest.mock import MagicMock, patch
 
 import cf_units
@@ -90,6 +90,94 @@ class _SCMCubeIntegrationTester(object):
 
         var.get_scm_timeseries(
             sftlf_cube=sftlf, land_mask_threshold=50, areacella_scmcube=None
+        )
+
+    def test_get_scm_cubes_last_resort(self, test_cube):
+        tloaded_paths = ["/path/1", "/path/2"]
+        class MockCube():
+            @property
+            def info(self):
+                return {"files": ["/area/cella/a/path/file.nc"]}
+
+        tmetadata_cubes = {
+            "areacella": MockCube()
+        }
+        tsftlf_cube = "mocked 124"
+        tland_mask_threshold = "mocked 51"
+        tareacella_scmcube = "mocked 4389"
+
+        test_cube._loaded_paths = tloaded_paths
+        test_cube._metadata_cubes = tmetadata_cubes
+
+        land_mask = np.array(
+            [
+                [False, True, True, False],
+                [False, True, False, True],
+                [False, False, True, False],
+            ]
+        )
+        nh_mask = np.array(
+            [
+                [False, False, False, False],
+                [False, False, False, False],
+                [True, True, True, True],
+            ]
+        )
+
+        mocked_masks = {
+            "World": np.full(nh_mask.shape, False),
+            "World|Land": land_mask,
+            "World|Ocean": ~land_mask,
+            "World|Northern Hemisphere": nh_mask,
+            "World|Southern Hemisphere": ~nh_mask,
+            "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
+            "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
+            "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
+            "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
+        }
+        test_cube._get_scm_masks = MagicMock(return_value=mocked_masks)
+
+        expected = {}
+        for label, mask in mocked_masks.items():
+            exp_cube = type(test_cube)()
+
+            rcube = test_cube.cube.copy()
+            rcube.data.mask = mask
+            exp_cube.cube = rcube
+
+            exp_cube.cube.attributes[
+                "crunch_netcdf_scm_version"
+            ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(
+                netcdf_scm.__version__
+            )
+            exp_cube.cube.attributes[
+                "crunch_land_mask_threshold"
+            ] = tland_mask_threshold
+            exp_cube.cube.attributes["crunch_source_files"] = "Files: {}; areacella: {}".format(
+                [basename(p) for p in tloaded_paths],
+                [basename(p) for p in tmetadata_cubes["areacella"].info["files"]],
+            )
+            exp_cube.cube.attributes["variable"] = "air_temperature"
+            exp_cube.cube.attributes["variable_standard_name"] = "air_temperature"
+            exp_cube.cube.attributes["scenario"] = "unspecified"
+            exp_cube.cube.attributes["climate_model"] = "unspecified"
+            exp_cube.cube.attributes["member_id"] = "unspecified"
+            exp_cube.cube.attributes["mip_era"] = "unspecified"
+            exp_cube.cube.attributes["activity_id"] = "unspecified"
+            exp_cube.cube.attributes["region"] = label
+            # exp_cube.cube.attributes.update(test_cube._get_scm_timeseries_ids())
+            expected[label] = exp_cube
+
+        result = test_cube.get_scm_cubes(
+            tsftlf_cube, tland_mask_threshold
+        )
+
+        for label, cube in expected.items():
+            assert cube.cube.attributes == result[label].cube.attributes
+            assert cube.cube == result[label].cube
+
+        test_cube._get_scm_masks.assert_called_with(
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
         )
 
     def test_get_scm_timeseries_cubes(self, test_cube):
@@ -441,7 +529,7 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
                 test_cube.cube.attributes[removed_attribute]
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog):
-        caplog.set_level(logging.WARNING)
+        caplog.set_level(logging.WARNING, logger="netcdf_scm")
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
             "rectify this by removing all data before year 1 and changing the units "
@@ -450,8 +538,10 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
         )
         test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
 
-        assert len(caplog.messages) == 1
-        assert caplog.messages[0] == expected_warn
+        # ignore ABCs warning messages
+        messages = [m for m in caplog.messages if "ABCs" not in m]
+        assert len(messages) == 1
+        assert messages[0] == expected_warn
         assert caplog.records[0].levelname == "WARNING"
 
         obs_time = test_cube.cube.dim_coords[0]
@@ -652,7 +742,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
     tclass = CMIP6Input4MIPsCube
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog):
-        caplog.set_level(logging.WARNING)
+        caplog.set_level(logging.WARNING, logger="netcdf_scm")
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
             "rectify this by removing all data before year 1 and changing the units "
@@ -661,8 +751,10 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
         )
         test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
 
-        assert len(caplog.messages) == 1
-        assert caplog.messages[0] == expected_warn
+        # ignore ABCs warning messages
+        messages = [m for m in caplog.messages if "ABCs" not in m]
+        assert len(messages) == 1
+        assert messages[0] == expected_warn
         assert caplog.records[0].levelname == "WARNING"
 
         obs_time = test_cube.cube.dim_coords[0]
