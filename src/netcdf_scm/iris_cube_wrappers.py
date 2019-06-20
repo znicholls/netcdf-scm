@@ -1025,7 +1025,8 @@ class SCMCube(object):
             if not start_date < end_date:
                 self._raise_time_period_invalid_error(time_period_str)
 
-    def _raise_time_period_invalid_error(self, time_period_str):
+    @staticmethod
+    def _raise_time_period_invalid_error(time_period_str):
         message = "Your time_period indicator ({}) does not look right".format(
             time_period_str
         )
@@ -1172,7 +1173,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             "ensemble_member": dirpath_bits[-1],
         }
 
-    def get_filepath_from_load_data_from_identifiers_args(
+    def get_filepath_from_load_data_from_identifiers_args(  # pylint: disable=arguments-differ
         self,
         root_dir=".",
         activity="activity",
@@ -1404,7 +1405,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             "version": dirpath_bits[-1],
         }
 
-    def get_filepath_from_load_data_from_identifiers_args(
+    def get_filepath_from_load_data_from_identifiers_args(  # pylint: disable=arguments-differ
         self,
         root_dir=".",
         activity_id="activity-id",
@@ -1703,7 +1704,7 @@ class CMIP6OutputCube(_CMIPCube):
             "version": dirpath_bits[-1],
         }
 
-    def get_filepath_from_load_data_from_identifiers_args(
+    def get_filepath_from_load_data_from_identifiers_args(  # pylint: disable=arguments-differ
         self,
         root_dir=".",
         mip_era="mip-era",
