@@ -71,16 +71,19 @@ $(DOCS_DIR)/build/html/index.html: $(DOCS_DIR)/source/*.py $(DOCS_DIR)/source/_t
 
 .PHONY: checks
 checks: $(VENV_DIR)  ## run all checks - formatting and tests (not docs yet...)
-	$(VENV_DIR)/bin/bandit -c bandit.yml -r src
-	$(VENV_DIR)/bin/black --check --exclude _version.py --target-version py37 $(FILES_TO_FORMAT_PYTHON)
-	$(VENV_DIR)/bin/flake8 $(FILES_TO_FORMAT_PYTHON)
-	$(VENV_DIR)/bin/isort --check-only --quiet --recursive $(FILES_TO_FORMAT_PYTHON)
-	$(VENV_DIR)/bin/pytest --cov -r a --cov-report term-missing
-	$(VENV_DIR)/bin/pytest -r a --nbval $(NOTEBOOKS_DIR) --sanitize $(NOTEBOOKS_SANITIZE_FILE)
+	@printf "=== bandit ===\n\n"; $(VENV_DIR)/bin/bandit -c bandit.yml -r src || echo "xxx bandit failed xxx" >&2; \
+		printf "\n\n=== black ===\n\n"; $(VENV_DIR)/bin/black --check --exclude _version.py --target-version py37 $(FILES_TO_FORMAT_PYTHON) || echo "xxx black failed xxx" >&2; \
+		printf "\n\n=== flake8 ===\n\n"; $(VENV_DIR)/bin/flake8 $(FILES_TO_FORMAT_PYTHON) || echo "xxx flake8 failed xxx" >&2; \
+		printf "\n\n=== isort ===\n\n"; $(VENV_DIR)/bin/isort --check-only --quiet --recursive $(FILES_TO_FORMAT_PYTHON) || echo "xxx isort failed xxx" >&2; \
+		printf "\n\n=== mypy ===\n\n"; $(VENV_DIR)/bin/mypy src || echo "xxx mypy failed xxx" >&2; \
+		printf "\n\n=== pydocstyle ===\n\n"; $(VENV_DIR)/bin/pydocstyle src || echo "xxx pydocstyle failed xxx" >&2; \
+		printf "\n\n=== pylint ==="; $(VENV_DIR)/bin/pylint src || echo "xxx pylint failed xxx" >&2; \
+		printf "\n\n=== docs ===\n\n"; $(VENV_DIR)/bin/sphinx-build -M html docs/source docs/build -EW || echo "xxx docs failed xxx" >&2; \
+		printf "\n\n=== tests ===\n\n"; $(VENV_DIR)/bin/pytest --cov -r a --cov-report term-missing || echo "xxx tests failed xxx" >&2; \
+		printf "\n\n=== notebook tests ===\n\n"; $(VENV_DIR)/bin/pytest -r a --nbval $(NOTEBOOKS_DIR) --sanitize $(NOTEBOOKS_SANITIZE_FILE) || echo "xxx notebook tests failed xxx" >&2
 
 .PHONY: format
-format:  ## re-format files and run any formatting tests
-	make flake8
+format:  ## re-format files
 	make isort
 	make black
 

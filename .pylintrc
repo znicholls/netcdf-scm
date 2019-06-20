@@ -1,0 +1,23 @@
+[MASTER]
+ignore=_version.py,mat4py
+load-plugins=
+    pylint.extensions.bad_builtin,
+    pylint.extensions.check_elif,
+    pylint.extensions.comparetozero,
+    pylint.extensions.docparams,
+    pylint.extensions.emptystring,
+    pylint.extensions.overlapping_exceptions,
+    pylint.extensions.redefined_variable_type
+
+[MESSAGES CONTROL]
+disable=
+    fixme,
+    invalid-name,
+    pointless-string-statement,
+    # handled by black
+    format
+
+[SIMILARITIES]
+ignore-comments=no
+ignore-docstrings=yes
+ignore-imports=yes
