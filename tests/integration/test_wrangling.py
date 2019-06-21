@@ -2,7 +2,11 @@ from glob import glob
 from os.path import isdir, join
 
 from click.testing import CliRunner
-from conftest import TEST_DATA_CMIP6_CRUNCH_OUTPUT, TEST_DATA_MARBLE_CMIP5_CRUNCH_OUTPUT, TEST_DATA_ROOT_DIR
+from conftest import (
+    TEST_DATA_CMIP6_CRUNCH_OUTPUT,
+    TEST_DATA_MARBLE_CMIP5_CRUNCH_OUTPUT,
+    TEST_DATA_ROOT_DIR,
+)
 
 import netcdf_scm
 from netcdf_scm.cli import wrangle_netcdf_scm_ncs
@@ -169,7 +173,7 @@ def test_wrangling_blend_models(tmpdir, caplog):
     assert ".*" in result.output
     assert ".mat" in result.output
 
-    assert len(glob(join(OUTPUT_DIR, "*.mat"))) == 27
+    assert len(glob(join(OUTPUT_DIR, "*.mat"))) == 36
 
 
 def test_wrangling_handles_integer_units(tmpdir, caplog):
@@ -299,15 +303,20 @@ def test_wrangling_drs_replication(tmpdir):
 
 
 def test_wrangling_annual_mean_file(tmpdir):
-    INPUT_DIR = join(TEST_DATA_ROOT_DIR, "marble-cmip5-annual-output/cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1")
+    INPUT_DIR = join(
+        TEST_DATA_ROOT_DIR,
+        "marble-cmip5-annual-output/cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1",
+    )
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_netcdf_scm_ncs,
-        [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "MarbleCMIP5"],
+        wrangle_netcdf_scm_ncs, [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "MarbleCMIP5"]
     )
 
     assert result.exit_code != 0
     assert isinstance(result.exception, ValueError)
-    assert str(result.exception) == "Please raise an issue at github.com/znicholls/netcdf-scm/issues to discuss how to handle non-monthly data wrangling"
+    assert (
+        str(result.exception)
+        == "Please raise an issue at github.com/znicholls/netcdf-scm/issues to discuss how to handle non-monthly data wrangling"
+    )

@@ -1,3 +1,4 @@
+"""Miscellaneous definitions used in NetCDF-SCM"""
 _SCM_TIMESERIES_META_COLUMNS = [
     "variable",
     "variable_standard_name",

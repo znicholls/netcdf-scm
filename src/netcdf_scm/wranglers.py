@@ -1,3 +1,4 @@
+"""Functions used to 'wrangle' netCDF-SCM netCDF files into other formats"""
 import logging
 from os.path import isfile, join
 
@@ -12,7 +13,8 @@ logger = logging.getLogger(__name__)
 def convert_tuningstruc_to_scmdf(
     filepath, variable=None, region=None, unit=None, scenario=None, model=None
 ):
-    """Convert a matlab tuningstruc to an ScmDataFrame
+    """
+    Convert a matlab tuningstruc to an ScmDataFrame
 
     Parameters
     ----------
@@ -95,7 +97,8 @@ def convert_tuningstruc_to_scmdf(
 
 
 def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
-    """Convert an ScmDataFrame to a matlab tuningstruc
+    """
+    Convert an ScmDataFrame to a matlab tuningstruc
 
     One tuningstruc file will be created for each unique
     ["model", "scenario", "variable", "region", "unit"] combination in the input
@@ -201,7 +204,6 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
         A name cannot be determined because e.g. more than one scenario is contained
         in the dataframe
     """
-
     def _get_col(col):
         try:
             vals = df[col].unique()
