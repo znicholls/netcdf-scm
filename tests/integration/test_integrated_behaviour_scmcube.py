@@ -162,10 +162,9 @@ class _SCMCubeIntegrationTester(object):
             exp_cube.cube.attributes["scenario"] = "unspecified"
             exp_cube.cube.attributes["climate_model"] = "unspecified"
             exp_cube.cube.attributes["member_id"] = "unspecified"
-            exp_cube.cube.attributes["mip_era"] = "unspecified"
+            exp_cube.cube.attributes["mip_era"] = "CMIP5" if isinstance(test_cube, MarbleCMIP5Cube) else "unspecified"
             exp_cube.cube.attributes["activity_id"] = "unspecified"
             exp_cube.cube.attributes["region"] = label
-            # exp_cube.cube.attributes.update(test_cube._get_scm_timeseries_ids())
             expected[label] = exp_cube
 
         result = test_cube.get_scm_cubes(
