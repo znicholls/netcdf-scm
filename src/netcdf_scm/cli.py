@@ -40,13 +40,15 @@ _MAGICC_VARIABLE_MAP = {"tas": ("Surface Temperature", "SURFACE_TEMP")}
 """Mapping from CMOR variable names to MAGICC variables"""
 
 
-def init_logging(params, out_filename=None, level=None):
+def init_logging(params, out_filename=None):
     """
     Set up the root logger
 
     All INFO messages and greater are written to stderr.
     If an ``out_filename`` is provided, all recorded log messages are also written to
     disk.
+
+    # TODO: make level of logging customisable
 
     Parameters
     ----------
@@ -76,11 +78,8 @@ def init_logging(params, out_filename=None, level=None):
             h.setFormatter(fmt)
         logger.addHandler(h)
 
-    if level is not None:
-        logger.setLevel(level)
-    else:
-        # use DEBUG as default for now
-        logger.setLevel(logging.DEBUG)
+    # use DEBUG as default for now
+    logger.setLevel(logging.DEBUG)
 
     logging.captureWarnings(True)
     logger.info("netcdf-scm: {}".format(__version__))
@@ -181,7 +180,7 @@ def crunch_data(
                 logger.debug("Skipping (did not match regexp) {}".format(dirpath))
                 continue
             logger.info("Attempting to process: {}".format(filenames))
-            scmcube = _CUBES[drs]()
+            scmcube = _get_scmcube_helper(drs)
             try:
                 if len(filenames) == 1:
                     scmcube.load_data_from_path(os.path.join(dirpath, filenames[0]))
@@ -264,7 +263,7 @@ def crunch_data(
     default="None",
     type=click.Choice(["None", "MarbleCMIP5", "CMIP6Input4MIPs", "CMIP6Output"]),
     show_default=True,
-    help="Data reference syntax to use to decipher paths when crunching to flat and the output format is tuningstrucs. This is required to ensure the output names are unique.",
+    help="Data reference syntax to use to decipher paths. This is required to ensure the output folders match the input data reference syntax.",
 )
 @click.option(
     "--force/--do-not-force",
@@ -319,14 +318,7 @@ def _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix):
                 if any([r.match(dirpath) for r in considered_regexps]):
                     continue
 
-            if drs == "None":
-                raise NotImplementedError(
-                    "`drs` == 'None' is not supported for wrangling to "
-                    "tuningstrucs. Please raise an issue at "
-                    "github.com/znicholls/netcdf-scm/ if you need this feature."
-                )
-
-            scmcube = _CUBES[drs]()
+            scmcube = _get_scmcube_helper(drs)
             ids = {
                 k: v
                 if any([s in k for s in ["variable", "experiment", "activity", "mip"]])
@@ -376,14 +368,7 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
     logger.info("Found {} directories with files".format(total_dirs))
     dir_counter = 1
 
-    if drs == "None":
-        raise NotImplementedError(
-            "`drs` == 'None' is not supported for wrangling to "
-            "tuningstrucs. Please raise an issue at "
-            "github.com/znicholls/netcdf-scm/ if you need this feature."
-        )
-
-    scmcube = _CUBES[drs]()
+    scmcube = _get_scmcube_helper(drs)
 
     for dirpath, _, filenames in walk(src):
         if filenames:
@@ -420,9 +405,9 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
 
             if out_format == "mag-files":
                 if len(filenames) > 1:
-                    raise AssertionError("more than one file to wrangle?")
-                _make_path_if_not_exists(out_filedir)
+                    raise AssertionError("more than one file to wrangle?")  # pragma: no cover # emergency valve
                 out_file = os.path.join(out_filedir, filenames[0])
+                _make_path_if_not_exists(out_filedir)
                 out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
                 if not force and os.path.isfile(out_file):
                     logger.info(
@@ -444,8 +429,9 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
                     | (time_steps < np.timedelta64(28, "D"))
                 ):
                     raise ValueError(
-                        "Please raise an issue at github.com/znicholls/netcdf-scm/"
-                        "issues to discuss how to handle non-monthly data wrangling"
+                        "Please raise an issue at "
+                        "github.com/znicholls/netcdf-scm/issues "
+                        "to discuss how to handle non-monthly data wrangling"
                     )
                 writer.metadata = metadata
                 writer.metadata["timeseriestype"] = "MONTHLY"
@@ -538,3 +524,14 @@ def _make_path_if_not_exists(path_to_check):
     if not os.path.exists(path_to_check):
         logger.info("Making output directory: {}".format(path_to_check))
         makedirs(path_to_check)
+
+
+def _get_scmcube_helper(drs):
+    if drs == "None":
+        raise NotImplementedError(
+            "`drs` == 'None' is not supported yet. Please raise an issue at "
+            "github.com/znicholls/netcdf-scm/ with your use case if you need this "
+            "feature."
+        )
+
+    return _CUBES[drs]()
