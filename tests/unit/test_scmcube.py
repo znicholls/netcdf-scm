@@ -1,10 +1,12 @@
 import copy
+import datetime as dt
 import itertools
 import re
 import warnings
 from os.path import basename, dirname, join
 from unittest.mock import MagicMock, call, patch
 
+import cftime
 import iris
 import numpy as np
 import pandas as pd
@@ -499,6 +501,7 @@ class TestSCMCube(object):
         mock_assert_all_time_axes_same,
         test_cube,
         out_calendar,
+        caplog,
     ):
         expected_calendar = (
             test_cube.cube.coords("time")[0].units.calendar
@@ -508,10 +511,13 @@ class TestSCMCube(object):
 
         tscm_timeseries_cubes = {"mocked 1": 198, "mocked 2": 248}
 
-        tget_time_axis = np.array([1, 2, 3])
+        years = range(1920, 1950, 10)
+        tget_time_axis = [cftime.DatetimeNoLeap(y, 1, 1) for y in years]
         mock_get_time_axis_in_calendar.return_value = tget_time_axis
 
-        expected_idx = pd.Index(tget_time_axis, dtype="object", name="time")
+        expected_idx = pd.Index(
+            [dt.datetime(y, 1, 1) for y in years], dtype="object", name="time"
+        )
         result_idx, result_calendar = test_cube._get_openscmdata_time_axis_and_calendar(
             tscm_timeseries_cubes, out_calendar
         )
@@ -526,6 +532,15 @@ class TestSCMCube(object):
         mock_assert_all_time_axes_same.assert_called_with(
             [tget_time_axis] * len(tscm_timeseries_cubes)
         )
+
+        if out_calendar not in {"standard", "gregorian", "proleptic_gregorian"}:
+            assert len(caplog.messages) == 1
+            assert caplog.messages[0] == (
+                "Performing lazy conversion to datetime for calendar: 365_day. This "
+                "may cause subtle errors in operations that depend on the length of "
+                "time between dates"
+            )
+            assert caplog.records[0].levelname == "WARNING"
 
     @pytest.mark.parametrize(
         "valid_time_period_str",

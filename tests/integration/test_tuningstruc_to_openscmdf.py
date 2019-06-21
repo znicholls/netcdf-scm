@@ -143,9 +143,6 @@ def test_convert_scmdf_to_tuningstruc(test_file_info, tmpdir):
 
 
 def test_get_tuningstruc_name_from_df_error():
-    df = pd.DataFrame(
-        ["scen_1", "scen_2"],
-        columns=["scenario"]
-    )
+    df = pd.DataFrame(["scen_1", "scen_2"], columns=["scenario"])
     with pytest.raises(ValueError, match="More than one scenario in df"):
         get_tuningstruc_name_from_df(df, "test", "filler")
