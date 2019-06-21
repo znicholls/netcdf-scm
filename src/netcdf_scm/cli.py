@@ -1,6 +1,4 @@
-"""
-Command line interface
-"""
+"""Command line interface"""
 import datetime as dt
 import logging
 import os
@@ -141,7 +139,6 @@ def crunch_data(
     ``crunch_contact`` is written into the output ``.nc`` files' ``crunch_contact``
     attribute.
     """
-
     output_prefix = "netcdf-scm"
     separator = "_"
     timestamp = _get_timestamp()
@@ -405,7 +402,9 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
 
             if out_format == "mag-files":
                 if len(filenames) > 1:
-                    raise AssertionError("more than one file to wrangle?")  # pragma: no cover # emergency valve
+                    raise AssertionError(
+                        "more than one file to wrangle?"
+                    )  # pragma: no cover # emergency valve
                 out_file = os.path.join(out_filedir, filenames[0])
                 _make_path_if_not_exists(out_filedir)
                 out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
@@ -452,7 +451,11 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
                 time_id = "{}-{}".format(
                     src_time_points[0].year, src_time_points[-1].year + 1
                 )
-                openscmdf = openscmdf.interpolate(out_time_points)
+                try:
+                    openscmdf = openscmdf.interpolate(out_time_points)
+                except:
+                    logger.exception("Not happy {}".format(filenames))
+                    continue
 
                 var_to_write = openscmdf["variable"].unique()[0]
                 try:
@@ -509,9 +512,12 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
                     writer.metadata = metadata
                     writer.metadata["header"] = header
                     writer.metadata["timeseriestype"] = "POINT_END_OF_YEAR"
-                    writer.write(out_file, magicc_version=7)
-                    logger.info("Making symlink to {}".format(symlink_file))
-                    os.symlink(out_file, symlink_file)
+                    try:
+                        writer.write(out_file, magicc_version=7)
+                        logger.info("Making symlink to {}".format(symlink_file))
+                        os.symlink(out_file, symlink_file)
+                    except:
+                        logger.exception("Not happy {}".format(out_file))
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))
 

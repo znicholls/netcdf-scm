@@ -1,6 +1,8 @@
-"""Utils contains a number of helpful functions for doing common cube operations.
+"""
+Utils contains a number of helpful functions for doing common cube operations.
 
-For example, applying masks to cubes, taking latitude-longitude means and getting timeseries from a cube as datetime values.
+For example, applying masks to cubes, taking latitude-longitude means and getting
+timeseries from a cube as datetime values.
 """
 import datetime as dt
 
@@ -17,7 +19,8 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
 
 
 def get_cube_timeseries_data(scm_cube):
-    """Get a timeseries from a cube.
+    """
+    Get a timeseries from a cube.
 
     This function only works on cubes which are on a time grid only i.e. have no other dimension coordinates.
 
@@ -36,7 +39,8 @@ def get_cube_timeseries_data(scm_cube):
 
 
 def get_scm_cube_time_axis_in_calendar(scm_cube, calendar):
-    """Gets a cube's time axis in a given calendar
+    """
+    Get a cube's time axis in a given calendar
 
     Parameters
     ----------
@@ -64,7 +68,8 @@ def _assert_only_cube_dim_coord_is_time(scm_cube):
 
 
 def assert_all_time_axes_same(time_axes):
-    """Assert all time axes in a set are the same.
+    """
+    Assert all time axes in a set are the same.
 
     Parameters
     ----------
@@ -88,7 +93,8 @@ def assert_all_time_axes_same(time_axes):
 
 
 def take_lat_lon_mean(in_scmcube, in_weights):
-    """Take the latitude longitude mean of a cube with given weights
+    """
+    Take the latitude longitude mean of a cube with given weights
 
     Parameters
     ----------
@@ -116,7 +122,8 @@ def take_lat_lon_mean(in_scmcube, in_weights):
 
 
 def apply_mask(in_scmcube, in_mask):
-    """Apply a mask to an scm cube's data
+    """
+    Apply a mask to an scm cube's data
 
     Parameters
     ----------
@@ -139,7 +146,8 @@ def apply_mask(in_scmcube, in_mask):
 
 
 def unify_lat_lon(cubes, rtol=10 ** -10):
-    """Unify latitude and longitude co-ordinates of cubes in place.
+    """
+    Unify latitude and longitude co-ordinates of cubes in place.
 
     The co-ordinates will only be unified if they already match to within a given
     tolerance.
@@ -183,7 +191,8 @@ def unify_lat_lon(cubes, rtol=10 ** -10):
 
 
 def broadcast_onto_lat_lon_grid(cube, array_in):
-    """Broadcast an array onto the latitude-longitude grid of ``cube``.
+    """
+    Broadcast an array onto the latitude-longitude grid of ``cube``.
 
     Here, broadcasting means taking the array and 'duplicating' it so that it
     has the same number of dimensions as the cube's underlying data.

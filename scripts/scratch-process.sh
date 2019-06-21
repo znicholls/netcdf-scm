@@ -1,8 +1,8 @@
 #!/bin/bash
 SRC_DIR="/media/research-nfs/cmip6/"
-CRUNCH_DIR="/home/UNIMELB/znicholls/test-cmip6-crunch-short"
-WRANGLE_DIR="/home/UNIMELB/znicholls/test-cmip6-wrangle-short"
-CONTACT='zebedee nicholls <zebedee.nicholls@climate-energy-college.org>'
+CRUNCH_DIR="/data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox"
+WRANGLE_DIR="/data/marble/sandbox/share/cmip6-wrangled-ipsl-sandbox"
+CONTACT='Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>'
 DRS="CMIP6Output"
 REGEXP="^(?!.*fx).*IPSL.*$"
 # have to be super careful when crunching input files as the duplicate grids can cause

@@ -1,5 +1,5 @@
 """
-This module contains our wrappers of the iris cube.
+Wrappers of the iris cube.
 
 These classes automate handling of a number of netCDF processing steps.
 For example, finding surface land fraction files, applying masks to data and
@@ -48,7 +48,8 @@ logger = logging.getLogger(__name__)
 
 
 class SCMCube(object):
-    """Class for processing netCDF files for use in simple climate models.
+    """
+    Class for processing netCDF files for use in simple climate models.
 
     Common, shared operations are implemented here.
     However, methods like ``_get_data_directory`` raise ``NotImplementedError``
@@ -122,7 +123,6 @@ class SCMCube(object):
 
         For help on regular expressions, see :ref:`regular expressions <regular-expressions>`.
         """
-
         if self._time_period_regex is None:
             self._time_period_regex = re.compile(
                 r".*_((\d*)" + re.escape(self.time_period_separator) + r"?(\d*)?).*"
@@ -131,7 +131,8 @@ class SCMCube(object):
 
     @property
     def timestamp_definitions(self):
-        """dict: Definition of valid timestamp information and corresponding key values.
+        """
+        dict: Definition of valid timestamp information and corresponding key values.
 
         This follows the CMIP standards where time strings must be one of the
         following: YYYY, YYYYMM, YYYYMMDD, YYYYMMDDHH or one of the previous combined
@@ -171,7 +172,8 @@ class SCMCube(object):
 
     @property
     def lon_dim_number(self):
-        """int: The index which corresponds to the longitude dimension.
+        """
+        int: The index which corresponds to the longitude dimension.
 
         e.g. if longitude is the third dimension of the data, then
         ``self.lon_dim_number`` will be ``2`` (Python is zero-indexed).
@@ -185,7 +187,8 @@ class SCMCube(object):
 
     @property
     def lat_dim_number(self):
-        """int: The index which corresponds to the latitude dimension.
+        """
+        int: The index which corresponds to the latitude dimension.
 
         e.g. if latitude is the first dimension of the data, then
         ``self.lat_dim_number`` will be ``0`` (Python is zero-indexed).
@@ -199,7 +202,8 @@ class SCMCube(object):
 
     @property
     def time_dim_number(self):
-        """int: The index which corresponds to the time dimension.
+        """
+        int: The index which corresponds to the time dimension.
 
         e.g. if time is the first dimension of the data, then
         ``self.time_dim_number`` will be ``0`` (Python is zero-indexed).
@@ -208,6 +212,13 @@ class SCMCube(object):
 
     @property
     def info(self):
+        """
+        dict: Information about the cubes source files
+
+        ``res["files"]`` contains the files used to load the data in this cube.
+        ``res["metadata"]`` contains information for each of the metadata cubes used to
+        load the data in this cube.
+        """
         r = {"files": self._loaded_paths}
         if len(self._metadata_cubes):
             #  Get the info dict for each of the metadata cubes

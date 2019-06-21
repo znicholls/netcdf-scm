@@ -1,7 +1,9 @@
-"""Masking regions of the World
+"""
+Module which handles masking of data
 
-These masks are applied to data fields to exclude unwanted parts of the globe. The convention used here is the same as numpy masked
-arrays, where ``True`` values are excluded.
+The masks are applied to data fields to exclude unwanted parts of the globe. The
+convention used here is the same as numpy masked arrays, where ``True`` values are
+excluded.
 """
 import logging
 import os
@@ -38,8 +40,9 @@ class InvalidMask(Exception):
     """
     Raised when a mask cannot be calculated.
 
-    This error usually propogates. For example, if a child mask used in the calculation of a parent mask fails then the parent mask
-    should also raise an InvalidMask exception (unless it can be satisfactorily handled).
+    This error usually propogates. For example, if a child mask used in the
+    calculation of a parent mask fails then the parent mask should also raise an
+    InvalidMask exception (unless it can be satisfactorily handled).
     """
 
     pass
@@ -49,7 +52,7 @@ def invert(mask_to_invert):
     """
     Invert a mask
 
-    I.e. convert from Land to Ocean
+    e.g. convert from Land to Ocean
 
     Parameters
     ----------
@@ -60,7 +63,6 @@ def invert(mask_to_invert):
     -------
     MaskFunc
     """
-
     def f(masker, cube, **kwargs):
         return ~masker.get_mask(mask_to_invert)
 
@@ -69,23 +71,25 @@ def invert(mask_to_invert):
 
 def or_masks(mask_a, mask_b):
     """
-    Or's two masks
+    Take the 'or' product of two masks
 
-    This is the equivilent of an inner join between two masks. Only values which are not masked in both masks (False in both masks)
-    will remain unmasked (False).
+    This is the equivilent of an inner join between two masks. Only values which are
+    not masked in both masks (False in both masks) will remain unmasked (False).
 
     Parameters
     ----------
     mask_a : str or MaskFunc
-        If a string is provided, the mask specified by the string is retrieved. Otherwise the MaskFunc is evaluated at runtime
+        If a string is provided, the mask specified by the string is retrieved.
+        Otherwise the MaskFunc is evaluated at runtime
+
     mask_b: str or MaskFunc
-        If a string is provided, the mask specified by the string is retrieved. Otherwise the MaskFunc is evaluated at runtime
+        If a string is provided, the mask specified by the string is retrieved.
+        Otherwise the MaskFunc is evaluated at runtime
 
     Returns
     -------
     MaskFunc
     """
-
     def f(masker, cube, **kwargs):
         a = (
             mask_a(masker, cube, **kwargs)
@@ -103,6 +107,7 @@ def or_masks(mask_a, mask_b):
 
 
 def get_default_sftlf_cube():
+    """Load NetCDF-SCM's default (last resort) surface land fraction cube"""
     return iris.load_cube(os.path.join(os.path.dirname(__file__), _DEFAULT_SFTLF_FILE))
 
 
@@ -142,6 +147,19 @@ def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwarg
 def get_nh_mask(masker, cube, **kwargs):
     """
     Get a mask of the Northern Hemisphere
+
+    Parameters
+    ----------
+    masker : :obj:`CubeMasker`
+        Cube masker from which to retrieve the mask
+
+    cube : :obj:`SCMCube`
+        Cube to create a mask for
+
+    Returns
+    -------
+    :obj:`np.ndarray`
+        Array of booleans which can be used for the mask
     """
     mask_nh_lat = np.array(
         [cell < 0 for cell in cube.cube.coord(cube.lat_name).cells()]
@@ -167,16 +185,22 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
 
     Parameters
     ----------
-    lower_lat: int or float of degrees North
-    left_lon: int or float of degrees East
-    upper_lat: int or float of degrees North
-    right_lon: int or float of degrees East
+    lower_lat : int or float
+        Lower latitude bound (degrees North)
+
+    left_lon : int or float
+        Lower longitude bound (degrees East)
+
+    upper_lat : int or float
+        Upper latitude bound (degrees North)
+
+    right_lon : int or float
+        Upper longitude bound (degrees East)
 
     Returns
     -------
     MaskFunc
     """
-
     def f(masker, cube, **kwargs):
         def mask_dim(dim, lower, upper):
             # Finds any cells where the bounds overlaps with the range (lower, upper)
@@ -226,12 +250,25 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
 
 def get_world_mask(masker, cube, **kwargs):
     """
-    Gets a mask with no values masked out
+    Get a mask with no values masked out
+
+    Parameters
+    ----------
+    masker : :obj:`CubeMasker`
+        Cube masker from which to retrieve the mask
+
+    cube : :obj:`SCMCube`
+        Cube to create a mask for
+
+    Returns
+    -------
+    :obj:`np.ndarray`
+        Array of booleans which can be used for the mask
     """
     return np.full(masker.get_mask("World|Northern Hemisphere").shape, False)
 
 
-# Known masks
+"""dict: known masks"""
 MASKS = {
     "World": get_world_mask,
     "World|Northern Hemisphere": get_nh_mask,
