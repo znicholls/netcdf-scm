@@ -2,7 +2,7 @@ import datetime
 import logging
 import re
 import warnings
-from os.path import join, basename
+from os.path import basename, join
 from unittest.mock import MagicMock, patch
 
 import cf_units
@@ -94,17 +94,15 @@ class _SCMCubeIntegrationTester(object):
 
     def test_get_scm_cubes_last_resort(self, test_cube):
         tloaded_paths = ["/path/1", "/path/2"]
-        class MockCube():
+
+        class MockCube:
             @property
             def info(self):
                 return {"files": ["/area/cella/a/path/file.nc"]}
 
-        tmetadata_cubes = {
-            "areacella": MockCube()
-        }
+        tmetadata_cubes = {"areacella": MockCube()}
         tsftlf_cube = "mocked 124"
         tland_mask_threshold = "mocked 51"
-        tareacella_scmcube = "mocked 4389"
 
         test_cube._loaded_paths = tloaded_paths
         test_cube._metadata_cubes = tmetadata_cubes
@@ -153,7 +151,9 @@ class _SCMCubeIntegrationTester(object):
             exp_cube.cube.attributes[
                 "crunch_land_mask_threshold"
             ] = tland_mask_threshold
-            exp_cube.cube.attributes["crunch_source_files"] = "Files: {}; areacella: {}".format(
+            exp_cube.cube.attributes[
+                "crunch_source_files"
+            ] = "Files: {}; areacella: {}".format(
                 [basename(p) for p in tloaded_paths],
                 [basename(p) for p in tmetadata_cubes["areacella"].info["files"]],
             )
@@ -162,14 +162,14 @@ class _SCMCubeIntegrationTester(object):
             exp_cube.cube.attributes["scenario"] = "unspecified"
             exp_cube.cube.attributes["climate_model"] = "unspecified"
             exp_cube.cube.attributes["member_id"] = "unspecified"
-            exp_cube.cube.attributes["mip_era"] = "CMIP5" if isinstance(test_cube, MarbleCMIP5Cube) else "unspecified"
+            exp_cube.cube.attributes["mip_era"] = (
+                "CMIP5" if isinstance(test_cube, MarbleCMIP5Cube) else "unspecified"
+            )
             exp_cube.cube.attributes["activity_id"] = "unspecified"
             exp_cube.cube.attributes["region"] = label
             expected[label] = exp_cube
 
-        result = test_cube.get_scm_cubes(
-            tsftlf_cube, tland_mask_threshold
-        )
+        result = test_cube.get_scm_cubes(tsftlf_cube, tland_mask_threshold)
 
         for label, cube in expected.items():
             assert cube.cube.attributes == result[label].cube.attributes

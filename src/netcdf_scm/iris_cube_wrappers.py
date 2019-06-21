@@ -936,6 +936,7 @@ class SCMCube(object):
             if k == "variable":
                 try:
                     output[k] = getattr(self, self._scm_timeseries_id_map[k])
+                    continue
                 except AttributeError:
                     warn_msg = (
                         "Could not determine {}, filling with "
@@ -943,7 +944,7 @@ class SCMCube(object):
                     )
                     logger.warning(warn_msg)
                     output[k] = self.cube.standard_name
-                continue
+                    continue
             try:
                 output[k] = getattr(self, self._scm_timeseries_id_map[k])
             except AttributeError:
@@ -967,7 +968,6 @@ class SCMCube(object):
         ]
         assert_all_time_axes_same(time_axes)
         time_axis = time_axes[0]
-
         if isinstance(time_axis[0], cftime.datetime):
             # inspired by xarray, should make a PR back in there...
             if out_calendar not in {"standard", "gregorian", "proleptic_gregorian"}:

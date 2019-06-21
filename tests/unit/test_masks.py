@@ -11,10 +11,10 @@ from netcdf_scm.masks import (
     DEFAULT_REGIONS,
     MASKS,
     CubeMasker,
+    InvalidMask,
     get_area_mask,
     get_land_mask,
     get_nh_mask,
-    InvalidMask,
 )
 
 
@@ -263,18 +263,18 @@ def test_area_mask_wrapped_lons(test_all_cubes):
 
     np.testing.assert_array_equal(result, expected)
 
+
 def test_unknown_mask_error(test_all_cubes):
-    sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
     masker = CubeMasker(test_all_cubes)
     with pytest.raises(InvalidMask, match="Unknown mask: junk"):
         masker.get_mask("junk")
 
-def test_get_masks_unknown_mask_warning(test_all_cubes, caplog):
-    sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
-    masker = CubeMasker(test_all_cubes)
-    res  = masker.get_masks(["World", "junk"])
 
-    assert (res["World"] == False).all()
+def test_get_masks_unknown_mask_warning(test_all_cubes, caplog):
+    masker = CubeMasker(test_all_cubes)
+    res = masker.get_masks(["World", "junk"])
+
+    assert (~res["World"]).all()
 
     assert len(caplog.messages) == 1
     assert caplog.messages[0] == "Failed to create junk mask: Unknown mask: junk"
