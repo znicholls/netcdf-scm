@@ -82,7 +82,7 @@ def assert_all_time_axes_same(time_axes):
             np.testing.assert_array_equal(
                 time_axis_to_check, time_axes[0], err_msg=assert_msg
             )
-        # handle weird numpy error in case it comes
+        # handle weird numpy error in case it comes up
         except AttributeError:  # pragma: no cover
             raise AssertionError(assert_msg)
 
