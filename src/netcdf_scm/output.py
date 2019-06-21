@@ -1,3 +1,9 @@
+"""
+Module for handling crunching output tracking
+
+This module handles checking whether a file has already been crunched and if its
+source files have been updated since it was last crunched.
+"""
 import json
 import logging
 from collections import OrderedDict
@@ -33,6 +39,7 @@ class OutputFileDatabase(object):
         self._fp = self.load_from_file()
 
     def __len__(self):
+        """Get length of database"""
         return len(self._data)
 
     def load_from_file(self):
@@ -91,15 +98,11 @@ class OutputFileDatabase(object):
         self._fp.flush()
 
     def _write_line(self, line):
-        """
-        Flush out a line to file
-        """
+        """Flush out a line to file"""
         self._fp.write("{}\n".format(json.dumps(line)))
 
     def dump(self):
-        """
-        Rewrite the entire file
-        """
+        """Rewrite the entire file"""
         logger.info("Rewriting output file")
         self._fp.close()
         # Create a new file truncating the old values
