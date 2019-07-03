@@ -1,3 +1,4 @@
+"""Input and output from NetCDF-SCM's netCDF format"""
 try:
     import iris
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
