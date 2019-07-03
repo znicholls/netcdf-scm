@@ -59,7 +59,8 @@ class SCMCube(object):
     """
 
     sftlf_var = "sftlf"
-    """str: The name of the variable associated with the land-surface fraction in each gridbox.
+    """
+    str: The name of the variable associated with the land-surface fraction in each gridbox.
 
     If required, this is used when looking for the land-surface fraction file which
     belongs to a given data file. For example, if our data file is
@@ -69,7 +70,8 @@ class SCMCube(object):
     """
 
     areacella_var = "areacella"
-    """str: The name of the variable associated with the area of each gridbox.
+    """
+    str: The name of the variable associated with the area of each gridbox.
 
     If required, this is used to determine the area of each cell in a data file. For
     example, if our data file is ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then
@@ -88,7 +90,8 @@ class SCMCube(object):
     """str: The expected name of the longitude co-ordinate in data."""
 
     time_period_separator = "-"
-    """str: Character used to separate time period strings in the time period indicator in filenames.
+    """
+    str: Character used to separate time period strings in the time period indicator in filenames.
 
     e.g. ``-`` is the 'time period separator' in "2015-2030".
     """
@@ -119,7 +122,8 @@ class SCMCube(object):
 
     @property
     def time_period_regex(self):
-        """:obj:`_sre.SRE_Pattern`: Regular expression which captures the timeseries identifier in input data files.
+        """
+        :obj:`_sre.SRE_Pattern`: Regular expression which captures the timeseries identifier in input data files.
 
         For help on regular expressions, see :ref:`regular expressions <regular-expressions>`.
         """
@@ -335,7 +339,8 @@ class SCMCube(object):
             setattr(self.cube, att, getattr(year_zero_cube, att))
 
     def load_data_from_path(self, filepath):
-        """Load data from a path.
+        """
+        Load data from a path.
 
         If you are using the ``SCMCube`` class directly, this method simply loads the
         path into an iris cube which can be accessed through ``self.cube``.
@@ -353,7 +358,8 @@ class SCMCube(object):
         self._load_cube(filepath)
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath=None):
-        """Get the set of identifiers to use to load data from a filepath.
+        """
+        Get the set of identifiers to use to load data from a filepath.
 
         Parameters
         ----------
@@ -369,7 +375,8 @@ class SCMCube(object):
         raise NotImplementedError()
 
     def load_data_in_directory(self, directory=None):
-        """Load data in a directory.
+        """
+        Load data in a directory.
 
         The data is loaded into an iris cube which can be accessed through
         ``self.cube``.
@@ -484,7 +491,8 @@ class SCMCube(object):
         }
 
     def load_data_from_identifiers(self, **kwargs):
-        """Load data using key identifiers.
+        """
+        Load data using key identifiers.
 
         The identifiers are used to determine the path of the file to load. The file
         is then loaded into an iris cube which can be accessed through ``self.cube``.
@@ -542,7 +550,8 @@ class SCMCube(object):
         )
 
     def get_filepath_from_load_data_from_identifiers_args(self, **kwargs):
-        """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
+        """
+        Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
         This function should, in most cases, call ``self._get_data_directory`` and
         ``self._get_data_filename``.
@@ -561,7 +570,8 @@ class SCMCube(object):
         raise NotImplementedError()
 
     def get_variable_constraint_from_load_data_from_identifiers_args(self, **kwargs):
-        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
+        """
+        Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
 
         Parameters
         ----------
@@ -577,7 +587,8 @@ class SCMCube(object):
         raise NotImplementedError()
 
     def _get_data_directory(self):
-        """Get the path to a data file from self's attributes.
+        """
+        Get the path to a data file from self's attributes.
 
         This can take multiple forms, it may just return a previously set
         filepath attribute or it could combine a number of different metadata
@@ -591,7 +602,8 @@ class SCMCube(object):
         raise NotImplementedError()
 
     def _get_data_filename(self):
-        """Get the name of a data file from self's attributes.
+        """
+        Get the name of a data file from self's attributes.
 
         This can take multiple forms, it may just return a previously set
         filename attribute or it could combine a number of different metadata
@@ -605,7 +617,8 @@ class SCMCube(object):
         raise NotImplementedError()
 
     def get_metadata_cube(self, metadata_variable, cube=None):
-        """Load a metadata cube from self's attributes.
+        """
+        Load a metadata cube from self's attributes.
 
         Parameters
         ----------
@@ -632,7 +645,8 @@ class SCMCube(object):
         return cube
 
     def _get_metadata_load_arguments(self, metadata_variable):
-        """Get the arguments to load a metadata file from self's attributes.
+        """
+        Get the arguments to load a metadata file from self's attributes.
 
         This can take multiple forms, it may just return a previously set
         metada_filename attribute or it could combine a number of different
@@ -655,7 +669,8 @@ class SCMCube(object):
     def get_scm_timeseries(
         self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
     ):
-        """Get SCM relevant timeseries from ``self``.
+        """
+        Get SCM relevant timeseries from ``self``.
 
         Parameters
         ----------
@@ -783,7 +798,8 @@ class SCMCube(object):
         return timeseries_cubes
 
     def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50):
-        """Get SCM relevant cubes from the ``self``.
+        """
+        Get SCM relevant cubes from the ``self``.
 
         Each cube comes with extra information in its ``attributes`` property. The
         extra information comprises of crunching information (e.g. the
@@ -855,7 +871,8 @@ class SCMCube(object):
         return cubes
 
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
-        """Get the scm masks.
+        """
+        Get the scm masks.
 
         Returns
         -------
@@ -998,7 +1015,8 @@ class SCMCube(object):
         return pd.Index(time_axis, dtype="object", name="time"), out_calendar
 
     def _check_time_period_valid(self, time_period_str):
-        """Check that a time_period identifier string is valid.
+        """
+        Check that a time_period identifier string is valid.
 
         Parameters
         ----------
@@ -1046,7 +1064,8 @@ class SCMCube(object):
 
 class _CMIPCube(SCMCube):
     def load_data_from_path(self, filepath):
-        """Load data from a path.
+        """
+        Load data from a path.
 
         Parameters
         ----------
@@ -1071,7 +1090,8 @@ class _CMIPCube(SCMCube):
         self.time_period = self.time_period_separator.join([strt, end])
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
-        """Get the set of identifiers to use to load data from a filepath.
+        """
+        Get the set of identifiers to use to load data from a filepath.
 
         Parameters
         ----------
@@ -1105,7 +1125,8 @@ class _CMIPCube(SCMCube):
 
 
 class MarbleCMIP5Cube(_CMIPCube):
-    """Subclass of ``SCMCube`` which can be used with the ``cmip5`` directory on marble.
+    """
+    Subclass of ``SCMCube`` which can be used with the ``cmip5`` directory on marble.
 
     This directory structure is very similar, but not quite identical, to the
     recommended CMIP5 directory structure described in section 3.1 of the
@@ -1115,7 +1136,8 @@ class MarbleCMIP5Cube(_CMIPCube):
     mip_era = "CMIP5"
 
     def process_filename(self, filename):
-        """Cut a filename into its identifiers
+        """
+        Cut a filename into its identifiers
 
         Parameters
         ----------
@@ -1152,7 +1174,8 @@ class MarbleCMIP5Cube(_CMIPCube):
         }
 
     def process_path(self, path):
-        """Cut a path into its identifiers
+        """
+        Cut a path into its identifiers
 
         Parameters
         ----------
@@ -1196,7 +1219,8 @@ class MarbleCMIP5Cube(_CMIPCube):
         time_period=None,
         file_ext=".nc",
     ):
-        """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
+        """
+        Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
         Full details about the identifiers are given in Section 2 of the
         `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
@@ -1275,7 +1299,8 @@ class MarbleCMIP5Cube(_CMIPCube):
     def get_variable_constraint_from_load_data_from_identifiers_args(
         self, variable_name="tas", **kwargs
     ):
-        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
+        """
+        Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
 
         Parameters
         ----------
@@ -1335,14 +1360,16 @@ class MarbleCMIP5Cube(_CMIPCube):
 
 
 class CMIP6Input4MIPsCube(_CMIPCube):
-    """Subclass of ``SCMCube`` which can be used with CMIP6 input4MIPs data
+    """
+    Subclass of ``SCMCube`` which can be used with CMIP6 input4MIPs data
 
     The data must match the CMIP6 Forcing Datasets Summary, specifically the
     `Forcing Dataset Specifications <https://docs.google.com/document/d/1pU9IiJvPJwRvIgVaSDdJ4O0Jeorv_2ekEtted34K9cA/edit#heading=h.cn9f7982ycw6>`_.
     """
 
     def process_filename(self, filename):
-        """Cut a filename into its identifiers
+        """
+        Cut a filename into its identifiers
 
         Parameters
         ----------
@@ -1380,7 +1407,8 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         }
 
     def process_path(self, path):
-        """Cut a path into its identifiers
+        """
+        Cut a path into its identifiers
 
         Parameters
         ----------
@@ -1433,7 +1461,8 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         time_range=None,
         file_ext="file-ext",
     ):
-        """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
+        """
+        Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
         Full details about the meaning of the identifiers are given in the
         `Forcing Dataset Specifications <https://docs.google.com/document/d/1pU9IiJvPJwRvIgVaSDdJ4O0Jeorv_2ekEtted34K9cA/edit#heading=h.cn9f7982ycw6>`_.
@@ -1510,7 +1539,8 @@ class CMIP6Input4MIPsCube(_CMIPCube):
     def get_variable_constraint_from_load_data_from_identifiers_args(
         self, variable_id="tas", **kwargs
     ):
-        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
+        """
+        Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
 
         Parameters
         ----------
@@ -1624,7 +1654,8 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
 
 class CMIP6OutputCube(_CMIPCube):
-    """Subclass of ``SCMCube`` which can be used with CMIP6 model output data
+    """
+    Subclass of ``SCMCube`` which can be used with CMIP6 model output data
 
     The data must match the CMIP6 data reference syntax as specified in the 'File name
     template' and 'Directory structure template' sections of the
@@ -1641,7 +1672,8 @@ class CMIP6OutputCube(_CMIPCube):
     }
 
     def process_filename(self, filename):
-        """Cut a filename into its identifiers
+        """
+        Cut a filename into its identifiers
 
         Parameters
         ----------
@@ -1679,7 +1711,8 @@ class CMIP6OutputCube(_CMIPCube):
         }
 
     def process_path(self, path):
-        """Cut a path into its identifiers
+        """
+        Cut a path into its identifiers
 
         Parameters
         ----------
@@ -1731,7 +1764,8 @@ class CMIP6OutputCube(_CMIPCube):
         time_range=None,
         file_ext="file-ext",
     ):
-        """Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
+        """
+        Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
         Full details about the meaning of each identifier is given in Table 1 of the
         `CMIP6 Data Reference Syntax <https://goo.gl/v1drZl>`_.
@@ -1799,7 +1833,8 @@ class CMIP6OutputCube(_CMIPCube):
     def get_variable_constraint_from_load_data_from_identifiers_args(
         self, variable_id="tas", **kwargs
     ):
-        """Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
+        """
+        Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
 
         Parameters
         ----------

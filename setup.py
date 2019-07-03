@@ -47,10 +47,10 @@ REQUIREMENTS_INSTALL = [
     "python-dateutil",
     "progressbar2",
     "openscm>=0.1.0a",
-    "pymagicc>=2.0.0b2",
+    "pymagicc>=2.0.0b4",
     "click",
 ]
-REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0"]
+REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0,<5.0"]
 REQUIREMENTS_NOTEBOOKS = ["notebook", "nbval", "expectexception"]
 REQUIREMENTS_DOCS = ["sphinx>=1.4,<2.1", "sphinx_rtd_theme", "sphinx-click"]
 REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
