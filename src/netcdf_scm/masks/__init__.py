@@ -295,35 +295,42 @@ class CubeMasker:
     """
     Computes masks for a given cube in a somewhat efficient manner.
 
-    Previously calculated masks are cached so each mask is only calculated once. This implementation trades off some additional
-    memory overhead for the ability to generate arbitary masks.
+    Previously calculated masks are cached so each mask is only calculated once. This
+    implementation trades off some additional memory overhead for the ability to
+    generate arbitary masks.
 
     **Adding new masks**
 
-    Additional masks can be added to the MASKS array above. The values in the ``MASKS`` array should be MaskFunc's. A MaskFunc is a
-    function which takes a ScmCube, CubeMasker and any additional keyword arguments. The function should return a numpy
-    array of boolean's with the same dimensionality as the ScmCube. Where True values are returned, data will be masked out (excluded)
-    from any calculations. The "World|Northern Hemisphere|Land" mask should be True everywhere except for land cells in the Northern
-    Hemisphere.
+    Additional masks can be added to the MASKS array above. The values in the
+    ``MASKS`` array should be MaskFunc's. A MaskFunc is a function which takes a
+    ScmCube, CubeMasker and any additional keyword arguments. The function should
+    return a numpy array of boolean's with the same dimensionality as the ScmCube.
+    Where True values are returned, data will be masked out (excluded) from any
+    calculations. The "World|Northern Hemisphere|Land" mask should be True everywhere
+    except for land cells in the Northern Hemisphere.
 
-    These MaskFunc's can be composed together to create more complex functionality. For example
-    `or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")` will the return the result of an 'or' operation between a subsetted area and
-    an ocean mask.
-
-    Parameters
-    ----------
-    cube : ScmCube
-
-    kwargs : dict
-        Any optional arguments to be passed to the MaskFunc's during evaluation.
-        Possible parameters include:
-
-            sftlf_cube : ScmCube
-
-            land_mask_threshold : float default: 50.
+    These MaskFunc's can be composed together to create more complex functionality.
+    For example `or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")` will the
+    return the result of an 'or' operation between a subsetted area and an ocean mask.
     """
 
     def __init__(self, cube, **kwargs):
+        """
+        Initialise
+
+        Parameters
+        ----------
+        cube : :obj:`ScmCube`
+            cube to generate masks for
+
+        kwargs : dict
+            Any optional arguments to be passed to the MaskFunc's during evaluation.
+            Possible parameters include:
+
+                sftlf_cube : ScmCube
+
+                land_mask_threshold : float default: 50.
+        """
         self.cube = cube
         self._masks = {}
         self.kwargs = kwargs
@@ -358,8 +365,6 @@ class CubeMasker:
                 self._masks[mask_name] = mask
             except KeyError:
                 raise InvalidMask("Unknown mask: {}".format(mask_name))
-            except InvalidMask:  # pragma: no cover # emergency valve
-                raise
 
         return mask
 
@@ -374,7 +379,9 @@ class CubeMasker:
 
         Returns
         -------
-        dict of ndarrays of bool
+        dict
+            Dictionary where keys are mask names and values are :obj:`np.ndarray` of
+            bool
 
         The result only contains valid masks. Any invalid masks are dropped.
         """
@@ -384,5 +391,5 @@ class CubeMasker:
                 mask = self.get_mask(name)
                 masks[name] = mask
             except InvalidMask as e:
-                logger.warning("Failed to create {} mask: {}".format(name, str(e)))
+                logger.warning("Failed to create %s mask: %s", name, str(e))
         return masks
