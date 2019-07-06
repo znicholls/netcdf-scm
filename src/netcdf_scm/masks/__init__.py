@@ -45,8 +45,6 @@ class InvalidMask(Exception):
     InvalidMask exception (unless it can be satisfactorily handled).
     """
 
-    pass
-
 
 def invert(mask_to_invert):
     """
@@ -63,6 +61,7 @@ def invert(mask_to_invert):
     -------
     MaskFunc
     """
+
     def f(masker, cube, **kwargs):
         return ~masker.get_mask(mask_to_invert)
 
@@ -90,6 +89,7 @@ def or_masks(mask_a, mask_b):
     -------
     MaskFunc
     """
+
     def f(masker, cube, **kwargs):
         a = (
             mask_a(masker, cube, **kwargs)
@@ -201,6 +201,7 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
     -------
     MaskFunc
     """
+
     def f(masker, cube, **kwargs):
         def mask_dim(dim, lower, upper):
             # Finds any cells where the bounds overlaps with the range (lower, upper)
