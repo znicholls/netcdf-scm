@@ -226,10 +226,10 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
 
     raw_name = (
         (
-            "{}{}_{}_{}_{}".format(prefix, variable, scenario, member_id, region)
+            "{}_{}_{}_{}".format(variable, scenario, member_id, region)
             .replace(" ", "_")
             .replace("|", "_")
         )
     ).upper() + ".mat"
 
-    return join(outdir, raw_name)
+    return join(outdir, "{}{}".format(prefix, raw_name))
