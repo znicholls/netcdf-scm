@@ -453,7 +453,7 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
                 )
                 try:
                     openscmdf = openscmdf.interpolate(out_time_points)
-                except:
+                except (ValueError, AttributeError):
                     logger.exception("Not happy {}".format(filenames))
                     continue
 
@@ -516,7 +516,7 @@ def _do_wrangling(src, dst, regexp, out_format, force, prefix, wrangle_contact, 
                         writer.write(out_file, magicc_version=7)
                         logger.info("Making symlink to {}".format(symlink_file))
                         os.symlink(out_file, symlink_file)
-                    except:
+                    except (ValueError, AttributeError):
                         logger.exception("Not happy {}".format(out_file))
             else:
                 raise ValueError("Unsupported format: {}".format(out_format))

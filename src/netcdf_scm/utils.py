@@ -130,7 +130,7 @@ def apply_mask(in_scmcube, in_mask):
     in_scmcube : :obj:`SCMCube`
         An ``SCMCube`` instance.
 
-    in_mask : boolean np.ndarray
+    in_mask : np.ndarray
         The mask to apply
 
     Returns
