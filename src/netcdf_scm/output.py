@@ -13,7 +13,7 @@ from os.path import exists, join
 logger = logging.getLogger(__name__)
 
 
-class OutputFileDatabase(object):
+class OutputFileDatabase:
     """
     Holds a list of output files which have been written.
 
@@ -46,6 +46,11 @@ class OutputFileDatabase(object):
         """
         Load database from ``self.out_dir``
 
+        Returns
+        -------
+        :obj:`io.TextIOWrapper`
+            Handle to the loaded filepath
+
         Raises
         ------
         ValueError
@@ -67,9 +72,7 @@ class OutputFileDatabase(object):
                 )
             self._data[info["filename"]] = info
 
-        logger.info(
-            "Read in {} items from database {}".format(len(self._data), self.filename)
-        )
+        logger.info("Read in %s items from database %s", len(self._data), self.filename)
         return fp
 
     def register(self, out_fname, info):

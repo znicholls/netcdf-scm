@@ -4,6 +4,9 @@ output-examples
 # venv for pip installs
 venv
 
+# paper pdf
+paper/paper.pdf
+
 # profile outputs
 *.lprof
 
