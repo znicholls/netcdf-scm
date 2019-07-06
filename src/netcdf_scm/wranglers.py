@@ -204,6 +204,8 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
         A name cannot be determined because e.g. more than one scenario is contained
         in the dataframe
     """
+    prefix = "{}_".format(prefix) if prefix is not None else ""
+
     def _get_col(col):
         try:
             vals = df[col].unique()
@@ -224,12 +226,10 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
 
     raw_name = (
         (
-            "{}_{}_{}_{}".format(variable, scenario, member_id, region)
+            "{}{}_{}_{}_{}".format(prefix, variable, scenario, member_id, region)
             .replace(" ", "_")
             .replace("|", "_")
         )
     ).upper() + ".mat"
-    if prefix is not None:
-        return join(outdir, "{}_{}".format(prefix, raw_name))
 
     return join(outdir, raw_name)
