@@ -36,6 +36,9 @@ DEFAULT_REGIONS = (
 )
 
 
+# TODO: ask @lewisjared how to refactor this to avoid all these unused arguments
+
+
 class InvalidMask(Exception):
     """
     Raised when a mask cannot be calculated.
@@ -59,10 +62,11 @@ def invert(mask_to_invert):
 
     Returns
     -------
-    MaskFunc
+    :func:`MaskFunc`
+        MaskFunc which inverts the input mask
     """
 
-    def f(masker, cube, **kwargs):
+    def f(masker, cube, **kwargs):  # pylint:disable=unused-argument
         return ~masker.get_mask(mask_to_invert)
 
     return f
@@ -87,7 +91,8 @@ def or_masks(mask_a, mask_b):
 
     Returns
     -------
-    MaskFunc
+    :func:`MaskFunc`
+        MaskFunc which ors the input masks
     """
 
     def f(masker, cube, **kwargs):
@@ -111,17 +116,38 @@ def get_default_sftlf_cube():
     return iris.load_cube(os.path.join(os.path.dirname(__file__), _DEFAULT_SFTLF_FILE))
 
 
-def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwargs):
+def get_land_mask(  # pylint:disable=unused-argument
+    masker,
+    cube,
+    sftlf_cube=None,
+    land_mask_threshold=50,
+    **kwargs
+):
     """
     Get the land mask
 
     Parameters
     ----------
-    TODO: write this
+    masker : :obj:`CubeMasker`
+        Cube masker from which to retrieve the mask
+
+    cube : :obj:`SCMCube`
+        Cube to create a mask for
+
+    sftlf_cube : :obj:`SCMCube`
+        Cube containing the surface land-fraction data
+
+    land_mask_threshold : float
+        Threshold for determining whether a cell is land or not. If the surface
+        land-fraction > land_mask_threshold, the cell is land.
+
+    kwargs : Any
+        Ignored (required for compatibility with ``CubeMasker``)
 
     Returns
     -------
     np.ndarray
+        Land mask
     """
     warn_msg = "Land surface fraction (sftlf) data not available, using default instead"
     sftlf_data = None
@@ -144,7 +170,7 @@ def get_land_mask(masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwarg
     return broadcast_onto_lat_lon_grid(cube, land_mask)
 
 
-def get_nh_mask(masker, cube, **kwargs):
+def get_nh_mask(masker, cube, **kwargs):  # pylint:disable=unused-argument
     """
     Get a mask of the Northern Hemisphere
 
@@ -155,6 +181,9 @@ def get_nh_mask(masker, cube, **kwargs):
 
     cube : :obj:`SCMCube`
         Cube to create a mask for
+
+    kwargs : Any
+        Ignored (required for compatibility with ``CubeMasker``)
 
     Returns
     -------
@@ -199,10 +228,11 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
 
     Returns
     -------
-    MaskFunc
+    :func:`MaskFunc`
+        MaskFunc which masks out everything except the specified area
     """
 
-    def f(masker, cube, **kwargs):
+    def f(masker, cube, **kwargs):  # pylint:disable=unused-argument
         def mask_dim(dim, lower, upper):
             # Finds any cells where the bounds overlaps with the range (lower, upper)
             if dim.circular:
@@ -216,22 +246,21 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
                             for cell in dim.bounds
                         ]
                     )
-                else:
-                    return ~np.array(
-                        [
-                            (lower % max_val < cell).any()
-                            and (cell < upper % max_val).any()
-                            for cell in dim.bounds
-                        ]
-                    )
 
-            else:
                 return ~np.array(
                     [
-                        (lower < cell).any() and (cell < upper).any()
+                        (lower % max_val < cell).any()
+                        and (cell < upper % max_val).any()
                         for cell in dim.bounds
                     ]
                 )
+
+            return ~np.array(
+                [
+                    (lower < cell).any() and (cell < upper).any()
+                    for cell in dim.bounds
+                ]
+            )
 
         mask_lat = mask_dim(cube.lat_dim, lower_lat, upper_lat)
         mask_lon = mask_dim(cube.lon_dim, left_lon, right_lon)
@@ -249,7 +278,7 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
     return f
 
 
-def get_world_mask(masker, cube, **kwargs):
+def get_world_mask(masker, cube, **kwargs):  # pylint:disable=unused-argument
     """
     Get a mask with no values masked out
 
@@ -260,6 +289,9 @@ def get_world_mask(masker, cube, **kwargs):
 
     cube : :obj:`SCMCube`
         Cube to create a mask for
+
+    kwargs : Any
+        Ignored (required for compatibility with ``CubeMasker``)
 
     Returns
     -------
@@ -302,17 +334,17 @@ class CubeMasker:
 
     **Adding new masks**
 
-    Additional masks can be added to the MASKS array above. The values in the
-    ``MASKS`` array should be MaskFunc's. A MaskFunc is a function which takes a
+    Additional masks can be added to ``netcdf_scm.masks.MASKS``. The values in
+    ``MASKS`` should be MaskFunc's. A MaskFunc is a function which takes a
     ScmCube, CubeMasker and any additional keyword arguments. The function should
     return a numpy array of boolean's with the same dimensionality as the ScmCube.
     Where True values are returned, data will be masked out (excluded) from any
-    calculations. The "World|Northern Hemisphere|Land" mask should be True everywhere
-    except for land cells in the Northern Hemisphere.
+    calculations. For example, the "World|Northern Hemisphere|Land" mask should be
+    True everywhere except for land cells in the Northern Hemisphere.
 
     These MaskFunc's can be composed together to create more complex functionality.
-    For example `or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")` will the
-    return the result of an 'or' operation between a subsetted area and an ocean mask.
+    For example `or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean")` will
+    return the result of an 'or' operation between the given area and an ocean mask.
     """
 
     def __init__(self, cube, **kwargs):
@@ -340,8 +372,9 @@ class CubeMasker:
         """
         Get a single mask
 
-        If the mask has previously been calculated the precalculated result is returned from the cache. Otherwise the appropriate
-        MaskFunc is called with any kwargs specified in the constructor.
+        If the mask has previously been calculated the precalculated result is
+        returned from the cache. Otherwise the appropriate MaskFunc is called with any
+        kwargs specified in the constructor.
 
         Parameters
         ----------
@@ -393,4 +426,5 @@ class CubeMasker:
                 masks[name] = mask
             except InvalidMask as e:
                 logger.warning("Failed to create %s mask: %s", name, str(e))
+
         return masks
