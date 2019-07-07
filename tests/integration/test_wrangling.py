@@ -315,8 +315,9 @@ def test_wrangling_annual_mean_file(tmpdir):
     )
 
     assert result.exit_code != 0
-    assert isinstance(result.exception, ValueError)
+    assert isinstance(result.exception, SystemExit)
     assert (
-        str(result.exception)
-        == "Please raise an issue at github.com/znicholls/netcdf-scm/issues to discuss how to handle non-monthly data wrangling"
-    )
+        "ValueError: Please raise an issue at "
+        "github.com/znicholls/netcdf-scm/issues to discuss how to handle "
+        "non-monthly data wrangling"
+    ) in result.output

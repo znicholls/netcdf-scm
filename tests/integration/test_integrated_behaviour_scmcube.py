@@ -333,7 +333,7 @@ class _SCMCubeIntegrationTester(object):
         }
         with warnings.catch_warnings(record=True):
             warnings.filterwarnings("ignore", ".*appropriate model scenario*")
-            result = test_cube._convert_scm_timeseries_cubes_to_openscmdata(
+            result = test_cube.convert_scm_timeseries_cubes_to_openscmdata(
                 test_timeseries_cubes, out_calendar=out_calendar
             )
 
