@@ -553,8 +553,8 @@ class SCMCube(object):
         """
         Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
 
-        This function should, in most cases, call ``self._get_data_directory`` and
-        ``self._get_data_filename``.
+        This function should, in most cases, call ``self.get_data_directory`` and
+        ``self.get_data_filename``.
 
         Parameters
         ----------
@@ -586,7 +586,7 @@ class SCMCube(object):
         """
         raise NotImplementedError()
 
-    def _get_data_directory(self):
+    def get_data_directory(self):
         """
         Get the path to a data file from self's attributes.
 
@@ -601,7 +601,7 @@ class SCMCube(object):
         """
         raise NotImplementedError()
 
-    def _get_data_filename(self):
+    def get_data_filename(self):
         """
         Get the name of a data file from self's attributes.
 
@@ -699,7 +699,7 @@ class SCMCube(object):
             areacella_scmcube=areacella_scmcube,
         )
 
-        return self._convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
+        return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
     def get_scm_timeseries_cubes(
         self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
@@ -923,7 +923,7 @@ class SCMCube(object):
         ):
             logger.exception("Could not calculate areacella")
 
-    def _convert_scm_timeseries_cubes_to_openscmdata(
+    def convert_scm_timeseries_cubes_to_openscmdata(
         self, scm_timeseries_cubes, out_calendar=None
     ):
         data = []
@@ -944,7 +944,7 @@ class SCMCube(object):
         output = ScmDataFrame(
             data,
             index=time_index,
-            columns={**{"unit": unit, "model": "unspecified"}, **metadata},
+            columns={**{"unit": str(unit), "model": "unspecified"}, **metadata},
         )
         try:
             output.metadata["calendar"] = out_calendar
@@ -1270,9 +1270,9 @@ class MarbleCMIP5Cube(_CMIPCube):
         for name, value in inargs.items():
             setattr(self, name, value)
 
-        return join(self._get_data_directory(), self._get_data_filename())
+        return join(self.get_data_directory(), self.get_data_filename())
 
-    def _get_data_directory(self):
+    def get_data_directory(self):
         return join(
             self.root_dir,
             self.activity,
@@ -1283,7 +1283,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             self.ensemble_member,
         )
 
-    def _get_data_filename(self):
+    def get_data_filename(self):
         bits_to_join = [
             self.variable_name,
             self.modeling_realm,
@@ -1534,7 +1534,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         # TODO: do time indicator/frequency checks too and make a new method for checks so can be reused by different methods
         self._check_self_consistency()
 
-        return join(self._get_data_directory(), self._get_data_filename())
+        return join(self.get_data_directory(), self.get_data_filename())
 
     def get_variable_constraint_from_load_data_from_identifiers_args(
         self, variable_id="tas", **kwargs
@@ -1623,7 +1623,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             "file_ext": self.file_ext,
         }
 
-    def _get_data_filename(self):
+    def get_data_filename(self):
         bits_to_join = [
             self.variable_id,
             self.activity_id,
@@ -1637,7 +1637,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
         return "_".join(bits_to_join) + self.file_ext
 
-    def _get_data_directory(self):
+    def get_data_directory(self):
         return join(
             self.root_dir,
             self.activity_id,
@@ -1828,7 +1828,7 @@ class CMIP6OutputCube(_CMIPCube):
         for name, value in inargs.items():
             setattr(self, name, value)
 
-        return join(self._get_data_directory(), self._get_data_filename())
+        return join(self.get_data_directory(), self.get_data_filename())
 
     def get_variable_constraint_from_load_data_from_identifiers_args(
         self, variable_id="tas", **kwargs
@@ -1910,7 +1910,7 @@ class CMIP6OutputCube(_CMIPCube):
             "file_ext": self.file_ext,
         }
 
-    def _get_data_filename(self):
+    def get_data_filename(self):
         bits_to_join = [
             self.variable_id,
             self.table_id,
@@ -1924,7 +1924,7 @@ class CMIP6OutputCube(_CMIPCube):
 
         return "_".join(bits_to_join) + self.file_ext
 
-    def _get_data_directory(self):
+    def get_data_directory(self):
         return join(
             self.root_dir,
             self.mip_era,

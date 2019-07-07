@@ -16,8 +16,9 @@ def save_netcdf_scm_nc(cubes, out_path):
 
     Parameters
     ----------
-    cube : dict
-        Dictionary of "region name"-:obj:`ScmCube` key-value pairs. The cubes will all be saved in the same ``.nc`` file.
+    cubes : dict
+        Dictionary of "region name"-:obj:`ScmCube` key-value pairs. The cubes will all
+        be saved in the same ``.nc`` file.
 
     out_path : str
         Path in which to save the data
@@ -45,7 +46,7 @@ def load_scmdataframe(path):
         :obj:`ScmDataFrame` containing the data in ``path``.
     """
     helper, scm_cubes = _load_helper_and_scm_cubes(path)
-    scmdf = helper._convert_scm_timeseries_cubes_to_openscmdata(scm_cubes)
+    scmdf = helper.convert_scm_timeseries_cubes_to_openscmdata(scm_cubes)
     scmdf.metadata = {k: v for k, v in helper.cube.attributes.items() if k != "region"}
     for coord in helper.cube.coords():
         if coord.standard_name in ["time", "latitude", "longitude", "height"]:
@@ -68,14 +69,14 @@ def _load_helper_and_scm_cubes(path):
 
     loaded = SCMCube()
     scm_cubes = {}
-    for i, v in enumerate(cube_list):
+    for v in cube_list:
         region = v.attributes["region"]
         scm_cubes[region] = SCMCube()
         scm_cubes[region].cube = v
-        # take any cube as base for now, not sure how to really handle this so will
-        # leave like this for now and only make this method public when I work it
-        # out...
-        if i == 0:
-            loaded.cube = v
+
+    # take any cube as base for now, not sure how to really handle this so will
+    # leave like this for now and only make this method public when I work it
+    # out...
+    loaded.cube = cube_list[0]
 
     return loaded, scm_cubes

@@ -245,7 +245,7 @@ class TestSCMCube(object):
         test_cube.get_scm_timeseries_cubes = MagicMock(return_value=test_cubes_return)
 
         test_conversion_return = pd.DataFrame(data=np.array([1, 2, 3]))
-        test_cube._convert_scm_timeseries_cubes_to_openscmdata = MagicMock(
+        test_cube.convert_scm_timeseries_cubes_to_openscmdata = MagicMock(
             return_value=test_conversion_return
         )
 
@@ -260,7 +260,7 @@ class TestSCMCube(object):
             land_mask_threshold=tland_mask_threshold,
             areacella_scmcube=tareacella_scmcube,
         )
-        test_cube._convert_scm_timeseries_cubes_to_openscmdata.assert_called_with(
+        test_cube.convert_scm_timeseries_cubes_to_openscmdata.assert_called_with(
             test_cubes_return
         )
 
@@ -646,10 +646,10 @@ class _CMIPCubeTester(TestSCMCube):
         tkwargs = {k: getattr(self, "t" + k) for k in tkwargs_list}
 
         mock_data_path = "here/there/everywhere"
-        test_cube._get_data_directory = MagicMock(return_value=mock_data_path)
+        test_cube.get_data_directory = MagicMock(return_value=mock_data_path)
 
         mock_data_name = "here_there_file.nc"
-        test_cube._get_data_filename = MagicMock(return_value=mock_data_name)
+        test_cube.get_data_filename = MagicMock(return_value=mock_data_name)
 
         for kwarg in tkwargs_list:
             with pytest.raises(AttributeError):
@@ -663,8 +663,8 @@ class _CMIPCubeTester(TestSCMCube):
         for kwarg in tkwargs_list:
             assert getattr(test_cube, kwarg) == tkwargs[kwarg]
 
-        assert test_cube._get_data_directory.call_count == 1
-        assert test_cube._get_data_filename.call_count == 1
+        assert test_cube.get_data_directory.call_count == 1
+        assert test_cube.get_data_filename.call_count == 1
 
 
 class TestMarbleCMIP5Cube(_CMIPCubeTester):
@@ -806,7 +806,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
-        result = test_cube._get_data_directory()
+        result = test_cube.get_data_directory()
 
         assert result == expected
 
@@ -837,7 +837,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
-        result = test_cube._get_data_filename()
+        result = test_cube.get_data_filename()
 
         assert result == expected
 
@@ -868,7 +868,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 
         test_cube.time_period = None
 
-        result = test_cube._get_data_filename()
+        result = test_cube.get_data_filename()
 
         assert result == expected
 
@@ -1151,7 +1151,7 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
-        result = test_cube._get_data_filename()
+        result = test_cube.get_data_filename()
         assert result == expected
 
         expected = (
@@ -1173,7 +1173,7 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
-        result = test_cube._get_data_filename()
+        result = test_cube.get_data_filename()
         assert result == expected
 
     def test_get_data_directory(self, test_cube):
@@ -1207,7 +1207,7 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
-        result = test_cube._get_data_directory()
+        result = test_cube.get_data_directory()
 
         assert result == expected
 
@@ -1441,7 +1441,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
-        result = test_cube._get_data_filename()
+        result = test_cube.get_data_filename()
         assert result == expected
 
         expected = (
@@ -1463,7 +1463,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
-        result = test_cube._get_data_filename()
+        result = test_cube.get_data_filename()
         assert result == expected
 
     def test_get_data_directory(self, test_cube):
@@ -1497,7 +1497,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         for att in atts_to_set:
             setattr(test_cube, att, getattr(self, "t" + att))
 
-        result = test_cube._get_data_directory()
+        result = test_cube.get_data_directory()
 
         assert result == expected
 
