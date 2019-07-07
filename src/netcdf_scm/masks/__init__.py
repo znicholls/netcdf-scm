@@ -117,11 +117,7 @@ def get_default_sftlf_cube():
 
 
 def get_land_mask(  # pylint:disable=unused-argument
-    masker,
-    cube,
-    sftlf_cube=None,
-    land_mask_threshold=50,
-    **kwargs
+    masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwargs
 ):
     """
     Get the land mask
@@ -256,10 +252,7 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
                 )
 
             return ~np.array(
-                [
-                    (lower < cell).any() and (cell < upper).any()
-                    for cell in dim.bounds
-                ]
+                [(lower < cell).any() and (cell < upper).any() for cell in dim.bounds]
             )
 
         mask_lat = mask_dim(cube.lat_dim, lower_lat, upper_lat)
