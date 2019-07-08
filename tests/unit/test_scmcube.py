@@ -201,10 +201,10 @@ class TestSCMCube(object):
         test_cube._load_and_concatenate_files_in_directory.assert_called_with(tdir)
 
     def test_get_data_directory(self, test_cube):
-        self.run_test_of_method_to_overload(test_cube, "_get_data_directory")
+        self.run_test_of_method_to_overload(test_cube, "get_data_directory")
 
     def test_get_data_filename(self, test_cube):
-        self.run_test_of_method_to_overload(test_cube, "_get_data_filename")
+        self.run_test_of_method_to_overload(test_cube, "get_data_filename")
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         self.run_test_of_method_to_overload(
