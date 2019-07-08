@@ -59,15 +59,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     context specific methods.
     """
 
-    sftlf_var = "sftlf"
+    cube = None
     """
-    str: The name of the variable associated with the land-surface fraction in each gridbox.
-
-    If required, this is used when looking for the land-surface fraction file which
-    belongs to a given data file. For example, if our data file is
-    ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then ``sftlf_var`` can be used to work
-    out the name of the associated land-surface fraction file. In some cases, it might
-    be as simple as replacing ``tas`` with the value of ``sftlf_var``.
+    :obj:`iris.cube.Cube`: The Iris cube which is wrapped by this :obj:`SCMCube` instance.
     """
 
     areacella_var = "areacella"
@@ -81,14 +75,25 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     ``areacella_var``.
     """
 
-    time_name = "time"
-    """str: The expected name of the time co-ordinate in data."""
-
     lat_name = "latitude"
     """str: The expected name of the latitude co-ordinate in data."""
 
     lon_name = "longitude"
     """str: The expected name of the longitude co-ordinate in data."""
+
+    sftlf_var = "sftlf"
+    """
+    str: The name of the variable associated with the land-surface fraction in each gridbox.
+
+    If required, this is used when looking for the land-surface fraction file which
+    belongs to a given data file. For example, if our data file is
+    ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then ``sftlf_var`` can be used to work
+    out the name of the associated land-surface fraction file. In some cases, it might
+    be as simple as replacing ``tas`` with the value of ``sftlf_var``.
+    """
+
+    time_name = "time"
+    """str: The expected name of the time co-ordinate in data."""
 
     time_period_separator = "-"
     """
@@ -733,6 +738,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         cubes = {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
         try:
+            if hasattr(self, "root_dir") and self.root_dir is None:
+                raise AttributeError  # temporary hack for refactoring
             source_file_info = "Files: {}".format(
                 [p.replace(self.root_dir, "") for p in self.info["files"]]
             )
@@ -744,6 +751,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             source_meta = {}
             for k, v in self.info["metadata"].items():
                 try:
+                    if hasattr(self, "root_dir") and self.root_dir is None:
+                        raise AttributeError  # temporary hack for refactoring
                     source_meta[k] = [
                         "{}".format(p.replace(self.root_dir, "")) for p in v["files"]
                     ]
@@ -814,6 +823,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         except (
             iris.exceptions.ConstraintMismatchError,
             AttributeError,
+            TypeError,
             OSError,
             NotImplementedError,
         ):
@@ -878,6 +888,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             if k == "variable":
                 try:
                     output[k] = getattr(self, self._scm_timeseries_id_map[k])
+                    if output[k] is None:
+                        raise AttributeError  # temporary hack
                     continue
                 except AttributeError:
                     warn_msg = (
@@ -889,6 +901,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                     continue
             try:
                 output[k] = getattr(self, self._scm_timeseries_id_map[k])
+                if output[k] is None:
+                    raise AttributeError  # temporary hack
             except AttributeError:
                 warn_msg = "Could not determine {}, filling with 'unspecified'".format(
                     k
@@ -978,6 +992,17 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
 
 class _CMIPCube(SCMCube, ABC):
+    """
+    Base class for cubes which follow a CMIP data reference syntax
+    """
+
+    time_period = None
+    """
+    str: The timespan of the data stored by this cube
+
+    The string follows the cube's data reference syntax.
+    """
+
     def load_data_from_path(self, filepath):
         """
         Load data from a path.
@@ -1239,8 +1264,54 @@ class MarbleCMIP5Cube(_CMIPCube):
     recommended CMIP5 directory structure described in section 3.1 of the
     `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
     """
+    #     root_dir=".",
+    #     activity="activity",
+    #     experiment="experiment",
+    #     modeling_realm="modeling-realm",
+    #     variable_name="variable-name",
+    #     model="model",
+    #     ensemble_member="ensemble-member",
+    #     time_period=None,
+    #     file_ext=".nc",
+
+    root_dir = None
+    """
+    str: The root directory of the database i.e. where the cube should start its path
+
+    e.g. ``/home/users/usertim/cmip5_25x25``
+    """
+
+    activity = None
+    """str: The activity for which we want to load data e.g. 'cmip5'"""
+
+    experiment = None
+    """str: The experiment for which we want to load data e.g. '1pctCO2'"""
+
+    modeling_realm = None
+    """str: The modeling_realm for which we want to load data e.g. 'Amon'"""
+
+    variable_name = None
+    """str: The variable for which we want to load data e.g. 'tas'"""
+
+    model = None
+    """str: The model for which we want to load data e.g. 'CanESM2'"""
+
+    ensemble_member = None
+    """str: The ensemble member for which we want to load data e.g. 'r1i1p1'"""
+
+    time_period = None
+    """
+    str: The time period for which we want to load data
+
+    If ``None``, this information isn't included in the filename which is useful for
+    loading metadata files which don't have a relevant time period.
+    """
+
+    file_ext = None
+    """str: The file extension of the data file we want to load e.g. '.nc'"""
 
     mip_era = "CMIP5"
+    """str: The MIP era to which this cube belongs"""
 
     def process_filename(self, filename):
         """
@@ -1316,15 +1387,7 @@ class MarbleCMIP5Cube(_CMIPCube):
 
     def get_filepath_from_load_data_from_identifiers_args(  # pylint: disable=arguments-differ
         self,
-        root_dir=".",
-        activity="activity",
-        experiment="experiment",
-        modeling_realm="modeling-realm",
-        variable_name="variable-name",
-        model="model",
-        ensemble_member="ensemble-member",
-        time_period=None,
-        file_ext=".nc",
+        **kwargs
     ):
         """
         Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
@@ -1334,47 +1397,20 @@ class MarbleCMIP5Cube(_CMIPCube):
 
         Parameters
         ----------
-        root_dir : str, optional
-            The root directory of the database i.e. where the cube should start its
-            path from e.g. ``/home/users/usertim/cmip5_25x25``.
-
-        activity : str, optional
-            The activity for which we want to load data e.g. ``cmip5``.
-
-        experiment : str, optional
-            The experiment for which we want to load data e.g. ``1pctCO2``.
-
-        modeling_realm : str, optional
-            The modeling_realm for which we want to load data e.g. ``Amon``.
-
-        variable_name : str, optional
-            The variable for which we want to load data e.g. ``variable_name``.
-
-        model : str, optional
-            The model for which we want to load data ``CanESM2``.
-
-        ensemble_member : str, optional
-            The ensemble member for which we want to load data ``r1i1p1``.
-
-        time_period : str, optional
-            The time period for which we want to load data e.g. ``1850-2000``.
-            If ``None``, this information isn't included in the filename which is
-            useful for loading metadata files which don't have a relevant time period.
-
-        file_ext : str, optional
-            The file extension of the data file we want to load e.g. ``.nc``.
+        kwargs : str
+            Identifiers to use to load the data
 
         Returns
         -------
         str
             The full filepath (path and name) of the file to load.
-        """
-        inargs = locals()
-        del inargs["self"]
-        # if the step above ever gets more complicated, use the solution here
-        # http://kbyanc.blogspot.com/2007/07/python-aggregating-function-arguments.html
 
-        for name, value in inargs.items():
+        Raises
+        ------
+        AttributeError
+            An input argument does not match with the cube's data reference syntax
+        """
+        for name, value in kwargs.items():
             setattr(self, name, value)
 
         return join(self.get_data_directory(), self.get_data_filename())
