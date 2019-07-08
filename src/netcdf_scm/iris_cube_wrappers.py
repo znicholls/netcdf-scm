@@ -926,6 +926,22 @@ class SCMCube(object):
     def convert_scm_timeseries_cubes_to_openscmdata(
         self, scm_timeseries_cubes, out_calendar=None
     ):
+        """
+        Convert dictionary of SCM timeseries cubes to an :obj:`ScmDataFrame`
+
+        Parameters
+        ----------
+        scm_timeseries_cubes : dict
+            Dictionary of "region name"-:obj:`ScmCube` key-value pairs.
+
+        out_calendar : str
+            Calendar to use for the time axis of the output :obj:`ScmDataFrame`
+
+        Returns
+        -------
+        :obj:`ScmDataFrame`
+            :obj:`ScmDataFrame` containing the data from the SCM timeseries cubes
+        """
         data = []
         metadata = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
         for scm_cube in scm_timeseries_cubes.values():
@@ -1273,6 +1289,14 @@ class MarbleCMIP5Cube(_CMIPCube):
         return join(self.get_data_directory(), self.get_data_filename())
 
     def get_data_directory(self):
+        """
+        Get the directory which matches the cube's data reference syntax
+
+        Returns
+        -------
+        str
+            Directory which matches the cube's data reference syntax
+        """
         return join(
             self.root_dir,
             self.activity,
@@ -1284,6 +1308,14 @@ class MarbleCMIP5Cube(_CMIPCube):
         )
 
     def get_data_filename(self):
+        """
+        Get the filename which matches the cube's data reference syntax
+
+        Returns
+        -------
+        str
+            Filename which matches the cube's data reference syntax
+        """
         bits_to_join = [
             self.variable_name,
             self.modeling_realm,
@@ -1624,6 +1656,14 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         }
 
     def get_data_filename(self):
+        """
+        Get the filename which matches the cube's data reference syntax
+
+        Returns
+        -------
+        str
+            Filename which matches the cube's data reference syntax
+        """
         bits_to_join = [
             self.variable_id,
             self.activity_id,
@@ -1638,6 +1678,14 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         return "_".join(bits_to_join) + self.file_ext
 
     def get_data_directory(self):
+        """
+        Get the directory which matches the cube's data reference syntax
+
+        Returns
+        -------
+        str
+            Directory which matches the cube's data reference syntax
+        """
         return join(
             self.root_dir,
             self.activity_id,
@@ -1911,6 +1959,14 @@ class CMIP6OutputCube(_CMIPCube):
         }
 
     def get_data_filename(self):
+        """
+        Get the filename which matches the cube's data reference syntax
+
+        Returns
+        -------
+        str
+            Filename which matches the cube's data reference syntax
+        """
         bits_to_join = [
             self.variable_id,
             self.table_id,
@@ -1925,6 +1981,14 @@ class CMIP6OutputCube(_CMIPCube):
         return "_".join(bits_to_join) + self.file_ext
 
     def get_data_directory(self):
+        """
+        Get the directory which matches the cube's data reference syntax
+
+        Returns
+        -------
+        str
+            Directory which matches the cube's data reference syntax
+        """
         return join(
             self.root_dir,
             self.mip_era,
