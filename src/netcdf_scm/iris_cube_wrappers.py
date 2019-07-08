@@ -9,6 +9,7 @@ import logging
 import os
 import re
 import warnings
+from abc import ABC, abstractmethod
 from datetime import datetime
 from os.path import basename, dirname, join, splitext
 
@@ -47,7 +48,7 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
 logger = logging.getLogger(__name__)
 
 
-class SCMCube(object):
+class SCMCube:  # pylint:disable=too-many-public-methods
     """
     Class for processing netCDF files for use in simple climate models.
 
@@ -224,13 +225,13 @@ class SCMCube(object):
         load the data in this cube.
         """
         r = {"files": self._loaded_paths}
-        if len(self._metadata_cubes):
+        if self._metadata_cubes:
             #  Get the info dict for each of the metadata cubes
             r["metadata"] = {k: v.info for k, v in self._metadata_cubes.items()}
         return r
 
     def _load_cube(self, filepath, constraint=None):
-        logger.info("loading cube {}".format(filepath))
+        logger.info("loading cube %s", filepath)
         self._loaded_paths.append(filepath)
         # Raises Warning and Exceptions
         self.cube = iris.load_cube(filepath, constraint=constraint)
@@ -419,13 +420,13 @@ class SCMCube(object):
             self.load_data_from_path(join(directory, f))
             loaded_cubes.append(self.cube)
 
-        loaded_cubes = iris.cube.CubeList(loaded_cubes)
+        loaded_cubes_iris = iris.cube.CubeList(loaded_cubes)
 
-        unify_time_units(loaded_cubes)
-        unify_lat_lon(loaded_cubes)
-        iris.experimental.equalise_cubes.equalise_attributes(loaded_cubes)
+        unify_time_units(loaded_cubes_iris)
+        unify_lat_lon(loaded_cubes_iris)
+        iris.experimental.equalise_cubes.equalise_attributes(loaded_cubes_iris)
 
-        self.cube = loaded_cubes.concatenate_cube()
+        self.cube = loaded_cubes_iris.concatenate_cube()
 
     def _check_data_names_in_same_directory(self, directory):
         found_files = sorted(os.listdir(directory))
@@ -490,47 +491,18 @@ class SCMCube(object):
             "expected_timestep": timestep,
         }
 
-    def load_data_from_identifiers(self, **kwargs):
-        """
-        Load data using key identifiers.
-
-        The identifiers are used to determine the path of the file to load. The file
-        is then loaded into an iris cube which can be accessed through ``self.cube``.
-
-        Parameters
-        ----------
-        **kwargs
-            Arguments which can then be processed by
-            ``self.get_filepath_from_load_data_from_identifiers_args`` and
-            ``self.get_variable_constraint_from_load_data_from_identifiers_args`` to determine the full
-            filepath of the file to load and the variable constraint to use.
-        """
-        with warnings.catch_warnings(record=True) as w:
-            # iris v2.2.0 under py3.7 raises a DeprecationWarning about using collections, see https://github.com/SciTools/iris/pull/3320
-            warnings.filterwarnings(
-                "ignore", category=DeprecationWarning, module=r".*collections.*"
-            )
-            self._load_cube(
-                self.get_filepath_from_load_data_from_identifiers_args(**kwargs),
-                self.get_variable_constraint_from_load_data_from_identifiers_args(
-                    **kwargs
-                ),
-            )
-
-        if w:
-            self._process_load_data_from_identifiers_warnings(w)
-
     def _process_load_data_from_identifiers_warnings(self, w):
         area_cell_warn = "Missing CF-netCDF measure variable 'areacella'"
         for warn in w:
             if area_cell_warn in str(warn.message):
                 try:
                     self._add_areacella_measure()
-                except Exception:
-                    logger.exception(
+                except Exception:  # pylint:disable=broad-except
+                    error_msg = (
                         str(warn.message)
                         + ". Tried to add areacella cube but another exception was raised:"
                     )
+                    logger.exception(error_msg)
             else:
                 logger.warning(warn.message)
 
@@ -549,73 +521,6 @@ class SCMCube(object):
             areacella_measure, data_dims=[self.lat_dim_number, self.lon_dim_number]
         )
 
-    def get_filepath_from_load_data_from_identifiers_args(self, **kwargs):
-        """
-        Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
-
-        This function should, in most cases, call ``self.get_data_directory`` and
-        ``self.get_data_filename``.
-
-        Parameters
-        ----------
-        **kwargs
-            Arguments, initially passed to ``self.load_data_from_identifiers`` from which the full
-            filepath of the file to load should be determined.
-
-        Returns
-        -------
-        str
-            The full filepath (path and name) of the file to load.
-        """
-        raise NotImplementedError()
-
-    def get_variable_constraint_from_load_data_from_identifiers_args(self, **kwargs):
-        """
-        Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
-
-        Parameters
-        ----------
-        **kwargs
-            Arguments, initially passed to ``self.load_data_from_identifiers`` from which the full
-            filepath of the file to load should be determined.
-
-        Returns
-        -------
-        :obj:`iris.Constraint`
-            constraint to use which ensures that only the variable of interest is loaded.
-        """
-        raise NotImplementedError()
-
-    def get_data_directory(self):
-        """
-        Get the path to a data file from self's attributes.
-
-        This can take multiple forms, it may just return a previously set
-        filepath attribute or it could combine a number of different metadata
-        elements (e.g. model name, experiment name) to create the data path.
-
-        Returns
-        -------
-        str
-            path to the data file from which this cube has been/will be loaded
-        """
-        raise NotImplementedError()
-
-    def get_data_filename(self):
-        """
-        Get the name of a data file from self's attributes.
-
-        This can take multiple forms, it may just return a previously set
-        filename attribute or it could combine a number of different metadata
-        elements (e.g. model name, experiment name) to create the data name.
-
-        Returns
-        -------
-        str
-            name of the data file from which this cube has been/will be loaded.
-        """
-        raise NotImplementedError()
-
     def get_metadata_cube(self, metadata_variable, cube=None):
         """
         Load a metadata cube from self's attributes.
@@ -624,47 +529,26 @@ class SCMCube(object):
         ----------
         metadata_variable : str
             the name of the metadata variable to get, as it appears in the filename.
-        cube : SCMCube
+
+        cube : :obj:`SCMCube`
             Optionally, pass in an already loaded metadata cube to link it to currently loaded cube
+
         Returns
         -------
-        :obj:`type(self)`
+        type(self)
             instance of self which has been loaded from the file containing the metadata variable of interest.
+
+        Raises
+        ------
+        TypeError
+            ``cube`` is not an :obj:`ScmCube`
         """
-        if cube is None:
-            load_args = self._get_metadata_load_arguments(metadata_variable)
-
-            cube = type(self)()
-            cube.load_data_from_identifiers(**load_args)
-
         if not isinstance(cube, SCMCube):
             raise TypeError("cube must be an SCMCube instance")
 
         self._metadata_cubes[metadata_variable] = cube
 
         return cube
-
-    def _get_metadata_load_arguments(self, metadata_variable):
-        """
-        Get the arguments to load a metadata file from self's attributes.
-
-        This can take multiple forms, it may just return a previously set
-        metada_filename attribute or it could combine a number of different
-        metadata elements (e.g. model name, experiment name) to create the
-        metadata filename.
-
-        Parameters
-        ----------
-        metadata_variable : str
-            the name of the metadata variable to get, as it appears in the filename.
-
-        Returns
-        -------
-        dict
-            dictionary containing all the arguments to pass to ``self.load_data_from_identifiers``
-            required to load the desired metadata cube.
-        """
-        raise NotImplementedError()
 
     def get_scm_timeseries(
         self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
@@ -834,7 +718,7 @@ class SCMCube(object):
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
         # force the data to realise so it's not read 9 times while applying masks
-        self.cube.data
+        self.cube.data  # pylint:disable=pointless-statement
 
         cubes = {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
         try:
@@ -877,6 +761,7 @@ class SCMCube(object):
         Returns
         -------
         dict
+            Dictionary of region name-mask key-value pairs
         """
         masker = CubeMasker(
             self, sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
@@ -922,6 +807,8 @@ class SCMCube(object):
             NotImplementedError,
         ):
             logger.exception("Could not calculate areacella")
+
+        return None
 
     def convert_scm_timeseries_cubes_to_openscmdata(
         self, scm_timeseries_cubes, out_calendar=None
@@ -1016,9 +903,9 @@ class SCMCube(object):
             # inspired by xarray, should make a PR back in there...
             if out_calendar not in {"standard", "gregorian", "proleptic_gregorian"}:
                 logger.warning(
-                    "Performing lazy conversion to datetime for calendar: {}. This "
+                    "Performing lazy conversion to datetime for calendar: %s. This "
                     "may cause subtle errors in operations that depend on the length "
-                    "of time between dates".format(out_calendar)
+                    "of time between dates", out_calendar
                 )
             time_axis = _vector_cftime_conversion(time_axis)
         else:
@@ -1067,7 +954,7 @@ class SCMCube(object):
         if len(dates) == 2:
             start_date = datetime.strptime(dates[0], time_format)
             end_date = datetime.strptime(dates[1], time_format)
-            if not start_date < end_date:
+            if start_date >= end_date:
                 self._raise_time_period_invalid_error(time_period_str)
 
     @staticmethod
@@ -1078,7 +965,7 @@ class SCMCube(object):
         raise ValueError(message)
 
 
-class _CMIPCube(SCMCube):
+class _CMIPCube(SCMCube, ABC):
     def load_data_from_path(self, filepath):
         """
         Load data from a path.
@@ -1119,6 +1006,11 @@ class _CMIPCube(SCMCube):
         dict
             Set of arguments which can be passed to
             ``self.load_data_from_identifiers`` to load the data in the filepath.
+
+        Raises
+        ------
+        ValueError
+            Path and filename contradict each other
         """
         path_ids = self.process_path(dirname(filepath))
         name_ids = self.process_filename(basename(filepath))
@@ -1133,10 +1025,197 @@ class _CMIPCube(SCMCube):
 
         return {**path_ids, **name_ids}
 
-    def _raise_path_error(self, path):
+    @abstractmethod
+    def process_path(self, path):
+        """
+        Cut a path into its identifiers
+
+        Parameters
+        ----------
+        path : str
+            The path to process. Path here means just the path, no filename
+            should be included.
+
+        Returns
+        -------
+        dict
+            A dictionary where each key is the identifier name and each value is the value of that identifier for the input path
+        """
+
+    @abstractmethod
+    def process_filename(self, filename):
+        """
+        Cut a filename into its identifiers
+
+        Parameters
+        ----------
+        filename : str
+            The filename to process. Filename here means just the filename, no path
+            should be included.
+
+        Returns
+        -------
+        dict
+            A dictionary where each key is the identifier name and each value is the value of that identifier for the input filename
+        """
+
+    def load_data_from_identifiers(self, **kwargs):
+        """
+        Load data using key identifiers.
+
+        The identifiers are used to determine the path of the file to load. The file
+        is then loaded into an iris cube which can be accessed through ``self.cube``.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments which can then be processed by
+            ``self.get_filepath_from_load_data_from_identifiers_args`` and
+            ``self.get_variable_constraint_from_load_data_from_identifiers_args`` to determine the full
+            filepath of the file to load and the variable constraint to use.
+        """
+        with warnings.catch_warnings(record=True) as w:
+            # iris v2.2.0 under py3.7 raises a DeprecationWarning about using collections, see https://github.com/SciTools/iris/pull/3320
+            warnings.filterwarnings(
+                "ignore", category=DeprecationWarning, module=r".*collections.*"
+            )
+            self._load_cube(
+                self.get_filepath_from_load_data_from_identifiers_args(**kwargs),
+                self.get_variable_constraint_from_load_data_from_identifiers_args(
+                    **kwargs
+                ),
+            )
+
+        if w:
+            self._process_load_data_from_identifiers_warnings(w)
+
+    def get_metadata_cube(self, metadata_variable, cube=None):
+        """
+        Load a metadata cube from self's attributes.
+
+        Parameters
+        ----------
+        metadata_variable : str
+            the name of the metadata variable to get, as it appears in the filename.
+
+        cube : :obj:`SCMCube`
+            Optionally, pass in an already loaded metadata cube to link it to currently loaded cube
+
+        Returns
+        -------
+        type(self)
+            instance of self which has been loaded from the file containing the metadata variable of interest.
+
+        Raises
+        ------
+        TypeError
+            ``cube`` is not an :obj:`ScmCube`
+        """
+        if cube is None:
+            load_args = self._get_metadata_load_arguments(metadata_variable)
+
+            cube = type(self)()
+            cube.load_data_from_identifiers(**load_args)
+
+        return super().get_metadata_cube(metadata_variable, cube=cube)
+
+    @abstractmethod
+    def get_filepath_from_load_data_from_identifiers_args(self, **kwargs):
+        """
+        Get the full filepath of the data to load from the arguments passed to ``self.load_data_from_identifiers``.
+
+        This function should, in most cases, call ``self.get_data_directory`` and
+        ``self.get_data_filename``.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments, initially passed to ``self.load_data_from_identifiers`` from which the full
+            filepath of the file to load should be determined.
+
+        Returns
+        -------
+        str
+            The full filepath (path and name) of the file to load.
+        """
+
+    @abstractmethod
+    def get_variable_constraint_from_load_data_from_identifiers_args(self, **kwargs):
+        """
+        Get the iris variable constraint to use when loading data with ``self.load_data_from_identifiers``.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments, initially passed to ``self.load_data_from_identifiers`` from which the full
+            filepath of the file to load should be determined.
+
+        Returns
+        -------
+        :obj:`iris.Constraint`
+            constraint to use which ensures that only the variable of interest is loaded.
+        """
+
+    @abstractmethod
+    def get_data_directory(self):
+        """
+        Get the path to a data file from self's attributes.
+
+        This can take multiple forms, it may just return a previously set
+        filepath attribute or it could combine a number of different metadata
+        elements (e.g. model name, experiment name) to create the data path.
+
+        Returns
+        -------
+        str
+            path to the data file from which this cube has been/will be loaded
+        """
+
+    @abstractmethod
+    def get_data_filename(self):
+        """
+        Get the name of a data file from self's attributes.
+
+        This can take multiple forms, it may just return a previously set
+        filename attribute or it could combine a number of different metadata
+        elements (e.g. model name, experiment name) to create the data name.
+
+        Returns
+        -------
+        str
+            name of the data file from which this cube has been/will be loaded.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def _get_metadata_load_arguments(self, metadata_variable):
+        """
+        Get the arguments to load a metadata file from self's attributes.
+
+        This can take multiple forms, it may just return a previously set
+        metada_filename attribute or it could combine a number of different
+        metadata elements (e.g. model name, experiment name) to create the
+        metadata filename.
+
+        Parameters
+        ----------
+        metadata_variable : str
+            the name of the metadata variable to get, as it appears in the filename.
+
+        Returns
+        -------
+        dict
+            dictionary containing all the arguments to pass to ``self.load_data_from_identifiers``
+            required to load the desired metadata cube.
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def _raise_path_error(path):
         raise ValueError("Path does not look right: {}".format(path))
 
-    def _raise_filename_error(self, filename):
+    @staticmethod
+    def _raise_filename_error(filename):
         raise ValueError("Filename does not look right: {}".format(filename))
 
 
@@ -1336,35 +1415,11 @@ class MarbleCMIP5Cube(_CMIPCube):
 
         Parameters
         ----------
-        root_dir : str, optional
-            The root directory of the database i.e. where the cube should start its
-            path from e.g. ``/home/users/usertim/cmip5_25x25``.
-
-        activity : str, optional
-            The activity for which we want to load data.
-
-        experiment : str, optional
-            The experiment for which we want to load data.
-
-        modeling_realm : str, optional
-            The modeling_realm for which we want to load data.
-
         variable_name : str, optional
-            The variable for which we want to load data.
+            The variable_name for which we want to load data.
 
-        model : str, optional
-            The model for which we want to load data.
-
-        ensemble_member : str, optional
-            The ensemble member for which we want to load data.
-
-        time_period : str, optional
-            The time period for which we want to load data. If ``None``, this
-            information isn't included in the filename which is useful for loading
-            metadata files which don't have a relevant time period.
-
-        file_ext : str, optional
-            The file extension of the data file we want to load.
+        kwargs : str
+            Ignored, only done for compatibility with base class [TODO: fix this].
 
         Returns
         -------
@@ -1576,51 +1631,11 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
         Parameters
         ----------
-        root_dir : str, optional
-            The root directory of the database i.e. where the cube should start its
-            path from e.g. ``/home/users/usertim/cmip5_25x25``.
-
-        activity_id : str, optional
-            The activity_id for which we want to load data. For these cubes, will
-            almost always be "input4MIPs".
-
-        mip_era : str, optional
-            The mip_era for which we want to load data.
-
-        target_mip : str, optional
-            The target_mip for which we want to load data.
-
-        institution_id : str, optional
-            The institution_id for which we want to load data.
-
-        source_id : str, optional
-            The source_id for which we want to load data. This must include the version and the institution_id.
-
-        realm : str, optional
-            The realm for which we want to load data.
-
-        frequency : str, optional
-            The frequency for which we want to load data.
-
         variable_id : str, optional
             The variable_id for which we want to load data.
 
-        grid_label : str, optional
-            The grid_label for which we want to load data.
-
-        version : str, optional
-            The version for which we want to load data.
-
-        dataset_category : str, optional
-            The dataset_category for which we want to load data.
-
-        time_range : str, optional
-            The time range for which we want to load data. If ``None``, this
-            information isn't included in the filename which is useful for loading
-            metadata files which don't have a relevant time period.
-
-        file_ext : str, optional
-            The file extension of the data file we want to load.
+        kwargs : str
+            Ignored, only done for compatibility with base class [TODO: fix this].
 
         Returns
         -------
@@ -1886,49 +1901,11 @@ class CMIP6OutputCube(_CMIPCube):
 
         Parameters
         ----------
-        root_dir : str, optional
-            The root directory of the database i.e. where the cube should start its
-            path from e.g. ``/home/users/usertim/cmip5_25x25``.
-
-        mip_era : str, optional
-            The mip_era for which we want to load data.
-
-        activity_id : str, optional
-            The activity_id for which we want to load data. For these cubes, will
-            almost always be "input4MIPs".
-
-        institution_id : str, optional
-            The institution_id for which we want to load data.
-
-        source_id : str, optional
-            The source_id for which we want to load data. This was known as model in
-            CMIP5.
-
-        experiment_id : str, optional
-            The experiment_id for which we want to load data.
-
-        member_id : str, optional
-            The member_id for which we want to load data.
-
-        table_id : str, optional
-            The table_id for which we want to load data.
-
         variable_id : str, optional
             The variable_id for which we want to load data.
 
-        grid_label : str, optional
-            The grid_label for which we want to load data.
-
-        version : str, optional
-            The version for which we want to load data.
-
-        time_range : str, optional
-            The time range for which we want to load data. If ``None``, this
-            information isn't included in the filename which is useful for loading
-            metadata files which don't have a relevant time period.
-
-        file_ext : str, optional
-            The file extension of the data file we want to load.
+        kwargs : str
+            Ignored, only done for compatibility with base class [TODO: fix this].
 
         Returns
         -------
