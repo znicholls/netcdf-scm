@@ -476,14 +476,7 @@ def _get_wrangle_to_mag_files_func(
         time_steps = writer.timeseries().columns[1:] - writer.timeseries().columns[:-1]
         step_upper = np.timedelta64(32, "D")  # pylint:disable=too-many-function-args
         step_lower = np.timedelta64(28, "D")  # pylint:disable=too-many-function-args
-        if any(
-            (
-                time_steps > step_upper
-            )
-            | (
-                time_steps < step_lower
-            )
-        ):
+        if any((time_steps > step_upper) | (time_steps < step_lower)):
             raise ValueError(
                 "Please raise an issue at "
                 "github.com/znicholls/netcdf-scm/issues "
