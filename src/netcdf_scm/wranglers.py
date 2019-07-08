@@ -10,7 +10,7 @@ from . import mat4py
 logger = logging.getLogger(__name__)
 
 
-def convert_tuningstruc_to_scmdf(
+def convert_tuningstruc_to_scmdf(  # pylint:disable=too-many-arguments
     filepath, variable=None, region=None, unit=None, scenario=None, model=None
 ):
     """
@@ -49,13 +49,13 @@ def convert_tuningstruc_to_scmdf(
 
     Raises
     ------
-    ValueError
+    KeyError
         If a metadata variable is not supplied and it cannot be determined from the
         tuningstruc.
 
     Returns
     -------
-    :obj: `ScmDataFrame`
+    :obj:`ScmDataFrame`
         ScmDataFrame with the tuningstruc data
     """
     dataset = mat4py.loadmat(filepath)
@@ -106,7 +106,7 @@ def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
 
     Parameters
     ----------
-    scmdf : :obj: `ScmDataFrame`
+    scmdf : :obj:`ScmDataFrame`
         ScmDataFrame to convert to a tuningstruc
 
     outdir : str
@@ -124,13 +124,18 @@ def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
     -------
     list
         List of files which were not re-written as they already exist
+
+    Raises
+    ------
+    AssertionError
+        If timeseries are not unique for a given ["climate_model", "model",
+        "scenario", "variable", "region", "unit"] combination.
     """
     already_written = []
 
-    iterable = scmdf.timeseries().groupby(
-        ["model", "scenario", "variable", "region", "unit"]
-    )
-    for (model, scenario, variable, region, unit), df in iterable:
+    group_cols = ["model", "scenario", "variable", "region", "unit"]
+    for label, df in scmdf.timeseries().groupby(group_cols):
+        ids = {name: value for name, value in zip(group_cols, label)}
         dataset = {}
         dataset["tuningdata"] = {}
         dataset["tuningdata"]["modelcodes"] = []
@@ -139,40 +144,39 @@ def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
         for m, (climate_model, cmdf) in enumerate(df.groupby("climate_model")):
             # impossible to make dataframe with duplicate rows, this is just in
             # case
-            error_msg = (
-                "Should only have a single unique timeseries for a given "
-                '["climate_model", "model", "scenario", "variable", '
-                '"region", "unit"] combination'
-            )
             if cmdf.shape[0] != 1:  # pragma: no cover # emergency valve
-                raise AssertionError(error_msg)
+                raise AssertionError(
+                    "Should only have a single unique timeseries for a given "
+                    '["climate_model", "model", "scenario", "variable", '
+                    '"region", "unit"] combination'
+                )
 
             dataset["tuningdata"]["modelcodes"].append(climate_model)
             dataset["tuningdata"]["model"].append({})
 
-            dataset["tuningdata"]["model"][m]["model"] = model
-            dataset["tuningdata"]["model"][m]["scenario"] = scenario
-            dataset["tuningdata"]["model"][m]["variable"] = variable
-            dataset["tuningdata"]["model"][m]["region"] = region
-            dataset["tuningdata"]["model"][m]["unit"] = unit
+            dataset["tuningdata"]["model"][m]["model"] = ids["model"]
+            dataset["tuningdata"]["model"][m]["scenario"] = ids["scenario"]
+            dataset["tuningdata"]["model"][m]["variable"] = ids["variable"]
+            dataset["tuningdata"]["model"][m]["region"] = ids["region"]
+            dataset["tuningdata"]["model"][m]["unit"] = ids["unit"]
 
             dataset["tuningdata"]["model"][m]["notes"] = (
                 "{} {} {} {} ({}) tuningstruc (written with scmcallib)"
-                "".format(scenario, model, region, variable, unit)
+                "".format(ids["scenario"], ids["model"], ids["region"], ids["variable"], ids["unit"])
             )
             dataset["tuningdata"]["model"][m]["data"] = [
                 [float(t.year) for t in cmdf.columns],
                 list(cmdf.values.squeeze()),
             ]
-            dataset["tuningdata"]["model"][m]["col_code"] = ["YEARS", variable]
+            dataset["tuningdata"]["model"][m]["col_code"] = ["YEARS", ids["variable"]]
 
         outfile = get_tuningstruc_name_from_df(df, outdir, prefix)
 
         if isfile(outfile) and not force:
-            logger.info("Skipped (already exists, not overwriting) {}".format(outfile))
+            logger.info("Skipped (already exists, not overwriting) %s", outfile)
             already_written.append(outfile)
         else:
-            logger.info("Writing {}".format(outfile))
+            logger.info("Writing %s", outfile)
             mat4py.savemat(outfile, dataset)
 
     return already_written
@@ -184,7 +188,7 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
 
     Parameters
     ----------
-    df : :obj: `pd.DataFrame`
+    df : :obj:`pd.DataFrame`
         *pandas* DataFrame to convert to a tuningstruc
 
     outdir : str
