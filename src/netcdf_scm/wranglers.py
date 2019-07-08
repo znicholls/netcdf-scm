@@ -162,7 +162,13 @@ def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
 
             dataset["tuningdata"]["model"][m]["notes"] = (
                 "{} {} {} {} ({}) tuningstruc (written with scmcallib)"
-                "".format(ids["scenario"], ids["model"], ids["region"], ids["variable"], ids["unit"])
+                "".format(
+                    ids["scenario"],
+                    ids["model"],
+                    ids["region"],
+                    ids["variable"],
+                    ids["unit"],
+                )
             )
             dataset["tuningdata"]["model"][m]["data"] = [
                 [float(t.year) for t in cmdf.columns],

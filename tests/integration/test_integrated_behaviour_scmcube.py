@@ -30,6 +30,7 @@ from pandas.testing import assert_frame_equal
 
 import netcdf_scm
 from netcdf_scm.iris_cube_wrappers import (
+    _CMIPCube,
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
     MarbleCMIP5Cube,
@@ -38,60 +39,6 @@ from netcdf_scm.iris_cube_wrappers import (
 
 
 class _SCMCubeIntegrationTester(object):
-    @tdata_required
-    def test_load_data_from_identifiers_and_areacella(self, test_cube):
-        tfile = TEST_TAS_FILE
-        test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
-            return_value=tfile
-        )
-
-        test_constraint = iris.Constraint(
-            cube_func=(lambda c: c.var_name == np.str("tas"))
-        )
-        test_cube.get_variable_constraint_from_load_data_from_identifiers_args = MagicMock(
-            return_value=test_constraint
-        )
-
-        tmdata_scmcube = type(test_cube)()
-        tmdata_scmcube.cube = iris.load_cube(TEST_AREACELLA_FILE)
-        test_cube.get_metadata_cube = MagicMock(return_value=tmdata_scmcube)
-
-        tkwargs = {
-            "variable_name": "fco2antt",
-            "modeling_realm": "Amon",
-            "model": "CanESM2",
-            "experiment": "1pctCO2",
-        }
-
-        with pytest.warns(None) as record:
-            test_cube.load_data_from_identifiers(**tkwargs)
-
-        assert len(record) == 0
-
-        test_cube.get_filepath_from_load_data_from_identifiers_args.assert_called_with(
-            **tkwargs
-        )
-        test_cube.get_variable_constraint_from_load_data_from_identifiers_args.assert_called_with(
-            **tkwargs
-        )
-        test_cube.get_metadata_cube.assert_called_with(test_cube.areacella_var)
-
-        cell_measures = test_cube.cube.cell_measures()
-        assert len(cell_measures) == 1
-        assert cell_measures[0].standard_name == "cell_area"
-
-    @tdata_required
-    def test_get_scm_timeseries_no_areacealla(self, test_cube):
-        var = self.tclass()
-        var.cube = iris.load_cube(TEST_TAS_FILE)
-
-        sftlf = self.tclass()
-        sftlf.cube = iris.load_cube(TEST_SFTLF_FILE)
-
-        var.get_scm_timeseries(
-            sftlf_cube=sftlf, land_mask_threshold=50, areacella_scmcube=None
-        )
-
     def test_get_scm_cubes_last_resort(self, test_cube):
         tloaded_paths = ["/path/1", "/path/2"]
 
@@ -577,7 +524,65 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
         assert obs_time_points[-1] == datetime.datetime(2049, 12, 16, 12, 0)
 
 
-class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
+class _CMIPCubeTester(_SCMCubeIntegrationTester):
+    tclass = _CMIPCube
+
+    @tdata_required
+    def test_load_data_from_identifiers_and_areacella(self, test_cube):
+        tfile = TEST_TAS_FILE
+        test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
+            return_value=tfile
+        )
+
+        test_constraint = iris.Constraint(
+            cube_func=(lambda c: c.var_name == np.str("tas"))
+        )
+        test_cube.get_variable_constraint_from_load_data_from_identifiers_args = MagicMock(
+            return_value=test_constraint
+        )
+
+        tmdata_scmcube = type(test_cube)()
+        tmdata_scmcube.cube = iris.load_cube(TEST_AREACELLA_FILE)
+        test_cube.get_metadata_cube = MagicMock(return_value=tmdata_scmcube)
+
+        tkwargs = {
+            "variable_name": "fco2antt",
+            "modeling_realm": "Amon",
+            "model": "CanESM2",
+            "experiment": "1pctCO2",
+        }
+
+        with pytest.warns(None) as record:
+            test_cube.load_data_from_identifiers(**tkwargs)
+
+        assert len(record) == 0
+
+        test_cube.get_filepath_from_load_data_from_identifiers_args.assert_called_with(
+            **tkwargs
+        )
+        test_cube.get_variable_constraint_from_load_data_from_identifiers_args.assert_called_with(
+            **tkwargs
+        )
+        test_cube.get_metadata_cube.assert_called_with(test_cube.areacella_var)
+
+        cell_measures = test_cube.cube.cell_measures()
+        assert len(cell_measures) == 1
+        assert cell_measures[0].standard_name == "cell_area"
+
+    @tdata_required
+    def test_get_scm_timeseries_no_areacealla(self, test_cube):
+        var = self.tclass()
+        var.cube = iris.load_cube(TEST_TAS_FILE)
+
+        sftlf = self.tclass()
+        sftlf.cube = iris.load_cube(TEST_SFTLF_FILE)
+
+        var.get_scm_timeseries(
+            sftlf_cube=sftlf, land_mask_threshold=50, areacella_scmcube=None
+        )
+
+
+class TestMarbleCMIP5Cube(_CMIPCubeTester):
     tclass = MarbleCMIP5Cube
 
     def test_load_and_concatenate_files_in_directory_same_time(self, test_cube):
@@ -737,7 +742,7 @@ class TestMarbleCMIP5Cube(_SCMCubeIntegrationTester):
         assert test_cube.model == "ACCESS1-0"
 
 
-class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
+class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
     tclass = CMIP6Input4MIPsCube
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog):
@@ -878,7 +883,7 @@ class TestCMIP6Input4MIPsCube(_SCMCubeIntegrationTester):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
 
-class TestCMIP6OutputCube(_SCMCubeIntegrationTester):
+class TestCMIP6OutputCube(_CMIPCubeTester):
     tclass = CMIP6OutputCube
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):

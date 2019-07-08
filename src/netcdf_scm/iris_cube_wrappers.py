@@ -256,7 +256,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             logger.warning(warn_msg)
             self._adjust_gregorian_year_zero_units()
 
-    def _adjust_gregorian_year_zero_units(self):
+    def _adjust_gregorian_year_zero_units(self):  # pylint:disable=too-many-locals
+        # hack function to work around very specific use case
         year_zero_cube = self.cube.copy()
         year_zero_cube_time_dim = self.time_dim
 
@@ -632,16 +633,16 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             for k, scm_cube in scm_cubes.items()
         }
 
+        timeseries_cubes = self._add_land_fraction(
+            timeseries_cubes, scm_cubes, area_weights
+        )
+
+        return timeseries_cubes
+
+    @staticmethod
+    def _add_land_fraction(timeseries_cubes, scm_cubes, area_weights):
         add_land_frac = True
         try:
-            regions_to_calculate = [
-                "World",
-                "World|Land",
-                "World|Northern Hemisphere",
-                "World|Northern Hemisphere|Land",
-                "World|Southern Hemisphere",
-                "World|Southern Hemisphere|Land",
-            ]
 
             def get_area(c):
                 time_slice = [slice(None)] * len(c.cube.shape)
@@ -653,7 +654,17 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
                 return a
 
-            area = {r: get_area(scm_cubes[r]) for r in regions_to_calculate}
+            area = {
+                r: get_area(scm_cubes[r])
+                for r in [
+                    "World",
+                    "World|Land",
+                    "World|Northern Hemisphere",
+                    "World|Northern Hemisphere|Land",
+                    "World|Southern Hemisphere",
+                    "World|Southern Hemisphere|Land",
+                ]
+            }
 
         except KeyError:
             logger.warning(
@@ -905,7 +916,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 logger.warning(
                     "Performing lazy conversion to datetime for calendar: %s. This "
                     "may cause subtle errors in operations that depend on the length "
-                    "of time between dates", out_calendar
+                    "of time between dates",
+                    out_calendar,
                 )
             time_axis = _vector_cftime_conversion(time_axis)
         else:
