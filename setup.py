@@ -62,7 +62,7 @@ requirements_dev = [
         "bandit",
         "mypy",
         "pydocstyle",
-        "pylint @ git+https://github.com/PyCQA/pylint.git@b1ee385",  # TODO: change when new release comes out
+        "pylint @ git+https://github.com/PyCQA/pylint.git@e6cd6e35bae7d19d1264c398dafe21c758fe4747",  # TODO: change when new release comes out
     ],
     *REQUIREMENTS_TESTS,
     *REQUIREMENTS_NOTEBOOKS,
