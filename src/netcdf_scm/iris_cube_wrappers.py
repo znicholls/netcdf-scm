@@ -943,7 +943,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         ValueError
             If the time period is not in a valid format.
         """
-        if self.filename_bits_separator in time_period_str:
+        if "_" in time_period_str:
             self._raise_time_period_invalid_error(time_period_str)
 
         if "-" in time_period_str:
@@ -1206,7 +1206,9 @@ class _CMIPCube(SCMCube, ABC):
         helper = cls()
         for a in dir(helper):
             try:
-                if callable(a) or callable(getattr(helper, a)) or a.startswith("_"):
+                if callable(a) or callable(getattr(helper, a)):
+                    continue
+                elif a == "filename_bits_separator" or a.startswith("_"):
                     continue
                 new_separator = "-" if cls.filename_bits_separator == "_" else "_"
                 setattr(
@@ -1394,7 +1396,9 @@ class MarbleCMIP5Cube(_CMIPCube):
         """
         path = path[:-1] if path.endswith(os.sep) else path
         dirpath_bits = path.split(os.sep)
-        if (len(dirpath_bits) < 6) or any([self.filename_bits_separator in d for d in dirpath_bits[-6:]]):
+        if (len(dirpath_bits) < 6) or any(
+            [self.filename_bits_separator in d for d in dirpath_bits[-6:]]
+        ):
             self._raise_path_error(path)
 
         root_dir = os.sep.join(dirpath_bits[:-6])
@@ -1630,7 +1634,9 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         """
         path = path[:-1] if path.endswith(os.sep) else path
         dirpath_bits = path.split(os.sep)
-        if (len(dirpath_bits) < 10) or any([self.filename_bits_separator in d for d in dirpath_bits[-10:]]):
+        if (len(dirpath_bits) < 10) or any(
+            [self.filename_bits_separator in d for d in dirpath_bits[-10:]]
+        ):
             self._raise_path_error(path)
 
         root_dir = os.sep.join(dirpath_bits[:-10])
@@ -1893,7 +1899,9 @@ class CMIP6OutputCube(_CMIPCube):
         """
         path = path[:-1] if path.endswith(os.sep) else path
         dirpath_bits = path.split(os.sep)
-        if (len(dirpath_bits) < 10) or any([self.filename_bits_separator in d for d in dirpath_bits[-10:]]):
+        if (len(dirpath_bits) < 10) or any(
+            [self.filename_bits_separator in d for d in dirpath_bits[-10:]]
+        ):
             self._raise_path_error(path)
 
         root_dir = os.sep.join(dirpath_bits[:-10])

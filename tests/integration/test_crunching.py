@@ -7,7 +7,11 @@ from os.path import isdir, isfile, join
 import numpy as np
 import pandas as pd
 from click.testing import CliRunner
-from conftest import TEST_DATA_KNMI_DIR, TEST_DATA_MARBLE_CMIP5_DIR, TEST_DATA_CMIP6Output_DIR
+from conftest import (
+    TEST_DATA_KNMI_DIR,
+    TEST_DATA_MARBLE_CMIP5_DIR,
+    TEST_DATA_CMIP6Output_DIR,
+)
 
 import netcdf_scm
 from netcdf_scm.cli import crunch_data
@@ -135,6 +139,7 @@ def test_crunching(tmpdir, caplog):
 
     assert files_found == 5
 
+
 def test_crunching_join_files(tmpdir, caplog):
     INPUT_DIR = join(
         TEST_DATA_CMIP6Output_DIR,
@@ -156,14 +161,7 @@ def test_crunching_join_files(tmpdir, caplog):
     with caplog.at_level("DEBUG"):
         result = runner.invoke(
             crunch_data,
-            [
-                INPUT_DIR,
-                OUTPUT_DIR,
-                crunch_contact,
-                "--drs",
-                "CMIP6Output",
-                "-f",
-            ],
+            [INPUT_DIR, OUTPUT_DIR, crunch_contact, "--drs", "CMIP6Output", "-f"],
         )
     assert result.exit_code == 0
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
@@ -181,7 +179,7 @@ def test_crunching_join_files(tmpdir, caplog):
         "tas",
         "gr",
         "v20181123",
-        "netcdf-scm_tas_Amon_IPSL-CM6A-LR_piControl_r1i1p1f1_gr_284001-285912.nc"
+        "netcdf-scm_tas_Amon_IPSL-CM6A-LR_piControl_r1i1p1f1_gr_284001-285912.nc",
     )
 
     assert isfile(expected_file)

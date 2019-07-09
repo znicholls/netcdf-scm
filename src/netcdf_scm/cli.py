@@ -333,25 +333,27 @@ def _tuningstrucs_blended_model_wrangling(  # pylint:disable=too-many-arguments
                 if any([r.match(dirpath) for r in considered_regexps]):
                     continue
 
-            scmcube = _get_scmcube_helper(drs)
-            ids = {
-                k: v
-                if any([s in k for s in ["variable", "experiment", "activity", "mip"]])
-                else ".*"
-                for k, v in scmcube.process_path(dirpath).items()
-            }
-            for name, value in ids.items():
-                setattr(scmcube, name, value)
-
-            regexp_here = re.compile("{}.*".format(scmcube.get_data_directory()))
-            logger.info("Wrangling %s", regexp_here)
-            regexp_compiled = re.compile(regexp)
+            regexp_here = _get_blended_model_regexp(drs, dirpath)
             logger.info("Wrangling %s", regexp_here)
 
             _tuningstrucs_blended_model_wrangling_inner_loop(
-                src, regexp_compiled, dst, force, prefix
+                src, regexp_here, dst, force, prefix
             )
             considered_regexps.append(regexp_here)
+
+
+def _get_blended_model_regexp(drs, dirpath):
+    scmcube = _get_scmcube_helper(drs)
+    ids = {
+        k: v
+        if any([s in k for s in ["variable", "experiment", "activity", "mip"]])
+        else ".*"
+        for k, v in scmcube.process_path(dirpath).items()
+    }
+    for name, value in ids.items():
+        setattr(scmcube, name, value)
+
+    return re.compile("{}.*".format(scmcube.get_data_directory()))
 
 
 def _tuningstrucs_blended_model_wrangling_inner_loop(
