@@ -170,7 +170,7 @@ def test_crunching_join_files(tmpdir, caplog):
 
     expected_file = join(
         OUTPUT_DIR,
-        "netcdf-scm",
+        "netcdf-scm-crunched",
         "CMIP6",
         "CMIP",
         "IPSL",
@@ -187,9 +187,8 @@ def test_crunching_join_files(tmpdir, caplog):
     assert isfile(expected_file)
     crunched_data = load_scmdataframe(expected_file)
     assert crunched_data.metadata["crunch_contact"] == crunch_contact
-    assert crunched_data["time"].min() == dt.datetime(2840, 1, 17)
-    assert crunched_data["time"].max() == dt.datetime(2859, 12, 17)
-    assert False
+    assert crunched_data["time"].min() == dt.datetime(2840, 1, 16, 12)
+    assert crunched_data["time"].max() == dt.datetime(2859, 12, 16, 12)
 
 
 def test_crunching_arguments(tmpdir, caplog):
