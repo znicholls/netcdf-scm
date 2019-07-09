@@ -23,11 +23,11 @@ from pandas.testing import assert_frame_equal, assert_index_equal
 
 import netcdf_scm
 from netcdf_scm.iris_cube_wrappers import (
-    _CMIPCube,
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
     MarbleCMIP5Cube,
     SCMCube,
+    _CMIPCube,
 )
 
 
@@ -131,11 +131,6 @@ class TestSCMCube(object):
         test_cube._load_and_concatenate_files_in_directory = MagicMock()
         test_cube.load_data_in_directory(tdir)
         test_cube._load_and_concatenate_files_in_directory.assert_called_with(tdir)
-
-    def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
-        self.run_test_of_method_to_overload(
-            test_cube, "get_load_data_from_identifiers_args_from_filepath"
-        )
 
     def test_get_scm_timeseries(self, test_sftlf_cube, test_cube):
         tsftlf_cube = "mocked 124"
@@ -524,9 +519,7 @@ class _CMIPCubeTester(TestSCMCube):
         )
 
         vcons = 12.195
-        test_cube.get_variable_constraint_from_load_data_from_identifiers_args = MagicMock(
-            return_value=vcons
-        )
+        test_cube.get_variable_constraint = MagicMock(return_value=vcons)
 
         lcube_return = 9848
         mock_iris_load_cube.return_value = lcube_return
@@ -545,9 +538,7 @@ class _CMIPCubeTester(TestSCMCube):
         test_cube.get_filepath_from_load_data_from_identifiers_args.assert_called_with(
             **tkwargs
         )
-        test_cube.get_variable_constraint_from_load_data_from_identifiers_args.assert_called_with(
-            **tkwargs
-        )
+        test_cube.get_variable_constraint.assert_called()
         mock_iris_load_cube.assert_called_with(tfile, constraint=vcons)
         test_cube._process_load_data_from_identifiers_warnings.assert_not_called()
         test_cube._check_cube.assert_called()
@@ -564,9 +555,7 @@ class _CMIPCubeTester(TestSCMCube):
         bad_constraint = iris.Constraint(
             cube_func=(lambda c: c.var_name == np.str("misnamed_var"))
         )
-        test_cube.get_variable_constraint_from_load_data_from_identifiers_args = MagicMock(
-            return_value=bad_constraint
-        )
+        test_cube.get_variable_constraint = MagicMock(return_value=bad_constraint)
 
         with pytest.raises(ConstraintMismatchError, match="no cubes found"):
             test_cube.load_data_from_identifiers(mocked_out="mocked")
@@ -901,10 +890,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             cube_func=(lambda c: c.var_name == np.str(tkwargs["variable_name"]))
         )
         """
-
-        result = test_cube.get_variable_constraint_from_load_data_from_identifiers_args(
-            **tkwargs
-        )
+        for k, v in tkwargs.items():
+            setattr(test_cube, k, v)
+        result = test_cube.get_variable_constraint()
         assert isinstance(result, iris.Constraint)
 
     def test_get_metadata_load_arguments(self, test_cube):
@@ -1246,9 +1234,9 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
             cube_func=(lambda c: c.var_name == np.str(tkwargs["variable_name"]))
         )
         """
-        result = test_cube.get_variable_constraint_from_load_data_from_identifiers_args(
-            **tkwargs
-        )
+        for k, v in tkwargs.items():
+            setattr(test_cube, k, v)
+        result = test_cube.get_variable_constraint()
         assert isinstance(result, iris.Constraint)
 
 
@@ -1535,10 +1523,9 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             cube_func=(lambda c: c.var_name == np.str(tkwargs["variable_name"]))
         )
         """
-
-        result = test_cube.get_variable_constraint_from_load_data_from_identifiers_args(
-            **tkwargs
-        )
+        for k, v in tkwargs.items():
+            setattr(test_cube, k, v)
+        result = test_cube.get_variable_constraint()
         assert isinstance(result, iris.Constraint)
 
     def test_get_scm_timeseries_ids(self, test_cube, caplog):
