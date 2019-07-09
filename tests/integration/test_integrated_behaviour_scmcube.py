@@ -581,6 +581,14 @@ class _CMIPCubeTester(_SCMCubeIntegrationTester):
             sftlf_cube=sftlf, land_mask_threshold=50, areacella_scmcube=None
         )
 
+    def test_get_data_reference_syntax(self):
+        """
+        Test that the cube's data reference syntax is correctly implemented and can be easily accessed
+
+        Should be overwritten in each cube's tester
+        """
+        assert False
+
 
 class TestMarbleCMIP5Cube(_CMIPCubeTester):
     tclass = MarbleCMIP5Cube
@@ -682,6 +690,34 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             test_cube.get_filepath_from_load_data_from_identifiers_args(**expected)
             == tpath
         )
+
+    @pytest.mark.parametrize("file_ext,time_period", (
+        (None, None),
+        (None, "YYYY-YYYY"),
+        (".nc", None),
+        (".nc", "YYYY-YYYY"),
+    ))
+    def test_get_data_reference_syntax(self, file_ext, time_period):
+        expected = join(
+            "root-dir",
+            "activity",
+            "experiment",
+            "modeling-realm",
+            "variable-name",
+            "ensemble-member",
+            "variable-name_modeling-realm_model_experiment_ensemble-memberfile-ext"
+        )
+        tkwargs = {}
+        if file_ext is not None:
+            expected = expected.replace("file-ext", file_ext)
+            tkwargs["file_ext"] = file_ext
+        if time_period is not None:
+            expected = expected.replace("ensemble-member", "ensemble-member_{}".format(time_period))
+            tkwargs["time_period"] = time_period
+
+        res = self.tclass.get_data_reference_syntax(**tkwargs)
+        assert res == expected
+
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
         self, test_cube
