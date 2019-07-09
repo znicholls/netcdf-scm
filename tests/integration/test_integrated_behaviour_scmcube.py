@@ -30,11 +30,11 @@ from pandas.testing import assert_frame_equal
 
 import netcdf_scm
 from netcdf_scm.iris_cube_wrappers import (
-    _CMIPCube,
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
     MarbleCMIP5Cube,
     SCMCube,
+    _CMIPCube,
 )
 
 
@@ -537,9 +537,7 @@ class _CMIPCubeTester(_SCMCubeIntegrationTester):
         test_constraint = iris.Constraint(
             cube_func=(lambda c: c.var_name == np.str("tas"))
         )
-        test_cube.get_variable_constraint_from_load_data_from_identifiers_args = MagicMock(
-            return_value=test_constraint
-        )
+        test_cube.get_variable_constraint = MagicMock(return_value=test_constraint)
 
         tmdata_scmcube = type(test_cube)()
         tmdata_scmcube.cube = iris.load_cube(TEST_AREACELLA_FILE)
@@ -560,9 +558,7 @@ class _CMIPCubeTester(_SCMCubeIntegrationTester):
         test_cube.get_filepath_from_load_data_from_identifiers_args.assert_called_with(
             **tkwargs
         )
-        test_cube.get_variable_constraint_from_load_data_from_identifiers_args.assert_called_with(
-            **tkwargs
-        )
+        test_cube.get_variable_constraint.assert_called_with()
         test_cube.get_metadata_cube.assert_called_with(test_cube.areacella_var)
 
         cell_measures = test_cube.cube.cell_measures()
@@ -691,12 +687,8 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             == tpath
         )
 
-    @pytest.mark.parametrize("file_ext,time_period", (
-        (None, None),
-        (None, "YYYY-YYYY"),
-        (".nc", None),
-        (".nc", "YYYY-YYYY"),
-    ))
+    @pytest.mark.parametrize("file_ext", (None, "", ".nc"))
+    @pytest.mark.parametrize("time_period", (None, "", "YYYY-YYYY"))
     def test_get_data_reference_syntax(self, file_ext, time_period):
         expected = join(
             "root-dir",
@@ -704,20 +696,22 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "experiment",
             "modeling-realm",
             "variable-name",
+            "model",
             "ensemble-member",
-            "variable-name_modeling-realm_model_experiment_ensemble-memberfile-ext"
+            "variable-name_modeling-realm_model_experiment_ensemble-member_time-periodfile-ext",
         )
         tkwargs = {}
         if file_ext is not None:
             expected = expected.replace("file-ext", file_ext)
             tkwargs["file_ext"] = file_ext
         if time_period is not None:
-            expected = expected.replace("ensemble-member", "ensemble-member_{}".format(time_period))
-            tkwargs["time_period"] = time_period
+            expected = expected.replace("time-period", time_period)
+        else:
+            expected = expected.replace("_time-period", "")
+        tkwargs["time_period"] = time_period
 
         res = self.tclass.get_data_reference_syntax(**tkwargs)
         assert res == expected
-
 
     def test_get_load_data_from_identifiers_args_from_filepath_no_root_dir(
         self, test_cube
@@ -817,6 +811,36 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         assert test_cube.cube.name() == "mole"
         assert test_cube.cube.long_name == "mole"
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
+
+    @pytest.mark.parametrize("file_ext", (None, "", ".nc"))
+    @pytest.mark.parametrize("time_period", (None, "", "YYYY-YYYY"))
+    def test_get_data_reference_syntax(self, file_ext, time_period):
+        expected = join(
+            "root-dir",
+            "activity-id",
+            "mip-era",
+            "target-mip",
+            "institution-id",
+            "source-id",
+            "realm",
+            "frequency",
+            "variable-id",
+            "grid-label",
+            "version",
+            "variable-id_activity-id_dataset-category_target-mip_source-id_grid-label_time-rangefile-ext",
+        )
+        tkwargs = {}
+        if file_ext is not None:
+            expected = expected.replace("file-ext", file_ext)
+            tkwargs["file_ext"] = file_ext
+        if time_period is not None:
+            expected = expected.replace("time-range", time_period)
+        else:
+            expected = expected.replace("_time-range", "")
+        tkwargs["time_range"] = time_period
+
+        res = self.tclass.get_data_reference_syntax(**tkwargs)
+        assert res == expected
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "tests/test_data/cmip6-input4mips/input4MIPs/CMIP6/CMIP/PCMDI/PCMDI-AMIP-1-1-4/ocean/mon/tos/gn/v20180427/tos_input4MIPs_SSTsAndSeaIce_CMIP_PCMDI-AMIP-1-1-4_gn_187001-201712.nc"
@@ -921,6 +945,36 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
 
 class TestCMIP6OutputCube(_CMIPCubeTester):
     tclass = CMIP6OutputCube
+
+    @pytest.mark.parametrize("file_ext", (None, "", ".nc"))
+    @pytest.mark.parametrize("time_period", (None, "", "YYYY-YYYY"))
+    def test_get_data_reference_syntax(self, file_ext, time_period):
+        expected = join(
+            "root-dir",
+            "mip-era",
+            "activity-id",
+            "institution-id",
+            "source-id",
+            "experiment-id",
+            "member-id",
+            "table-id",
+            "variable-id",
+            "grid-label",
+            "version",
+            "variable-id_table-id_source-id_experiment-id_member-id_grid-label_time-rangefile-ext",
+        )
+        tkwargs = {}
+        if file_ext is not None:
+            expected = expected.replace("file-ext", file_ext)
+            tkwargs["file_ext"] = file_ext
+        if time_period is not None:
+            expected = expected.replace("time-range", time_period)
+        else:
+            expected = expected.replace("_time-range", "")
+        tkwargs["time_range"] = time_period
+
+        res = self.tclass.get_data_reference_syntax(**tkwargs)
+        assert res == expected
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "./tests/test_data/cmip6-output/CMIP6/DCPP/CNRM-CERFACS/CNRM-CM6-1/dcppA-hindcast/s1960-r2i1p1f3/day/pr/gn/v20160215/pr_day_CNRM-CM6-1_dcppA-hindcast_s1960-r2i1p1f3_gn_198001-198412.nc"
