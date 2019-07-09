@@ -1264,16 +1264,6 @@ class MarbleCMIP5Cube(_CMIPCube):
     recommended CMIP5 directory structure described in section 3.1 of the
     `CMIP5 Data Reference Syntax <https://cmip.llnl.gov/cmip5/docs/cmip5_data_reference_syntax_v1-00_clean.pdf>`_.
     """
-    #     root_dir=".",
-    #     activity="activity",
-    #     experiment="experiment",
-    #     modeling_realm="modeling-realm",
-    #     variable_name="variable-name",
-    #     model="model",
-    #     ensemble_member="ensemble-member",
-    #     time_period=None,
-    #     file_ext=".nc",
-
     root_dir = None
     """
     str: The root directory of the database i.e. where the cube should start its path
