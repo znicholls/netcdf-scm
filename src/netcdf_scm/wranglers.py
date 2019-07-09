@@ -233,7 +233,6 @@ def get_tuningstruc_name_from_df(df, outdir, prefix):
         member_id = "member-id"
     variable = _get_col("variable")
     region = _get_col("region")
-
     raw_name = (
         (
             "{}_{}_{}_{}".format(variable, scenario, member_id, region)

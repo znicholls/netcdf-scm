@@ -340,12 +340,10 @@ def _tuningstrucs_blended_model_wrangling(  # pylint:disable=too-many-arguments
                 else ".*"
                 for k, v in scmcube.process_path(dirpath).items()
             }
+            for name, value in ids.items():
+                setattr(scmcube, name, value)
 
-            regexp_here = re.compile(
-                os.path.dirname(
-                    scmcube.get_filepath_from_load_data_from_identifiers_args(**ids)
-                )
-            )
+            regexp_here = re.compile("{}.*".format(scmcube.get_data_directory()))
             logger.info("Wrangling %s", regexp_here)
             regexp_compiled = re.compile(regexp)
             logger.info("Wrangling %s", regexp_here)
