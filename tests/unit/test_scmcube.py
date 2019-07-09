@@ -629,7 +629,7 @@ class _CMIPCubeTester(TestSCMCube):
 
         test_cube._add_time_period_from_files_in_directory(tdir)
 
-        assert test_cube.time_period == expected_time_period
+        assert test_cube._time_id == expected_time_period
         test_cube._check_data_names_in_same_directory.assert_called_with(tdir)
 
     def _run_test_get_filepath_from_load_data_from_identifiers_args(
@@ -701,6 +701,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         self._run_test_add_time_period_from_files_in_directory(
             mock_listdir, files_in_path, expected_time_period, test_cube
         )
+        assert test_cube.time_period == expected_time_period
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
         tkwargs_list = [
@@ -980,6 +981,7 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         self._run_test_add_time_period_from_files_in_directory(
             mock_listdir, files_in_path, expected_time_period, test_cube
         )
+        assert test_cube.time_range == expected_time_period
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
         test_cube._check_self_consistency = MagicMock()
@@ -1284,6 +1286,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         self._run_test_add_time_period_from_files_in_directory(
             mock_listdir, files_in_path, expected_time_period, test_cube
         )
+        assert test_cube.time_range == expected_time_period
 
     def test_get_filepath_from_load_data_from_identifiers_args(self, test_cube):
         tkwargs_list = [
