@@ -943,7 +943,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         ValueError
             If the time period is not in a valid format.
         """
-        if "_" in time_period_str:
+        if self.filename_bits_separator in time_period_str:
             self._raise_time_period_invalid_error(time_period_str)
 
         if "-" in time_period_str:
@@ -1022,7 +1022,7 @@ class _CMIPCube(SCMCube, ABC):
         loaded_files = sorted(os.listdir(directory))
         strt = self._get_timestamp_bits_from_filename(loaded_files[0])["timestart_str"]
         end = self._get_timestamp_bits_from_filename(loaded_files[-1])["timeend_str"]
-        self.time_period = self.time_period_separator.join([strt, end])
+        self._time_id = self.time_period_separator.join([strt, end])
 
     def get_load_data_from_identifiers_args_from_filepath(self, filepath):
         """
@@ -1286,6 +1286,10 @@ class _CMIPCube(SCMCube, ABC):
     def _variable_name_for_constraint_loading(self):
         """Variable name to use when loading an iris cube with a constraint"""
 
+    @abstractproperty
+    def _time_id(self):
+        """Accessor for setting/getting the time id (whose name varies with drs)"""
+
 
 class MarbleCMIP5Cube(_CMIPCube):
     """
@@ -1350,7 +1354,7 @@ class MarbleCMIP5Cube(_CMIPCube):
         dict
             A dictionary where each key is the identifier name and each value is the value of that identifier for the input filename
         """
-        filename_bits = filename.split("_")
+        filename_bits = filename.split(self.filename_bits_separator)
         if len(filename_bits) == 6:
             time_period, file_ext = splitext(filename_bits[-1])
             ensemble_member = filename_bits[-2]
@@ -1390,7 +1394,7 @@ class MarbleCMIP5Cube(_CMIPCube):
         """
         path = path[:-1] if path.endswith(os.sep) else path
         dirpath_bits = path.split(os.sep)
-        if (len(dirpath_bits) < 6) or any(["_" in d for d in dirpath_bits[-6:]]):
+        if (len(dirpath_bits) < 6) or any([self.filename_bits_separator in d for d in dirpath_bits[-6:]]):
             self._raise_path_error(path)
 
         root_dir = os.sep.join(dirpath_bits[:-6])
@@ -1472,7 +1476,7 @@ class MarbleCMIP5Cube(_CMIPCube):
         if self.time_period is not None:
             bits_to_join.append(self.time_period)
 
-        return "_".join(bits_to_join) + self.file_ext
+        return self.filename_bits_separator.join(bits_to_join) + self.file_ext
 
     def _get_metadata_load_arguments(self, metadata_variable):
         return {
@@ -1490,6 +1494,14 @@ class MarbleCMIP5Cube(_CMIPCube):
     @property
     def _variable_name_for_constraint_loading(self):
         return self.variable_name
+
+    @property
+    def _time_id(self):
+        return self.time_period
+
+    @_time_id.setter
+    def _time_id(self, value):
+        self.time_period = value
 
 
 class CMIP6Input4MIPsCube(_CMIPCube):
@@ -1577,7 +1589,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         dict
             A dictionary where each key is the identifier name and each value is the value of that identifier for the input filename
         """
-        filename_bits = filename.split("_")
+        filename_bits = filename.split(self.filename_bits_separator)
         if len(filename_bits) == 7:
             time_range, file_ext = splitext(filename_bits[-1])
             grid_label = filename_bits[-2]
@@ -1618,7 +1630,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         """
         path = path[:-1] if path.endswith(os.sep) else path
         dirpath_bits = path.split(os.sep)
-        if (len(dirpath_bits) < 10) or any(["_" in d for d in dirpath_bits[-10:]]):
+        if (len(dirpath_bits) < 10) or any([self.filename_bits_separator in d for d in dirpath_bits[-10:]]):
             self._raise_path_error(path)
 
         root_dir = os.sep.join(dirpath_bits[:-10])
@@ -1712,7 +1724,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
         if self.time_range is not None:
             bits_to_join.append(self.time_range)
 
-        return "_".join(bits_to_join) + self.file_ext
+        return self.filename_bits_separator.join(bits_to_join) + self.file_ext
 
     def get_data_directory(self):
         """
@@ -1740,6 +1752,14 @@ class CMIP6Input4MIPsCube(_CMIPCube):
     @property
     def _variable_name_for_constraint_loading(self):
         return self.variable_id.replace("-", "_")
+
+    @property
+    def _time_id(self):
+        return self.time_range
+
+    @_time_id.setter
+    def _time_id(self, value):
+        self.time_range = value
 
 
 class CMIP6OutputCube(_CMIPCube):
@@ -1832,7 +1852,7 @@ class CMIP6OutputCube(_CMIPCube):
         dict
             A dictionary where each key is the identifier name and each value is the value of that identifier for the input filename
         """
-        filename_bits = filename.split("_")
+        filename_bits = filename.split(self.filename_bits_separator)
         if len(filename_bits) == 7:
             time_range, file_ext = splitext(filename_bits[-1])
             grid_label = filename_bits[-2]
@@ -1873,7 +1893,7 @@ class CMIP6OutputCube(_CMIPCube):
         """
         path = path[:-1] if path.endswith(os.sep) else path
         dirpath_bits = path.split(os.sep)
-        if (len(dirpath_bits) < 10) or any(["_" in d for d in dirpath_bits[-10:]]):
+        if (len(dirpath_bits) < 10) or any([self.filename_bits_separator in d for d in dirpath_bits[-10:]]):
             self._raise_path_error(path)
 
         root_dir = os.sep.join(dirpath_bits[:-10])
@@ -1958,7 +1978,7 @@ class CMIP6OutputCube(_CMIPCube):
         if self.time_range is not None:
             bits_to_join.append(self.time_range)
 
-        return "_".join(bits_to_join) + self.file_ext
+        return self.filename_bits_separator.join(bits_to_join) + self.file_ext
 
     def get_data_directory(self):
         """
@@ -1986,3 +2006,11 @@ class CMIP6OutputCube(_CMIPCube):
     @property
     def _variable_name_for_constraint_loading(self):
         return self.variable_id.replace("-", "_")
+
+    @property
+    def _time_id(self):
+        return self.time_range
+
+    @_time_id.setter
+    def _time_id(self, value):
+        self.time_range = value
