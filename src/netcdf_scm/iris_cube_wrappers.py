@@ -37,7 +37,7 @@ try:
     from iris.util import unify_time_units
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
-    from iris.exceptions import CoordinateNotFoundError
+    from iris.exceptions import CoordinateNotFoundError, ConcatenateError
     import cftime
     import cf_units
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
@@ -414,8 +414,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         unify_time_units(loaded_cubes_iris)
         unify_lat_lon(loaded_cubes_iris)
         iris.experimental.equalise_cubes.equalise_attributes(loaded_cubes_iris)
-
-        self.cube = loaded_cubes_iris.concatenate_cube()
+        try:
+            self.cube = loaded_cubes_iris.concatenate_cube()
+        except ConcatenateError:
+            for ec in loaded_cubes_iris:
+                ec.coord("time").attributes.pop("time_origin")
+            self.cube = loaded_cubes_iris.concatenate_cube()
 
     def _check_data_names_in_same_directory(self, directory):
         found_files = sorted(os.listdir(directory))
