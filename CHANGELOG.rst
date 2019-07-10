@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#67 <https://github.com/znicholls/netcdf-scm/pull/67>`_) Fix crunching filenaming, tidy up more and add catch for IPSL ``time_origin`` time variable attribute
 - (`#66 <https://github.com/znicholls/netcdf-scm/pull/66>`_) Add devops tools and refactor to pass new standards
 - (`#64 <https://github.com/znicholls/netcdf-scm/pull/64>`_) Update logging to make post analysis easier and output clearer
 - (`#63 <https://github.com/znicholls/netcdf-scm/pull/63>`_) Switch to using cmor name for variable in SCM timeseries output and put standard name in standard_variable_name
