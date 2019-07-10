@@ -21,3 +21,4 @@ result = runner.invoke(
     ],
 )
 assert result.exit_code == 0, result.output
+print(result.output)
