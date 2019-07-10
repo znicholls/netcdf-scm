@@ -1296,6 +1296,11 @@ class _CMIPCube(SCMCube, ABC):
     def _time_id(self):
         """Accessor for setting/getting the time id (whose name varies with drs)"""
 
+    @abstractproperty
+    @_time_id.setter
+    def _time_id(self, value):
+        self.time_period = value
+
 
 class MarbleCMIP5Cube(_CMIPCube):
     """
