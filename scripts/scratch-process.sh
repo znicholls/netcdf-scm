@@ -1,12 +1,11 @@
 #!/bin/bash
-SRC_DIR="/media/research-nfs/cmip6/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/1pctCO2/r1i1p1f1/Amon/"
-SRC_DIR="/data/marble/cmip6/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/1pctCO2/r1i1p1f1/Amon/"
+SRC_DIR="/media/research-nfs/cmip6/CMIP6/"
 CRUNCH_DIR="/data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox"
 WRANGLE_DIR="/data/marble/sandbox/share/cmip6-wrangled-ipsl-sandbox"
-CONTACT='serial test Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>'
+CONTACT='Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>'
 DRS="CMIP6Output"
 #REGEXP="^(?!.*fx).*IPSL.*$"
-REGEXP="^(?!.*(fx|/ta/)).*$"
+REGEXP="^(?!.*(fx|/ta/)).*(rlust|rsdt|rsut|tas|ts|fgco2|hfds|hfcorr|tos|co2|fco2fos|fco2nat|fco2antt|co2s).*$"
 # have to be super careful when crunching input files as the duplicate grids can cause
 # things to explode
 REGEXP_WRANGLE_IN_FILES=".*tas/.*gr/.*"
