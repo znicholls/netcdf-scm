@@ -33,6 +33,7 @@ from .utils import (
 )
 
 try:
+    import dask
     import iris
     from iris.util import unify_time_units
     import iris.analysis.cartography
