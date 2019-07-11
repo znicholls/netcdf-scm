@@ -58,11 +58,14 @@ def _get_cf_var_data(cf_var, filename):
     dtype = netcdf._get_actual_dtype(cf_var)
 
     # Create cube with deferred data, but no metadata
-    fill_value = getattr(cf_var.cf_data, '_FillValue',
-                         netCDF4.default_fillvals[cf_var.dtype.str[1:]])
-    proxy = netcdf.NetCDFDataProxy(cf_var.shape, dtype, filename, cf_var.cf_name,
-                            fill_value)
+    fill_value = getattr(
+        cf_var.cf_data, "_FillValue", netCDF4.default_fillvals[cf_var.dtype.str[1:]]
+    )
+    proxy = netcdf.NetCDFDataProxy(
+        cf_var.shape, dtype, filename, cf_var.cf_name, fill_value
+    )
     return netcdf.as_lazy_data(proxy, chunks=None)
+
 
 netcdf._get_cf_var_data = _get_cf_var_data
 
@@ -596,7 +599,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
-
 
     def get_scm_timeseries_cubes(
         self,
