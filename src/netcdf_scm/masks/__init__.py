@@ -7,6 +7,7 @@ excluded.
 """
 import logging
 import os
+from functools import lru_cache
 
 import numpy as np
 
@@ -108,6 +109,7 @@ def or_masks(mask_a, mask_b):
     return f
 
 
+@lru_cache(maxsize=32)
 def get_default_sftlf_cube():
     """Load NetCDF-SCM's default (last resort) surface land fraction cube"""
     return iris.load_cube(os.path.join(os.path.dirname(__file__), _DEFAULT_SFTLF_FILE))

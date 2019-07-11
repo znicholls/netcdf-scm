@@ -597,6 +597,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
+
     def get_scm_timeseries_cubes(
         self,
         sftlf_cube=None,

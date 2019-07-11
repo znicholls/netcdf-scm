@@ -145,6 +145,7 @@ def apply_mask(in_scmcube, in_mask):
         new_data = da.ma.masked_array(data=in_scmcube.cube.lazy_data(), mask=in_mask)
     else:
         new_data = ma.masked_array(in_scmcube.cube.data, mask=in_mask)
+
     out_cube.cube = in_scmcube.cube.copy(data=new_data)
 
     return out_cube
