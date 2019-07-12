@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#69 <https://github.com/znicholls/netcdf-scm/pull/69>`_) Add El Nino 3.4 mask
 - (`#67 <https://github.com/znicholls/netcdf-scm/pull/67>`_) Fix crunching filenaming, tidy up more and add catch for IPSL ``time_origin`` time variable attribute
 - (`#66 <https://github.com/znicholls/netcdf-scm/pull/66>`_) Add devops tools and refactor to pass new standards
 - (`#64 <https://github.com/znicholls/netcdf-scm/pull/64>`_) Update logging to make post analysis easier and output clearer
