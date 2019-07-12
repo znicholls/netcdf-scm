@@ -29,7 +29,7 @@ from netcdf_scm.iris_cube_wrappers import (
     SCMCube,
     _CMIPCube,
 )
-from netcdf_scm.masks import CubeMasker, DEFAULT_REGIONS
+from netcdf_scm.masks import DEFAULT_REGIONS, CubeMasker
 
 
 class TestSCMCube(object):
@@ -263,7 +263,9 @@ class TestSCMCube(object):
             scmc.cube.attributes.update(test_cube._get_scm_timeseries_ids())
 
         result = test_cube.get_scm_cubes(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=tmasks
+            sftlf_cube=tsftlf_cube,
+            land_mask_threshold=tland_mask_threshold,
+            masks=tmasks,
         )
 
         for k, res in result.items():
@@ -272,7 +274,9 @@ class TestSCMCube(object):
             assert res.cube.attributes == exp.cube.attributes
 
         test_cube._get_scm_masks.assert_called_with(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=tmasks
+            sftlf_cube=tsftlf_cube,
+            land_mask_threshold=tland_mask_threshold,
+            masks=tmasks,
         )
 
         mock_apply_mask.call_count == len(tscm_masks)
@@ -284,13 +288,17 @@ class TestSCMCube(object):
     @patch.object(CubeMasker, "get_masks")
     @patch("netcdf_scm.iris_cube_wrappers.apply_mask")
     def test_get_scm_masks(self, mock_apply_mask, mock_get_masks, test_cube, tmasks):
-        tgetmasks_return  = "mock return"
+        tgetmasks_return = "mock return"
         mock_get_masks.return_value = tgetmasks_return
 
         tsftlf_cube = "mocked out"
         tland_mask_threshold = "mocked land"
 
-        res = test_cube._get_scm_masks(sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=tmasks)
+        res = test_cube._get_scm_masks(
+            sftlf_cube=tsftlf_cube,
+            land_mask_threshold=tland_mask_threshold,
+            masks=tmasks,
+        )
 
         assert res == tgetmasks_return
 
