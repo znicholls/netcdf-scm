@@ -29,6 +29,7 @@ from netcdf_scm.iris_cube_wrappers import (
     SCMCube,
     _CMIPCube,
 )
+from netcdf_scm.masks import CubeMasker, DEFAULT_REGIONS
 
 
 class TestSCMCube(object):
@@ -242,6 +243,7 @@ class TestSCMCube(object):
     def test_get_scm_cubes(self, mock_apply_mask, test_cube):
         tsftlf_cube = "mocked out"
         tland_mask_threshold = 48
+        tmasks = ["hi", "bye", "1", "2", "3"]
 
         tscm_masks = {"mask 1": 12, "mask 2": 83}
         test_cube._get_scm_masks = MagicMock(return_value=tscm_masks)
@@ -261,7 +263,7 @@ class TestSCMCube(object):
             scmc.cube.attributes.update(test_cube._get_scm_timeseries_ids())
 
         result = test_cube.get_scm_cubes(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=tmasks
         )
 
         for k, res in result.items():
@@ -270,13 +272,30 @@ class TestSCMCube(object):
             assert res.cube.attributes == exp.cube.attributes
 
         test_cube._get_scm_masks.assert_called_with(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=tmasks
         )
 
         mock_apply_mask.call_count == len(tscm_masks)
         mock_apply_mask.assert_has_calls(
             [call(test_cube, c) for c in tscm_masks.values()], any_order=True
         )
+
+    @pytest.mark.parametrize("tmasks", (None, ["a", "b", "custom", "World|Land"]))
+    @patch.object(CubeMasker, "get_masks")
+    @patch("netcdf_scm.iris_cube_wrappers.apply_mask")
+    def test_get_scm_masks(self, mock_apply_mask, mock_get_masks, test_cube, tmasks):
+        tgetmasks_return  = "mock return"
+        mock_get_masks.return_value = tgetmasks_return
+
+        tsftlf_cube = "mocked out"
+        tland_mask_threshold = "mocked land"
+
+        res = test_cube._get_scm_masks(sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=tmasks)
+
+        assert res == tgetmasks_return
+
+        expected_masks = tmasks if tmasks is not None else DEFAULT_REGIONS
+        mock_get_masks.assert_called_with(expected_masks)
 
     @pytest.mark.parametrize("transpose", [True, False])
     @pytest.mark.parametrize("input_format", ["scmcube", None])
