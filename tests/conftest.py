@@ -335,7 +335,7 @@ def run_crunching_comparison(res, expected, update=False):
 def assert_scmdata_frames_allclose(res_scmdf, exp_scmdf):
     res_df = res_scmdf.timeseries().sort_index()
     assert (
-        (res_df.values > 10 ** -5) & (res_df.values < 10 ** 5)
+        (res_df.values > -10 ** 5) & (res_df.values < 10 ** 5)
     ).all(), "Failed sanity check"
 
     exp_df = exp_scmdf.timeseries().sort_index()
