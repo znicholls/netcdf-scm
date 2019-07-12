@@ -19,7 +19,7 @@ from dateutil.relativedelta import relativedelta
 from openscm.scmdataframe import ScmDataFrame
 
 from . import __version__
-from .definitions import _SCM_TIMESERIES_META_COLUMNS
+from .definitions import _LAND_FRACTION_REGIONS, _SCM_TIMESERIES_META_COLUMNS
 from .masks import DEFAULT_REGIONS, CubeMasker
 from .utils import (
     _vector_cftime_conversion,
@@ -579,7 +579,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
     def get_scm_timeseries_cubes(
-        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
+        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None, masks=None
     ):
         """
         Get SCM relevant cubes
@@ -610,77 +610,89 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             cube's data. If ``None``, we try to load this data automatically and if
             that fails we fall back onto ``iris.analysis.cartography.area_weights``.
 
+        masks : list[str]
+            List of masks to use. If ``None`` then ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
+
         Returns
         -------
         dict
             Cubes, with latitude-longitude mean data as appropriate for each of the
             SCM relevant regions.
         """
+        try:
+            self._ensure_data_realised()
+            # check a copy will fit in memory too
+            np.copy(self.cube.data)  # pylint:disable=pointless-statement
+        except MemoryError:
+            # reload to go back to lazy data
+            import pdb
+            pdb.set_trace()
+            data_dir = dirname(self.info["files"][0])
+            self = type(self)()
+            self.load_data_in_directory(data_dir)
+            import pdb
+            pdb.set_trace()
+
+        masks = masks if masks is not None else DEFAULT_REGIONS
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
-        scm_cubes = self.get_scm_cubes(
-            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
-        )
-        timeseries_cubes = {
-            k: take_lat_lon_mean(scm_cube, area_weights)
-            for k, scm_cube in scm_cubes.items()
-        }
+
+        timeseries_cubes = {}
+        areas = {}
+        for m in masks:
+            scm_cube = self.get_scm_cubes(
+                sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=[m]
+            )[m]
+
+            if m in _LAND_FRACTION_REGIONS:
+                areas[m] = self._get_area(scm_cube, area_weights)
+
+            timeseries_cubes[m] = take_lat_lon_mean(scm_cube, area_weights)
 
         timeseries_cubes = self._add_land_fraction(
-            timeseries_cubes, scm_cubes, area_weights
+            timeseries_cubes, areas
         )
-
         return timeseries_cubes
 
+    def _ensure_data_realised(self):
+        # force the data to realise
+        if self.cube.has_lazy_data():
+            self.cube.data  # pylint:disable=pointless-statement
+
+    @staticmethod  # TODO: move to utils
+    def _get_area(scmcube, area_weights):
+        time_slice = [slice(None)] * len(scmcube.cube.shape)
+        time_slice[scmcube.time_dim_number] = 0
+        area = (
+            (~scmcube.cube.data[tuple(time_slice)].mask).astype(int)
+            * area_weights[tuple(time_slice)]
+        ).sum()
+
+        return area
+
     @staticmethod
-    def _add_land_fraction(timeseries_cubes, scm_cubes, area_weights):
-        add_land_frac = True
-        try:
+    def _add_land_fraction(timeseries_cubes, areas):
+        add_land_frac = all([r in areas for r in _LAND_FRACTION_REGIONS])
 
-            def get_area(c):
-                time_slice = [slice(None)] * len(c.cube.shape)
-                time_slice[c.time_dim_number] = 0
-                a = (
-                    (~c.cube.data[tuple(time_slice)].mask).astype(int)
-                    * area_weights[tuple(time_slice)]
-                ).sum()
-
-                return a
-
-            area = {
-                r: get_area(scm_cubes[r])
-                for r in [
-                    "World",
-                    "World|Land",
-                    "World|Northern Hemisphere",
-                    "World|Northern Hemisphere|Land",
-                    "World|Southern Hemisphere",
-                    "World|Southern Hemisphere|Land",
-                ]
-            }
-
-        except KeyError:
-            logger.warning(
-                "Not calculating land fractions as all required cubes are not "
-                "available"
-            )
-            add_land_frac = False
-
-        for cube in timeseries_cubes.values():
-
-            if add_land_frac:
+        if add_land_frac:
+            for cube in timeseries_cubes.values():
                 extensions = {
                     "land_fraction": "",
                     "land_fraction_northern_hemisphere": "|Northern Hemisphere",
                     "land_fraction_southern_hemisphere": "|Southern Hemisphere",
                 }
                 fractions = {
-                    k: area["World{}|Land".format(ext)] / area["World{}".format(ext)]
+                    k: areas["World{}|Land".format(ext)] / areas["World{}".format(ext)]
                     for k, ext in extensions.items()
                 }
                 for k, v in fractions.items():
                     cube.cube.add_aux_coord(
                         iris.coords.AuxCoord(v, long_name=k, units=1)
                     )
+        else:
+            logger.warning(
+                "Not calculating land fractions as all required cubes are not "
+                "available"
+            )
 
         return timeseries_cubes
 
@@ -723,8 +735,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
         )
-        # force the data to realise so it's not read 9 times while applying masks
-        self.cube.data  # pylint:disable=pointless-statement
+        # ensure data is realised so it's not read multiple times while applying
+        # masks
+        self._ensure_data_realised()
 
         cubes = {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
         has_root_dir = (
