@@ -14,11 +14,10 @@ import pytest
 from conftest import (
     TEST_ACCESS_CMIP5_FILE,
     TEST_AREACELLA_FILE,
-    TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE,
-    TEST_CMIP6INPUT4MIPS_PROJECTION_CONCS_FILE,
     TEST_CMIP6_OUTPUT_FILE,
     TEST_CMIP6_OUTPUT_FILE_1_UNIT,
     TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
+    TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE,
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_SFTLF_FILE,
     TEST_TAS_FILE,
@@ -974,6 +973,7 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
 
     def test_get_scm_timeseries(self):
         pytest.skip("No test data included at the moment")
+
 
 class TestCMIP6OutputCube(_CMIPCubeTester):
     tclass = CMIP6OutputCube
