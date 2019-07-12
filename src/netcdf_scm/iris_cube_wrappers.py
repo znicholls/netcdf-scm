@@ -579,7 +579,11 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
     def get_scm_timeseries_cubes(
-        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None, masks=None
+        self,
+        sftlf_cube=None,
+        land_mask_threshold=50,
+        areacella_scmcube=None,
+        masks=None,
     ):
         """
         Get SCM relevant cubes
@@ -626,11 +630,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         except MemoryError:
             # reload to go back to lazy data
             import pdb
+
             pdb.set_trace()
             data_dir = dirname(self.info["files"][0])
-            self = type(self)()
+            import pdb
+            pdb.set_trace()
+            self.__init__()
             self.load_data_in_directory(data_dir)
             import pdb
+
             pdb.set_trace()
 
         masks = masks if masks is not None else DEFAULT_REGIONS
@@ -640,7 +648,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         areas = {}
         for m in masks:
             scm_cube = self.get_scm_cubes(
-                sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=[m]
+                sftlf_cube=sftlf_cube,
+                land_mask_threshold=land_mask_threshold,
+                masks=[m],
             )[m]
 
             if m in _LAND_FRACTION_REGIONS:
@@ -648,9 +658,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
             timeseries_cubes[m] = take_lat_lon_mean(scm_cube, area_weights)
 
-        timeseries_cubes = self._add_land_fraction(
-            timeseries_cubes, areas
-        )
+        timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 
     def _ensure_data_realised(self):

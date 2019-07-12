@@ -6,7 +6,9 @@ timeseries from a cube as datetime values.
 """
 import datetime as dt
 
+import dask.array as da
 import numpy as np
+import numpy.ma as ma
 
 try:
     import iris
@@ -139,8 +141,11 @@ def apply_mask(in_scmcube, in_mask):
         A copy of the input cube with the mask applied to its data
     """
     out_cube = type(in_scmcube)()
-    out_cube.cube = in_scmcube.cube.copy()
-    out_cube.cube.data.mask = in_mask
+    if in_scmcube.cube.has_lazy_data():
+        new_data = da.ma.masked_array(data=in_scmcube.cube.lazy_data(), mask=in_mask)
+    else:
+        new_data = ma.masked_array(in_scmcube.cube.data, mask=in_mask)
+    out_cube.cube = in_scmcube.cube.copy(data=new_data)
 
     return out_cube
 
