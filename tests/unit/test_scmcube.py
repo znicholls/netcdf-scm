@@ -221,7 +221,10 @@ class TestSCMCube(object):
 
         expected = {k: tlat_lon_mean for k in tscm_cubes}
         result = test_cube.get_scm_timeseries_cubes(
-            tsftlf_cube, tland_mask_threshold, tareacella_scmcube, masks=tscm_cubes.keys()
+            tsftlf_cube,
+            tland_mask_threshold,
+            tareacella_scmcube,
+            masks=tscm_cubes.keys(),
         )
 
         assert result == expected
@@ -230,7 +233,9 @@ class TestSCMCube(object):
             areacella_scmcube=tareacella_scmcube
         )
         test_cube.get_scm_cubes.assert_any_call(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=[list(tscm_cubes.keys())[0]]
+            sftlf_cube=tsftlf_cube,
+            land_mask_threshold=tland_mask_threshold,
+            masks=[list(tscm_cubes.keys())[0]],
         )
         mock_take_lat_lon_mean.call_count == len(tscm_cubes)
 
