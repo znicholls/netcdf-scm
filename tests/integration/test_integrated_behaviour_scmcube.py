@@ -123,7 +123,7 @@ class _SCMCubeIntegrationTester(object):
             assert cube.cube == result[label].cube
 
         test_cube._get_scm_masks.assert_called_with(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=None
         )
 
     def test_get_scm_timeseries_cubes(self, test_cube):
@@ -233,7 +233,7 @@ class _SCMCubeIntegrationTester(object):
             )
 
         test_cube._get_scm_masks.assert_called_with(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=None
         )
         test_cube._get_area_weights.assert_called_with(
             areacella_scmcube=tareacella_scmcube
