@@ -634,6 +634,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             pdb.set_trace()
             data_dir = dirname(self.info["files"][0])
             import pdb
+
             pdb.set_trace()
             self.__init__()
             self.load_data_in_directory(data_dir)

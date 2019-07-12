@@ -238,7 +238,9 @@ class _SCMCubeIntegrationTester(object):
             )
 
         test_cube._get_scm_masks.assert_any_call(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=["World"]
+            sftlf_cube=tsftlf_cube,
+            land_mask_threshold=tland_mask_threshold,
+            masks=["World"],
         )
         test_cube._get_area_weights.assert_called_with(
             areacella_scmcube=tareacella_scmcube
