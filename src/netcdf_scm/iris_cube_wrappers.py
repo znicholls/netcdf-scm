@@ -684,7 +684,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return timeseries_cubes
 
-    def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50):
+    def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get SCM relevant cubes from the ``self``.
 
@@ -704,12 +704,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         Parameters
         ----------
         sftlf_cube : :obj:`SCMCube`, optional
-            land surface fraction data which is used to determine whether a given
+            Land surface fraction data which is used to determine whether a given
             gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
 
         land_mask_threshold : float, optional
-            if the surface land fraction in a grid box is greater than
+            If the surface land fraction in a grid box is greater than
             ``land_mask_threshold``, it is considered to be a land grid box.
+
+        masks : list[str]
+            List of masks to use. If ``None`` then ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
 
         Returns
         -------
@@ -718,7 +721,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             regions.
         """
         scm_masks = self._get_scm_masks(
-            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
+            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
         )
         # force the data to realise so it's not read 9 times while applying masks
         self.cube.data  # pylint:disable=pointless-statement
@@ -767,7 +770,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return cubes
 
-    def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50):
+    def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get the scm masks.
 
@@ -779,7 +782,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         masker = CubeMasker(
             self, sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
         )
-        return masker.get_masks(DEFAULT_REGIONS)
+        masks = masks if masks is not None else DEFAULT_REGIONS
+        return masker.get_masks(masks)
 
     def _get_area_weights(self, areacella_scmcube=None):
         areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
