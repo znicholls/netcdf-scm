@@ -632,12 +632,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 "Data won't fit in memory, will process lazily (hence slowly)"
             )
             data_dir = dirname(self.info["files"][0])
-            # import pdb
-            # pdb.set_trace()
             self.__init__()
             self.load_data_in_directory(data_dir)
-            # import pdb
-            # pdb.set_trace()
 
         masks = masks if masks is not None else DEFAULT_REGIONS
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
@@ -668,7 +664,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         if self.cube.has_lazy_data():
             self.cube.data  # pylint:disable=pointless-statement
 
-    @staticmethod  # TODO: move to utils
+    @staticmethod
     def _get_area(scmcube, area_weights):
         time_slice = [slice(None)] * len(scmcube.cube.shape)
         time_slice[scmcube.time_dim_number] = 0
