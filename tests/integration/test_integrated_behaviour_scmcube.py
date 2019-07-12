@@ -21,6 +21,7 @@ from conftest import (
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_SFTLF_FILE,
     TEST_TAS_FILE,
+    assert_scmdata_frames_allclose,
     tdata_required,
 )
 from dateutil import parser
@@ -571,6 +572,23 @@ class _CMIPCubeTester(_SCMCubeIntegrationTester):
         cell_measures = test_cube.cube.cell_measures()
         assert len(cell_measures) == 1
         assert cell_measures[0].standard_name == "cell_area"
+
+    @tdata_required
+    @pytest.mark.parametrize("force_lazy_load", [True, False])
+    def test_get_scm_timeseries(self, test_cube, force_lazy_load):
+        var = self.tclass()
+        var.load_data_from_path(TEST_TAS_FILE)
+
+        res = var.get_scm_timeseries()
+        assert isinstance(res, ScmDataFrame)
+
+        if force_lazy_load:
+            var_lazy = self.tclass()
+            var_lazy._make_two_copies_of_data = MagicMock(side_effect=MemoryError)
+            var_lazy.load_data_from_path(TEST_TAS_FILE)
+
+            res_lazy = var_lazy.get_scm_timeseries()
+            assert_scmdata_frames_allclose(res, res_lazy)
 
     @tdata_required
     def test_get_scm_timeseries_no_areacealla(self, test_cube):
