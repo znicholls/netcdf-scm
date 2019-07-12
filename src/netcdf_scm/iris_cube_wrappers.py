@@ -624,23 +624,20 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             SCM relevant regions.
         """
         try:
-            self._ensure_data_realised()
-            # check a copy will fit in memory too
-            np.copy(self.cube.data)  # pylint:disable=pointless-statement
+            # Check if two copies of data will fit in memory. If not, everything has
+            # to be done lazily.
+            self._make_two_copies_of_data()
         except MemoryError:
-            # reload to go back to lazy data
-            import pdb
-
-            pdb.set_trace()
+            logger.warning(
+                "Data won't fit in memory, will process lazily (hence slowly)"
+            )
             data_dir = dirname(self.info["files"][0])
-            import pdb
-
-            pdb.set_trace()
+            # import pdb
+            # pdb.set_trace()
             self.__init__()
             self.load_data_in_directory(data_dir)
-            import pdb
-
-            pdb.set_trace()
+            # import pdb
+            # pdb.set_trace()
 
         masks = masks if masks is not None else DEFAULT_REGIONS
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
@@ -661,6 +658,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
+
+    def _make_two_copies_of_data(self):
+        self._ensure_data_realised()
+        np.copy(self.cube.data)  # pylint:disable=pointless-statement
 
     def _ensure_data_realised(self):
         # force the data to realise

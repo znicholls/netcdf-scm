@@ -309,19 +309,26 @@ def run_crunching_comparison(res, expected, update=False):
                         shutil.copy(res_f, exp_f)
                     else:
                         res_scmdf = load_scmdataframe(res_f)
-                        res_df = res_scmdf.timeseries().sort_index()
-                        assert ((res_df.values > 10 **-5) & (res_df.values < 10 **5)).all(), "Failed sanity check"
                         exp_scmdf = load_scmdataframe(exp_f)
-                        exp_df = exp_scmdf.timeseries().sort_index()
-                        pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
-                        for k, v in res_scmdf.metadata.items():
-                            if k == "crunch_netcdf_scm_version":
-                                continue  # will change with version
-                            if isinstance(v, np.ndarray):
-                                np.testing.assert_allclose(v, exp_scmdf.metadata[k])
-                            else:
-                                assert v == exp_scmdf.metadata[k]
+                        assert_scmdata_frames_allclose(res_scmdf, exp_scmdf)
 
     if update:
         print("Updated {}".format(expected))
         pytest.skip()
+
+
+def assert_scmdata_frames_allclose(res_scmdf, exp_scmdf):
+    res_df = res_scmdf.timeseries().sort_index()
+    assert (
+        (res_df.values > 10 ** -5) & (res_df.values < 10 ** 5)
+    ).all(), "Failed sanity check"
+
+    exp_df = exp_scmdf.timeseries().sort_index()
+    pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
+    for k, v in res_scmdf.metadata.items():
+        if k == "crunch_netcdf_scm_version":
+            continue  # will change with version
+        if isinstance(v, np.ndarray):
+            np.testing.assert_allclose(v, exp_scmdf.metadata[k])
+        else:
+            assert v == exp_scmdf.metadata[k]
