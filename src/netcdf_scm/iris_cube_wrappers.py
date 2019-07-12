@@ -33,7 +33,6 @@ from .utils import (
 )
 
 try:
-    import dask
     import iris
     from iris.util import unify_time_units
     import iris.analysis.cartography
@@ -55,11 +54,13 @@ def _get_cf_var_data(cf_var, filename):
     import netCDF4
 
     # Get lazy chunked data out of a cf variable.
-    dtype = netcdf._get_actual_dtype(cf_var)
+    dtype = netcdf._get_actual_dtype(cf_var)  # pylint:disable=protected-access
 
     # Create cube with deferred data, but no metadata
     fill_value = getattr(
-        cf_var.cf_data, "_FillValue", netCDF4.default_fillvals[cf_var.dtype.str[1:]]
+        cf_var.cf_data,
+        "_FillValue",
+        netCDF4.default_fillvals[cf_var.dtype.str[1:]],  # pylint:disable=no-member
     )
     proxy = netcdf.NetCDFDataProxy(
         cf_var.shape, dtype, filename, cf_var.cf_name, fill_value
@@ -67,7 +68,7 @@ def _get_cf_var_data(cf_var, filename):
     return netcdf.as_lazy_data(proxy, chunks=None)
 
 
-netcdf._get_cf_var_data = _get_cf_var_data
+netcdf._get_cf_var_data = _get_cf_var_data  # pylint:disable=protected-access
 
 
 class SCMCube:  # pylint:disable=too-many-public-methods
