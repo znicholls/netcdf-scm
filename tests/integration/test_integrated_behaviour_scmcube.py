@@ -36,6 +36,7 @@ from netcdf_scm.iris_cube_wrappers import (
     SCMCube,
     _CMIPCube,
 )
+from netcdf_scm.utils import broadcast_onto_lat_lon_grid
 
 
 class _SCMCubeIntegrationTester(object):
@@ -61,6 +62,7 @@ class _SCMCubeIntegrationTester(object):
                 [False, False, True, False],
             ]
         )
+        land_mask = broadcast_onto_lat_lon_grid(test_cube, land_mask)
         nh_mask = np.array(
             [
                 [False, False, False, False],
@@ -68,6 +70,7 @@ class _SCMCubeIntegrationTester(object):
                 [True, True, True, True],
             ]
         )
+        nh_mask = broadcast_onto_lat_lon_grid(test_cube, nh_mask)
 
         mocked_masks = {
             "World": np.full(nh_mask.shape, False),
@@ -138,6 +141,7 @@ class _SCMCubeIntegrationTester(object):
                 [False, False, True, False],
             ]
         )
+        land_mask = broadcast_onto_lat_lon_grid(test_cube, land_mask)
         nh_mask = np.array(
             [
                 [False, False, False, False],
@@ -145,6 +149,7 @@ class _SCMCubeIntegrationTester(object):
                 [True, True, True, True],
             ]
         )
+        nh_mask = broadcast_onto_lat_lon_grid(test_cube, nh_mask)
 
         mocked_masks = {
             "World": np.full(nh_mask.shape, False),
@@ -232,8 +237,8 @@ class _SCMCubeIntegrationTester(object):
                 == land_frac_sh
             )
 
-        test_cube._get_scm_masks.assert_called_with(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=None
+        test_cube._get_scm_masks.assert_any_call(
+            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=["World"]
         )
         test_cube._get_area_weights.assert_called_with(
             areacella_scmcube=tareacella_scmcube
