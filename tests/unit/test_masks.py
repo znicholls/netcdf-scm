@@ -233,6 +233,23 @@ def test_nao_mask(test_all_cubes):
     np.testing.assert_array_equal(result, expected)
 
 
+def test_elnino_mask(test_all_cubes):
+    sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
+    masker = CubeMasker(test_all_cubes, sftlf_cube=sftlf_cube, land_mask_threshold=50.5)
+    result = masker.get_mask("World|El Nino N3.4")
+    # 5N-5S, 170W-120W
+    expected_base = np.array(
+        [[True, True, True, True], [False, False, False, False], [True, True, True, True]]
+    )
+    expected = broadcast_to_shape(
+        expected_base,
+        test_all_cubes.cube.shape,
+        [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
+    )
+
+    np.testing.assert_array_equal(result, expected)
+
+
 def test_area_mask(test_all_cubes):
     # increasing lons (test_nao_mask tests wrapping around)
     result = get_area_mask(-20, 100, 20, 250)(None, test_all_cubes)
