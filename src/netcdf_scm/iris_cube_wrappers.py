@@ -685,7 +685,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     def _ensure_data_realised(self):
         # force the data to realise
         if self.cube.has_lazy_data():
-            self.cube.data  # pylint:disable=pointless-statement
+            import dask
+            with dask.config.set(scheduler="synchronous"):
+                self.cube.data  # pylint:disable=pointless-statement
 
     @staticmethod
     def _get_area(scmcube, area_weights):

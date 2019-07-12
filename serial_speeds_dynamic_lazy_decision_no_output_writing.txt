@@ -1,0 +1,1030 @@
+2019-07-12 21:00:59,045 INFO:netcdf_scm:netcdf-scm: 1.0.0+201.g484cff3
+2019-07-12 21:00:59,045 INFO:netcdf_scm:crunch-contact: Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>
+2019-07-12 21:00:59,045 INFO:netcdf_scm:source: /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg
+2019-07-12 21:00:59,045 INFO:netcdf_scm:destination: /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched
+2019-07-12 21:00:59,045 INFO:netcdf_scm:drs: CMIP6Output
+2019-07-12 21:00:59,046 INFO:netcdf_scm:regexp: ^(?!.*fx).*(tas/|fco2nat|rsut|rlut|rsdt).*$
+2019-07-12 21:00:59,046 INFO:netcdf_scm:land_mask_threshold: 50.0
+2019-07-12 21:00:59,046 INFO:netcdf_scm:force: True
+2019-07-12 21:00:59,060 INFO:netcdf_scm.output:Read in 1009 items from database netcdf-scm_crunched.jsonl
+2019-07-12 21:00:59,061 INFO:netcdf_scm:Finding directories with files
+2019-07-12 21:00:59,409 INFO:netcdf_scm:Found 90 directories with files
+2019-07-12 21:00:59,410 INFO:netcdf_scm:Checking directory 1 of 90
+2019-07-12 21:00:59,410 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:00:59,410 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr_185001-185912.nc
+2019-07-12 21:00:59,757 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:00:59,913 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:00:59,974 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,021 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,073 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,089 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,204 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,221 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,275 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,291 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,345 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,361 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,414 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,430 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr.nc
+2019-07-12 21:01:00,483 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:00,501 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r2i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r2i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:00,502 INFO:netcdf_scm:Checking directory 2 of 90
+2019-07-12 21:01:00,503 INFO:netcdf_scm:Checking directory 3 of 90
+2019-07-12 21:01:00,503 INFO:netcdf_scm:Checking directory 4 of 90
+2019-07-12 21:01:00,504 INFO:netcdf_scm:Checking directory 5 of 90
+2019-07-12 21:01:00,504 INFO:netcdf_scm:Checking directory 6 of 90
+2019-07-12 21:01:00,505 INFO:netcdf_scm:Checking directory 7 of 90
+2019-07-12 21:01:00,505 INFO:netcdf_scm:Checking directory 8 of 90
+2019-07-12 21:01:00,505 INFO:netcdf_scm:Checking directory 9 of 90
+2019-07-12 21:01:00,506 INFO:netcdf_scm:Checking directory 10 of 90
+2019-07-12 21:01:00,506 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:01:00,506 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:00,623 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:00,806 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:00,856 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:00,890 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:00,940 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:00,957 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:01,069 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:01,085 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:01,139 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:01,155 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:01,209 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:01,225 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:01,279 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:01,295 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr.nc
+2019-07-12 21:01:01,348 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:01,367 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r3i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r3i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:01,368 INFO:netcdf_scm:Checking directory 11 of 90
+2019-07-12 21:01:01,369 INFO:netcdf_scm:Checking directory 12 of 90
+2019-07-12 21:01:01,369 INFO:netcdf_scm:Checking directory 13 of 90
+2019-07-12 21:01:01,370 INFO:netcdf_scm:Checking directory 14 of 90
+2019-07-12 21:01:01,370 INFO:netcdf_scm:Checking directory 15 of 90
+2019-07-12 21:01:01,370 INFO:netcdf_scm:Checking directory 16 of 90
+2019-07-12 21:01:01,371 INFO:netcdf_scm:Checking directory 17 of 90
+2019-07-12 21:01:01,371 INFO:netcdf_scm:Checking directory 18 of 90
+2019-07-12 21:01:01,372 INFO:netcdf_scm:Checking directory 19 of 90
+2019-07-12 21:01:01,372 INFO:netcdf_scm:Checking directory 20 of 90
+2019-07-12 21:01:01,372 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:01:01,373 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:01,594 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:01,710 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:01,757 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:01,918 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:01,969 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:01,985 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:02,099 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:02,117 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:02,171 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:02,187 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:02,240 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:02,256 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:02,309 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:02,325 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr.nc
+2019-07-12 21:01:02,378 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:02,396 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r5i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r5i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:02,397 INFO:netcdf_scm:Checking directory 21 of 90
+2019-07-12 21:01:02,398 INFO:netcdf_scm:Checking directory 22 of 90
+2019-07-12 21:01:02,398 INFO:netcdf_scm:Checking directory 23 of 90
+2019-07-12 21:01:02,399 INFO:netcdf_scm:Checking directory 24 of 90
+2019-07-12 21:01:02,399 INFO:netcdf_scm:Checking directory 25 of 90
+2019-07-12 21:01:02,400 INFO:netcdf_scm:Checking directory 26 of 90
+2019-07-12 21:01:02,400 INFO:netcdf_scm:Checking directory 27 of 90
+2019-07-12 21:01:02,401 INFO:netcdf_scm:Checking directory 28 of 90
+2019-07-12 21:01:02,401 INFO:netcdf_scm:Checking directory 29 of 90
+2019-07-12 21:01:02,401 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:01:02,401 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:02,519 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:02,685 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:02,733 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:02,767 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:02,816 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:02,832 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:02,944 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:02,960 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:03,015 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:03,031 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:03,084 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:03,100 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:03,154 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:03,172 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr.nc
+2019-07-12 21:01:03,224 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:03,243 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r1i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r1i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:03,244 INFO:netcdf_scm:Checking directory 30 of 90
+2019-07-12 21:01:03,244 INFO:netcdf_scm:Checking directory 31 of 90
+2019-07-12 21:01:03,245 INFO:netcdf_scm:Checking directory 32 of 90
+2019-07-12 21:01:03,245 INFO:netcdf_scm:Checking directory 33 of 90
+2019-07-12 21:01:03,246 INFO:netcdf_scm:Checking directory 34 of 90
+2019-07-12 21:01:03,246 INFO:netcdf_scm:Checking directory 35 of 90
+2019-07-12 21:01:03,247 INFO:netcdf_scm:Checking directory 36 of 90
+2019-07-12 21:01:03,247 INFO:netcdf_scm:Checking directory 37 of 90
+2019-07-12 21:01:03,248 INFO:netcdf_scm:Checking directory 38 of 90
+2019-07-12 21:01:03,248 INFO:netcdf_scm:Checking directory 39 of 90
+2019-07-12 21:01:03,249 INFO:netcdf_scm:Checking directory 40 of 90
+2019-07-12 21:01:03,249 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:01:03,249 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:03,342 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,539 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,586 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,631 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,681 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,697 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,809 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,826 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,878 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,894 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,946 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:03,962 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:04,014 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:04,031 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr.nc
+2019-07-12 21:01:04,082 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:04,101 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r4i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r4i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:04,102 INFO:netcdf_scm:Checking directory 41 of 90
+2019-07-12 21:01:04,103 INFO:netcdf_scm:Checking directory 42 of 90
+2019-07-12 21:01:04,103 INFO:netcdf_scm:Checking directory 43 of 90
+2019-07-12 21:01:04,103 INFO:netcdf_scm:Checking directory 44 of 90
+2019-07-12 21:01:04,104 INFO:netcdf_scm:Checking directory 45 of 90
+2019-07-12 21:01:04,105 INFO:netcdf_scm:Checking directory 46 of 90
+2019-07-12 21:01:04,105 INFO:netcdf_scm:Checking directory 47 of 90
+2019-07-12 21:01:04,105 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:01:04,105 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:04,221 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,366 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,425 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,655 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,704 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,720 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,828 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,844 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,896 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,912 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,964 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:04,980 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:05,034 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:05,050 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr.nc
+2019-07-12 21:01:05,100 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:05,118 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r9i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r9i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:05,119 INFO:netcdf_scm:Checking directory 48 of 90
+2019-07-12 21:01:05,120 INFO:netcdf_scm:Checking directory 49 of 90
+2019-07-12 21:01:05,120 INFO:netcdf_scm:Checking directory 50 of 90
+2019-07-12 21:01:05,120 INFO:netcdf_scm:Checking directory 51 of 90
+2019-07-12 21:01:05,121 INFO:netcdf_scm:Checking directory 52 of 90
+2019-07-12 21:01:05,121 INFO:netcdf_scm:Checking directory 53 of 90
+2019-07-12 21:01:05,122 INFO:netcdf_scm:Checking directory 54 of 90
+2019-07-12 21:01:05,122 INFO:netcdf_scm:Checking directory 55 of 90
+2019-07-12 21:01:05,122 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:01:05,123 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:05,215 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,365 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,411 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,428 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,477 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,493 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,602 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,620 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,671 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,687 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,740 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,755 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,806 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,822 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr.nc
+2019-07-12 21:01:05,874 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:05,894 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r8i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r8i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:05,895 INFO:netcdf_scm:Checking directory 56 of 90
+2019-07-12 21:01:05,896 INFO:netcdf_scm:Checking directory 57 of 90
+2019-07-12 21:01:05,896 INFO:netcdf_scm:Checking directory 58 of 90
+2019-07-12 21:01:05,897 INFO:netcdf_scm:Checking directory 59 of 90
+2019-07-12 21:01:05,897 INFO:netcdf_scm:Checking directory 60 of 90
+2019-07-12 21:01:05,898 INFO:netcdf_scm:Checking directory 61 of 90
+2019-07-12 21:01:05,898 INFO:netcdf_scm:Checking directory 62 of 90
+2019-07-12 21:01:05,898 INFO:netcdf_scm:Checking directory 63 of 90
+2019-07-12 21:01:05,899 INFO:netcdf_scm:Checking directory 64 of 90
+2019-07-12 21:01:05,899 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:01:05,899 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:06,028 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,143 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,190 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,285 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,333 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,349 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,456 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,472 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,525 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,541 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,591 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,606 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,656 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,673 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr.nc
+2019-07-12 21:01:06,721 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:06,739 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r6i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r6i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:06,740 INFO:netcdf_scm:Checking directory 65 of 90
+2019-07-12 21:01:06,740 INFO:netcdf_scm:Checking directory 66 of 90
+2019-07-12 21:01:06,741 INFO:netcdf_scm:Checking directory 67 of 90
+2019-07-12 21:01:06,741 INFO:netcdf_scm:Checking directory 68 of 90
+2019-07-12 21:01:06,742 INFO:netcdf_scm:Checking directory 69 of 90
+2019-07-12 21:01:06,742 INFO:netcdf_scm:Checking directory 70 of 90
+2019-07-12 21:01:06,742 INFO:netcdf_scm:Checking directory 71 of 90
+2019-07-12 21:01:06,743 INFO:netcdf_scm:Checking directory 72 of 90
+2019-07-12 21:01:06,743 INFO:netcdf_scm:Checking directory 73 of 90
+2019-07-12 21:01:06,744 INFO:netcdf_scm:Checking directory 74 of 90
+2019-07-12 21:01:06,744 INFO:netcdf_scm:Checking directory 75 of 90
+2019-07-12 21:01:06,745 INFO:netcdf_scm:Checking directory 76 of 90
+2019-07-12 21:01:06,745 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:01:06,745 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:06,887 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,002 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,047 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,063 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,109 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,124 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,230 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,246 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,295 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,310 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,359 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,374 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,423 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,437 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr.nc
+2019-07-12 21:01:07,486 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:07,503 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r7i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r7i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:07,504 INFO:netcdf_scm:Checking directory 77 of 90
+2019-07-12 21:01:07,505 INFO:netcdf_scm:Checking directory 78 of 90
+2019-07-12 21:01:07,505 INFO:netcdf_scm:Checking directory 79 of 90
+2019-07-12 21:01:07,506 INFO:netcdf_scm:Checking directory 80 of 90
+2019-07-12 21:01:07,506 INFO:netcdf_scm:Checking directory 81 of 90
+2019-07-12 21:01:07,507 INFO:netcdf_scm:Checking directory 82 of 90
+2019-07-12 21:01:07,507 INFO:netcdf_scm:Checking directory 83 of 90
+2019-07-12 21:01:07,507 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr_185001-185912.nc']
+2019-07-12 21:01:07,507 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/Amon/tas/gr/v20190110/tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:07,614 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:07,738 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:07,782 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:07,808 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:07,854 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:07,869 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:07,972 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:07,987 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:08,038 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:08,053 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:08,108 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:08,124 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:08,180 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/sftlf/gr/v20190110/sftlf_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:08,196 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/fx/areacella/gr/v20190110/areacella_fx_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr.nc
+2019-07-12 21:01:08,248 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:08,267 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg/r10i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-ipv-neg_r10i1p1f1_gr_185001-185912.nc
+2019-07-12 21:01:08,268 INFO:netcdf_scm:Checking directory 84 of 90
+2019-07-12 21:01:08,268 INFO:netcdf_scm:Checking directory 85 of 90
+2019-07-12 21:01:08,269 INFO:netcdf_scm:Checking directory 86 of 90
+2019-07-12 21:01:08,270 INFO:netcdf_scm:Checking directory 87 of 90
+2019-07-12 21:01:08,270 INFO:netcdf_scm:Checking directory 88 of 90
+2019-07-12 21:01:08,270 INFO:netcdf_scm:Checking directory 89 of 90
+2019-07-12 21:01:08,271 INFO:netcdf_scm:Checking directory 90 of 90
+2019-07-12 21:01:11,748 INFO:netcdf_scm:netcdf-scm: 1.0.0+201.g484cff3
+2019-07-12 21:01:11,748 INFO:netcdf_scm:crunch-contact: Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>
+2019-07-12 21:01:11,759 INFO:netcdf_scm:source: /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon
+2019-07-12 21:01:11,759 INFO:netcdf_scm:destination: /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched
+2019-07-12 21:01:11,759 INFO:netcdf_scm:drs: CMIP6Output
+2019-07-12 21:01:11,759 INFO:netcdf_scm:regexp: ^(?!.*fx).*(tas/|fco2nat|rsut|rlut|rsdt).*$
+2019-07-12 21:01:11,759 INFO:netcdf_scm:land_mask_threshold: 50.0
+2019-07-12 21:01:11,759 INFO:netcdf_scm:force: True
+2019-07-12 21:01:11,774 INFO:netcdf_scm.output:Read in 1009 items from database netcdf-scm_crunched.jsonl
+2019-07-12 21:01:11,774 INFO:netcdf_scm:Finding directories with files
+2019-07-12 21:01:11,890 INFO:netcdf_scm:Found 12 directories with files
+2019-07-12 21:01:11,891 INFO:netcdf_scm:Checking directory 1 of 12
+2019-07-12 21:01:11,891 INFO:netcdf_scm:Checking directory 2 of 12
+2019-07-12 21:01:11,891 INFO:netcdf_scm:Checking directory 3 of 12
+2019-07-12 21:01:11,892 INFO:netcdf_scm:Checking directory 4 of 12
+2019-07-12 21:01:11,892 INFO:netcdf_scm:Checking directory 5 of 12
+2019-07-12 21:01:11,892 INFO:netcdf_scm:Attempting to process: ['tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
+2019-07-12 21:01:11,893 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:01:13,045 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:13,045 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'tas'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:01:14,396 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:14,397 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:01:14,397 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:01:15,398 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:15,399 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:16,773 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:16,774 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:20,799 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:20,800 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:22,212 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:22,212 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:23,594 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:23,595 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:25,067 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:25,067 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:26,486 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:26,504 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:01:26,506 INFO:netcdf_scm:Checking directory 6 of 12
+2019-07-12 21:01:26,506 INFO:netcdf_scm:Attempting to process: ['rsdt_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
+2019-07-12 21:01:26,506 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsdt/gn/v20181126/rsdt_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:01:27,915 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:27,915 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'rsdt'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:01:29,186 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:29,186 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:01:29,186 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:01:30,150 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:30,150 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:31,514 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:31,514 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:35,461 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:35,462 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:36,895 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:36,896 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:38,313 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:38,314 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:39,763 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:39,764 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:41,200 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:41,217 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsdt/gn/v20181126/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:01:41,218 INFO:netcdf_scm:Checking directory 7 of 12
+2019-07-12 21:01:41,218 INFO:netcdf_scm:Attempting to process: ['rsut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
+2019-07-12 21:01:41,219 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsut/gn/v20181126/rsut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:01:42,491 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:42,492 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'rsut'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:01:43,735 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:43,735 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:01:43,742 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:01:44,703 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:44,703 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:46,024 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:46,025 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:49,987 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:49,987 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:51,433 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:51,434 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:52,848 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:52,848 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:54,326 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:54,326 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:01:55,735 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:01:55,753 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsut/gn/v20181126/netcdf-scm_rsut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:01:55,755 INFO:netcdf_scm:Checking directory 8 of 12
+2019-07-12 21:01:55,755 INFO:netcdf_scm:Attempting to process: ['rlut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
+2019-07-12 21:01:55,755 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rlut/gn/v20181126/rlut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:01:56,636 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:56,637 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'rlut'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:01:57,960 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:57,960 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20181126/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:01:57,960 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:01:58,923 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:01:58,924 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:00,236 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:00,237 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:04,207 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:04,208 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:05,639 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:05,639 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:07,039 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:07,040 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:08,497 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20181126/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:08,497 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:09,959 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:02:09,978 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rlut/gn/v20181126/netcdf-scm_rlut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:02:09,979 INFO:netcdf_scm:Checking directory 9 of 12
+2019-07-12 21:02:09,980 INFO:netcdf_scm:Checking directory 10 of 12
+2019-07-12 21:02:09,980 INFO:netcdf_scm:Checking directory 11 of 12
+2019-07-12 21:02:09,981 INFO:netcdf_scm:Checking directory 12 of 12
+2019-07-12 21:02:09,981 INFO:netcdf_scm:Attempting to process: ['fco2nat_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
+2019-07-12 21:02:09,981 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/fco2nat/gn/v20190226/fco2nat_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:02:11,215 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20190226/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:11,215 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'fco2nat'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20190226/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:02:12,612 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20190226/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:12,612 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/areacella/gn/v20190226/areacella_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:02:12,613 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:02:13,594 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:13,595 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:14,963 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:14,963 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:18,948 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:18,948 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:20,360 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:20,360 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:21,764 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:21,764 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:23,219 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_historical_r1i1p1f1_gn.nc
+2019-07-12 21:02:23,220 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:02:24,656 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:02:24,674 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+2019-07-12 21:02:27,922 INFO:netcdf_scm:netcdf-scm: 1.0.0+201.g484cff3
+2019-07-12 21:02:27,922 INFO:netcdf_scm:crunch-contact: Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>
+2019-07-12 21:02:27,922 INFO:netcdf_scm:source: /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon
+2019-07-12 21:02:27,922 INFO:netcdf_scm:destination: /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched
+2019-07-12 21:02:27,922 INFO:netcdf_scm:drs: CMIP6Output
+2019-07-12 21:02:27,922 INFO:netcdf_scm:regexp: ^(?!.*fx).*(tas/|fco2nat|rsut|rlut|rsdt).*$
+2019-07-12 21:02:27,922 INFO:netcdf_scm:land_mask_threshold: 50.0
+2019-07-12 21:02:27,922 INFO:netcdf_scm:force: True
+2019-07-12 21:02:27,936 INFO:netcdf_scm.output:Read in 1009 items from database netcdf-scm_crunched.jsonl
+2019-07-12 21:02:27,937 INFO:netcdf_scm:Finding directories with files
+2019-07-12 21:02:28,249 INFO:netcdf_scm:Found 11 directories with files
+2019-07-12 21:02:28,249 INFO:netcdf_scm:Checking directory 1 of 11
+2019-07-12 21:02:28,249 INFO:netcdf_scm:Attempting to process: ['tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
+2019-07-12 21:02:28,250 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tas/gn/v20181016/tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:02:31,065 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:02:31,065 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'tas'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:02:36,447 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:02:36,448 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:02:36,462 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:02:53,851 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:02:53,852 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:03:17,658 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:03:17,658 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:04:31,174 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:04:31,174 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:04:53,752 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:04:53,752 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:05:23,427 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:05:23,427 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:05:48,788 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:05:48,788 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:06:08,822 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:06:08,839 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tas/gn/v20181016/netcdf-scm_tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:06:08,845 INFO:netcdf_scm:Checking directory 2 of 11
+2019-07-12 21:06:08,845 INFO:netcdf_scm:Checking directory 3 of 11
+2019-07-12 21:06:08,846 INFO:netcdf_scm:Checking directory 4 of 11
+2019-07-12 21:06:08,846 INFO:netcdf_scm:Checking directory 5 of 11
+2019-07-12 21:06:08,847 INFO:netcdf_scm:Checking directory 6 of 11
+2019-07-12 21:06:08,847 INFO:netcdf_scm:Attempting to process: ['rsut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
+2019-07-12 21:06:08,847 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsut/gn/v20181016/rsut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:06:11,670 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:06:11,670 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'rsut'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:06:16,473 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:06:16,473 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:06:16,473 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:06:32,782 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:06:32,783 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:06:58,430 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:06:58,430 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:08:19,322 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:08:19,323 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:08:45,094 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:08:45,094 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:09:11,998 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:09:11,998 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:09:39,802 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:09:39,803 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:10:12,438 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:10:12,458 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsut/gn/v20181016/netcdf-scm_rsut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:10:12,466 INFO:netcdf_scm:Checking directory 7 of 11
+2019-07-12 21:10:12,466 INFO:netcdf_scm:Attempting to process: ['rsdt_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
+2019-07-12 21:10:12,466 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsdt/gn/v20181016/rsdt_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:10:12,560 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:10:12,561 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'rsdt'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:10:17,400 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:10:17,401 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:10:17,401 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:10:30,948 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:10:30,949 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:10:56,446 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:10:56,446 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:12:22,102 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:12:22,103 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:12:48,647 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:12:48,647 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:13:16,701 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:13:16,701 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:13:44,243 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:13:44,243 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:14:06,310 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:14:06,328 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsdt/gn/v20181016/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:14:06,334 INFO:netcdf_scm:Checking directory 8 of 11
+2019-07-12 21:14:06,335 INFO:netcdf_scm:Checking directory 9 of 11
+2019-07-12 21:14:06,335 INFO:netcdf_scm:Attempting to process: ['rlut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
+2019-07-12 21:14:06,335 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rlut/gn/v20181016/rlut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:14:09,106 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:14:09,107 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'rlut'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:14:13,852 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:14:13,852 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20181016/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:14:13,853 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:14:24,625 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:14:24,625 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:14:50,519 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:14:50,520 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:16:20,485 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:16:20,486 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:16:50,729 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:16:50,729 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:17:24,790 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:17:24,790 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:18:06,921 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20181016/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:18:06,921 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:18:37,569 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:18:37,589 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rlut/gn/v20181016/netcdf-scm_rlut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:18:37,597 INFO:netcdf_scm:Checking directory 10 of 11
+2019-07-12 21:18:37,597 INFO:netcdf_scm:Attempting to process: ['fco2nat_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
+2019-07-12 21:18:37,598 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/fco2nat/gn/v20190226/fco2nat_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:18:37,729 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20190226/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:18:37,729 ERROR:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'areacella', referenced by netCDF variable 'fco2nat'. Tried to add areacella cube but another exception was raised:
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 515, in _process_load_data_from_identifiers_warnings
+    self._add_areacella_measure()
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 526, in _add_areacella_measure
+    areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20190226/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:18:42,511 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20190226/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:18:42,512 ERROR:netcdf_scm.iris_cube_wrappers:Could not calculate areacella
+Traceback (most recent call last):
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 855, in _get_areacella_scmcube
+    self.areacella_var, cube=areacella_scmcube
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1197, in get_metadata_cube
+    cube.load_data_from_identifiers(**load_args)
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 1166, in load_data_from_identifiers
+    self._load_cube(fpath, self.get_variable_constraint())
+  File "/home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py", line 265, in _load_cube
+    self.cube = iris.load_cube(filepath, constraint=constraint)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 373, in load_cube
+    cubes = _load_collection(uris, constraints, callback)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 313, in _load_collection
+    result = iris.cube._CubeFilterCollection.from_cubes(cubes, constraints)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/cube.py", line 145, in from_cubes
+    for cube in cubes:
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/__init__.py", line 300, in _generate_cubes
+    for cube in iris.io.load_files(part_names, callback, constraints):
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 193, in load_files
+    all_file_paths = expand_filespecs(filenames)
+  File "/home/UNIMELB/znicholls/.conda/envs/netcdf-scm/lib/python3.7/site-packages/iris/io/__init__.py", line 176, in expand_filespecs
+    raise IOError(msg)
+OSError: One or more of the files specified did not exist:
+    * "/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/areacella/gn/v20190226/areacella_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc" didn't match any files
+2019-07-12 21:18:42,512 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights
+2019-07-12 21:18:54,489 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:18:54,489 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:19:26,308 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:19:26,309 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:20:55,382 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:20:55,382 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:21:29,367 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:21:29,367 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:22:00,730 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:22:00,731 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:22:34,243 INFO:netcdf_scm.iris_cube_wrappers:loading cube /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/fx/sftlf/gn/v20190226/sftlf_fx_BCC-CSM2-MR_piControl_r1i1p1f1_gn.nc
+2019-07-12 21:22:34,244 WARNING:netcdf_scm.masks:Land surface fraction (sftlf) data not available, using default instead
+2019-07-12 21:23:06,064 INFO:netcdf_scm.output:Rewriting output file
+2019-07-12 21:23:06,083 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+2019-07-12 21:23:06,091 INFO:netcdf_scm:Checking directory 11 of 11
+NetCDF-SCM version: 1.0.0+201.g484cff3
+NetCDF-SCM version: 
+Multiple small file (10 yrs) time: 
+real	0m19.275s
+user	0m9.678s
+sys	0m4.733s
+Multiple medium file (250 yrs) crunch time: 
+real	1m16.453s
+user	0m39.378s
+sys	0m35.252s
+Multiple big file (750 yrs) crunch time: 
+real	20m41.467s
+user	2m52.587s
+sys	17m50.440s
