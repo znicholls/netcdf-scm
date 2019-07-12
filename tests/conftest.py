@@ -64,7 +64,7 @@ TEST_ACCESS_CMIP5_FILE = join(
 )
 
 TEST_DATA_CMIP6Input4MIPS_DIR = join(TEST_DATA_ROOT_DIR, "cmip6input4mips")
-TEST_CMIP6_HISTORICAL_CONCS_FILE = join(
+TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE = join(
     TEST_DATA_CMIP6Input4MIPS_DIR,
     "input4MIPs",
     "CMIP6",
@@ -78,6 +78,21 @@ TEST_CMIP6_HISTORICAL_CONCS_FILE = join(
     "v20100304",
     "mole-fraction-of-so2f2-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_0000-2014.nc",
 )
+TEST_CMIP6INPUT4MIPS_PROJECTION_CONCS_FILE = join(
+    TEST_DATA_CMIP6Input4MIPS_DIR,
+    "input4MIPs",
+    "CMIP6",
+    "ScenarioMIP",
+    "UoM",
+    "UoM-MESSAGE-GLOBIOM-ssp245-1-2-1",
+    "atmos",
+    "mon",
+    "mole-fraction-of-carbon-dioxide-in-air",
+    "gn-15x360deg",
+    "v20100304",
+    "mole-fraction-of-carbon-dioxide-in-air_input4MIPs_GHGConcentrations_ScenarioMIP_UoM-MESSAGE-GLOBIOM-ssp245-1-2-1_gn-15x360deg_201501-203012.nc",
+)
+
 
 TEST_DATA_CMIP6Output_DIR = join(TEST_DATA_ROOT_DIR, "cmip6output")
 TEST_CMIP6_OUTPUT_FILE = join(

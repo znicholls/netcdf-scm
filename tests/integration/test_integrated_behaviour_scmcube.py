@@ -14,7 +14,8 @@ import pytest
 from conftest import (
     TEST_ACCESS_CMIP5_FILE,
     TEST_AREACELLA_FILE,
-    TEST_CMIP6_HISTORICAL_CONCS_FILE,
+    TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE,
+    TEST_CMIP6INPUT4MIPS_PROJECTION_CONCS_FILE,
     TEST_CMIP6_OUTPUT_FILE,
     TEST_CMIP6_OUTPUT_FILE_1_UNIT,
     TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
@@ -41,6 +42,8 @@ from netcdf_scm.utils import broadcast_onto_lat_lon_grid
 
 
 class _SCMCubeIntegrationTester(object):
+    _test_get_scm_timeseries_file = TEST_TAS_FILE
+
     def test_get_scm_cubes_last_resort(self, test_cube):
         tloaded_paths = ["/path/1", "/path/2"]
 
@@ -490,7 +493,7 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
             "to 'days since 1-1-1'. If you want other behaviour, you will need to use "
             "another package."
         )
-        test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+        test_cube.load_data_from_path(TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE)
 
         # ignore ABCs warning messages
         messages = [m for m in caplog.messages if "ABCs" not in m]
@@ -577,7 +580,7 @@ class _CMIPCubeTester(_SCMCubeIntegrationTester):
     @pytest.mark.parametrize("force_lazy_load", [True, False])
     def test_get_scm_timeseries(self, test_cube, force_lazy_load):
         var = self.tclass()
-        var.load_data_from_path(TEST_TAS_FILE)
+        var.load_data_from_path(self._test_get_scm_timeseries_file)
 
         res = var.get_scm_timeseries()
         assert isinstance(res, ScmDataFrame)
@@ -585,7 +588,7 @@ class _CMIPCubeTester(_SCMCubeIntegrationTester):
         if force_lazy_load:
             var_lazy = self.tclass()
             var_lazy._make_two_copies_of_data = MagicMock(side_effect=MemoryError)
-            var_lazy.load_data_from_path(TEST_TAS_FILE)
+            var_lazy.load_data_from_path(self._test_get_scm_timeseries_file)
 
             res_lazy = var_lazy.get_scm_timeseries()
             assert_scmdata_frames_allclose(res, res_lazy)
@@ -613,6 +616,7 @@ class _CMIPCubeTester(_SCMCubeIntegrationTester):
 
 class TestMarbleCMIP5Cube(_CMIPCubeTester):
     tclass = MarbleCMIP5Cube
+    _test_get_scm_timeseries_file = TEST_TAS_FILE
 
     def test_load_and_concatenate_files_in_directory_same_time(self, test_cube):
         tdir = join(
@@ -799,6 +803,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
     tclass = CMIP6Input4MIPsCube
+    _test_get_scm_timeseries_file = None  # I don't have any test files for this
 
     def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog):
         caplog.set_level(logging.WARNING, logger="netcdf_scm")
@@ -808,7 +813,7 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
             "to 'days since 1-1-1'. If you want other behaviour, you will need to use "
             "another package."
         )
-        test_cube.load_data_from_path(TEST_CMIP6_HISTORICAL_CONCS_FILE)
+        test_cube.load_data_from_path(TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE)
 
         # ignore ABCs warning messages
         messages = [m for m in caplog.messages if "ABCs" not in m]
@@ -967,9 +972,12 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_load_data_from_identifiers_args_from_filepath(tpath)
 
+    def test_get_scm_timeseries(self):
+        pytest.skip("No test data included at the moment")
 
 class TestCMIP6OutputCube(_CMIPCubeTester):
     tclass = CMIP6OutputCube
+    _test_get_scm_timeseries_file = TEST_CMIP6_OUTPUT_FILE
 
     @pytest.mark.parametrize("file_ext", (None, "", ".nc"))
     @pytest.mark.parametrize("time_period", (None, "", "YYYY-YYYY"))
