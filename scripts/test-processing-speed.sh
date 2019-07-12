@@ -23,6 +23,11 @@ exec 3>&1 4>&2
 SRC_DIR_BIG_TIME=$( { time netcdf-scm-crunch "${SRC_DIR_BIG}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp "${REGEXP}" --force 1>&3 2>&4; } 2>&1 )
 exec 3>&- 4>&-
 
+exec 3>&1 4>&2
+VERSION=$( { python -c "import netcdf_scm; import click; click.echo('NetCDF-SCM version: {}'.format(netcdf_scm.__version__))" 1>&3 2>&4; } 2>&1 )
+exec 3>&- 4>&-
+
+echo "NetCDF-SCM version: $VERSION"
 echo "Multiple small file (10 yrs) time: $SRC_DIR_TIME"
 echo "Multiple medium file (250 yrs) crunch time: $SRC_DIR_MEDIUM_TIME"
 echo "Multiple big file (750 yrs) crunch time: $SRC_DIR_BIG_TIME"
