@@ -763,6 +763,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
         )
+
         # ensure data is realised so it's not read multiple times while applying
         # masks
         self._ensure_data_realised()
