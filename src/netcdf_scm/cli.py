@@ -181,7 +181,7 @@ def crunch_data(
 
         tracker.register(out_filepath, scmcube.info)
         logger.info("Writing file to %s", out_filepath)
-        #save_netcdf_scm_nc(results, out_filepath)
+        save_netcdf_scm_nc(results, out_filepath)
 
     failures = _apply_func_to_files_if_dir_matches_regexp(
         crunch_files, src, re.compile(regexp)
