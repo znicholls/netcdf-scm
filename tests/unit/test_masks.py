@@ -237,9 +237,9 @@ def test_elnino_mask(test_all_cubes):
     sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
     masker = CubeMasker(test_all_cubes, sftlf_cube=sftlf_cube, land_mask_threshold=50.5)
     result = masker.get_mask("World|El Nino N3.4")
-    # 5N-5S, 170W-120W
+    # 5N-5S, 190E-240E
     expected_base = np.array(
-        [[True, True, True, True], [False, False, False, False], [True, True, True, True]]
+        [[True, True, True, True], [True, True, False, True], [True, True, True, True]]
     )
     expected = broadcast_to_shape(
         expected_base,

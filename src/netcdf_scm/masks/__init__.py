@@ -36,9 +36,6 @@ DEFAULT_REGIONS = (
 )
 
 
-# TODO: ask @lewisjared how to refactor this to avoid all these unused arguments
-
-
 class InvalidMask(Exception):
     """
     Raised when a mask cannot be calculated.
@@ -314,6 +311,9 @@ MASKS = {
         "World|Southern Hemisphere", "World|Ocean"
     ),
     "World|North Atlantic Ocean": or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean"),
+    # 5N-5S, 170W-120W (i.e. 190E to 240E) see
+    # https://climatedataguide.ucar.edu/climate-data/nino-sst-indices-nino-12-3-34-4-oni-and-tni
+    "World|El Nino N3.4": or_masks(get_area_mask(-5, 190, 5, 240), "World|Ocean"),
 }
 
 
