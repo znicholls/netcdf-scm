@@ -418,7 +418,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             self.cube = loaded_cubes_iris.concatenate_cube()
         except ConcatenateError:
             for ec in loaded_cubes_iris:
-                ec.coord("time").attributes.pop("time_origin")
+                ec.coord("time").attributes.pop("time_origin", None)
             self.cube = loaded_cubes_iris.concatenate_cube()
 
     def _check_data_names_in_same_directory(self, directory):
@@ -1298,11 +1298,11 @@ class _CMIPCube(SCMCube, ABC):
 
     @abstractproperty
     def _time_id(self):
-        """Accessor for setting/getting the time id (whose name varies with drs)"""
+        """Accessor for getting the time id (whose name varies with drs)"""
 
-    @abstractproperty
     @_time_id.setter
     def _time_id(self, value):
+        """Accessor for setting the time id (whose name varies with drs)"""
         self.time_period = value
 
 
