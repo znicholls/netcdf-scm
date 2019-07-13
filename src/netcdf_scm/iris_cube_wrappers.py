@@ -661,20 +661,29 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         masks = masks if masks is not None else DEFAULT_REGIONS
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
 
-        timeseries_cubes = {}
-        areas = {}
-        for m in masks:
+        def add_masked_cube(mask):
             scm_cube = self.get_scm_cubes(
                 sftlf_cube=sftlf_cube,
                 land_mask_threshold=land_mask_threshold,
-                masks=[m],
-            )[m]
+                masks=[mask],
+            )[mask]
 
-            if m in _LAND_FRACTION_REGIONS:
-                areas[m] = self._get_area(scm_cube, area_weights)
+            if mask in _LAND_FRACTION_REGIONS:
+                area = self._get_area(scm_cube, area_weights)
+            else:
+                area = None
+            return mask, take_lat_lon_mean(scm_cube, area_weights), area
 
-            timeseries_cubes[m] = take_lat_lon_mean(scm_cube, area_weights)
-
+        crunch_list = [r for r in map(add_masked_cube, masks)]
+        timeseries_cubes = {
+            mask: ts_cube
+            for mask, ts_cube, _ in crunch_list
+        }
+        areas = {
+            mask: area
+            for mask, _, area in crunch_list
+            if area is not None
+        }
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 
