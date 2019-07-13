@@ -660,25 +660,30 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             self.load_data_in_directory(data_dir)
 
         masks = masks if masks is not None else DEFAULT_REGIONS
+        scm_masks = self._get_scm_masks(
+            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
+        )
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
 
-        def crunch_timeseries(mask):
-            scm_cube = self.get_scm_cubes(
-                sftlf_cube=sftlf_cube,
-                land_mask_threshold=land_mask_threshold,
-                masks=[mask],
-            )[mask]
+        def crunch_timeseries(region, numpy_mask):
+            scm_cube = self._get_masked_cube_with_metdata(
+                region,
+                numpy_mask,
+                land_mask_threshold,
+            )
 
-            if mask in _LAND_FRACTION_REGIONS:
+            if region in _LAND_FRACTION_REGIONS:
                 area = self._get_area(scm_cube, area_weights)
             else:
                 area = None
-            return mask, take_lat_lon_mean(scm_cube, area_weights), area
+            return region, take_lat_lon_mean(scm_cube, area_weights), area
 
         with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [executor.submit(crunch_timeseries, m) for m in masks]
+            futures = [
+                executor.submit(crunch_timeseries, region, mask)
+                for region, mask in scm_masks.items()
+            ]
         crunch_list = [r.result() for r in futures]
-
         timeseries_cubes = {
             mask: ts_cube
             for mask, ts_cube, _ in crunch_list
@@ -783,13 +788,13 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         self._ensure_data_realised()
 
         cubes = {
-            k: self._get_masked_cube_with_metdata(k, mask) 
+            k: self._get_masked_cube_with_metdata(k, mask, land_mask_threshold)
             for k, mask in scm_masks.items()
         }
 
         return cubes
 
-    def _get_masked_cube_with_metdata(self, region, numpy_mask):
+    def _get_masked_cube_with_metdata(self, region, numpy_mask, land_mask_threshold):
         scmcube = apply_mask(self, numpy_mask)
         has_root_dir = (
             hasattr(self, "root_dir")  # pylint:disable=no-member
@@ -832,7 +837,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         scmcube.cube.attributes.update(self._get_scm_timeseries_ids())
 
         return scmcube
-                                               
+
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get the scm masks.
