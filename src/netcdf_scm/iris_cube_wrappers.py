@@ -47,6 +47,14 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
 
     raise_no_iris_warning()
 
+PARALLEL_CRUNCHING_TREHSHOLD = 10 ** 8
+"""
+float: Minimum array size (in bytes) for SCM timeseries to be crunched in parallel
+
+If the array is smaller than this, parallelising isn't worth the extra overhead and
+so is not done.
+"""
+
 logger = logging.getLogger(__name__)
 
 
@@ -602,6 +610,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
+
     def get_scm_timeseries_cubes(
         self,
         sftlf_cube=None,
@@ -647,18 +656,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             Cubes, with latitude-longitude mean data as appropriate for each of the
             SCM relevant regions.
         """
-        try:
-            # Check if two copies of data will fit in memory. If not, everything has
-            # to be done lazily.
-            self._make_two_copies_of_data()
-        except MemoryError:
-            logger.warning(
-                "Data won't fit in memory, will process lazily (hence slowly)"
-            )
-            data_dir = dirname(self.info["files"][0])
-            self.__init__()
-            self.load_data_in_directory(data_dir)
-
         masks = masks if masks is not None else DEFAULT_REGIONS
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
@@ -678,12 +675,23 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 area = None
             return region, take_lat_lon_mean(scm_cube, area_weights), area
 
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [
-                executor.submit(crunch_timeseries, region, mask)
-                for region, mask in scm_masks.items()
-            ]
-        crunch_list = [r.result() for r in futures]
+        try:
+            self._ensure_data_realised()
+            if self.cube.data.nbytes < PARALLEL_CRUNCHING_TREHSHOLD:
+                logger.info("Crunching serial")
+                crunch_list = self._crunch_serial(crunch_timeseries, scm_masks)
+            else:
+                logger.info("Crunching parallel")
+                crunch_list = self._crunch_parallel(crunch_timeseries, scm_masks)
+        except MemoryError:
+            logger.warning(
+                "Data won't fit in memory, will process lazily (hence slowly)"
+            )
+            data_dir = dirname(self.info["files"][0])
+            self.__init__()
+            self.load_data_in_directory(data_dir)
+            crunch_list = self._crunch_serial(crunch_timeseries, scm_masks)
+
         timeseries_cubes = {
             mask: ts_cube
             for mask, ts_cube, _ in crunch_list
@@ -696,9 +704,17 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 
-    def _make_two_copies_of_data(self):
-        self._ensure_data_realised()
-        np.copy(self.cube.data)  # pylint:disable=pointless-statement
+    def _crunch_parallel(self, crunch_timeseries, scm_masks):
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [
+                executor.submit(crunch_timeseries, region, mask)
+                for region, mask in scm_masks.items()
+            ]
+
+        return [r.result() for r in futures]
+
+    def _crunch_serial(self, crunch_timeseries, scm_masks):
+        return [crunch_timeseries(region, mask) for region, mask in scm_masks.items()]
 
     def _ensure_data_realised(self):
         # force the data to realise
