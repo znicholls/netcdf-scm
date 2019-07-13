@@ -782,7 +782,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         # masks
         self._ensure_data_realised()
 
-        cubes = {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
+        cubes = {
+            k: self._get_masked_cube_with_metdata(k, mask) 
+            for k, mask in scm_masks.items()
+        }
+
+        return cubes
+
+    def _get_masked_cube_with_metdata(self, region, numpy_mask):
+        scmcube = apply_mask(self, numpy_mask)
         has_root_dir = (
             hasattr(self, "root_dir")  # pylint:disable=no-member
             and self.root_dir is not None  # pylint:disable=no-member
@@ -815,17 +823,16 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 + ["{}: {}".format(k, v) for k, v in source_meta.items()]
             )
 
-        for region, c in cubes.items():
-            c.cube.attributes["crunch_land_mask_threshold"] = land_mask_threshold
-            c.cube.attributes[
-                "crunch_netcdf_scm_version"
-            ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(__version__)
-            c.cube.attributes["crunch_source_files"] = source_file_info
-            c.cube.attributes["region"] = region
-            c.cube.attributes.update(self._get_scm_timeseries_ids())
+        scmcube.cube.attributes["crunch_land_mask_threshold"] = land_mask_threshold
+        scmcube.cube.attributes[
+            "crunch_netcdf_scm_version"
+        ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(__version__)
+        scmcube.cube.attributes["crunch_source_files"] = source_file_info
+        scmcube.cube.attributes["region"] = region
+        scmcube.cube.attributes.update(self._get_scm_timeseries_ids())
 
-        return cubes
-
+        return scmcube
+                                               
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get the scm masks.
