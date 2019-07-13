@@ -10,6 +10,7 @@ import os
 import re
 import warnings
 from abc import ABC, abstractmethod, abstractproperty
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from os.path import basename, dirname, join, splitext
 
@@ -661,23 +662,21 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         masks = masks if masks is not None else DEFAULT_REGIONS
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
 
-        import copy
-        from .pool_helper import add_masked_cube, funtime
-        pool_inputs = [
-            (
-                 m,
-                 copy.copy(self),
-                 sftlf_cube,
-                 land_mask_threshold,
-                 _LAND_FRACTION_REGIONS,
-                 area_weights
-            )
-            for m in masks
-        ]
+        def crunch_timeseries(mask):
+            scm_cube = self.get_scm_cubes(
+                sftlf_cube=sftlf_cube,
+                land_mask_threshold=land_mask_threshold,
+                masks=[mask],
+            )[mask]
 
-        from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+            if mask in _LAND_FRACTION_REGIONS:
+                area = self._get_area(scm_cube, area_weights)
+            else:
+                area = None
+            return mask, take_lat_lon_mean(scm_cube, area_weights), area
+
         with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [executor.submit(add_masked_cube, p) for p in pool_inputs]
+            futures = [executor.submit(crunch_timeseries, m) for m in masks]
         crunch_list = [r.result() for r in futures]
 
         timeseries_cubes = {
