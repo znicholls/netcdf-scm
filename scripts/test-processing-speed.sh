@@ -1,6 +1,6 @@
 #!/bin/bash
 SRC_DIR="/data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-ipv-neg"
-CRUNCH_DIR="/data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox"
+CRUNCH_DIR="/data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test"
 CONTACT='Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>'
 DRS="CMIP6Output"
 REGEXP="^(?!.*fx).*(tas/|fco2nat|rsut|rlut|rsdt).*$"
