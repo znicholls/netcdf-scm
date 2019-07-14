@@ -55,6 +55,8 @@ If the array is smaller than this, parallelising isn't worth the extra overhead 
 so is not done.
 """
 
+TEST_PARALLEL_CRUNCHING_MAX = 10**9
+
 logger = logging.getLogger(__name__)
 
 
@@ -677,7 +679,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         try:
             self._ensure_data_realised()
-            if self.cube.data.nbytes < PARALLEL_CRUNCHING_TREHSHOLD:
+            if self.cube.data.nbytes < PARALLEL_CRUNCHING_TREHSHOLD or self.cube.data.nbytes > TEST_PARALLEL_CRUNCHING_MAX:
                 logger.info("Crunching serial")
                 crunch_list = self._crunch_serial(crunch_timeseries, scm_masks)
             else:
