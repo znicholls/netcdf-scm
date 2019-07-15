@@ -38,6 +38,7 @@ try:
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
     from iris.exceptions import CoordinateNotFoundError, ConcatenateError
+    from iris.fileformats import netcdf
     import cftime
     import cf_units
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
@@ -46,6 +47,22 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
     raise_no_iris_warning()
 
 logger = logging.getLogger(__name__)
+
+
+def _get_cf_var_data(cf_var, filename):
+    import netCDF4
+
+    # Get lazy chunked data out of a cf variable.
+    dtype = netcdf._get_actual_dtype(cf_var)
+
+    # Create cube with deferred data, but no metadata
+    fill_value = getattr(cf_var.cf_data, '_FillValue',
+                         netCDF4.default_fillvals[cf_var.dtype.str[1:]])
+    proxy = netcdf.NetCDFDataProxy(cf_var.shape, dtype, filename, cf_var.cf_name,
+                            fill_value)
+    return netcdf.as_lazy_data(proxy, chunks=None)
+
+netcdf._get_cf_var_data = _get_cf_var_data
 
 
 class SCMCube:  # pylint:disable=too-many-public-methods
@@ -589,7 +606,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
-    @profile
+    #@profile
     def get_scm_timeseries_cubes(
         self,
         sftlf_cube=None,
@@ -667,7 +684,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 
-    @profile
+    #@profile
     def _make_two_copies_of_data(self):
         self._ensure_data_realised()
         np.copy(self.cube.data)  # pylint:disable=pointless-statement
@@ -714,8 +731,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             )
 
         return timeseries_cubes
-    
-    @profile
+
+    #@profile
     def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get SCM relevant cubes from the ``self``.
@@ -803,7 +820,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return cubes
 
-    @profile
+    #@profile
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get the scm masks.
