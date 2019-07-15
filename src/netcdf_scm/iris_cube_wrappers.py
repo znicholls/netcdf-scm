@@ -603,7 +603,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
-
     def get_scm_timeseries_cubes(
         self,
         sftlf_cube=None,
@@ -657,9 +656,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         def crunch_timeseries(region, numpy_mask):
             scm_cube = self._get_masked_cube_with_metdata(
-                region,
-                numpy_mask,
-                land_mask_threshold,
+                region, numpy_mask, land_mask_threshold
             )
 
             if region in _LAND_FRACTION_REGIONS:
@@ -682,15 +679,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             self.load_data_in_directory(data_dir)
             crunch_list = self._crunch_serial(crunch_timeseries, scm_masks)
 
-        timeseries_cubes = {
-            mask: ts_cube
-            for mask, ts_cube, _ in crunch_list
-        }
-        areas = {
-            mask: area
-            for mask, _, area in crunch_list
-            if area is not None
-        }
+        timeseries_cubes = {mask: ts_cube for mask, ts_cube, _ in crunch_list}
+        areas = {mask: area for mask, _, area in crunch_list if area is not None}
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 

@@ -5,6 +5,7 @@ import os
 import os.path
 import re
 import sys
+from concurrent.futures import as_completed, ProcessPoolExecutor
 from os import makedirs, walk
 from time import gmtime, strftime
 
@@ -159,33 +160,49 @@ def crunch_data(
     )
 
     tracker = OutputFileDatabase(out_dir)
+    regexp_to_match = re.compile(regexp)
+    dirs_to_crunch = []
+    logger.info("Finding directories with files")
+    for dirpath, _, filenames in walk(src):
+        logger.debug("Entering %s", dirpath)
+        if filenames:
+            if not regexp_to_match.match(dirpath):
+                logger.debug("Skipping (did not match regexp) %s", dirpath)
+                continue
+            logger.info("Adding directory to queue %s", dirpath)
+            dirs_to_crunch.append((dirpath, filenames))
 
-    def crunch_files(fnames, dpath):
-        scmcube = _load_scm_cube(drs, dpath, fnames)
+    total_dirs = len(dirs_to_crunch)
+    logger.info("Found %s directories with files", total_dirs)
+    dir_counter = 1
 
-        out_filename = separator.join([output_prefix, scmcube.get_data_filename()])
+    with ProcessPoolExecutor(max_workers=10) as executor:
+        futures = [
+            executor.submit(
+                _crunch_files,
+                f,
+                d,
+                drs=drs,
+                separator=separator,
+                output_prefix=output_prefix,
+                out_dir=out_dir,
+                force=force,
+                existing_files=tracker._data,
+                land_mask_threshold=land_mask_threshold,
+                crunch_contact=crunch_contact,
+            )
+            for d, f in dirs_to_crunch
+        ]
 
-        outfile_dir = scmcube.get_data_directory().replace(scmcube.root_dir, out_dir)
-        out_filepath = os.path.join(outfile_dir, out_filename)
-
-        _make_path_if_not_exists(outfile_dir)
-
-        if not force and tracker.contains_file(out_filepath):
-            logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
-            return
-
-        results = scmcube.get_scm_timeseries_cubes(
-            land_mask_threshold=land_mask_threshold
-        )
-        results = _set_crunch_contact_in_results(results, crunch_contact)
-
-        tracker.register(out_filepath, scmcube.info)
-        logger.info("Writing file to %s", out_filepath)
-        save_netcdf_scm_nc(results, out_filepath)
-
-    failures = _apply_func_to_files_if_dir_matches_regexp(
-        crunch_files, src, re.compile(regexp)
-    )
+    failures = False
+    for future in as_completed(futures):
+        try:
+            scm_timeseries_cubes, out_filepath, info = future.result()
+            tracker.register(out_filepath, info)
+            logger.info("Writing file to %s", out_filepath)
+            save_netcdf_scm_nc(scm_timeseries_cubes, out_filepath)
+        except Exception:
+            failures = True
 
     if failures:
         raise click.ClickException(
@@ -193,27 +210,77 @@ def crunch_data(
         )
 
 
-def _apply_func_to_files_if_dir_matches_regexp(apply_func, search_dir, regexp_to_match):
+def _crunch_files(
+    fnames,
+    dpath,
+    drs=None,
+    separator=None,
+    output_prefix=None,
+    out_dir=None,
+    force=None,
+    existing_files=None,
+    land_mask_threshold=None,
+    crunch_contact=None,
+):
+    logger.info("Processing {}".format(fnames))
+    scmcube = _load_scm_cube(drs, dpath, fnames)
+
+    out_filename = separator.join([output_prefix, scmcube.get_data_filename()])
+
+    outfile_dir = scmcube.get_data_directory().replace(scmcube.root_dir, out_dir)
+    out_filepath = os.path.join(outfile_dir, out_filename)
+
+    _make_path_if_not_exists(outfile_dir)
+
+    if not force and out_filepath in existing_files:
+        logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
+        return
+
+    results = scmcube.get_scm_timeseries_cubes(land_mask_threshold=land_mask_threshold)
+    results = _set_crunch_contact_in_results(results, crunch_contact)
+
+    return results, out_filepath, scmcube.info
+
+
+def _apply_func_to_files_if_dir_matches_regexp(
+    apply_func, search_dir, regexp_to_match, compl_func=None, apply_func_kwargs={}
+):
     failures = False
 
     logger.info("Finding directories with files")
     total_dirs = len(list([f for _, _, f in walk(search_dir) if f]))
     logger.info("Found %s directories with files", total_dirs)
     dir_counter = 1
-    for dirpath, _, filenames in walk(search_dir):
-        logger.debug("Entering %s", dirpath)
-        if filenames:
-            logger.info("Checking directory %s of %s", dir_counter, total_dirs)
-            dir_counter += 1
-            if not regexp_to_match.match(dirpath):
-                logger.debug("Skipping (did not match regexp) %s", dirpath)
-                continue
-            logger.info("Attempting to process: %s", filenames)
-            try:
-                apply_func(filenames, dirpath)
+    with ProcessPoolExecutor(max_workers=10) as executor:
+        futures = []
+        for dirpath, _, filenames in walk(search_dir):
+            logger.debug("Entering %s", dirpath)
+            if filenames:
+                logger.info("Checking directory %s of %s", dir_counter, total_dirs)
+                dir_counter += 1
+                if not regexp_to_match.match(dirpath):
+                    logger.debug("Skipping (did not match regexp) %s", dirpath)
+                    continue
+                logger.info("Attempting to process: %s", filenames)
+                futures.append(
+                    executor.submit(apply_func, filenames, dirpath, **apply_func_kwargs)
+                )
 
-            except Exception:  # pylint:disable=broad-except
-                logger.exception("Failed to process: %s", filenames)
+        import pdb
+
+        pdb.set_trace()
+        for f in as_completed(futures):
+            try:
+                result = f.result()
+                if compl_func is not None:
+                    import pdb
+
+                    pdb.set_trace()
+            except Exception:
+                import pdb
+
+                pdb.set_trace()
+                logger.exception("Failed to process %s", filenames)
                 failures = True
 
     return failures

@@ -23,5 +23,5 @@ result = runner.invoke(
 assert result.exit_code == 0, result.output
 end = datetime.now()
 print(result.output)
-total_time = (end-start).total_seconds()
+total_time = (end - start).total_seconds()
 print(f"Start: {start}\nEnd: {end}\nDiff: {total_time}")
