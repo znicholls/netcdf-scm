@@ -515,7 +515,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                         str(warn.message)
                         + ". Tried to add areacella cube but another exception was raised:"
                     )
-                    logger.exception(error_msg)
+                    logger.debug(error_msg)
             else:
                 logger.warning(warn.message)
 
@@ -556,12 +556,13 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         TypeError
             ``cube`` is not an :obj:`ScmCube`
         """
-        if not isinstance(cube, SCMCube):
-            raise TypeError("cube must be an SCMCube instance")
+        if cube is not None:
+            if not isinstance(cube, SCMCube):
+                raise TypeError("cube must be an SCMCube instance")
 
-        self._metadata_cubes[metadata_variable] = cube
+            self._metadata_cubes[metadata_variable] = cube
 
-        return cube
+        return self._metadata_cubes[metadata_variable]
 
     def get_scm_timeseries(
         self,
@@ -606,7 +607,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
-    #@profile
+    @profile
     def get_scm_timeseries_cubes(
         self,
         sftlf_cube=None,
@@ -684,7 +685,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 
-    #@profile
+    @profile
     def _make_two_copies_of_data(self):
         self._ensure_data_realised()
         np.copy(self.cube.data)  # pylint:disable=pointless-statement
@@ -732,7 +733,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return timeseries_cubes
 
-    #@profile
+    @profile
     def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get SCM relevant cubes from the ``self``.
@@ -820,7 +821,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return cubes
 
-    #@profile
+    @profile
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get the scm masks.
@@ -876,7 +877,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             OSError,
             NotImplementedError,
         ):
-            logger.exception("Could not calculate areacella")
+            logger.debug("Could not calculate areacella")
 
         return None
 
@@ -1177,6 +1178,7 @@ class _CMIPCube(SCMCube, ABC):
         if w:
             self._process_load_data_from_identifiers_warnings(w)
 
+    @profile
     def get_metadata_cube(self, metadata_variable, cube=None):
         """
         Load a metadata cube from self's attributes.
@@ -1199,13 +1201,17 @@ class _CMIPCube(SCMCube, ABC):
         TypeError
             ``cube`` is not an :obj:`ScmCube`
         """
-        if cube is None:
+        if cube is not None:
+            return super().get_metadata_cube(metadata_variable, cube=cube)
+        if metadata_variable not in self._metadata_cubes:
             load_args = self._get_metadata_load_arguments(metadata_variable)
 
             cube = type(self)()
+            cube._metadata_cubes = {k: v for k, v in self._metadata_cubes.items() if k != metadata_variable}
             cube.load_data_from_identifiers(**load_args)
 
-        return super().get_metadata_cube(metadata_variable, cube=cube)
+            return super().get_metadata_cube(metadata_variable, cube=cube)
+        return super().get_metadata_cube(metadata_variable)
 
     @abstractmethod
     def get_filepath_from_load_data_from_identifiers_args(self, **kwargs):
