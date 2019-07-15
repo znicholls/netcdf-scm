@@ -589,6 +589,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
+    @profile
     def get_scm_timeseries_cubes(
         self,
         sftlf_cube=None,
@@ -666,6 +667,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 
+    @profile
     def _make_two_copies_of_data(self):
         self._ensure_data_realised()
         np.copy(self.cube.data)  # pylint:disable=pointless-statement
@@ -712,7 +714,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             )
 
         return timeseries_cubes
-
+    
+    @profile
     def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get SCM relevant cubes from the ``self``.
@@ -800,6 +803,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return cubes
 
+    @profile
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get the scm masks.

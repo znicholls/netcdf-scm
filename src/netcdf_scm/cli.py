@@ -159,7 +159,8 @@ def crunch_data(
     )
 
     tracker = OutputFileDatabase(out_dir)
-
+    
+    @profile
     def crunch_files(fnames, dpath):
         scmcube = _load_scm_cube(drs, dpath, fnames)
 
