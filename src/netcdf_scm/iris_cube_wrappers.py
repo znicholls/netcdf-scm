@@ -47,15 +47,6 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
 
     raise_no_iris_warning()
 
-PARALLEL_CRUNCHING_TREHSHOLD = 10 ** 8
-"""
-float: Minimum array size (in bytes) for SCM timeseries to be crunched in parallel
-
-If the array is smaller than this, parallelising isn't worth the extra overhead and
-so is not done.
-"""
-
-TEST_PARALLEL_CRUNCHING_MAX = 10**9
 
 logger = logging.getLogger(__name__)
 
@@ -679,12 +670,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         try:
             self._ensure_data_realised()
-            if self.cube.data.nbytes < PARALLEL_CRUNCHING_TREHSHOLD or self.cube.data.nbytes > TEST_PARALLEL_CRUNCHING_MAX:
-                logger.info("Crunching serial")
-                crunch_list = self._crunch_serial(crunch_timeseries, scm_masks)
-            else:
-                logger.info("Crunching parallel")
-                crunch_list = self._crunch_parallel(crunch_timeseries, scm_masks)
+            logger.debug("Crunching SCM timeseries serially")
+            crunch_list = self._crunch_serial(crunch_timeseries, scm_masks)
+            # crunching in parallel could go here
         except MemoryError:
             logger.warning(
                 "Data won't fit in memory, will process lazily (hence slowly)"
@@ -705,15 +693,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         }
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
-
-    def _crunch_parallel(self, crunch_timeseries, scm_masks):
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [
-                executor.submit(crunch_timeseries, region, mask)
-                for region, mask in scm_masks.items()
-            ]
-
-        return [r.result() for r in futures]
 
     def _crunch_serial(self, crunch_timeseries, scm_masks):
         return [crunch_timeseries(region, mask) for region, mask in scm_masks.items()]
