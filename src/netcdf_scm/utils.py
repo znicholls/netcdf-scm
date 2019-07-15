@@ -93,7 +93,7 @@ def assert_all_time_axes_same(time_axes):
         except AttributeError:  # pragma: no cover
             raise AssertionError(assert_msg)
 
-@profile
+#@profile
 def take_lat_lon_mean(in_scmcube, in_weights):
     """
     Take the latitude longitude mean of a cube with given weights
@@ -122,7 +122,7 @@ def take_lat_lon_mean(in_scmcube, in_weights):
     )
     return out_cube
 
-@profile
+#@profile
 def apply_mask(in_scmcube, in_mask):
     """
     Apply a mask to an scm cube's data
