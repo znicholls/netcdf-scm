@@ -1,0 +1,315 @@
+Start: 2019-07-15 21:25:07.075475
+End: 2019-07-15 21:26:10.793409
+Diff: 63.717934
+Wrote profile results to scratch.py.lprof
+Timer unit: 1e-06 s
+
+Total time: 63.6945 s
+File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/cli.py
+Function: crunch_files at line 163
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   163                                               @profile
+   164                                               def crunch_files(fnames, dpath):
+   165         5     246157.0  49231.4      0.4          scmcube = _load_scm_cube(drs, dpath, fnames)
+   166                                           
+   167         5         47.0      9.4      0.0          out_filename = separator.join([output_prefix, scmcube.get_data_filename()])
+   168                                           
+   169         5        142.0     28.4      0.0          outfile_dir = scmcube.get_data_directory().replace(scmcube.root_dir, out_dir)
+   170         5         40.0      8.0      0.0          out_filepath = os.path.join(outfile_dir, out_filename)
+   171                                           
+   172         5        100.0     20.0      0.0          _make_path_if_not_exists(outfile_dir)
+   173                                           
+   174         5          6.0      1.2      0.0          if not force and tracker.contains_file(out_filepath):
+   175                                                       logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
+   176                                                       return
+   177                                           
+   178         5          7.0      1.4      0.0          results = scmcube.get_scm_timeseries_cubes(
+   179         5   62966464.0 12593292.8     98.9              land_mask_threshold=land_mask_threshold
+   180                                                   )
+   181         5        184.0     36.8      0.0          results = _set_crunch_contact_in_results(results, crunch_contact)
+   182                                           
+   183         5      20017.0   4003.4      0.0          tracker.register(out_filepath, scmcube.info)
+   184         5       9152.0   1830.4      0.0          logger.info("Writing file to %s", out_filepath)
+   185         5     452141.0  90428.2      0.7          save_netcdf_scm_nc(results, out_filepath)
+
+Total time: 62.9635 s
+File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
+Function: get_scm_timeseries_cubes at line 581
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   581                                               @profile
+   582                                               def get_scm_timeseries_cubes(
+   583                                                   self,
+   584                                                   sftlf_cube=None,
+   585                                                   land_mask_threshold=50,
+   586                                                   areacella_scmcube=None,
+   587                                                   masks=None,
+   588                                               ):
+   589                                                   """
+   590                                                   Get SCM relevant cubes
+   591                                           
+   592                                                   If global, Northern Hemisphere and Southern Hemisphere land cubes are
+   593                                                   calculated, then three auxillary co-ordinates are also added to each cube:
+   594                                                   ``land_fraction``, ``land_fraction_northern_hemisphere`` and
+   595                                                   ``land_fraction_southern_hemisphere``. These co-ordinates document the area
+   596                                                   fraction that was considered to be land when the cubes were crunched i.e.
+   597                                                   ``land_fraction`` is the fraction of the entire globe which was considered to
+   598                                                   be land, ``land_fraction_northern_hemisphere`` is the fraction of the Northern
+   599                                                   Hemisphere which was considered to be land and
+   600                                                   ``land_fraction_southern_hemisphere`` is the fraction of the Southern
+   601                                                   Hemisphere which was considered to be land.
+   602                                           
+   603                                                   Parameters
+   604                                                   ----------
+   605                                                   sftlf_cube : :obj:`SCMCube`, optional
+   606                                                       land surface fraction data which is used to determine whether a given
+   607                                                       gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
+   608                                           
+   609                                                   land_mask_threshold : float, optional
+   610                                                       if the surface land fraction in a grid box is greater than
+   611                                                       ``land_mask_threshold``, it is considered to be a land grid box.
+   612                                           
+   613                                                   areacella_scmcube : :obj:`SCMCube`, optional
+   614                                                       cell area data which is used to take the latitude-longitude mean of the
+   615                                                       cube's data. If ``None``, we try to load this data automatically and if
+   616                                                       that fails we fall back onto ``iris.analysis.cartography.area_weights``.
+   617                                           
+   618                                                   masks : list[str]
+   619                                                       List of masks to use. If ``None`` then ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
+   620                                           
+   621                                                   Returns
+   622                                                   -------
+   623                                                   dict
+   624                                                       Cubes, with latitude-longitude mean data as appropriate for each of the
+   625                                                       SCM relevant regions.
+   626                                                   """
+   627         5          5.0      1.0      0.0          try:
+   628                                                       # Check if two copies of data will fit in memory. If not, everything has
+   629                                                       # to be done lazily.
+   630         5    3842095.0 768419.0      6.1              self._make_two_copies_of_data()
+   631                                                   except MemoryError:
+   632                                                       logger.warning(
+   633                                                           "Data won't fit in memory, will process lazily (hence slowly)"
+   634                                                       )
+   635                                                       data_dir = dirname(self.info["files"][0])
+   636                                                       self.__init__()
+   637                                                       self.load_data_in_directory(data_dir)
+   638                                           
+   639         5         30.0      6.0      0.0          masks = masks if masks is not None else DEFAULT_REGIONS
+   640         5      26295.0   5259.0      0.0          area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
+   641                                           
+   642         5          8.0      1.6      0.0          timeseries_cubes = {}
+   643         5          5.0      1.0      0.0          areas = {}
+   644        50         77.0      1.5      0.0          for m in masks:
+   645        45         82.0      1.8      0.0              scm_cube = self.get_scm_cubes(
+   646        45         34.0      0.8      0.0                  sftlf_cube=sftlf_cube,
+   647        45         38.0      0.8      0.0                  land_mask_threshold=land_mask_threshold,
+   648        45    3620022.0  80444.9      5.7                  masks=[m],
+   649        45      11188.0    248.6      0.0              )[m]
+   650                                           
+   651        45        122.0      2.7      0.0              if m in _LAND_FRACTION_REGIONS:
+   652        30      14711.0    490.4      0.0                  areas[m] = self._get_area(scm_cube, area_weights)
+   653                                           
+   654        45   55420386.0 1231564.1     88.0              timeseries_cubes[m] = take_lat_lon_mean(scm_cube, area_weights)
+   655                                           
+   656         5      28436.0   5687.2      0.0          timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
+   657         5          7.0      1.4      0.0          return timeseries_cubes
+
+Total time: 3.84192 s
+File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
+Function: _make_two_copies_of_data at line 659
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   659                                               @profile
+   660                                               def _make_two_copies_of_data(self):
+   661         5    3139170.0 627834.0     81.7          self._ensure_data_realised()
+   662         5     702747.0 140549.4     18.3          np.copy(self.cube.data)  # pylint:disable=pointless-statement
+
+Total time: 3.61692 s
+File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
+Function: get_scm_cubes at line 707
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   707                                               @profile
+   708                                               def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
+   709                                                   """
+   710                                                   Get SCM relevant cubes from the ``self``.
+   711                                           
+   712                                                   Each cube comes with extra information in its ``attributes`` property. The
+   713                                                   extra information comprises of crunching information (e.g. the
+   714                                                   land_mask_treshold, netcdf_scm_version and source files used to generate the
+   715                                                   cube) and SCM timeseries metadata (e.g. scenario, climate_model,
+   716                                                   standard_variable_name).
+   717                                           
+   718                                                   In particular, the timeseries'
+   719                                                   `CMOR name <https://www.earthsystemcog.org/projects/wip/CMIP6DataRequest>`_
+   720                                                   (see `here <http://clipc-services.ceda.ac.uk/dreq/mipVars.html>`_ for more
+   721                                                   details) is put in the ``variable`` attribute whilst the timeseries` 'standard name' (see
+   722                                                   `CF documentation <http://cfconventions.org/Data/cf-standard-names/66/build/cf-standard-name-table.html>`_
+   723                                                   ) is put in the ``variable_standard_name`` attribute.
+   724                                           
+   725                                                   Parameters
+   726                                                   ----------
+   727                                                   sftlf_cube : :obj:`SCMCube`, optional
+   728                                                       Land surface fraction data which is used to determine whether a given
+   729                                                       gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
+   730                                           
+   731                                                   land_mask_threshold : float, optional
+   732                                                       If the surface land fraction in a grid box is greater than
+   733                                                       ``land_mask_threshold``, it is considered to be a land grid box.
+   734                                           
+   735                                                   masks : list[str]
+   736                                                       List of masks to use. If ``None`` then ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
+   737                                           
+   738                                                   Returns
+   739                                                   -------
+   740                                                   dict
+   741                                                       Cubes, with data masked as appropriate for each of the SCM relevant
+   742                                                       regions.
+   743                                                   """
+   744        45        126.0      2.8      0.0          scm_masks = self._get_scm_masks(
+   745        45    3502869.0  77841.5     96.8              sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
+   746                                                   )
+   747                                                   # ensure data is realised so it's not read multiple times while applying
+   748                                                   # masks
+   749        45        700.0     15.6      0.0          self._ensure_data_realised()
+   750                                           
+   751        45     108367.0   2408.2      3.0          cubes = {k: apply_mask(self, mask) for k, mask in scm_masks.items()}
+   752                                                   has_root_dir = (
+   753        45        139.0      3.1      0.0              hasattr(self, "root_dir")  # pylint:disable=no-member
+   754        45        100.0      2.2      0.0              and self.root_dir is not None  # pylint:disable=no-member
+   755                                                   )
+   756        45         84.0      1.9      0.0          if has_root_dir:
+   757        45         92.0      2.0      0.0              source_file_info = "Files: {}".format(
+   758                                                           [
+   759        45        104.0      2.3      0.0                      p.replace(self.root_dir, "")  # pylint:disable=no-member
+   760        45       1079.0     24.0      0.0                      for p in self.info["files"]
+   761                                                           ]
+   762                                                       )
+   763                                                   else:
+   764                                                       source_file_info = "Files: {}".format(
+   765                                                           [basename(p) for p in self.info["files"]]
+   766                                                       )
+   767        45        191.0      4.2      0.0          if "metadata" in self.info:
+   768                                                       source_meta = {}
+   769                                                       for k, v in self.info["metadata"].items():
+   770                                                           if has_root_dir:
+   771                                                               source_meta[k] = [
+   772                                                                   "{}".format(
+   773                                                                       p.replace(self.root_dir, "")  # pylint:disable=no-member
+   774                                                                   )
+   775                                                                   for p in v["files"]
+   776                                                               ]
+   777                                                           else:
+   778                                                               source_meta[k] = ["{}".format(basename(p)) for p in v["files"]]
+   779                                                       source_file_info = "; ".join(
+   780                                                           [source_file_info]
+   781                                                           + ["{}: {}".format(k, v) for k, v in source_meta.items()]
+   782                                                       )
+   783                                           
+   784        90        240.0      2.7      0.0          for region, c in cubes.items():
+   785        45        230.0      5.1      0.0              c.cube.attributes["crunch_land_mask_threshold"] = land_mask_threshold
+   786                                                       c.cube.attributes[
+   787                                                           "crunch_netcdf_scm_version"
+   788        45        261.0      5.8      0.0              ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(__version__)
+   789        45        185.0      4.1      0.0              c.cube.attributes["crunch_source_files"] = source_file_info
+   790        45        184.0      4.1      0.0              c.cube.attributes["region"] = region
+   791        45       1882.0     41.8      0.1              c.cube.attributes.update(self._get_scm_timeseries_ids())
+   792                                           
+   793        45         86.0      1.9      0.0          return cubes
+
+Total time: 3.49608 s
+File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
+Function: _get_scm_masks at line 795
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   795                                               @profile
+   796                                               def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
+   797                                                   """
+   798                                                   Get the scm masks.
+   799                                           
+   800                                                   Returns
+   801                                                   -------
+   802                                                   dict
+   803                                                       Dictionary of region name-mask key-value pairs
+   804                                                   """
+   805        45         52.0      1.2      0.0          masker = CubeMasker(
+   806        45        267.0      5.9      0.0              self, sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
+   807                                                   )
+   808        45         40.0      0.9      0.0          masks = masks if masks is not None else DEFAULT_REGIONS
+   809        45    3495719.0  77682.6    100.0          return masker.get_masks(masks)
+
+Total time: 55.4194 s
+File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/utils.py
+Function: take_lat_lon_mean at line 96
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    96                                           @profile
+    97                                           def take_lat_lon_mean(in_scmcube, in_weights):
+    98                                               """
+    99                                               Take the latitude longitude mean of a cube with given weights
+   100                                           
+   101                                               Parameters
+   102                                               ----------
+   103                                               in_scmcube : :obj:`SCMCube`
+   104                                                   An ``SCMCube`` instance.
+   105                                           
+   106                                               in_weights : np.ndarray
+   107                                                   Weights to use when taking the mean. If you don't have another source, these
+   108                                                   can be generated using
+   109                                                   ``iris.analysis.cartography.area_weights(iris_cube_instance)``
+   110                                           
+   111                                               Returns
+   112                                               -------
+   113                                               :obj:`SCMCube`
+   114                                                   A copy of the input cube in which the data is now the latitude-longitude mean
+   115                                                   of the input cube's data
+   116                                               """
+   117        45        159.0      3.5      0.0      out_cube = type(in_scmcube)()
+   118        45         65.0      1.4      0.0      out_cube.cube = in_scmcube.cube.collapsed(
+   119        45         56.0      1.2      0.0          [in_scmcube.lat_name, in_scmcube.lon_name],
+   120        45         90.0      2.0      0.0          iris.analysis.MEAN,
+   121        45   55418937.0 1231531.9    100.0          weights=in_weights,
+   122                                               )
+   123        45        134.0      3.0      0.0      return out_cube
+
+Total time: 0.107305 s
+File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/utils.py
+Function: apply_mask at line 125
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   125                                           @profile
+   126                                           def apply_mask(in_scmcube, in_mask):
+   127                                               """
+   128                                               Apply a mask to an scm cube's data
+   129                                           
+   130                                               Parameters
+   131                                               ----------
+   132                                               in_scmcube : :obj:`SCMCube`
+   133                                                   An ``SCMCube`` instance.
+   134                                           
+   135                                               in_mask : np.ndarray
+   136                                                   The mask to apply
+   137                                           
+   138                                               Returns
+   139                                               -------
+   140                                               :obj:`SCMCube`
+   141                                                   A copy of the input cube with the mask applied to its data
+   142                                               """
+   143        45        388.0      8.6      0.4      out_cube = type(in_scmcube)()
+   144        45         94.0      2.1      0.1      if in_scmcube.cube.has_lazy_data():
+   145                                                   new_data = da.ma.masked_array(data=in_scmcube.cube.lazy_data(), mask=in_mask)
+   146                                               else:
+   147        45       6586.0    146.4      6.1          new_data = ma.masked_array(in_scmcube.cube.data, mask=in_mask)
+   148        45     100179.0   2226.2     93.4      out_cube.cube = in_scmcube.cube.copy(data=new_data)
+   149                                           
+   150        45         58.0      1.3      0.1      return out_cube
+
