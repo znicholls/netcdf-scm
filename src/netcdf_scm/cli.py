@@ -5,12 +5,14 @@ import os
 import os.path
 import re
 import sys
+from concurrent.futures import as_completed, ProcessPoolExecutor
 from os import makedirs, walk
 from time import gmtime, strftime
 
 import click
 import numpy as np
 import pymagicc
+import tqdm
 from openscm.scmdataframe import ScmDataFrame, df_append
 from pymagicc.io import MAGICCData
 
@@ -120,8 +122,14 @@ def init_logging(params, out_filename=None):
     default=False,
     show_default=True,
 )
+@click.option(
+    "--number-workers",  # pylint:disable=too-many-arguments
+    default=10,
+    show_default=True,
+    help="Maximum number of workers to use when crunching files.",
+)
 def crunch_data(
-    src, dst, crunch_contact, drs, regexp, land_mask_threshold, data_sub_dir, force
+    src, dst, crunch_contact, drs, regexp, land_mask_threshold, data_sub_dir, force, number_workers
 ):
     r"""
     Crunch data in ``src`` to NetCDF-SCM ``.nc`` files in ``dst``.
@@ -154,45 +162,124 @@ def crunch_data(
             ("regexp", regexp),
             ("land_mask_threshold", land_mask_threshold),
             ("force", force),
+            ("number_workers", number_workers),
         ],
         out_filename=log_file,
     )
 
     tracker = OutputFileDatabase(out_dir)
-    
-    @profile
-    def crunch_files(fnames, dpath):
-        scmcube = _load_scm_cube(drs, dpath, fnames)
+    regexp_to_match = re.compile(regexp)
+    dirs_to_crunch = []
+    logger.info("Finding directories with files")
+    for dirpath, _, filenames in walk(src):
+        logger.debug("Entering %s", dirpath)
+        if filenames:
+            if not regexp_to_match.match(dirpath):
+                logger.debug("Skipping (did not match regexp) %s", dirpath)
+                continue
+            logger.info("Adding directory to queue %s", dirpath)
+            helper = _get_scmcube_helper(drs)
+            try:
+                helper._add_time_period_from_files_in_directory(dirpath)
+            except:
+                logger.debug("Ignoring broken directory %s", dirpath)
+                continue
+            time_ids = helper._time_id.split(helper.time_period_separator)
+            num_years = int(time_ids[1][:4]) - int(time_ids[0][:4])
+            dirs_to_crunch.append((dirpath, filenames, num_years))
 
-        out_filename = separator.join([output_prefix, scmcube.get_data_filename()])
+    total_dirs = len(dirs_to_crunch)
+    logger.info("Found %s directories with files", total_dirs)
 
-        outfile_dir = scmcube.get_data_directory().replace(scmcube.root_dir, out_dir)
-        out_filepath = os.path.join(outfile_dir, out_filename)
+    def crunch_from_list(crunch_list, n_workers):
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
+            futures = [
+                executor.submit(
+                    _crunch_files,
+                    f,
+                    d,
+                    drs=drs,
+                    separator=separator,
+                    output_prefix=output_prefix,
+                    out_dir=out_dir,
+                    force=force,
+                    existing_files=tracker._data,
+                    land_mask_threshold=land_mask_threshold,
+                    crunch_contact=crunch_contact,
+                )
+                for d, f in crunch_list
+            ]
 
-        _make_path_if_not_exists(outfile_dir)
+            tqdm_kwargs = {
+                'total': total_dirs,
+                'unit': 'it',
+                'unit_scale': True,
+                'leave': True
+            }
+            failures = False
+            # Print out the progress as tasks complete
+            for future in tqdm.tqdm(as_completed(futures), **tqdm_kwargs):
+                try:
+                    res = future.result()
+                    if res is None:
+                        continue  # skipped crunching
+                    scm_timeseries_cubes, out_filepath, info = res
+                    logger.info("Registering %s", out_filepath)
+                    tracker.register(out_filepath, info)
+                    logger.info("Writing file to %s", out_filepath)
+                    save_netcdf_scm_nc(scm_timeseries_cubes, out_filepath)
+                except Exception as e:
+                    logger.exception("Exception found %s", e)
+                    failures = True
 
-        if not force and tracker.contains_file(out_filepath):
-            logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
-            return
+        return failures
 
-        results = scmcube.get_scm_timeseries_cubes(
-            land_mask_threshold=land_mask_threshold
-        )
-        results = _set_crunch_contact_in_results(results, crunch_contact)
+    dirs_to_crunch_short = [(d, f) for d, f, n in dirs_to_crunch if n < 300]
+    logger.info("Crunching %s directories with data of less than 300 years", len(dirs_to_crunch_short))
+    failures_short = crunch_from_list(dirs_to_crunch_short, number_workers)
 
-        tracker.register(out_filepath, scmcube.info)
-        logger.info("Writing file to %s", out_filepath)
-        save_netcdf_scm_nc(results, out_filepath)
+    dirs_to_crunch_long = [(d, f) for d, f, n in dirs_to_crunch if n >= 300]
+    logger.info("Crunching %s directories with data of greater than or equal to 300 years", len(dirs_to_crunch_long))
+    if number_workers > 3:
+        logger.warning("Only using 3 workers for memory reasons")
+        number_workers = 3
+    failures_long = crunch_from_list(dirs_to_crunch_long, number_workers)
 
-    failures = _apply_func_to_files_if_dir_matches_regexp(
-        crunch_files, src, re.compile(regexp)
-    )
-
-    if failures:
+    if failures_short or failures_long:
         raise click.ClickException(
             "Some files failed to process. See {} for more details".format(log_file)
         )
 
+def _crunch_files(
+    fnames,
+    dpath,
+    drs=None,
+    separator=None,
+    output_prefix=None,
+    out_dir=None,
+    force=None,
+    existing_files=None,
+    land_mask_threshold=None,
+    crunch_contact=None,
+):
+    logger.info("Processing {}".format(fnames))
+    scmcube = _load_scm_cube(drs, dpath, fnames)
+
+    out_filename = separator.join([output_prefix, scmcube.get_data_filename()])
+
+    outfile_dir = scmcube.get_data_directory().replace(scmcube.root_dir, out_dir)
+    out_filepath = os.path.join(outfile_dir, out_filename)
+
+    _make_path_if_not_exists(outfile_dir)
+
+    if not force and out_filepath in existing_files:
+        logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
+        return
+
+    results = scmcube.get_scm_timeseries_cubes(land_mask_threshold=land_mask_threshold)
+    results = _set_crunch_contact_in_results(results, crunch_contact)
+
+    return results, out_filepath, scmcube.info
 
 def _apply_func_to_files_if_dir_matches_regexp(apply_func, search_dir, regexp_to_match):
     failures = False

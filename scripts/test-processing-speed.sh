@@ -9,19 +9,19 @@ REGEXP="^(?!.*(fx|/ta/|/co2/)).*Amon.*$"
 exec 3>&1 4>&2
 SRC_DIR_TIME=$( { time netcdf-scm-crunch "${SRC_DIR}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp "${REGEXP}" --force 1>&3 2>&4; } 2>&1 )
 exec 3>&- 4>&-
-
+echo "Multiple small file (10 yrs) time: $SRC_DIR_TIME"
 
 SRC_DIR_MEDIUM="/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical"
 
 exec 3>&1 4>&2
 SRC_DIR_MEDIUM_TIME=$( { time netcdf-scm-crunch "${SRC_DIR_MEDIUM}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp "${REGEXP}" --force 1>&3 2>&4; } 2>&1 )
 exec 3>&- 4>&-
-
+echo "Multiple medium file (250 yrs) crunch time: $SRC_DIR_MEDIUM_TIME"
 
 SRC_DIR_BIG="/data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon"
 
 exec 3>&1 4>&2
-SRC_DIR_BIG_TIME=$( { time netcdf-scm-crunch "${SRC_DIR_BIG}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp "${REGEXP}" --force 1>&3 2>&4; } 2>&1 )
+SRC_DIR_BIG_TIME=$( { time netcdf-scm-crunch "${SRC_DIR_BIG}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp "${REGEXP}" --force --number-workers 5 1>&3 2>&4; } 2>&1 )
 exec 3>&- 4>&-
 
 exec 3>&1 4>&2
