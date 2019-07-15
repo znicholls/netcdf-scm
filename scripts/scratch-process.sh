@@ -1,6 +1,8 @@
 #!/bin/bash
 SRC_DIR="/media/research-nfs/cmip6/"
 CRUNCH_DIR="/data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox"
+SRC_DIR="tests/test-data/cmip6output"
+CRUNCH_DIR="output-examples/scratch-process-output"
 WRANGLE_DIR="/data/marble/sandbox/share/cmip6-wrangled-ipsl-sandbox"
 CONTACT='Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>'
 DRS="CMIP6Output"
