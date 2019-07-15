@@ -12,6 +12,7 @@ from time import gmtime, strftime
 import click
 import numpy as np
 import pymagicc
+import tqdm
 from openscm.scmdataframe import ScmDataFrame, df_append
 from pymagicc.io import MAGICCData
 
@@ -193,9 +194,18 @@ def crunch_data(
             )
             for d, f in dirs_to_crunch
         ]
+        kwargs = {
+            'total': len(futures),
+            'unit': 'it',
+            'unit_scale': True,
+            'leave': True
+        }
+        # Print out the progress as tasks complete
+        for f in tqdm.tqdm(as_completed(futures), **kwargs):
+            pass
 
     failures = False
-    for future in as_completed(futures):
+    for future in futures:
         try:
             scm_timeseries_cubes, out_filepath, info = future.result()
             tracker.register(out_filepath, info)

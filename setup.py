@@ -49,6 +49,7 @@ REQUIREMENTS_INSTALL = [
     "openscm>=0.1.0a",
     "pymagicc>=2.0.0b4",
     "click",
+    "tqdm",
 ]
 REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0,<5.0"]
 REQUIREMENTS_NOTEBOOKS = ["notebook", "nbval", "expectexception"]
