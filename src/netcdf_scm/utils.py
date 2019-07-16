@@ -101,7 +101,7 @@ def assert_all_time_axes_same(time_axes):
             raise AssertionError(assert_msg)
 
 
-# @profile
+
 def take_lat_lon_mean(in_scmcube, in_weights):
     """
     Take the latitude longitude mean of a cube with given weights
@@ -131,7 +131,7 @@ def take_lat_lon_mean(in_scmcube, in_weights):
     return out_cube
 
 
-# @profile
+
 def apply_mask(in_scmcube, in_mask):
     """
     Apply a mask to an scm cube's data

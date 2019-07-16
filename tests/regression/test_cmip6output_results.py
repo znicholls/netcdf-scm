@@ -26,6 +26,8 @@ def test_crunching(tmpdir, update_expected_files):
             "--drs",
             "CMIP6Output",
             "-f",
+            "--small-number-workers",
+            2
         ],
     )
     assert result.exit_code == 0, result.output
