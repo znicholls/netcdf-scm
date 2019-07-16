@@ -214,6 +214,11 @@ def test_crunching_arguments(tmpdir, caplog):
                 "--land-mask-threshold",
                 LAND_MASK_TRESHHOLD,
                 "-f",
+                # force serial processing
+                "--small-threshold",
+                1,
+                "--medium-threshold",
+                2,
             ],
         )
     assert result.exit_code == 0
@@ -275,6 +280,11 @@ def test_crunching_arguments(tmpdir, caplog):
                 DATA_SUB_DIR,
                 "--land-mask-threshold",
                 LAND_MASK_TRESHHOLD,
+                # force serial processing
+                "--small-threshold",
+                1,
+                "--medium-threshold",
+                2,
             ],
         )
     assert result_skip.exit_code == 0

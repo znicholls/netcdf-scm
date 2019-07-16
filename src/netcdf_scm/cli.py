@@ -314,7 +314,7 @@ def crunch_data(
     ]
     logger.info(
         "Crunching %s directories with greater than or equal to %s years of data",
-        len(dirs_to_crunch_medium),
+        len(dirs_to_crunch_large),
         medium_threshold,
     )
     if dirs_to_crunch_large:
@@ -338,7 +338,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments
     land_mask_threshold=None,
     crunch_contact=None,
 ):
-    logger.info("Processing %s", fnames)
+    logger.info("Attempting to process: %s", fnames)
     scmcube = _load_scm_cube(drs, dpath, fnames)
 
     out_filename = separator.join([output_prefix, scmcube.get_data_filename()])
@@ -357,7 +357,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments
 
     return results, out_filepath, scmcube.info
 
-
+# TODO: re-write to use progressbar and parallelisation
 def _apply_func_to_files_if_dir_matches_regexp(apply_func, search_dir, regexp_to_match):
     failures = False
 
