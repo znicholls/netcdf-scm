@@ -30,6 +30,7 @@ from openscm.scmdataframe import ScmDataFrame
 from pandas.testing import assert_frame_equal
 
 import netcdf_scm
+from netcdf_scm.masks import DEFAULT_REGIONS
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -240,10 +241,10 @@ class _SCMCubeIntegrationTester(object):
                 == land_frac_sh
             )
 
-        test_cube._get_scm_masks.assert_any_call(
+        test_cube._get_scm_masks.assert_called_with(
             sftlf_cube=tsftlf_cube,
             land_mask_threshold=tland_mask_threshold,
-            masks=["World"],
+            masks=DEFAULT_REGIONS,
         )
         test_cube._get_area_weights.assert_called_with(
             areacella_scmcube=tareacella_scmcube
