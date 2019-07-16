@@ -114,7 +114,7 @@ def test_apply_mask(test_generic_tas_cube):
 
 
 @tdata_required
-@pytest.mark.parametrize("ttol", [0.1, 10 ** -5, 10 ** -10, "default"])
+@pytest.mark.parametrize("ttol", [0.1, 10 ** -3, 1.5 * 10**-5, 10**-5, 0.9 * 10**-5, 10 ** -10, "default"])
 def test_unify_lat_lon(test_generic_tas_cube, ttol):
     def get_starting_list(scale):
         base_cube = test_generic_tas_cube.cube.copy()
@@ -138,7 +138,7 @@ def test_unify_lat_lon(test_generic_tas_cube, ttol):
         return iris.cube.CubeList([base_cube, other_cube])
 
     default = False if ttol != "default" else True
-    ttol = ttol if ttol != "default" else 10 ** -10
+    ttol = ttol if ttol != "default" else 10 ** -6
     for loop_ttol in [ttol * 0.1, ttol * 10 ** -5]:
         tlist = get_starting_list(scale=1 + loop_ttol)
         if default:
