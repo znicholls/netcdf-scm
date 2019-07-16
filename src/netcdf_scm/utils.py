@@ -6,14 +6,21 @@ timeseries from a cube as datetime values.
 """
 import datetime as dt
 
-import dask.array as da
 import numpy as np
 import numpy.ma as ma
 
 try:
+    import dask.array as da
     import iris
+    from iris.analysis import WeightedAggregator, _build_dask_mdtol_function
     from iris.util import broadcast_to_shape
     import cf_units
+
+    # monkey patch iris MEAN until https://github.com/SciTools/iris/pull/3299 is merged
+    iris.analysis.MEAN = WeightedAggregator(
+        "mean", ma.average, lazy_func=_build_dask_mdtol_function(da.ma.average)
+    )
+
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from .errors import raise_no_iris_warning
 
@@ -93,6 +100,7 @@ def assert_all_time_axes_same(time_axes):
         except AttributeError:  # pragma: no cover
             raise AssertionError(assert_msg)
 
+
 # @profile
 def take_lat_lon_mean(in_scmcube, in_weights):
     """
@@ -121,6 +129,7 @@ def take_lat_lon_mean(in_scmcube, in_weights):
         weights=in_weights,
     )
     return out_cube
+
 
 # @profile
 def apply_mask(in_scmcube, in_mask):
