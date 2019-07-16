@@ -1,6 +1,7 @@
 import copy
 import datetime as dt
 import itertools
+import logging
 import re
 import warnings
 from os.path import basename, dirname, join
@@ -86,6 +87,7 @@ class TestSCMCube(object):
             warnings.warn(warn_area)
 
         caplog.clear()
+        caplog.set_level(logging.DEBUG)
         test_cube._process_load_data_from_identifiers_warnings(mock_warn_area)
 
         assert len(caplog.messages) == 3  # warnings plus extra one exception
@@ -93,7 +95,7 @@ class TestSCMCube(object):
         assert caplog.records[0].levelname == "WARNING"
         assert caplog.messages[1] == warn_2
         assert caplog.records[1].levelname == "WARNING"
-        assert caplog.records[2].levelname == "ERROR"
+        assert caplog.records[2].levelname == "DEBUG"
         assert "Missing CF-netCDF measure variable" in str(caplog.records[2].message)
         assert "Tried to add areacella cube but another exception was raised:" in str(
             caplog.records[2].message
@@ -206,45 +208,7 @@ class TestSCMCube(object):
         assert res["member_id"] == tensemble_member
         assert res["mip_era"] == tmip_era
 
-    @patch("netcdf_scm.iris_cube_wrappers.take_lat_lon_mean")
-    def test_get_scm_timeseries_cubes(self, mock_take_lat_lon_mean, test_cube):
-        tsftlf_cube = "mocked out"
-        tland_mask_threshold = 48
-        tareacella_scmcube = "mocked out again"
-
-        tarea_weights = 145
-        test_cube._get_area_weights = MagicMock(return_value=tarea_weights)
-
-        tscm_cubes = {"mock 1": 213, "mock 2": 5893}
-        test_cube.get_scm_cubes = MagicMock(return_value=tscm_cubes)
-
-        tlat_lon_mean = "hello mock"
-        mock_take_lat_lon_mean.return_value = tlat_lon_mean
-
-        expected = {k: tlat_lon_mean for k in tscm_cubes}
-        result = test_cube.get_scm_timeseries_cubes(
-            tsftlf_cube,
-            tland_mask_threshold,
-            tareacella_scmcube,
-            masks=tscm_cubes.keys(),
-        )
-
-        assert result == expected
-
-        test_cube._get_area_weights.assert_called_with(
-            areacella_scmcube=tareacella_scmcube
-        )
-        test_cube.get_scm_cubes.assert_any_call(
-            sftlf_cube=tsftlf_cube,
-            land_mask_threshold=tland_mask_threshold,
-            masks=[list(tscm_cubes.keys())[0]],
-        )
-        mock_take_lat_lon_mean.call_count == len(tscm_cubes)
-
-        expected_calls = itertools.product(tscm_cubes.values(), [tarea_weights])
-        mock_take_lat_lon_mean.assert_has_calls(
-            [call(*c) for c in expected_calls], any_order=True
-        )
+    # TODO: re-write unit test for get_scm_timeseries_cubes
 
     @patch("netcdf_scm.iris_cube_wrappers.apply_mask")
     def test_get_scm_cubes(self, mock_apply_mask, test_cube):
@@ -380,6 +344,7 @@ class TestSCMCube(object):
             test_cube.get_metadata_cube = MagicMock(side_effect=OSError(no_file_msg))
 
         caplog.clear()
+        caplog.set_level(logging.DEBUG)
 
         # Function under test
         with pytest.warns(None) as record:
@@ -420,7 +385,7 @@ class TestSCMCube(object):
         assert re.match(specific_warn, caplog.messages[0])
         if exc_info is not None:
             assert re.match(
-                exc_info, str(caplog.records[0].exc_info[1])
+                "Could not calculate areacella, error message: {}".format(exc_info), str(caplog.records[0].message)
             )  # the actual message is stored in the exception
 
         np.testing.assert_array_equal(result, expected)
