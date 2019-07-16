@@ -5,7 +5,7 @@ import os
 import os.path
 import re
 import sys
-from concurrent.futures import as_completed, ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from os import makedirs, walk
 from time import gmtime, strftime
 
@@ -123,13 +123,42 @@ def init_logging(params, out_filename=None):
     show_default=True,
 )
 @click.option(
-    "--number-workers",  # pylint:disable=too-many-arguments
+    "--small-number-workers",  # pylint:disable=too-many-arguments
     default=10,
     show_default=True,
     help="Maximum number of workers to use when crunching files.",
 )
+@click.option(
+    "--small-threshold",  # pylint:disable=too-many-arguments
+    default=300,
+    show_default=True,
+    help="Maximum number of years in a file for it to be processed in parallel with ``small-number-workers``",
+)
+@click.option(
+    "--medium-number-workers",
+    default=3,  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
+    show_default=True,
+    help="Maximum number of workers to use when crunching files.",
+)
+@click.option(
+    "--medium-threshold",  # pylint:disable=too-many-arguments
+    default=900,
+    show_default=True,
+    help="Maximum number of years in a file for it to be processed in parallel with ``medium-number-workers``",
+)
 def crunch_data(
-    src, dst, crunch_contact, drs, regexp, land_mask_threshold, data_sub_dir, force, number_workers
+    src,
+    dst,
+    crunch_contact,
+    drs,
+    regexp,
+    land_mask_threshold,
+    data_sub_dir,
+    force,
+    small_number_workers,
+    small_threshold,
+    medium_number_workers,
+    medium_threshold,
 ):
     r"""
     Crunch data in ``src`` to NetCDF-SCM ``.nc`` files in ``dst``.
@@ -162,7 +191,10 @@ def crunch_data(
             ("regexp", regexp),
             ("land_mask_threshold", land_mask_threshold),
             ("force", force),
-            ("number_workers", number_workers),
+            ("small_number_workers", small_number_workers),
+            ("small_threshold", small_threshold),
+            ("medium_number_workers", medium_number_workers),
+            ("medium_threshold", medium_threshold),
         ],
         out_filename=log_file,
     )
@@ -180,77 +212,121 @@ def crunch_data(
             logger.info("Adding directory to queue %s", dirpath)
             helper = _get_scmcube_helper(drs)
             try:
-                helper._add_time_period_from_files_in_directory(dirpath)
-            except:
-                logger.debug("Ignoring broken directory %s", dirpath)
+                helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
+                    dirpath
+                )
+            except Exception as e:  # pylint:disable=broad-except
+                logger.debug("Ignoring broken directory %s with error %s", dirpath, e)
                 continue
-            time_ids = helper._time_id.split(helper.time_period_separator)
-            num_years = int(time_ids[1][:4]) - int(time_ids[0][:4])
+            time_ids = helper._time_id.split(  # pylint:disable=protected-access
+                helper.time_period_separator
+            )
+            start_year = int(time_ids[0][:4].lstrip("0"))
+            end_year = int(time_ids[1][:4].lstrip("0"))
+            num_years = end_year - start_year
             dirs_to_crunch.append((dirpath, filenames, num_years))
 
     total_dirs = len(dirs_to_crunch)
     logger.info("Found %s directories with files", total_dirs)
 
-    def crunch_from_list(crunch_list, n_workers):
-        with ProcessPoolExecutor(max_workers=n_workers) as executor:
-            futures = [
-                executor.submit(
-                    _crunch_files,
-                    f,
-                    d,
-                    drs=drs,
-                    separator=separator,
-                    output_prefix=output_prefix,
-                    out_dir=out_dir,
-                    force=force,
-                    existing_files=tracker._data,
-                    land_mask_threshold=land_mask_threshold,
-                    crunch_contact=crunch_contact,
-                )
-                for d, f in crunch_list
-            ]
+    def crunch_from_list(crunch_list, n_workers=1, serial=False):
+        crunch_kwargs = {
+            "drs": drs,
+            "separator": separator,
+            "output_prefix": output_prefix,
+            "out_dir": out_dir,
+            "force": force,
+            "existing_files": tracker._data,  # pylint:disable=protected-access
+            "land_mask_threshold": land_mask_threshold,
+            "crunch_contact": crunch_contact,
+        }
 
-            tqdm_kwargs = {
-                'total': total_dirs,
-                'unit': 'it',
-                'unit_scale': True,
-                'leave': True
-            }
-            failures = False
-            # Print out the progress as tasks complete
-            for future in tqdm.tqdm(as_completed(futures), **tqdm_kwargs):
+        def process_results(res):
+            if res is None:
+                return  # skipped crunching
+            scm_timeseries_cubes, out_filepath, info = res
+            logger.info("Registering %s", out_filepath)
+            tracker.register(out_filepath, info)
+            logger.info("Writing file to %s", out_filepath)
+            save_netcdf_scm_nc(scm_timeseries_cubes, out_filepath)
+
+        tqdm_kwargs = {
+            "total": len(crunch_list),
+            "unit": "it",
+            "unit_scale": True,
+            "leave": True,
+        }
+        failures = False
+        if serial:
+            logger.info("Crunching serially")
+            for d, f in tqdm.tqdm(crunch_list, **tqdm_kwargs):
                 try:
-                    res = future.result()
-                    if res is None:
-                        continue  # skipped crunching
-                    scm_timeseries_cubes, out_filepath, info = res
-                    logger.info("Registering %s", out_filepath)
-                    tracker.register(out_filepath, info)
-                    logger.info("Writing file to %s", out_filepath)
-                    save_netcdf_scm_nc(scm_timeseries_cubes, out_filepath)
-                except Exception as e:
+                    process_results(_crunch_files(f, d, **crunch_kwargs))
+                except Exception as e:  # pylint:disable=broad-except
                     logger.exception("Exception found %s", e)
                     failures = True
 
+        else:
+            logger.info("Crunching in parallel with %s workers", n_workers)
+            with ProcessPoolExecutor(max_workers=n_workers) as executor:
+                futures = [
+                    executor.submit(_crunch_files, f, d, **crunch_kwargs)
+                    for d, f in crunch_list
+                ]
+                failures = False
+                # Print out the progress as tasks complete
+                for future in tqdm.tqdm(as_completed(futures), **tqdm_kwargs):
+                    try:
+                        res = future.result()
+                        process_results(res)
+                    except Exception as e:  # pylint:disable=broad-except
+                        logger.exception("Exception found %s", e)
+                        failures = True
+
         return failures
 
-    dirs_to_crunch_short = [(d, f) for d, f, n in dirs_to_crunch if n < 300]
-    logger.info("Crunching %s directories with data of less than 300 years", len(dirs_to_crunch_short))
-    failures_short = crunch_from_list(dirs_to_crunch_short, number_workers)
+    failures_small = False
+    dirs_to_crunch_small = [(d, f) for d, f, n in dirs_to_crunch if n < small_threshold]
+    logger.info(
+        "Crunching %s directories with less than %s years of data",
+        len(dirs_to_crunch_small),
+        small_threshold,
+    )
+    if dirs_to_crunch_small:
+        failures_small = crunch_from_list(dirs_to_crunch_small, small_number_workers)
 
-    dirs_to_crunch_long = [(d, f) for d, f, n in dirs_to_crunch if n >= 300]
-    logger.info("Crunching %s directories with data of greater than or equal to 300 years", len(dirs_to_crunch_long))
-    if number_workers > 3:
-        logger.warning("Only using 3 workers for memory reasons")
-        number_workers = 3
-    failures_long = crunch_from_list(dirs_to_crunch_long, number_workers)
+    failures_medium = False
+    dirs_to_crunch_medium = [
+        (d, f) for d, f, n in dirs_to_crunch if small_threshold <= n < medium_threshold
+    ]
+    logger.info(
+        "Crunching %s directories with greater than or equal to %s and less than %s years of data",
+        len(dirs_to_crunch_medium),
+        small_threshold,
+        medium_threshold,
+    )
+    if dirs_to_crunch_medium:
+        failures_medium = crunch_from_list(dirs_to_crunch_medium, medium_number_workers)
 
-    if failures_short or failures_long:
+    failures_large = False
+    dirs_to_crunch_large = [
+        (d, f) for d, f, n in dirs_to_crunch if n > medium_threshold
+    ]
+    logger.info(
+        "Crunching %s directories with greater than or equal to %s years of data",
+        len(dirs_to_crunch_medium),
+        medium_threshold,
+    )
+    if dirs_to_crunch_large:
+        failures_large = crunch_from_list(dirs_to_crunch_large, serial=True)
+
+    if failures_small or failures_medium or failures_large:
         raise click.ClickException(
             "Some files failed to process. See {} for more details".format(log_file)
         )
 
-def _crunch_files(
+
+def _crunch_files(  # pylint:disable=too-many-arguments
     fnames,
     dpath,
     drs=None,
@@ -262,7 +338,7 @@ def _crunch_files(
     land_mask_threshold=None,
     crunch_contact=None,
 ):
-    logger.info("Processing {}".format(fnames))
+    logger.info("Processing %s", fnames)
     scmcube = _load_scm_cube(drs, dpath, fnames)
 
     out_filename = separator.join([output_prefix, scmcube.get_data_filename()])
@@ -274,12 +350,13 @@ def _crunch_files(
 
     if not force and out_filepath in existing_files:
         logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
-        return
+        return None
 
     results = scmcube.get_scm_timeseries_cubes(land_mask_threshold=land_mask_threshold)
     results = _set_crunch_contact_in_results(results, crunch_contact)
 
     return results, out_filepath, scmcube.info
+
 
 def _apply_func_to_files_if_dir_matches_regexp(apply_func, search_dir, regexp_to_match):
     failures = False
