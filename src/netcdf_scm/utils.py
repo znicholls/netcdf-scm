@@ -159,7 +159,7 @@ def apply_mask(in_scmcube, in_mask):
     return out_cube
 
 
-def unify_lat_lon(cubes, rtol=10 ** -10):
+def unify_lat_lon(cubes, rtol=10 ** -6):
     """
     Unify latitude and longitude co-ordinates of cubes in place.
 
