@@ -37,6 +37,8 @@ def test_crunching(tmpdir, caplog):
                 "--regexp",
                 VAR_TO_CRUNCH,
                 "-f",
+                "--small-number-workers",
+                1,
             ],
         )
     assert result.exit_code == 0
@@ -161,7 +163,16 @@ def test_crunching_join_files(tmpdir, caplog):
     with caplog.at_level("DEBUG"):
         result = runner.invoke(
             crunch_data,
-            [INPUT_DIR, OUTPUT_DIR, crunch_contact, "--drs", "CMIP6Output", "-f"],
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                crunch_contact,
+                "--drs",
+                "CMIP6Output",
+                "-f",
+                "--small-number-workers",
+                1,
+            ],
         )
     assert result.exit_code == 0
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
@@ -214,11 +225,8 @@ def test_crunching_arguments(tmpdir, caplog):
                 "--land-mask-threshold",
                 LAND_MASK_TRESHHOLD,
                 "-f",
-                # force serial processing
-                "--small-threshold",
+                "--small-number-workers",
                 1,
-                "--medium-threshold",
-                2,
             ],
         )
     assert result.exit_code == 0
@@ -280,11 +288,8 @@ def test_crunching_arguments(tmpdir, caplog):
                 DATA_SUB_DIR,
                 "--land-mask-threshold",
                 LAND_MASK_TRESHHOLD,
-                # force serial processing
-                "--small-threshold",
+                "--small-number-workers",
                 1,
-                "--medium-threshold",
-                2,
             ],
         )
     assert result_skip.exit_code == 0

@@ -114,7 +114,10 @@ def test_apply_mask(test_generic_tas_cube):
 
 
 @tdata_required
-@pytest.mark.parametrize("ttol", [0.1, 10 ** -3, 1.5 * 10**-5, 10**-5, 0.9 * 10**-5, 10 ** -10, "default"])
+@pytest.mark.parametrize(
+    "ttol",
+    [0.1, 10 ** -3, 1.5 * 10 ** -5, 10 ** -5, 0.9 * 10 ** -5, 10 ** -10, "default"],
+)
 def test_unify_lat_lon(test_generic_tas_cube, ttol):
     def get_starting_list(scale):
         base_cube = test_generic_tas_cube.cube.copy()

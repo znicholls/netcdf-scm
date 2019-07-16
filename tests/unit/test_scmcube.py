@@ -385,7 +385,8 @@ class TestSCMCube(object):
         assert re.match(specific_warn, caplog.messages[0])
         if exc_info is not None:
             assert re.match(
-                "Could not calculate areacella, error message: {}".format(exc_info), str(caplog.records[0].message)
+                "Could not calculate areacella, error message: {}".format(exc_info),
+                str(caplog.records[0].message),
             )  # the actual message is stored in the exception
 
         np.testing.assert_array_equal(result, expected)
