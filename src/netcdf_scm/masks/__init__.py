@@ -116,6 +116,7 @@ def get_default_sftlf_cube():
     """Load NetCDF-SCM's default (last resort) surface land fraction cube"""
     return iris.load_cube(os.path.join(os.path.dirname(__file__), _DEFAULT_SFTLF_FILE))
 
+
 # @profile
 def get_land_mask(  # pylint:disable=unused-argument
     masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwargs
@@ -168,6 +169,7 @@ def get_land_mask(  # pylint:disable=unused-argument
 
     masker._masks["World|Land"] = land_mask  # pylint:disable=protected-access
     return broadcast_onto_lat_lon_grid(cube, land_mask)
+
 
 def get_nh_mask(masker, cube, **kwargs):  # pylint:disable=unused-argument
     """

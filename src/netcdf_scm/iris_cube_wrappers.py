@@ -41,28 +41,33 @@ try:
     from iris.fileformats import netcdf
     import cftime
     import cf_units
+
+    # monkey patch netCDF4 loading to avoid very small chunks
+    def _get_cf_var_data(cf_var, filename):
+        import netCDF4
+
+        # Get lazy chunked data out of a cf variable.
+        dtype = netcdf._get_actual_dtype(cf_var)  # pylint:disable=protected-access
+
+        # Create cube with deferred data, but no metadata
+        fill_value = getattr(
+            cf_var.cf_data,
+            "_FillValue",
+            netCDF4.default_fillvals[cf_var.dtype.str[1:]],  # pylint:disable=no-member
+        )
+        proxy = netcdf.NetCDFDataProxy(
+            cf_var.shape, dtype, filename, cf_var.cf_name, fill_value
+        )
+        return netcdf.as_lazy_data(proxy, chunks=None)
+
+    netcdf._get_cf_var_data = _get_cf_var_data  # pylint:disable=protected-access
+
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from .errors import raise_no_iris_warning
 
     raise_no_iris_warning()
 
 logger = logging.getLogger(__name__)
-
-
-def _get_cf_var_data(cf_var, filename):
-    import netCDF4
-
-    # Get lazy chunked data out of a cf variable.
-    dtype = netcdf._get_actual_dtype(cf_var)
-
-    # Create cube with deferred data, but no metadata
-    fill_value = getattr(cf_var.cf_data, '_FillValue',
-                         netCDF4.default_fillvals[cf_var.dtype.str[1:]])
-    proxy = netcdf.NetCDFDataProxy(cf_var.shape, dtype, filename, cf_var.cf_name,
-                            fill_value)
-    return netcdf.as_lazy_data(proxy, chunks=None)
-
-netcdf._get_cf_var_data = _get_cf_var_data
 
 
 class SCMCube:  # pylint:disable=too-many-public-methods
@@ -673,10 +678,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             return region, take_lat_lon_mean(scm_cube, area_weights), area
 
         try:
-            self._ensure_data_realised()
-            logger.debug("Crunching SCM timeseries serially")
-            crunch_list = self._crunch_serial(crunch_timeseries, scm_masks)
-            # crunching in parallel could go here
+            crunch_list = self._crunch_in_memory(crunch_timeseries, scm_masks)
         except MemoryError:
             logger.warning(
                 "Data won't fit in memory, will process lazily (hence slowly)"
@@ -691,7 +693,14 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 
-    def _crunch_serial(self, crunch_timeseries, scm_masks):
+    def _crunch_in_memory(self, crunch_timeseries, scm_masks):
+        # crunching in parallel could go here
+        self._ensure_data_realised()
+        logger.debug("Crunching SCM timeseries in memory")
+        return self._crunch_serial(crunch_timeseries, scm_masks)
+
+    @staticmethod
+    def _crunch_serial(crunch_timeseries, scm_masks):
         return [crunch_timeseries(region, mask) for region, mask in scm_masks.items()]
 
     def _ensure_data_realised(self):
@@ -1219,7 +1228,9 @@ class _CMIPCube(SCMCube, ABC):
             load_args = self._get_metadata_load_arguments(metadata_variable)
 
             cube = type(self)()
-            cube._metadata_cubes = {k: v for k, v in self._metadata_cubes.items() if k != metadata_variable}
+            cube._metadata_cubes = {  # pylint:disable=protected-access
+                k: v for k, v in self._metadata_cubes.items() if k != metadata_variable
+            }
             cube.load_data_from_identifiers(**load_args)
 
             return super().get_metadata_cube(metadata_variable, cube=cube)

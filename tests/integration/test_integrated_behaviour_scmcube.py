@@ -586,7 +586,7 @@ class _CMIPCubeTester(_SCMCubeIntegrationTester):
 
         if force_lazy_load:
             var_lazy = self.tclass()
-            var_lazy._make_two_copies_of_data = MagicMock(side_effect=MemoryError)
+            var_lazy._crunch_in_memory = MagicMock(side_effect=MemoryError)
             var_lazy.load_data_from_path(self._test_get_scm_timeseries_file)
 
             res_lazy = var_lazy.get_scm_timeseries()
