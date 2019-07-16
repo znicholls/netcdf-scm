@@ -244,9 +244,9 @@ def crunch_data(
 
     dirs_to_crunch = _find_dirs_meeting_func(src, keep_dir)
 
-    def get_nyears(dpath):
+    def get_nyears(dpath_h):
         helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
-            dirpath
+            dpath_h
         )
         time_ids = helper._time_id.split(  # pylint:disable=protected-access
             helper.time_period_separator
@@ -290,18 +290,24 @@ def crunch_data(
         )
 
     failures_small = False
-    dirs_to_crunch_small = [{"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n < small_threshold]
+    dirs_to_crunch_small = [
+        {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n < small_threshold
+    ]
     logger.info(
         "Crunching %s directories with less than %s years of data",
         len(dirs_to_crunch_small),
         small_threshold,
     )
     if dirs_to_crunch_small:
-        failures_small = crunch_from_list(dirs_to_crunch_small, n_workers=small_number_workers)
+        failures_small = crunch_from_list(
+            dirs_to_crunch_small, n_workers=small_number_workers
+        )
 
     failures_medium = False
     dirs_to_crunch_medium = [
-        {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if small_threshold <= n < medium_threshold
+        {"fnames": f, "dpath": d}
+        for d, f, n in dirs_to_crunch
+        if small_threshold <= n < medium_threshold
     ]
     logger.info(
         "Crunching %s directories with greater than or equal to %s and less than %s years of data",
@@ -310,7 +316,9 @@ def crunch_data(
         medium_threshold,
     )
     if dirs_to_crunch_medium:
-        failures_medium = crunch_from_list(dirs_to_crunch_medium, n_workers=medium_number_workers)
+        failures_medium = crunch_from_list(
+            dirs_to_crunch_medium, n_workers=medium_number_workers
+        )
 
     failures_large = False
     dirs_to_crunch_large = [
@@ -361,6 +369,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments
 
     return results, out_filepath, scmcube.info
 
+
 def _find_dirs_meeting_func(src, check_func):
     matching_dirs = []
     logger.info("Finding directories with files")
@@ -373,7 +382,16 @@ def _find_dirs_meeting_func(src, check_func):
     logger.info("Found %s directories with files", len(matching_dirs))
     return matching_dirs
 
-def _apply_func_in_parallel(apply_func, loop_kwarglist, common_arglist=[], common_kwarglist={}, postprocess_func=None, n_workers=2, style="processes"):
+
+def _apply_func_in_parallel(
+    apply_func,
+    loop_kwarglist,
+    common_arglist=[],
+    common_kwarglist={},
+    postprocess_func=None,
+    n_workers=2,
+    style="processes",
+):
     tqdm_kwargs = {
         "total": len(loop_kwarglist),
         "unit": "it",
@@ -402,7 +420,9 @@ def _apply_func_in_parallel(apply_func, loop_kwarglist, common_arglist=[], commo
             raise ValueError("Unrecognised executor: {}".format(style))
         with executor_cls(max_workers=n_workers) as executor:
             futures = [
-                executor.submit(apply_func, *common_arglist, **ikwargs, **common_kwarglist)
+                executor.submit(
+                    apply_func, *common_arglist, **ikwargs, **common_kwarglist
+                )
                 for ikwargs in loop_kwarglist
             ]
             failures = False
@@ -522,7 +542,9 @@ def wrangle_netcdf_scm_ncs(
     if out_format == "tuningstrucs-blend-model":
         _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
     else:
-        _do_wrangling(src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers)
+        _do_wrangling(
+            src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers
+        )
 
 
 def _tuningstrucs_blended_model_wrangling(  # pylint:disable=too-many-arguments
@@ -593,7 +615,14 @@ def _do_wrangling(  # pylint:disable=too-many-arguments
 
     if out_format in ("mag-files", "magicc-input-files-point-end-of-year"):
         _do_magicc_wrangling(
-            src, dst, regexp_compiled, out_format, force, wrangle_contact, drs, number_workers
+            src,
+            dst,
+            regexp_compiled,
+            out_format,
+            force,
+            wrangle_contact,
+            drs,
+            number_workers,
         )
     else:
         raise ValueError("Unsupported format: {}".format(out_format))
@@ -641,7 +670,7 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
             wrangle_to_mag_files,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
             n_workers=number_workers,
-            style="threads"
+            style="threads",
         )
 
         if failures:
@@ -657,7 +686,7 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
             wrangle_to_magicc_input_files_point_end_of_year,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
             n_workers=number_workers,
-            style="threads"
+            style="threads",
         )
 
         if failures:

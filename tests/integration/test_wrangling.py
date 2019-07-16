@@ -21,7 +21,15 @@ def test_wrangling_defaults(tmpdir, caplog):
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
-            [INPUT_DIR, OUTPUT_DIR, test_wrangler, "--drs", "CMIP6Output"],
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                test_wrangler,
+                "--drs",
+                "CMIP6Output",
+                "--number-workers",
+                1,
+            ],
         )
     assert result.exit_code == 0
 
@@ -86,6 +94,8 @@ def test_wrangling_magicc_input_files(tmpdir, caplog):
                 ".*tas.*",
                 "--drs",
                 "MarbleCMIP5",
+                "--number-workers",
+                1,
             ],
         )
     assert result.exit_code == 0
@@ -137,6 +147,8 @@ def test_wrangling_magicc_input_files_error(tmpdir, caplog):
                 ".*lai.*",
                 "--drs",
                 "CMIP6Output",
+                "--number-workers",
+                1,
             ],
         )
     assert result.exit_code == 0
@@ -221,6 +233,8 @@ def test_wrangling_force(tmpdir, caplog):
             "test-prefix",
             "--drs",
             "CMIP6Output",
+            "--number-workers",
+            1,
         ],
     )
     assert result.exit_code == 0
@@ -239,6 +253,8 @@ def test_wrangling_force(tmpdir, caplog):
                 "test-prefix",
                 "--drs",
                 "CMIP6Output",
+                "--number-workers",
+                1,
             ],
         )
     assert result_skip.exit_code == 0
@@ -266,6 +282,8 @@ def test_wrangling_force(tmpdir, caplog):
                 "test-prefix",
                 "--drs",
                 "CMIP6Output",
+                "--number-workers",
+                1,
             ],
         )
     assert result_force.exit_code == 0
@@ -296,7 +314,17 @@ def test_wrangling_drs_replication(tmpdir):
     runner = CliRunner()
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [INPUT_DIR, OUTPUT_DIR, "test", "--regexp", ".*lai.*", "--drs", "CMIP6Output"],
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "test",
+            "--regexp",
+            ".*lai.*",
+            "--drs",
+            "CMIP6Output",
+            "--number-workers",
+            1,
+        ],
     )
     assert result.exit_code == 0
     assert isdir(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS"))
@@ -311,7 +339,8 @@ def test_wrangling_annual_mean_file(tmpdir):
 
     runner = CliRunner()
     result = runner.invoke(
-        wrangle_netcdf_scm_ncs, [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "MarbleCMIP5"]
+        wrangle_netcdf_scm_ncs,
+        [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "MarbleCMIP5", "--number-workers", 1],
     )
 
     assert result.exit_code != 0
