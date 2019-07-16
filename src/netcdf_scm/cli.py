@@ -5,7 +5,7 @@ import os
 import os.path
 import re
 import sys
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from os import makedirs, walk
 from time import gmtime, strftime
 
@@ -201,6 +201,8 @@ def crunch_data(
 
     tracker = OutputFileDatabase(out_dir)
     regexp_to_match = re.compile(regexp)
+    helper = _get_scmcube_helper(drs)
+
     dirs_to_crunch = []
     logger.info("Finding directories with files")
     for dirpath, _, filenames in walk(src):
@@ -226,78 +228,80 @@ def crunch_data(
             num_years = end_year - start_year
             dirs_to_crunch.append((dirpath, filenames, num_years))
 
-    total_dirs = len(dirs_to_crunch)
-    logger.info("Found %s directories with files", total_dirs)
+    def keep_dir(dpath):
+        if not regexp_to_match.match(dpath):
+            logger.debug("Skipping (did not match regexp) %s", dpath)
+            return False
+        logger.info("Adding directory to queue %s", dpath)
+        try:
+            helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
+                dpath
+            )
+        except Exception as e:  # pylint:disable=broad-except
+            logger.debug("Ignoring broken directory %s with error %s", dpath, e)
+            return False
+        return True
 
-    def crunch_from_list(crunch_list, n_workers=1, serial=False):
-        crunch_kwargs = {
-            "drs": drs,
-            "separator": separator,
-            "output_prefix": output_prefix,
-            "out_dir": out_dir,
-            "force": force,
-            "existing_files": tracker._data,  # pylint:disable=protected-access
-            "land_mask_threshold": land_mask_threshold,
-            "crunch_contact": crunch_contact,
-        }
+    dirs_to_crunch = _find_dirs_meeting_func(src, keep_dir)
 
-        def process_results(res):
-            if res is None:
-                return  # skipped crunching
-            scm_timeseries_cubes, out_filepath, info = res
-            logger.info("Registering %s", out_filepath)
-            tracker.register(out_filepath, info)
-            logger.info("Writing file to %s", out_filepath)
-            save_netcdf_scm_nc(scm_timeseries_cubes, out_filepath)
+    def get_nyears(dpath):
+        helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
+            dirpath
+        )
+        time_ids = helper._time_id.split(  # pylint:disable=protected-access
+            helper.time_period_separator
+        )
+        start_year = int(time_ids[0][:4].lstrip("0"))
+        end_year = int(time_ids[1][:4].lstrip("0"))
+        num_years = end_year - start_year
 
-        tqdm_kwargs = {
-            "total": len(crunch_list),
-            "unit": "it",
-            "unit_scale": True,
-            "leave": True,
-        }
-        failures = False
-        if serial:
-            logger.info("Crunching serially")
-            for d, f in tqdm.tqdm(crunch_list, **tqdm_kwargs):
-                try:
-                    process_results(_crunch_files(f, d, **crunch_kwargs))
-                except Exception as e:  # pylint:disable=broad-except
-                    logger.exception("Exception found %s", e)
-                    failures = True
+        return num_years
 
-        else:
-            logger.info("Crunching in parallel with %s workers", n_workers)
-            with ProcessPoolExecutor(max_workers=n_workers) as executor:
-                futures = [
-                    executor.submit(_crunch_files, f, d, **crunch_kwargs)
-                    for d, f in crunch_list
-                ]
-                failures = False
-                # Print out the progress as tasks complete
-                for future in tqdm.tqdm(as_completed(futures), **tqdm_kwargs):
-                    try:
-                        res = future.result()
-                        process_results(res)
-                    except Exception as e:  # pylint:disable=broad-except
-                        logger.exception("Exception found %s", e)
-                        failures = True
+    dirs_to_crunch = [(d, f, get_nyears(d)) for d, f in dirs_to_crunch]
 
-        return failures
+    crunch_kwargs = {
+        "drs": drs,
+        "separator": separator,
+        "output_prefix": output_prefix,
+        "out_dir": out_dir,
+        "force": force,
+        "existing_files": tracker._data,  # pylint:disable=protected-access
+        "land_mask_threshold": land_mask_threshold,
+        "crunch_contact": crunch_contact,
+    }
+
+    def process_results(res):
+        if res is None:
+            return  # skipped crunching
+        scm_timeseries_cubes, out_filepath, info = res
+        logger.info("Registering %s", out_filepath)
+        tracker.register(out_filepath, info)
+        logger.info("Writing file to %s", out_filepath)
+        save_netcdf_scm_nc(scm_timeseries_cubes, out_filepath)
+
+    def crunch_from_list(crunch_list, n_workers=1):
+        return _apply_func_in_parallel(
+            _crunch_files,
+            crunch_list,
+            common_kwarglist=crunch_kwargs,
+            postprocess_func=process_results,
+            n_workers=n_workers,
+            style="processes",
+        )
 
     failures_small = False
-    dirs_to_crunch_small = [(d, f) for d, f, n in dirs_to_crunch if n < small_threshold]
+    dirs_to_crunch_small = [{"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n < small_threshold]
     logger.info(
         "Crunching %s directories with less than %s years of data",
         len(dirs_to_crunch_small),
         small_threshold,
     )
     if dirs_to_crunch_small:
-        failures_small = crunch_from_list(dirs_to_crunch_small, small_number_workers)
+        failures_small = crunch_from_list(dirs_to_crunch_small, n_workers=small_number_workers)
 
     failures_medium = False
     dirs_to_crunch_medium = [
-        (d, f) for d, f, n in dirs_to_crunch if small_threshold <= n < medium_threshold
+        {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if small_threshold <= n < medium_threshold
     ]
     logger.info(
         "Crunching %s directories with greater than or equal to %s and less than %s years of data",
@@ -306,11 +310,11 @@ def crunch_data(
         medium_threshold,
     )
     if dirs_to_crunch_medium:
-        failures_medium = crunch_from_list(dirs_to_crunch_medium, medium_number_workers)
+        failures_medium = crunch_from_list(dirs_to_crunch_medium, n_workers=medium_number_workers)
 
     failures_large = False
     dirs_to_crunch_large = [
-        (d, f) for d, f, n in dirs_to_crunch if n > medium_threshold
+        {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n > medium_threshold
     ]
     logger.info(
         "Crunching %s directories with greater than or equal to %s years of data",
@@ -318,7 +322,7 @@ def crunch_data(
         medium_threshold,
     )
     if dirs_to_crunch_large:
-        failures_large = crunch_from_list(dirs_to_crunch_large, serial=True)
+        failures_large = crunch_from_list(dirs_to_crunch_large, n_workers=1)
 
     if failures_small or failures_medium or failures_large:
         raise click.ClickException(
@@ -357,29 +361,60 @@ def _crunch_files(  # pylint:disable=too-many-arguments
 
     return results, out_filepath, scmcube.info
 
-# TODO: re-write to use progressbar and parallelisation
-def _apply_func_to_files_if_dir_matches_regexp(apply_func, search_dir, regexp_to_match):
-    failures = False
-
+def _find_dirs_meeting_func(src, check_func):
+    matching_dirs = []
     logger.info("Finding directories with files")
-    total_dirs = len(list([f for _, _, f in walk(search_dir) if f]))
-    logger.info("Found %s directories with files", total_dirs)
-    dir_counter = 1
-    for dirpath, _, filenames in walk(search_dir):
+    for dirpath, _, filenames in walk(src):
         logger.debug("Entering %s", dirpath)
         if filenames:
-            logger.info("Checking directory %s of %s", dir_counter, total_dirs)
-            dir_counter += 1
-            if not regexp_to_match.match(dirpath):
-                logger.debug("Skipping (did not match regexp) %s", dirpath)
-                continue
-            logger.info("Attempting to process: %s", filenames)
-            try:
-                apply_func(filenames, dirpath)
+            if check_func(dirpath):
+                matching_dirs.append((dirpath, filenames))
 
-            except Exception:  # pylint:disable=broad-except
-                logger.exception("Failed to process: %s", filenames)
+    logger.info("Found %s directories with files", len(matching_dirs))
+    return matching_dirs
+
+def _apply_func_in_parallel(apply_func, loop_kwarglist, common_arglist=[], common_kwarglist={}, postprocess_func=None, n_workers=2, style="processes"):
+    tqdm_kwargs = {
+        "total": len(loop_kwarglist),
+        "unit": "it",
+        "unit_scale": True,
+        "leave": True,
+    }
+    failures = False
+    if n_workers == 1:
+        logger.info("Processing serially")
+        for ikwargs in tqdm.tqdm(loop_kwarglist, **tqdm_kwargs):
+            try:
+                res = apply_func(*common_arglist, **ikwargs, **common_kwarglist)
+                if postprocess_func is not None:
+                    postprocess_func(res)
+            except Exception as e:  # pylint:disable=broad-except
+                logger.exception("Exception found %s", e)
                 failures = True
+
+    else:
+        logger.info("Processing in parallel with %s workers", n_workers)
+        if style == "processes":
+            executor_cls = ProcessPoolExecutor
+        elif style == "threads":
+            executor_cls = ThreadPoolExecutor
+        else:
+            raise ValueError("Unrecognised executor: {}".format(style))
+        with executor_cls(max_workers=n_workers) as executor:
+            futures = [
+                executor.submit(apply_func, *common_arglist, **ikwargs, **common_kwarglist)
+                for ikwargs in loop_kwarglist
+            ]
+            failures = False
+            # Print out the progress as tasks complete
+            for future in tqdm.tqdm(as_completed(futures), **tqdm_kwargs):
+                try:
+                    res = future.result()
+                    if postprocess_func is not None:
+                        postprocess_func(res)
+                except Exception as e:  # pylint:disable=broad-except
+                    logger.exception("Exception found %s", e)
+                    failures = True
 
     return failures
 
@@ -447,8 +482,14 @@ def _set_crunch_contact_in_results(res, crunch_contact):
     default=False,
     show_default=True,
 )
+@click.option(
+    "--number-workers",  # pylint:disable=too-many-arguments
+    help="Number of worker (threads) to use when wrangling.",
+    default=4,
+    show_default=True,
+)
 def wrangle_netcdf_scm_ncs(
-    src, dst, wrangle_contact, regexp, prefix, out_format, drs, force
+    src, dst, wrangle_contact, regexp, prefix, out_format, drs, force, number_workers
 ):
     """
     Wrangle NetCDF-SCM ``.nc`` files into other formats and directory structures.
@@ -481,7 +522,7 @@ def wrangle_netcdf_scm_ncs(
     if out_format == "tuningstrucs-blend-model":
         _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
     else:
-        _do_wrangling(src, dst, regexp, out_format, force, wrangle_contact, drs)
+        _do_wrangling(src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers)
 
 
 def _tuningstrucs_blended_model_wrangling(  # pylint:disable=too-many-arguments
@@ -546,22 +587,23 @@ def _tuningstrucs_blended_model_wrangling_inner_loop(
 
 
 def _do_wrangling(  # pylint:disable=too-many-arguments
-    src, dst, regexp, out_format, force, wrangle_contact, drs
+    src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers
 ):
     regexp_compiled = re.compile(regexp)
 
     if out_format in ("mag-files", "magicc-input-files-point-end-of-year"):
         _do_magicc_wrangling(
-            src, dst, regexp_compiled, out_format, force, wrangle_contact, drs
+            src, dst, regexp_compiled, out_format, force, wrangle_contact, drs, number_workers
         )
     else:
         raise ValueError("Unsupported format: {}".format(out_format))
 
 
 def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
-    src, dst, regexp_compiled, out_format, force, wrangle_contact, drs
+    src, dst, regexp_compiled, out_format, force, wrangle_contact, drs, number_workers
 ):
     scmcube = _get_scmcube_helper(drs)
+    crunch_list = _find_dirs_meeting_func(src, regexp_compiled.match)
 
     def get_openscmdf_metadata_header(fnames, dpath):
         openscmdf = df_append(
@@ -595,10 +637,13 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
         wrangle_to_mag_files = _get_wrangle_to_mag_files_func(
             force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
         )
-
-        failures = _apply_func_to_files_if_dir_matches_regexp(
-            wrangle_to_mag_files, src, regexp_compiled
+        failures = _apply_func_in_parallel(
+            wrangle_to_mag_files,
+            [{"fnames": f, "dpath": d} for d, f in crunch_list],
+            n_workers=number_workers,
+            style="threads"
         )
+
         if failures:
             raise click.ClickException(
                 "Some files failed to process. See the logs for more details"
@@ -608,10 +653,13 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
         wrangle_to_magicc_input_files_point_end_of_year = _get_wrangle_to_magicc_input_files_point_end_of_year_func(
             force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
         )
-
-        failures = _apply_func_to_files_if_dir_matches_regexp(
-            wrangle_to_magicc_input_files_point_end_of_year, src, regexp_compiled
+        failures = _apply_func_in_parallel(
+            wrangle_to_magicc_input_files_point_end_of_year,
+            [{"fnames": f, "dpath": d} for d, f in crunch_list],
+            n_workers=number_workers,
+            style="threads"
         )
+
         if failures:
             raise click.ClickException(
                 "Some files failed to process. See the logs for more details"
