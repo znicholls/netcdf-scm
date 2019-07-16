@@ -30,7 +30,6 @@ from openscm.scmdataframe import ScmDataFrame
 from pandas.testing import assert_frame_equal
 
 import netcdf_scm
-from netcdf_scm.masks import DEFAULT_REGIONS
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -38,6 +37,7 @@ from netcdf_scm.iris_cube_wrappers import (
     SCMCube,
     _CMIPCube,
 )
+from netcdf_scm.masks import DEFAULT_REGIONS
 from netcdf_scm.utils import broadcast_onto_lat_lon_grid
 
 

@@ -27,7 +27,7 @@ def test_crunching(tmpdir, update_expected_files):
             "MarbleCMIP5",
             "-f",
             "--small-number-workers",
-            2
+            1,
         ],
     )
     assert result.exit_code == 0, result.output

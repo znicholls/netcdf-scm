@@ -612,7 +612,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
-
     def get_scm_timeseries_cubes(
         self,
         sftlf_cube=None,
@@ -746,7 +745,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return timeseries_cubes
 
-
     def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get SCM relevant cubes from the ``self``.
@@ -841,7 +839,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         scmcube.cube.attributes.update(self._get_scm_timeseries_ids())
 
         return scmcube
-
 
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
@@ -1198,7 +1195,6 @@ class _CMIPCube(SCMCube, ABC):
 
         if w:
             self._process_load_data_from_identifiers_warnings(w)
-
 
     def get_metadata_cube(self, metadata_variable, cube=None):
         """
