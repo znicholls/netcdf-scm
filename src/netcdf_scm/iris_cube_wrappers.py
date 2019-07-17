@@ -595,7 +595,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             that fails we fall back onto ``iris.analysis.cartography.area_weights``.
 
         masks : list[str]
-            List of masks to use. If ``None`` then ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
+            List of masks to use. If ``None`` then
+            ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
 
         Returns
         -------
