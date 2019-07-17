@@ -43,6 +43,10 @@ try:
     import cf_units
 
     # monkey patch netCDF4 loading to avoid very small chunks
+    # required until there is a resolution to
+    # https://github.com/SciTools/iris/issues/3333
+    # and
+    # https://github.com/SciTools/iris/issues/3357
     def _get_cf_var_data(cf_var, filename):
         import netCDF4
 
