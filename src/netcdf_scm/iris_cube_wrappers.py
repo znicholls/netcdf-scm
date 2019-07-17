@@ -544,7 +544,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return cube
 
     def get_scm_timeseries(
-        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None
+        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None,
+        masks=None,
     ):
         """
         Get SCM relevant timeseries from ``self``.
@@ -574,6 +575,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             sftlf_cube=sftlf_cube,
             land_mask_threshold=land_mask_threshold,
             areacella_scmcube=areacella_scmcube,
+            masks=masks if masks is not None else DEFAULT_REGIONS,
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
