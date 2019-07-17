@@ -143,7 +143,6 @@ class TestSCMCube(object):
 
         exp_masks = DEFAULT_REGIONS if masks is None else masks
         test_cubes_return = {m: 3 for m in exp_masks}
-
         test_cube.get_scm_timeseries_cubes = MagicMock(return_value=test_cubes_return)
 
         test_conversion_return = pd.DataFrame(data=np.array([1, 2, 3]))

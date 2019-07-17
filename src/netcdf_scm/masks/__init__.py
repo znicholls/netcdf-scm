@@ -155,9 +155,18 @@ def get_land_mask(  # pylint:disable=unused-argument
             "Land surface fraction (sftlf) data not available, using default instead"
         )
         logger.warning(warn_msg)
-        def_cube_regridded = get_default_sftlf_cube().regrid(
-            cube.cube, iris.analysis.AreaWeighted()
-        )
+        try:
+            def_cube_regridded = get_default_sftlf_cube().regrid(
+                cube.cube, iris.analysis.AreaWeighted()
+            )
+        except ValueError:
+            logger.warning("Guessing bounds to regrid default sftlf data")
+            cube.cube.coord("latitude").guess_bounds()
+            cube.cube.coord("longitude").guess_bounds()
+            def_cube_regridded = get_default_sftlf_cube().regrid(
+                cube.cube, iris.analysis.AreaWeighted()
+            )
+
         sftlf_data = def_cube_regridded.data
 
     land_mask = np.where(
