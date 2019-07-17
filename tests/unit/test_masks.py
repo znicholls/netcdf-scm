@@ -16,6 +16,7 @@ from netcdf_scm.masks import (
     get_default_sftlf_cube,
     get_land_mask,
     get_nh_mask,
+    get_default_sftlf_cube,
 )
 
 
