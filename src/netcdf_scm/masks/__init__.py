@@ -306,7 +306,7 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
         # that we have to flip everything so False goes to True and True goes
         # to False, do all our operations with AND logic, then flip everything
         # back).
-        mask = ~np.outer(~mask_lat, ~mask_lon)
+        mask = ~(~mask_lat_2d & ~mask_lon_2d)
 
         return broadcast_onto_lat_lon_grid(cube, mask)
 
