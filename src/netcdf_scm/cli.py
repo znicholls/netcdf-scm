@@ -280,7 +280,7 @@ def crunch_data(
         save_netcdf_scm_nc(scm_timeseries_cubes, out_filepath)
 
     def crunch_from_list(crunch_list, n_workers=1):
-        return _apply_func_in_parallel(
+        return _apply_func(
             _crunch_files,
             crunch_list,
             common_kwarglist=crunch_kwargs,
@@ -383,58 +383,102 @@ def _find_dirs_meeting_func(src, check_func):
     return matching_dirs
 
 
-def _apply_func_in_parallel(
+def _apply_func(  # pylint:disable=too-many-arguments
     apply_func,
     loop_kwarglist,
-    common_arglist=[],
-    common_kwarglist={},
+    common_arglist=None,
+    common_kwarglist=None,
     postprocess_func=None,
     n_workers=2,
     style="processes",
 ):
+    common_arglist = [] if common_arglist is None else common_arglist
+    common_kwarglist = {} if common_kwarglist is None else common_kwarglist
     tqdm_kwargs = {
         "total": len(loop_kwarglist),
         "unit": "it",
         "unit_scale": True,
         "leave": True,
     }
-    failures = False
     if n_workers == 1:
-        logger.info("Processing serially")
-        for ikwargs in tqdm.tqdm(loop_kwarglist, **tqdm_kwargs):
+        failures = _apply_func_serially(
+            apply_func=apply_func,
+            loop_kwarglist=loop_kwarglist,
+            tqdm_kwargs=tqdm_kwargs,
+            common_arglist=common_arglist,
+            common_kwarglist=common_kwarglist,
+            postprocess_func=postprocess_func,
+        )
+    else:
+        failures = _apply_func_parallel(
+            apply_func=apply_func,
+            loop_kwarglist=loop_kwarglist,
+            tqdm_kwargs=tqdm_kwargs,
+            common_arglist=common_arglist,
+            common_kwarglist=common_kwarglist,
+            postprocess_func=postprocess_func,
+            n_workers=n_workers,
+            style=style,
+        )
+
+    return failures
+
+
+def _apply_func_serially(  # pylint:disable=too-many-arguments
+    apply_func,
+    loop_kwarglist,
+    tqdm_kwargs,
+    common_arglist,
+    common_kwarglist,
+    postprocess_func,
+):
+    failures = False
+    logger.info("Processing serially")
+    for ikwargs in tqdm.tqdm(loop_kwarglist, **tqdm_kwargs):
+        try:
+            res = apply_func(*common_arglist, **ikwargs, **common_kwarglist)
+            if postprocess_func is not None:
+                postprocess_func(res)
+        except Exception as e:  # pylint:disable=broad-except
+            logger.exception("Exception found %s", e)
+            failures = True
+
+    return failures
+
+
+def _apply_func_parallel(  # pylint:disable=too-many-arguments
+    apply_func,
+    loop_kwarglist,
+    tqdm_kwargs,
+    common_arglist,
+    common_kwarglist,
+    postprocess_func,
+    n_workers,
+    style,
+):
+    failures = False
+    logger.info("Processing in parallel with %s workers", n_workers)
+    if style == "processes":
+        executor_cls = ProcessPoolExecutor
+    elif style == "threads":
+        executor_cls = ThreadPoolExecutor
+    else:
+        raise ValueError("Unrecognised executor: {}".format(style))
+    with executor_cls(max_workers=n_workers) as executor:
+        futures = [
+            executor.submit(apply_func, *common_arglist, **ikwargs, **common_kwarglist)
+            for ikwargs in loop_kwarglist
+        ]
+        failures = False
+        # Print out the progress as tasks complete
+        for future in tqdm.tqdm(as_completed(futures), **tqdm_kwargs):
             try:
-                res = apply_func(*common_arglist, **ikwargs, **common_kwarglist)
+                res = future.result()
                 if postprocess_func is not None:
                     postprocess_func(res)
             except Exception as e:  # pylint:disable=broad-except
                 logger.exception("Exception found %s", e)
                 failures = True
-
-    else:
-        logger.info("Processing in parallel with %s workers", n_workers)
-        if style == "processes":
-            executor_cls = ProcessPoolExecutor
-        elif style == "threads":
-            executor_cls = ThreadPoolExecutor
-        else:
-            raise ValueError("Unrecognised executor: {}".format(style))
-        with executor_cls(max_workers=n_workers) as executor:
-            futures = [
-                executor.submit(
-                    apply_func, *common_arglist, **ikwargs, **common_kwarglist
-                )
-                for ikwargs in loop_kwarglist
-            ]
-            failures = False
-            # Print out the progress as tasks complete
-            for future in tqdm.tqdm(as_completed(futures), **tqdm_kwargs):
-                try:
-                    res = future.result()
-                    if postprocess_func is not None:
-                        postprocess_func(res)
-                except Exception as e:  # pylint:disable=broad-except
-                    logger.exception("Exception found %s", e)
-                    failures = True
 
     return failures
 
@@ -501,7 +545,7 @@ def _set_crunch_contact_in_results(res, crunch_contact):
     help="Overwrite any existing files.",
     default=False,
     show_default=True,
-)
+)  # pylint:disable=too-many-arguments
 @click.option(
     "--number-workers",  # pylint:disable=too-many-arguments
     help="Number of worker (threads) to use when wrangling.",
@@ -666,7 +710,7 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
         wrangle_to_mag_files = _get_wrangle_to_mag_files_func(
             force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
         )
-        failures = _apply_func_in_parallel(
+        failures = _apply_func(
             wrangle_to_mag_files,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
             n_workers=number_workers,
@@ -682,7 +726,7 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
         wrangle_to_magicc_input_files_point_end_of_year = _get_wrangle_to_magicc_input_files_point_end_of_year_func(
             force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
         )
-        failures = _apply_func_in_parallel(
+        failures = _apply_func(
             wrangle_to_magicc_input_files_point_end_of_year,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
             n_workers=number_workers,
