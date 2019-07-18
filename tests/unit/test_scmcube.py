@@ -1,6 +1,5 @@
 import copy
 import datetime as dt
-import itertools
 import logging
 import re
 import warnings
