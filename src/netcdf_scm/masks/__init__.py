@@ -267,7 +267,7 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
                 raise
 
         mask_lat = ~np.array([
-            v in tmp_cube.coord("latitude").points
+            np.isclose(v, tmp_cube.coord("latitude").points).any()
             for v in cube.cube.coord("latitude").points
         ])
 
@@ -424,6 +424,8 @@ class CubeMasker:
                 raise InvalidMask("Unknown mask: {}".format(mask_name))
 
         if mask.all():
+            import pdb
+            pdb.set_trace()
             raise ValueError("Your cube has no data which matches the `{}` mask".format(mask_name))
 
         return mask
