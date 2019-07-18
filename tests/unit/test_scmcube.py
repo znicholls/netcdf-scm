@@ -133,15 +133,15 @@ class TestSCMCube(object):
         test_cube.load_data_in_directory(tdir)
         test_cube._load_and_concatenate_files_in_directory.assert_called_with(tdir)
 
-    def test_get_scm_timeseries(self, test_sftlf_cube, test_cube):
+    @pytest.mark.parametrize("masks", [None, ["World"]])
+    def test_get_scm_timeseries(self, test_sftlf_cube, test_cube, masks):
         tsftlf_cube = "mocked 124"
         tland_mask_threshold = "mocked 51"
         tareacella_scmcube = "mocked 4389"
 
-        test_cubes_return = {
-            "World|Northern Hemisphere|Ocean": 4,
-            "World|Southern Hemisphere|Land": 12,
-        }
+        exp_masks = DEFAULT_REGIONS if masks is None else masks
+        test_cubes_return = {m: 3 for m in exp_masks}
+
         test_cube.get_scm_timeseries_cubes = MagicMock(return_value=test_cubes_return)
 
         test_conversion_return = pd.DataFrame(data=np.array([1, 2, 3]))
@@ -153,12 +153,14 @@ class TestSCMCube(object):
             sftlf_cube=tsftlf_cube,
             land_mask_threshold=tland_mask_threshold,
             areacella_scmcube=tareacella_scmcube,
+            masks=masks
         )
 
         test_cube.get_scm_timeseries_cubes.assert_called_with(
             sftlf_cube=tsftlf_cube,
             land_mask_threshold=tland_mask_threshold,
             areacella_scmcube=tareacella_scmcube,
+            masks=exp_masks
         )
         test_cube.convert_scm_timeseries_cubes_to_openscmdata.assert_called_with(
             test_cubes_return
