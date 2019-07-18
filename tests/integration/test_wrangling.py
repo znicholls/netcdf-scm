@@ -1,6 +1,7 @@
 from glob import glob
 from os.path import isdir, join
 
+import pytest
 from click.testing import CliRunner
 from conftest import (
     TEST_DATA_CMIP6_CRUNCH_OUTPUT,
@@ -10,6 +11,27 @@ from conftest import (
 
 import netcdf_scm
 from netcdf_scm.cli import wrangle_netcdf_scm_ncs
+
+
+def test_wrangling_unsupported_format(tmpdir, caplog):
+    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
+    OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
+
+    runner = CliRunner()
+    with caplog.at_level("INFO"):
+        result = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test-invalid-format",
+                "--out-format",
+                "junk",
+            ],
+        )
+    assert result.exit_code != 0
+    assert "invalid choice: junk" in result.output
+    assert isinstance(result.exception, SystemExit)
 
 
 def test_wrangling_defaults(tmpdir, caplog):
@@ -215,7 +237,8 @@ def test_wrangling_handles_integer_units(tmpdir, caplog):
     assert "lai" in result.output
 
 
-def test_wrangling_force(tmpdir, caplog):
+@pytest.mark.parametrize("out_format", ["mag-files", "tuningstrucs-blend-model"])
+def test_wrangling_force(tmpdir, caplog, out_format):
     INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
     OUTPUT_DIR = str(tmpdir)
 
@@ -235,6 +258,8 @@ def test_wrangling_force(tmpdir, caplog):
             "CMIP6Output",
             "--number-workers",
             1,
+            "--out-format",
+            out_format,
         ],
     )
     assert result.exit_code == 0
@@ -255,16 +280,23 @@ def test_wrangling_force(tmpdir, caplog):
                 "CMIP6Output",
                 "--number-workers",
                 1,
+                "--out-format",
+                out_format,
             ],
         )
     assert result_skip.exit_code == 0
 
-    skip_str_file = "Skipped (already exists, not overwriting) {}".format(
-        join(
+    if out_format == "mag-files":
+        expected_file = join(
             OUTPUT_DIR,
             "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.MAG",
         )
-    )
+    else:
+        expected_file = join(
+            OUTPUT_DIR,
+            "test-prefix_LAI_HISTORICAL_R1I1P1F2_WORLD_SOUTHERN_HEMISPHERE_OCEAN.mat",
+        )
+    skip_str_file = "Skipped (already exists, not overwriting) {}".format(expected_file)
     assert skip_str_file in result_skip.output
 
     caplog.clear()
@@ -284,6 +316,8 @@ def test_wrangling_force(tmpdir, caplog):
                 "CMIP6Output",
                 "--number-workers",
                 1,
+                "--out-format",
+                out_format,
             ],
         )
     assert result_force.exit_code == 0

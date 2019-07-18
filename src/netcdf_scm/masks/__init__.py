@@ -123,6 +123,11 @@ def get_land_mask(  # pylint:disable=unused-argument
     """
     Get the land mask
 
+    If the default sftlf cube is used, it is regridded onto ``cube``'s mask using a
+    linear interpolation. We hope to use an area-weighted regridding in future but at
+    the moment its performance is not good enough to be put into production (
+    approximately 100x slower than the linear version).
+
     Parameters
     ----------
     masker : :obj:`CubeMasker`
@@ -160,10 +165,10 @@ def get_land_mask(  # pylint:disable=unused-argument
                 cube.cube,
                 iris.analysis.Linear(),  # AreaWeighted() in future but too slow now
             )
-        except ValueError:
+        except ValueError:  # pragma: no cover # only required for AreaWeighted() regridding
             logger.warning("Guessing bounds to regrid default sftlf data")
-            cube.cube.coord("latitude").guess_bounds()
-            cube.cube.coord("longitude").guess_bounds()
+            cube.lat_dim.guess_bounds()
+            cube.lon_dim.guess_bounds()
             def_cube_regridded = get_default_sftlf_cube().regrid(
                 cube.cube,
                 iris.analysis.Linear(),  # AreaWeighted() in future but too slow now
@@ -298,7 +303,7 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
                     )
                 )
 
-            raise
+            raise  # pragma: no cover
 
         mask_lat = ~np.array(
             [

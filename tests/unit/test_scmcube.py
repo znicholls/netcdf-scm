@@ -255,10 +255,14 @@ class TestSCMCube(object):
 
     @pytest.mark.parametrize("tmasks", (None, ["a", "b", "custom", "World|Land"]))
     @patch.object(CubeMasker, "get_masks")
+    @patch.object(CubeMasker, "__init__")
     @patch("netcdf_scm.iris_cube_wrappers.apply_mask")
-    def test_get_scm_masks(self, mock_apply_mask, mock_get_masks, test_cube, tmasks):
+    def test_get_scm_masks(
+        self, mock_apply_mask, mock_cube_init, mock_get_masks, test_cube, tmasks
+    ):
         tgetmasks_return = "mock return"
         mock_get_masks.return_value = tgetmasks_return
+        mock_cube_init.return_value = None
 
         tsftlf_cube = "mocked out"
         tland_mask_threshold = "mocked land"
@@ -273,6 +277,14 @@ class TestSCMCube(object):
 
         expected_masks = tmasks if tmasks is not None else DEFAULT_REGIONS
         mock_get_masks.assert_called_with(expected_masks)
+        assert mock_cube_init.call_count == 1
+        # test calling again does not call masker again
+        test_cube._get_scm_masks(
+            sftlf_cube=tsftlf_cube,
+            land_mask_threshold=tland_mask_threshold,
+            masks=tmasks,
+        )
+        assert mock_cube_init.call_count == 1
 
     @pytest.mark.parametrize("transpose", [True, False])
     @pytest.mark.parametrize("input_format", ["scmcube", None])
