@@ -112,7 +112,9 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes, caplog):
     mock_nh_mask.return_value = nh_mask
     default_sftlf_cube = get_default_sftlf_cube()
     default_sftlf_cube = default_sftlf_cube.regrid(
-        test_all_cubes.cube, iris.analysis.AreaWeighted()
+        # AreaWeighted() in future but too slow now
+        test_all_cubes.cube,
+        iris.analysis.Linear(),
     )
     expected_land_mask = ~(default_sftlf_cube.data > 50).data
 
