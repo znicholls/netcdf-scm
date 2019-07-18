@@ -7,6 +7,7 @@ excluded.
 """
 import logging
 import os
+from functools import lru_cache
 
 import numpy as np
 
@@ -14,6 +15,8 @@ from ..utils import broadcast_onto_lat_lon_grid
 
 try:
     import iris
+    from iris.analysis.cartography import wrap_lons
+    from iris.util import broadcast_to_shape
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from ..errors import raise_no_iris_warning
 
@@ -108,6 +111,7 @@ def or_masks(mask_a, mask_b):
     return f
 
 
+@lru_cache(maxsize=1)
 def get_default_sftlf_cube():
     """Load NetCDF-SCM's default (last resort) surface land fraction cube"""
     return iris.load_cube(os.path.join(os.path.dirname(__file__), _DEFAULT_SFTLF_FILE))
@@ -142,15 +146,17 @@ def get_land_mask(  # pylint:disable=unused-argument
     np.ndarray
         Land mask
     """
-    warn_msg = "Land surface fraction (sftlf) data not available, using default instead"
     sftlf_data = None
     try:
         sftlf_cube = cube.get_metadata_cube(cube.sftlf_var, cube=sftlf_cube)
         sftlf_data = sftlf_cube.cube.data
     except OSError:
+        warn_msg = (
+            "Land surface fraction (sftlf) data not available, using default instead"
+        )
         logger.warning(warn_msg)
         def_cube_regridded = get_default_sftlf_cube().regrid(
-            cube.cube, iris.analysis.Linear()
+            cube.cube, iris.analysis.AreaWeighted()
         )
         sftlf_data = def_cube_regridded.data
 
@@ -160,6 +166,7 @@ def get_land_mask(  # pylint:disable=unused-argument
         True,  # otherwise True
     )
 
+    masker._masks["World|Land"] = land_mask  # pylint:disable=protected-access
     return broadcast_onto_lat_lon_grid(cube, land_mask)
 
 
@@ -184,9 +191,9 @@ def get_nh_mask(masker, cube, **kwargs):  # pylint:disable=unused-argument
         Array of booleans which can be used for the mask
     """
     mask_nh_lat = np.array(
-        [cell < 0 for cell in cube.cube.coord(cube.lat_name).cells()]
+        [c < 0 for c in cube.lat_dim.points]
     )
-    mask_all_lon = np.full(cube.cube.coord(cube.lon_name).points.shape, False)
+    mask_all_lon = np.full(cube.lon_dim.points.shape, False)
 
     # Here we make a grid which we can use as a mask. We have to use all
     # of these nots so that our product (which uses AND logic) gives us
@@ -195,6 +202,9 @@ def get_nh_mask(masker, cube, **kwargs):  # pylint:disable=unused-argument
     # to False, do all our operations with AND logic, then flip everything
     # back).
     mask_nh = ~np.outer(~mask_nh_lat, ~mask_all_lon)
+    masker._masks[  # pylint:disable=protected-access
+        "World|Northern Hemisphere"
+    ] = mask_nh
 
     return broadcast_onto_lat_lon_grid(cube, mask_nh)
 
@@ -202,6 +212,9 @@ def get_nh_mask(masker, cube, **kwargs):  # pylint:disable=unused-argument
 def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
     """
     Mask a subset of the globe using latitudes and longitudes in degrees East
+
+    The bounds are inclusive. Only cells where the bounds are completely contained
+    within the specified ranges are included (TODO: test this properly).
 
     Circular coordinates (longitude) can cross the 0E.
 
@@ -226,35 +239,45 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
     """
 
     def f(masker, cube, **kwargs):  # pylint:disable=unused-argument
-        def mask_dim(dim, lower, upper):
-            # Finds any cells where the bounds overlaps with the range (lower, upper)
-            if dim.circular:
-                max_val = dim.contiguous_bounds()[-1]
-                if lower % max_val > upper % max_val:
-                    # Handle case where it wraps around 0
-                    return ~np.array(
-                        [
-                            (lower % max_val < cell).any()
-                            or (cell < upper % max_val).any()
-                            for cell in dim.bounds
-                        ]
-                    )
+        # iris standard behaviour is to include any point whose bounds overlap with
+        # the given ranges e.g. if the range is (0, 130) then a cell whose bounds were
+        # (-90, 5) would be included even if its point were -42.5
 
-                return ~np.array(
-                    [
-                        (lower % max_val < cell).any()
-                        and (cell < upper % max_val).any()
-                        for cell in dim.bounds
-                    ]
-                )
+        # this can be altered with the `ignore_bounds` keyword argument. In this case
+        # only cells whose points lie within the range are included so if the range is
+        # (0, 130) then a cell whose bounds were (-90, 5) would be excluded if its
+        # point were -42.5
 
-            return ~np.array(
-                [(lower < cell).any() and (cell < upper).any() for cell in dim.bounds]
+        # if we want to only include if the entire box is within a point we're going
+        # to need something custom...
+        try:
+            tmp_cube = cube.cube.intersection(
+                latitude=(lower_lat, upper_lat, True, True),  # include bounds
+                longitude=(left_lon, right_lon, True, True),  # include bounds
+                ignore_bounds=True,
             )
+        except IndexError:
+            # TODO: make issue in Iris about this being a cryptic error message
+            error_msg = "None of the cube's {} lie within the bounds:\nquery: ({}, {})\ncube points: {}"
+            if not any([lower_lat <= v <= upper_lat for v in cube.cube.coord("latitude").points]):
+                raise ValueError(error_msg.format("latitudes", lower_lat, upper_lat, cube.cube.coord("latitude").points))
+            elif not any([left_lon <= v <= right_lon for v in cube.cube.coord("longitude").points]):
+                raise ValueError(error_msg.format("longitudes", left_lon, right_lon, cube.cube.coord("longitude").points))
+            else:
+                raise
 
-        mask_lat = mask_dim(cube.lat_dim, lower_lat, upper_lat)
-        mask_lon = mask_dim(cube.lon_dim, left_lon, right_lon)
+        mask_lat = ~np.array([
+            v in tmp_cube.coord("latitude").points
+            for v in cube.cube.coord("latitude").points
+        ])
 
+        modulus = cube.cube.coord("longitude").units.modulus
+        kept_lons = wrap_lons(tmp_cube.coord("longitude").points, 0, modulus)
+        cube_lons = wrap_lons(cube.cube.coord("longitude").points, 0, modulus)
+        mask_lon = ~np.array([
+            v in kept_lons
+            for v in cube_lons
+        ])
         # Here we make a grid which we can use as a mask. We have to use all
         # of these nots so that our product (which uses AND logic) gives us
         # False in the NH and True in the SH (another way to think of this is
@@ -313,7 +336,7 @@ MASKS = {
     "World|North Atlantic Ocean": or_masks(get_area_mask(0, -80, 65, 0), "World|Ocean"),
     # 5N-5S, 170W-120W (i.e. 190E to 240E) see
     # https://climatedataguide.ucar.edu/climate-data/nino-sst-indices-nino-12-3-34-4-oni-and-tni
-    "World|El Nino N3.4": or_masks(get_area_mask(-5, 190, 5, 240), "World|Ocean"),
+    "World|El Nino N3.4": or_masks(get_area_mask(-5, -170, 5, -120), "World|Ocean"),
 }
 
 
@@ -389,9 +412,19 @@ class CubeMasker:
             try:
                 mask_func = MASKS[mask_name]
                 mask = mask_func(self, self.cube, **self.kwargs)
+                if len(mask.shape) == 2:
+                    # ensure mask can be used directly on cube
+                    mask = broadcast_to_shape(
+                        mask,
+                        self.cube.cube.shape,
+                        [self.cube.lat_dim_number, self.cube.lon_dim_number]
+                    )
                 self._masks[mask_name] = mask
             except KeyError:
                 raise InvalidMask("Unknown mask: {}".format(mask_name))
+
+        if mask.all():
+            raise ValueError("Your cube has no data which matches the `{}` mask".format(mask_name))
 
         return mask
 
