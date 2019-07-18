@@ -146,7 +146,6 @@ def init_logging(params, out_filename=None):
     show_default=True,
     help="Maximum number of years in a file for it to be processed in parallel with ``medium-number-workers``",
 )
-@profile
 def crunch_data(
     src,
     dst,
