@@ -616,7 +616,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
-
+    @profile
     def get_scm_timeseries_cubes(
         self,
         sftlf_cube=None,
@@ -669,7 +669,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
         )
         area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
-
+        @profile
         def crunch_timeseries(region, numpy_mask):
             scm_cube = self._get_masked_cube_with_metdata(
                 region, numpy_mask, land_mask_threshold
@@ -696,7 +696,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         areas = {mask: area for mask, _, area in crunch_list if area is not None}
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
-
+    @profile
     def _crunch_in_memory(self, crunch_timeseries, scm_masks):
         # crunching in parallel could go here
         self._ensure_data_realised()

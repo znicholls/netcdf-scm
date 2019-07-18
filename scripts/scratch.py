@@ -23,6 +23,10 @@ for _ in range(5):
             "--drs",
             "CMIP6Output",
             "-f",
+            "--small-number-workers",
+            1,
+            "--medium-number-workers",
+            1,
         ],
     )
 assert result.exit_code == 0, result.output
