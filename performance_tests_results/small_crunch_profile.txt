@@ -1,11 +1,11 @@
-Start: 2019-07-18 13:49:39.213926
-End: 2019-07-18 13:49:42.048095
-Diff: 2.834169
+Start: 2019-07-18 19:50:24.854787
+End: 2019-07-18 19:54:16.898433
+Diff: 232.043646
 Wrote profile results to scratch.py.lprof
 Timer unit: 1e-06 s
 
-Total time: 2.82688 s
-File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/cli.py
+Total time: 232.036 s
+File: /Users/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/cli.py
 Function: crunch_data at line 87
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
@@ -100,62 +100,62 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    174                                               ``crunch_contact`` is written into the output ``.nc`` files' ``crunch_contact``
    175                                               attribute.
    176                                               """
-   177         5         26.0      5.2      0.0      output_prefix = "netcdf-scm"
-   178         5         19.0      3.8      0.0      separator = "_"
-   179         5         73.0     14.6      0.0      out_dir = os.path.join(dst, data_sub_dir)
+   177         5         15.0      3.0      0.0      output_prefix = "netcdf-scm"
+   178         5         10.0      2.0      0.0      separator = "_"
+   179         5         46.0      9.2      0.0      out_dir = os.path.join(dst, data_sub_dir)
    180                                           
-   181         5         19.0      3.8      0.0      log_file = os.path.join(
-   182         5         17.0      3.4      0.0          out_dir,
-   183         5        111.0     22.2      0.0          "{}-crunch.log".format(_get_timestamp().replace(" ", "_").replace(":", "")),
+   181         5          6.0      1.2      0.0      log_file = os.path.join(
+   182         5          7.0      1.4      0.0          out_dir,
+   183         5         88.0     17.6      0.0          "{}-crunch.log".format(_get_timestamp().replace(" ", "_").replace(":", "")),
    184                                               )
-   185         5         85.0     17.0      0.0      _make_path_if_not_exists(out_dir)
-   186         5         20.0      4.0      0.0      init_logging(
+   185         5         67.0     13.4      0.0      _make_path_if_not_exists(out_dir)
+   186         5          7.0      1.4      0.0      init_logging(
    187                                                   [
-   188         5         18.0      3.6      0.0              ("crunch-contact", crunch_contact),
-   189         5         18.0      3.6      0.0              ("source", src),
-   190         5         17.0      3.4      0.0              ("destination", out_dir),
-   191         5         18.0      3.6      0.0              ("drs", drs),
-   192         5         32.0      6.4      0.0              ("regexp", regexp),
-   193         5         17.0      3.4      0.0              ("land_mask_threshold", land_mask_threshold),
-   194         5         22.0      4.4      0.0              ("force", force),
-   195         5         18.0      3.6      0.0              ("small_number_workers", small_number_workers),
-   196         5         32.0      6.4      0.0              ("small_threshold", small_threshold),
-   197         5         17.0      3.4      0.0              ("medium_number_workers", medium_number_workers),
-   198         5         19.0      3.8      0.0              ("medium_threshold", medium_threshold),
+   188         5          9.0      1.8      0.0              ("crunch-contact", crunch_contact),
+   189         5          9.0      1.8      0.0              ("source", src),
+   190         5          7.0      1.4      0.0              ("destination", out_dir),
+   191         5          6.0      1.2      0.0              ("drs", drs),
+   192         5          8.0      1.6      0.0              ("regexp", regexp),
+   193         5          8.0      1.6      0.0              ("land_mask_threshold", land_mask_threshold),
+   194         5          8.0      1.6      0.0              ("force", force),
+   195         5          9.0      1.8      0.0              ("small_number_workers", small_number_workers),
+   196         5          8.0      1.6      0.0              ("small_threshold", small_threshold),
+   197         5          8.0      1.6      0.0              ("medium_number_workers", medium_number_workers),
+   198         5         10.0      2.0      0.0              ("medium_threshold", medium_threshold),
    199                                                   ],
-   200         5      18382.0   3676.4      0.7          out_filename=log_file,
+   200         5      15550.0   3110.0      0.0          out_filename=log_file,
    201                                               )
    202                                           
-   203         5       2802.0    560.4      0.1      tracker = OutputFileDatabase(out_dir)
-   204         5        664.0    132.8      0.0      regexp_to_match = re.compile(regexp)
-   205         5         62.0     12.4      0.0      helper = _get_scmcube_helper(drs)
+   203         5       5571.0   1114.2      0.0      tracker = OutputFileDatabase(out_dir)
+   204         5        551.0    110.2      0.0      regexp_to_match = re.compile(regexp)
+   205         5         34.0      6.8      0.0      helper = _get_scmcube_helper(drs)
    206                                           
-   207         5         18.0      3.6      0.0      dirs_to_crunch = []
-   208         5       1449.0    289.8      0.1      logger.info("Finding directories with files")
-   209        10        356.0     35.6      0.0      for dirpath, _, filenames in walk(src):
-   210         5       1085.0    217.0      0.0          logger.debug("Entering %s", dirpath)
-   211         5         23.0      4.6      0.0          if filenames:
-   212         5         68.0     13.6      0.0              if not regexp_to_match.match(dirpath):
-   213                                                           logger.debug("Skipping (did not match regexp) %s", dirpath)
-   214                                                           continue
-   215         5       1410.0    282.0      0.0              logger.info("Adding directory to queue %s", dirpath)
-   216         5         38.0      7.6      0.0              helper = _get_scmcube_helper(drs)
-   217         5         17.0      3.4      0.0              try:
-   218         5         24.0      4.8      0.0                  helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
-   219         5      13984.0   2796.8      0.5                      dirpath
+   207         5          8.0      1.6      0.0      dirs_to_crunch = []
+   208         5       1031.0    206.2      0.0      logger.info("Finding directories with files")
+   209       285      19366.0     68.0      0.0      for dirpath, _, filenames in walk(src):
+   210       280      44671.0    159.5      0.0          logger.debug("Entering %s", dirpath)
+   211       280        701.0      2.5      0.0          if filenames:
+   212        35        453.0     12.9      0.0              if not regexp_to_match.match(dirpath):
+   213         5        834.0    166.8      0.0                  logger.debug("Skipping (did not match regexp) %s", dirpath)
+   214         5         10.0      2.0      0.0                  continue
+   215        30       6207.0    206.9      0.0              logger.info("Adding directory to queue %s", dirpath)
+   216        30        177.0      5.9      0.0              helper = _get_scmcube_helper(drs)
+   217        30         47.0      1.6      0.0              try:
+   218        30         56.0      1.9      0.0                  helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
+   219        30      39014.0   1300.5      0.0                      dirpath
    220                                                           )
    221                                                       except Exception as e:  # pylint:disable=broad-except
    222                                                           logger.debug("Ignoring broken directory %s with error %s", dirpath, e)
    223                                                           continue
-   224         5         28.0      5.6      0.0              time_ids = helper._time_id.split(  # pylint:disable=protected-access
-   225         5         21.0      4.2      0.0                  helper.time_period_separator
+   224        30         84.0      2.8      0.0              time_ids = helper._time_id.split(  # pylint:disable=protected-access
+   225        30         69.0      2.3      0.0                  helper.time_period_separator
    226                                                       )
-   227         5         27.0      5.4      0.0              start_year = int(time_ids[0][:4].lstrip("0"))
-   228         5         24.0      4.8      0.0              end_year = int(time_ids[1][:4].lstrip("0"))
-   229         5         18.0      3.6      0.0              num_years = end_year - start_year
-   230         5         21.0      4.2      0.0              dirs_to_crunch.append((dirpath, filenames, num_years))
+   227        30        108.0      3.6      0.0              start_year = int(time_ids[0][:4].lstrip("0"))
+   228        30         97.0      3.2      0.0              end_year = int(time_ids[1][:4].lstrip("0"))
+   229        30         53.0      1.8      0.0              num_years = end_year - start_year
+   230        30         57.0      1.9      0.0              dirs_to_crunch.append((dirpath, filenames, num_years))
    231                                           
-   232         5         22.0      4.4      0.0      def keep_dir(dpath):
+   232         5         11.0      2.2      0.0      def keep_dir(dpath):
    233                                                   if not regexp_to_match.match(dpath):
    234                                                       logger.debug("Skipping (did not match regexp) %s", dpath)
    235                                                       return False
@@ -169,9 +169,9 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    243                                                       return False
    244                                                   return True
    245                                           
-   246         5      15188.0   3037.6      0.5      dirs_to_crunch = _find_dirs_meeting_func(src, keep_dir)
+   246         5     101559.0  20311.8      0.0      dirs_to_crunch = _find_dirs_meeting_func(src, keep_dir)
    247                                           
-   248         5         24.0      4.8      0.0      def get_nyears(dpath_h):
+   248         5         15.0      3.0      0.0      def get_nyears(dpath_h):
    249                                                   helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
    250                                                       dpath_h
    251                                                   )
@@ -184,20 +184,20 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    258                                           
    259                                                   return num_years
    260                                           
-   261         5       9374.0   1874.8      0.3      dirs_to_crunch = [(d, f, get_nyears(d)) for d, f in dirs_to_crunch]
+   261         5      33346.0   6669.2      0.0      dirs_to_crunch = [(d, f, get_nyears(d)) for d, f in dirs_to_crunch]
    262                                           
    263                                               crunch_kwargs = {
-   264         5         21.0      4.2      0.0          "drs": drs,
-   265         5         18.0      3.6      0.0          "separator": separator,
-   266         5         17.0      3.4      0.0          "output_prefix": output_prefix,
-   267         5         19.0      3.8      0.0          "out_dir": out_dir,
-   268         5         18.0      3.6      0.0          "force": force,
-   269         5         19.0      3.8      0.0          "existing_files": tracker._data,  # pylint:disable=protected-access
-   270         5         18.0      3.6      0.0          "land_mask_threshold": land_mask_threshold,
-   271         5         22.0      4.4      0.0          "crunch_contact": crunch_contact,
+   264         5         12.0      2.4      0.0          "drs": drs,
+   265         5          6.0      1.2      0.0          "separator": separator,
+   266         5          6.0      1.2      0.0          "output_prefix": output_prefix,
+   267         5          8.0      1.6      0.0          "out_dir": out_dir,
+   268         5          8.0      1.6      0.0          "force": force,
+   269         5         10.0      2.0      0.0          "existing_files": tracker._data,  # pylint:disable=protected-access
+   270         5         10.0      2.0      0.0          "land_mask_threshold": land_mask_threshold,
+   271         5         11.0      2.2      0.0          "crunch_contact": crunch_contact,
    272                                               }
    273                                           
-   274         5         20.0      4.0      0.0      def process_results(res):
+   274         5         11.0      2.2      0.0      def process_results(res):
    275                                                   if res is None:
    276                                                       return  # skipped crunching
    277                                                   scm_timeseries_cubes, out_filepath, info = res
@@ -206,7 +206,7 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    280                                                   logger.info("Writing file to %s", out_filepath)
    281                                                   save_netcdf_scm_nc(scm_timeseries_cubes, out_filepath)
    282                                           
-   283         5         19.0      3.8      0.0      def crunch_from_list(crunch_list, n_workers=1):
+   283         5         10.0      2.0      0.0      def crunch_from_list(crunch_list, n_workers=1):
    284                                                   return _apply_func(
    285                                                       _crunch_files,
    286                                                       crunch_list,
@@ -216,56 +216,56 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    290                                                       style="processes",
    291                                                   )
    292                                           
-   293         5         17.0      3.4      0.0      failures_small = False
+   293         5          9.0      1.8      0.0      failures_small = False
    294                                               dirs_to_crunch_small = [
-   295         5         30.0      6.0      0.0          {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n < small_threshold
+   295         5         27.0      5.4      0.0          {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n < small_threshold
    296                                               ]
-   297         5         20.0      4.0      0.0      logger.info(
-   298         5         17.0      3.4      0.0          "Crunching %s directories with less than %s years of data",
-   299         5         19.0      3.8      0.0          len(dirs_to_crunch_small),
-   300         5       1493.0    298.6      0.1          small_threshold,
+   297         5         11.0      2.2      0.0      logger.info(
+   298         5          7.0      1.4      0.0          "Crunching %s directories with less than %s years of data",
+   299         5          8.0      1.6      0.0          len(dirs_to_crunch_small),
+   300         5       1219.0    243.8      0.0          small_threshold,
    301                                               )
-   302         5         21.0      4.2      0.0      if dirs_to_crunch_small:
-   303         5         17.0      3.4      0.0          failures_small = crunch_from_list(
-   304         5    2755859.0 551171.8     97.5              dirs_to_crunch_small, n_workers=small_number_workers
+   302         5         11.0      2.2      0.0      if dirs_to_crunch_small:
+   303         5          9.0      1.8      0.0          failures_small = crunch_from_list(
+   304         5  231761768.0 46352353.6     99.9              dirs_to_crunch_small, n_workers=small_number_workers
    305                                                   )
    306                                           
-   307         5         24.0      4.8      0.0      failures_medium = False
+   307         5         14.0      2.8      0.0      failures_medium = False
    308                                               dirs_to_crunch_medium = [
-   309         5         23.0      4.6      0.0          {"fnames": f, "dpath": d}
+   309         5         11.0      2.2      0.0          {"fnames": f, "dpath": d}
    310         5         32.0      6.4      0.0          for d, f, n in dirs_to_crunch
    311                                                   if small_threshold <= n < medium_threshold
    312                                               ]
-   313         5         20.0      4.0      0.0      logger.info(
-   314         5         17.0      3.4      0.0          "Crunching %s directories with greater than or equal to %s and less than %s years of data",
-   315         5         20.0      4.0      0.0          len(dirs_to_crunch_medium),
-   316         5         18.0      3.6      0.0          small_threshold,
-   317         5       1698.0    339.6      0.1          medium_threshold,
+   313         5         12.0      2.4      0.0      logger.info(
+   314         5          7.0      1.4      0.0          "Crunching %s directories with greater than or equal to %s and less than %s years of data",
+   315         5         11.0      2.2      0.0          len(dirs_to_crunch_medium),
+   316         5          8.0      1.6      0.0          small_threshold,
+   317         5       1432.0    286.4      0.0          medium_threshold,
    318                                               )
-   319         5         22.0      4.4      0.0      if dirs_to_crunch_medium:
+   319         5         10.0      2.0      0.0      if dirs_to_crunch_medium:
    320                                                   failures_medium = crunch_from_list(
    321                                                       dirs_to_crunch_medium, n_workers=medium_number_workers
    322                                                   )
    323                                           
-   324         5         19.0      3.8      0.0      failures_large = False
+   324         5          8.0      1.6      0.0      failures_large = False
    325                                               dirs_to_crunch_large = [
-   326         5         30.0      6.0      0.0          {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n > medium_threshold
+   326         5         23.0      4.6      0.0          {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n > medium_threshold
    327                                               ]
-   328         5         20.0      4.0      0.0      logger.info(
-   329         5         17.0      3.4      0.0          "Crunching %s directories with greater than or equal to %s years of data",
-   330         5         32.0      6.4      0.0          len(dirs_to_crunch_large),
-   331         5       1426.0    285.2      0.1          medium_threshold,
+   328         5         11.0      2.2      0.0      logger.info(
+   329         5          8.0      1.6      0.0          "Crunching %s directories with greater than or equal to %s years of data",
+   330         5         10.0      2.0      0.0          len(dirs_to_crunch_large),
+   331         5        988.0    197.6      0.0          medium_threshold,
    332                                               )
-   333         5         33.0      6.6      0.0      if dirs_to_crunch_large:
+   333         5         10.0      2.0      0.0      if dirs_to_crunch_large:
    334                                                   failures_large = crunch_from_list(dirs_to_crunch_large, n_workers=1)
    335                                           
-   336         5         20.0      4.0      0.0      if failures_small or failures_medium or failures_large:
+   336         5          9.0      1.8      0.0      if failures_small or failures_medium or failures_large:
    337                                                   raise click.ClickException(
    338                                                       "Some files failed to process. See {} for more details".format(log_file)
    339                                                   )
 
-Total time: 1.94426 s
-File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
+Total time: 227.461 s
+File: /Users/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
 Function: get_scm_timeseries_cubes at line 619
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
@@ -318,12 +318,12 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    664                                                       Cubes, with latitude-longitude mean data as appropriate for each of the
    665                                                       SCM relevant regions.
    666                                                   """
-   667         5         12.0      2.4      0.0          masks = masks if masks is not None else DEFAULT_REGIONS
-   668         5         10.0      2.0      0.0          scm_masks = self._get_scm_masks(
-   669         5     198990.0  39798.0     10.2              sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
+   667        30         70.0      2.3      0.0          masks = masks if masks is not None else DEFAULT_REGIONS
+   668        30         36.0      1.2      0.0          scm_masks = self._get_scm_masks(
+   669        30  197732685.0 6591089.5     86.9              sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
    670                                                   )
-   671         5      41524.0   8304.8      2.1          area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
-   672         5        233.0     46.6      0.0          @profile
+   671        30      99078.0   3302.6      0.0          area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
+   672        30        857.0     28.6      0.0          @profile
    673                                                   def crunch_timeseries(region, numpy_mask):
    674                                                       scm_cube = self._get_masked_cube_with_metdata(
    675                                                           region, numpy_mask, land_mask_threshold
@@ -335,8 +335,8 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    681                                                           area = None
    682                                                       return region, take_lat_lon_mean(scm_cube, area_weights), area
    683                                           
-   684         5          9.0      1.8      0.0          try:
-   685         5    1677461.0 335492.2     86.3              crunch_list = self._crunch_in_memory(crunch_timeseries, scm_masks)
+   684        30         19.0      0.6      0.0          try:
+   685        30   29534439.0 984481.3     13.0              crunch_list = self._crunch_in_memory(crunch_timeseries, scm_masks)
    686                                                   except MemoryError:
    687                                                       logger.warning(
    688                                                           "Data won't fit in memory, will process lazily (hence slowly)"
@@ -346,31 +346,31 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    692                                                       self.load_data_in_directory(data_dir)
    693                                                       crunch_list = self._crunch_serial(crunch_timeseries, scm_masks)
    694                                           
-   695         5         48.0      9.6      0.0          timeseries_cubes = {mask: ts_cube for mask, ts_cube, _ in crunch_list}
-   696         5         28.0      5.6      0.0          areas = {mask: area for mask, _, area in crunch_list if area is not None}
-   697         5      25937.0   5187.4      1.3          timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
-   698         5         10.0      2.0      0.0          return timeseries_cubes
+   695        30        183.0      6.1      0.0          timeseries_cubes = {mask: ts_cube for mask, ts_cube, _ in crunch_list}
+   696        30         94.0      3.1      0.0          areas = {mask: area for mask, _, area in crunch_list if area is not None}
+   697        30      93299.0   3110.0      0.0          timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
+   698        30         39.0      1.3      0.0          return timeseries_cubes
 
-Total time: 1.33875 s
-File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
+Total time: 25.1797 s
+File: /Users/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
 Function: crunch_timeseries at line 672
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
    672                                                   @profile
    673                                                   def crunch_timeseries(region, numpy_mask):
-   674        45        167.0      3.7      0.0              scm_cube = self._get_masked_cube_with_metdata(
-   675        45     104280.0   2317.3      7.8                  region, numpy_mask, land_mask_threshold
+   674       270        543.0      2.0      0.0              scm_cube = self._get_masked_cube_with_metdata(
+   675       270     626086.0   2318.8      2.5                  region, numpy_mask, land_mask_threshold
    676                                                       )
    677                                           
-   678        45         96.0      2.1      0.0              if region in _LAND_FRACTION_REGIONS:
-   679        30      16963.0    565.4      1.3                  area = self._get_area(scm_cube, area_weights)
+   678       270        431.0      1.6      0.0              if region in _LAND_FRACTION_REGIONS:
+   679       180      49227.0    273.5      0.2                  area = self._get_area(scm_cube, area_weights)
    680                                                       else:
-   681        15         10.0      0.7      0.0                  area = None
-   682        45    1217230.0  27049.6     90.9              return region, take_lat_lon_mean(scm_cube, area_weights), area
+   681        90         40.0      0.4      0.0                  area = None
+   682       270   24503384.0  90753.3     97.3              return region, take_lat_lon_mean(scm_cube, area_weights), area
 
-Total time: 1.67737 s
-File: /home/UNIMELB/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
+Total time: 29.5341 s
+File: /Users/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
 Function: _crunch_in_memory at line 699
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
@@ -378,7 +378,154 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    699                                               @profile
    700                                               def _crunch_in_memory(self, crunch_timeseries, scm_masks):
    701                                                   # crunching in parallel could go here
-   702         5     335144.0  67028.8     20.0          self._ensure_data_realised()
-   703         5       1838.0    367.6      0.1          logger.debug("Crunching SCM timeseries in memory")
-   704         5    1340393.0 268078.6     79.9          return self._crunch_serial(crunch_timeseries, scm_masks)
+   702        30    4294625.0 143154.2     14.5          self._ensure_data_realised()
+   703        30       8124.0    270.8      0.0          logger.debug("Crunching SCM timeseries in memory")
+   704        30   25231347.0 841044.9     85.4          return self._crunch_serial(crunch_timeseries, scm_masks)
+
+Total time: 197.732 s
+File: /Users/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/iris_cube_wrappers.py
+Function: _get_scm_masks at line 848
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   848                                               @profile
+   849                                               def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
+   850                                                   """
+   851                                                   Get the scm masks.
+   852                                           
+   853                                                   Returns
+   854                                                   -------
+   855                                                   dict
+   856                                                       Dictionary of region name-mask key-value pairs
+   857                                                   """
+   858        30         19.0      0.6      0.0          if self._masker is None:
+   859        30         13.0      0.4      0.0              self._masker = CubeMasker(
+   860        30        139.0      4.6      0.0                  self, sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
+   861                                                       )
+   862        30         13.0      0.4      0.0          masks = masks if masks is not None else DEFAULT_REGIONS
+   863        30  197732187.0 6591072.9    100.0          return self._masker.get_masks(masks)
+
+Total time: 197.128 s
+File: /Users/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/masks/__init__.py
+Function: get_land_mask at line 119
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   119                                           @profile
+   120                                           def get_land_mask(  # pylint:disable=unused-argument
+   121                                               masker, cube, sftlf_cube=None, land_mask_threshold=50, **kwargs
+   122                                           ):
+   123                                               """
+   124                                               Get the land mask
+   125                                           
+   126                                               Parameters
+   127                                               ----------
+   128                                               masker : :obj:`CubeMasker`
+   129                                                   Cube masker from which to retrieve the mask
+   130                                           
+   131                                               cube : :obj:`SCMCube`
+   132                                                   Cube to create a mask for
+   133                                           
+   134                                               sftlf_cube : :obj:`SCMCube`
+   135                                                   Cube containing the surface land-fraction data
+   136                                           
+   137                                               land_mask_threshold : float
+   138                                                   Threshold for determining whether a cell is land or not. If the surface
+   139                                                   land-fraction > land_mask_threshold, the cell is land.
+   140                                           
+   141                                               kwargs : Any
+   142                                                   Ignored (required for compatibility with ``CubeMasker``)
+   143                                           
+   144                                               Returns
+   145                                               -------
+   146                                               np.ndarray
+   147                                                   Land mask
+   148                                               """
+   149        30         13.0      0.4      0.0      sftlf_data = None
+   150        30         20.0      0.7      0.0      try:
+   151        30     119634.0   3987.8      0.1          sftlf_cube = cube.get_metadata_cube(cube.sftlf_var, cube=sftlf_cube)
+   152         5      44055.0   8811.0      0.0          sftlf_data = sftlf_cube.cube.data
+   153        25         28.0      1.1      0.0      except OSError:
+   154                                                   warn_msg = (
+   155        25         12.0      0.5      0.0              "Land surface fraction (sftlf) data not available, using default instead"
+   156                                                   )
+   157        25       5261.0    210.4      0.0          logger.warning(warn_msg)
+   158        25         21.0      0.8      0.0          try:
+   159        25      14667.0    586.7      0.0              def_cube_regridded = get_default_sftlf_cube().regrid(
+   160        25  135876499.0 5435060.0     68.9                  cube.cube, iris.analysis.AreaWeighted()
+   161                                                       )
+   162        10         11.0      1.1      0.0          except ValueError:
+   163        10       2252.0    225.2      0.0              logger.warning("Guessing bounds to regrid default sftlf data")
+   164        10       3679.0    367.9      0.0              cube.cube.coord("latitude").guess_bounds()
+   165        10       2519.0    251.9      0.0              cube.cube.coord("longitude").guess_bounds()
+   166        10         13.0      1.3      0.0              def_cube_regridded = get_default_sftlf_cube().regrid(
+   167        10   61035312.0 6103531.2     31.0                  cube.cube, iris.analysis.AreaWeighted()
+   168                                                       )
+   169                                           
+   170        25        411.0     16.4      0.0          sftlf_data = def_cube_regridded.data
+   171                                           
+   172        30         52.0      1.7      0.0      land_mask = np.where(
+   173        30      10770.0    359.0      0.0          sftlf_data > land_mask_threshold,
+   174        30         48.0      1.6      0.0          False,  # where it's land, return False i.e. don't mask
+   175        30       4409.0    147.0      0.0          True,  # otherwise True
+   176                                               )
+   177                                           
+   178        30         70.0      2.3      0.0      masker._masks["World|Land"] = land_mask  # pylint:disable=protected-access
+   179        30       8041.0    268.0      0.0      return broadcast_onto_lat_lon_grid(cube, land_mask)
+
+Total time: 197.223 s
+File: /Users/znicholls/Documents/AGCEC/Misc/netcdf-scm/src/netcdf_scm/masks/__init__.py
+Function: get_mask at line 417
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   417                                               @profile
+   418                                               def get_mask(self, mask_name):
+   419                                                   """
+   420                                                   Get a single mask
+   421                                           
+   422                                                   If the mask has previously been calculated the precalculated result is
+   423                                                   returned from the cache. Otherwise the appropriate MaskFunc is called with any
+   424                                                   kwargs specified in the constructor.
+   425                                           
+   426                                                   Parameters
+   427                                                   ----------
+   428                                                   mask_name : str
+   429                                           
+   430                                                   Raises
+   431                                                   ------
+   432                                                   InvalidMask
+   433                                                       If the requested mask cannot be found or evaluated
+   434                                           
+   435                                                   ValueError
+   436                                                       If the cube has no data which matches the input mask
+   437                                           
+   438                                                   Returns
+   439                                                   -------
+   440                                                   ndarray[bool]
+   441                                                       Any True values should be masked out and excluded from any further calculation.
+   442                                                   """
+   443       600        272.0      0.5      0.0          try:
+   444       600        617.0      1.0      0.0              return self._masks[mask_name]
+   445       270        174.0      0.6      0.0          except KeyError:
+   446       270         90.0      0.3      0.0              try:
+   447       270        189.0      0.7      0.0                  mask_func = MASKS[mask_name]
+   448       270  197153177.0 730197.0    100.0                  mask = mask_func(self, self.cube, **self.kwargs)
+   449       270        799.0      3.0      0.0                  if len(mask.shape) == 2:
+   450                                                               # ensure mask can be used directly on cube
+   451                                                               mask = broadcast_to_shape(
+   452                                                                   mask,
+   453                                                                   self.cube.cube.shape,
+   454                                                                   [self.cube.lat_dim_number, self.cube.lon_dim_number],
+   455                                                               )
+   456       270        564.0      2.1      0.0                  self._masks[mask_name] = mask
+   457                                                       except KeyError:
+   458                                                           raise InvalidMask("Unknown mask: {}".format(mask_name))
+   459                                           
+   460       270      66974.0    248.1      0.0          if mask.all():
+   461                                                       raise ValueError(
+   462                                                           "Your cube has no data which matches the `{}` mask".format(mask_name)
+   463                                                       )
+   464                                           
+   465       270        188.0      0.7      0.0          return mask
 
