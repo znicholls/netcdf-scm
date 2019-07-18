@@ -845,6 +845,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return scmcube
 
+    @profile
     def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
         """
         Get the scm masks.
