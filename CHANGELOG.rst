@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#74 <https://github.com/znicholls/netcdf-scm/pull/74>`_) Fix bug in mask generation
 - (`#70 <https://github.com/znicholls/netcdf-scm/pull/70>`_) Dynamically decide whether to handle data lazily (fix regression tests in process)
 - (`#69 <https://github.com/znicholls/netcdf-scm/pull/69>`_) Add El Nino 3.4 mask
 - (`#67 <https://github.com/znicholls/netcdf-scm/pull/67>`_) Fix crunching filenaming, tidy up more and add catch for IPSL ``time_origin`` time variable attribute
