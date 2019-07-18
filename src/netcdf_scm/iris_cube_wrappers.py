@@ -1385,7 +1385,7 @@ class _CMIPCube(SCMCube, ABC):
     @_time_id.setter
     def _time_id(self, value):
         """Accessor for setting the time id (whose name varies with drs)"""
-        self.time_period = value
+        raise NotImplementedError  # pragma: no cover
 
 
 class MarbleCMIP5Cube(_CMIPCube):

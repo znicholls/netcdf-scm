@@ -170,7 +170,9 @@ def test_crunching_join_files(tmpdir, caplog):
                 "--drs",
                 "CMIP6Output",
                 "-f",
-                "--small-number-workers",
+                "--small-threshhold",
+                1,
+                "--medium-number-workers",
                 1,
             ],
         )
@@ -225,8 +227,10 @@ def test_crunching_arguments(tmpdir, caplog):
                 "--land-mask-threshold",
                 LAND_MASK_TRESHHOLD,
                 "-f",
-                "--small-number-workers",
+                "--small-threshhold",
                 1,
+                "--medium-threshhold",
+                2,
             ],
         )
     assert result.exit_code == 0

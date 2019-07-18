@@ -51,6 +51,8 @@ def test_close_and_open(tmpdir):
     tracker.register("test", exp)
     tracker.register("test2", exp2)
     assert len(tracker) == 2
+    assert tracker.contains_file("test")
+    assert tracker.contains_file("test2")
 
     tracker2 = OutputFileDatabase(tmpdir)
     assert len(tracker2) == 2
