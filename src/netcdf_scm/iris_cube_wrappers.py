@@ -122,6 +122,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     }
     """Mapping from cube attributes (derived from read files) to SCM timeseries metadata"""
 
+    _masker = None
+    """:obj:`CubeMasker` to use to mask self"""
+
     def __init__(self):
         self._loaded_paths = []
         self._metadata_cubes = {}
@@ -800,11 +803,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         dict
             Dictionary of region name-mask key-value pairs
         """
-        masker = CubeMasker(
-            self, sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
-        )
+        if self._masker is None:
+            self._masker = CubeMasker(
+                self, sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
+            )
         masks = masks if masks is not None else DEFAULT_REGIONS
-        return masker.get_masks(masks)
+        return self._masker.get_masks(masks)
 
     def _get_area_weights(self, areacella_scmcube=None):
         areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
