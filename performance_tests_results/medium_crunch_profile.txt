@@ -431,14 +431,14 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
    157                                                   logger.warning(warn_msg)
    158                                                   try:
    159                                                       def_cube_regridded = get_default_sftlf_cube().regrid(
-   160                                                           cube.cube, iris.analysis.AreaWeighted()
+   160                                                           cube.cube, iris.analysis.Linear() # AreaWeighted() in future but too slow now
    161                                                       )
    162                                                   except ValueError:
    163                                                       logger.warning("Guessing bounds to regrid default sftlf data")
    164                                                       cube.cube.coord("latitude").guess_bounds()
    165                                                       cube.cube.coord("longitude").guess_bounds()
    166                                                       def_cube_regridded = get_default_sftlf_cube().regrid(
-   167                                                           cube.cube, iris.analysis.AreaWeighted()
+   167                                                           cube.cube, iris.analysis.Linear() # AreaWeighted() in future but too slow now
    168                                                       )
    169                                           
    170                                                   sftlf_data = def_cube_regridded.data
