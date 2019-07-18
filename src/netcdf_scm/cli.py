@@ -668,7 +668,7 @@ def _do_wrangling(  # pylint:disable=too-many-arguments
             drs,
             number_workers,
         )
-    else:
+    else:  # pragma: no cover # emergency valve (should be caught by click on call)
         raise ValueError("Unsupported format: {}".format(out_format))
 
 
@@ -717,11 +717,6 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
             style="threads",
         )
 
-        if failures:
-            raise click.ClickException(
-                "Some files failed to process. See the logs for more details"
-            )
-
     elif out_format == "magicc-input-files-point-end-of-year":
         wrangle_to_magicc_input_files_point_end_of_year = _get_wrangle_to_magicc_input_files_point_end_of_year_func(
             force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
@@ -733,10 +728,10 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
             style="threads",
         )
 
-        if failures:
-            raise click.ClickException(
-                "Some files failed to process. See the logs for more details"
-            )
+    if failures:
+        raise click.ClickException(
+            "Some files failed to process. See the logs for more details"
+        )
 
 
 def _get_wrangle_to_mag_files_func(
@@ -877,7 +872,10 @@ def _skip_file(out_file, force, symlink_dir):
 
     if os.path.isfile(out_file):
         os.remove(out_file)
-        os.remove(os.path.join(symlink_dir, os.path.basename(out_file)))
+
+    symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
+    if os.path.isfile(symlink_file):
+        os.remove(symlink_file)
 
     return False
 

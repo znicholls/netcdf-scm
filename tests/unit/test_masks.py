@@ -16,6 +16,7 @@ from netcdf_scm.masks import (
     get_default_sftlf_cube,
     get_land_mask,
     get_nh_mask,
+    or_masks,
 )
 
 
@@ -98,8 +99,9 @@ def test_get_scm_masks(mock_nh_mask, mock_land_mask, test_all_cubes):
     )
 
 
+@pytest.mark.parametrize("with_bounds", [True, False])
 @patch("netcdf_scm.masks.get_nh_mask")
-def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes, caplog):
+def test_get_scm_masks_no_land_available(mock_nh_mask, with_bounds, test_all_cubes, caplog):
     test_all_cubes.get_metadata_cube = MagicMock(side_effect=OSError)
 
     nh_mask = np.array(
@@ -135,6 +137,9 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes, caplog):
         "Land surface fraction (sftlf) data not available, using default instead"
     )
     with patch.dict(MASKS, {"World|Northern Hemisphere": mock_nh_mask}):
+        if not with_bounds:
+            test_all_cubes.lat_dim.bounds = None
+            test_all_cubes.lon_dim.bounds = None
         masker = CubeMasker(test_all_cubes)
         result = masker.get_masks(expected.keys())
 
@@ -405,3 +410,21 @@ def test_get_masks_unknown_mask_warning(test_all_cubes, caplog):
     assert len(caplog.messages) == 1
     assert caplog.messages[0] == "Failed to create junk mask: Unknown mask: junk"
     assert caplog.records[0].levelname == "WARNING"
+
+
+@patch(
+    "netcdf_scm.masks.MASKS",
+    return_value={
+        "Junk": or_masks(get_area_mask(0, 0, 30, 50), "World|Land"),
+        "World|Land": get_land_mask,
+    },
+)
+def test_no_match_error(mock_masks, test_all_cubes):
+    tmask_name = "Junk"
+
+    error_msg = re.escape(
+        r"Your cube has no data which matches the `{}` mask".format(tmask_name)
+    )
+    masker = CubeMasker(test_all_cubes)
+    with pytest.raises(ValueError, match=error_msg):
+        masker.get_mask("Junk")
