@@ -13,9 +13,9 @@ from netcdf_scm.masks import (
     CubeMasker,
     InvalidMask,
     get_area_mask,
+    get_default_sftlf_cube,
     get_land_mask,
     get_nh_mask,
-    get_default_sftlf_cube,
 )
 
 
@@ -111,7 +111,9 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes, caplog):
     )
     mock_nh_mask.return_value = nh_mask
     default_sftlf_cube = get_default_sftlf_cube()
-    default_sftlf_cube = default_sftlf_cube.regrid(test_all_cubes.cube, iris.analysis.AreaWeighted())
+    default_sftlf_cube = default_sftlf_cube.regrid(
+        test_all_cubes.cube, iris.analysis.AreaWeighted()
+    )
     expected_land_mask = ~(default_sftlf_cube.data > 50).data
 
     expected = {
@@ -237,16 +239,9 @@ def test_get_nh_mask(test_all_cubes):
 
 
 def create_dummy_cube_from_lat_lon_points(lat_pts, lon_pts):
-    lat = iris.coords.DimCoord(
-        lat_pts,
-        standard_name="latitude",
-        units="degrees",
-    )
+    lat = iris.coords.DimCoord(lat_pts, standard_name="latitude", units="degrees")
     lon = iris.coords.DimCoord(
-        lon_pts,
-        standard_name="longitude",
-        units="degrees",
-        circular=True,
+        lon_pts, standard_name="longitude", units="degrees", circular=True
     )
 
     cube = iris.cube.Cube(
@@ -290,25 +285,26 @@ def test_elnino_mask(test_all_cubes):
 
     np.testing.assert_array_equal(result, expected)
 
+
 @pytest.mark.parametrize(
     "lat_pts,lon_pts,expected",
     [
-        (   # nothing within bounds, raises Error
+        (  # nothing within bounds, raises Error
             np.array([-60, -1, 80]),
             np.array([45, 135, 225, 315]),
             "error",
         ),
-        (   # nothing within bounds, raises Error
+        (  # nothing within bounds, raises Error
             np.array([-60, 10, 80]),
             np.array([45, 135, 225, 279]),
             "error",
         ),
-        (   # nothing within bounds negative co-ord, raises Error
+        (  # nothing within bounds negative co-ord, raises Error
             np.array([-60, -1, 80]),
             np.array([-135, -45, 45, 135]),
             "error",
         ),
-        (   # edge of bound included
+        (  # edge of bound included
             np.array([65, 0, -60]),
             np.array([45, 135, 225, 280]),
             np.array(
@@ -319,7 +315,7 @@ def test_elnino_mask(test_all_cubes):
                 ]
             ),
         ),
-        (   # edge of bound included negative co-ord
+        (  # edge of bound included negative co-ord
             np.array([66, 0, -60]),
             np.array([-135, -80, 45, 135]),
             np.array(
@@ -330,7 +326,7 @@ def test_elnino_mask(test_all_cubes):
                 ]
             ),
         ),
-        (   # one within bounds
+        (  # one within bounds
             np.array([80, 35, -70]),
             np.array([10, 30, 50, 135, 320]),
             np.array(
@@ -341,7 +337,7 @@ def test_elnino_mask(test_all_cubes):
                 ]
             ),
         ),
-        (   # one within bounds negative co-ord
+        (  # one within bounds negative co-ord
             np.array([80, 35, -70]),
             np.array([-95, -40, 40, 135]),
             np.array(
@@ -357,7 +353,9 @@ def test_elnino_mask(test_all_cubes):
 @pytest.mark.parametrize("query", [[0, -80, 65, 0], [0, 280, 65, 360]])
 def test_area_mask(test_all_cubes, query, lat_pts, lon_pts, expected):
     regrid_cube = create_dummy_cube_from_lat_lon_points(lat_pts, lon_pts)
-    test_all_cubes.cube = test_all_cubes.cube.regrid(regrid_cube, iris.analysis.Linear())
+    test_all_cubes.cube = test_all_cubes.cube.regrid(
+        regrid_cube, iris.analysis.Linear()
+    )
 
     if isinstance(expected, str) and expected == "error":
         error_msg = re.compile("None of the cube's.*lie within the bounds.*")

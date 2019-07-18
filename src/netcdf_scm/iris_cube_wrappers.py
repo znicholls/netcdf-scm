@@ -547,7 +547,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return cube
 
     def get_scm_timeseries(
-        self, sftlf_cube=None, land_mask_threshold=50, areacella_scmcube=None,
+        self,
+        sftlf_cube=None,
+        land_mask_threshold=50,
+        areacella_scmcube=None,
         masks=None,
     ):
         """
@@ -567,6 +570,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             cell area data which is used to take the latitude-longitude mean of the
             cube's data. If ``None``, we try to load this data automatically and if
             that fails we fall back onto ``iris.analysis.cartography.area_weights``.
+
+        masks : list[str]
+            List of masks to use. If ``None`` then ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
 
         Returns
         -------
