@@ -153,14 +153,14 @@ class TestSCMCube(object):
             sftlf_cube=tsftlf_cube,
             land_mask_threshold=tland_mask_threshold,
             areacella_scmcube=tareacella_scmcube,
-            masks=masks
+            masks=masks,
         )
 
         test_cube.get_scm_timeseries_cubes.assert_called_with(
             sftlf_cube=tsftlf_cube,
             land_mask_threshold=tland_mask_threshold,
             areacella_scmcube=tareacella_scmcube,
-            masks=exp_masks
+            masks=exp_masks,
         )
         test_cube.convert_scm_timeseries_cubes_to_openscmdata.assert_called_with(
             test_cubes_return
