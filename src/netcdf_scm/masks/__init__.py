@@ -190,9 +190,7 @@ def get_nh_mask(masker, cube, **kwargs):  # pylint:disable=unused-argument
     :obj:`np.ndarray`
         Array of booleans which can be used for the mask
     """
-    mask_nh_lat = np.array(
-        [c < 0 for c in cube.lat_dim.points]
-    )
+    mask_nh_lat = np.array([c < 0 for c in cube.lat_dim.points])
     mask_all_lon = np.full(cube.lon_dim.points.shape, False)
 
     # Here we make a grid which we can use as a mask. We have to use all
@@ -259,25 +257,49 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
         except IndexError:
             # TODO: make issue in Iris about this being a cryptic error message
             error_msg = "None of the cube's {} lie within the bounds:\nquery: ({}, {})\ncube points: {}"
-            if not any([lower_lat <= v <= upper_lat for v in cube.cube.coord("latitude").points]):
-                raise ValueError(error_msg.format("latitudes", lower_lat, upper_lat, cube.cube.coord("latitude").points))
-            elif not any([left_lon <= v <= right_lon for v in cube.cube.coord("longitude").points]):
-                raise ValueError(error_msg.format("longitudes", left_lon, right_lon, cube.cube.coord("longitude").points))
-            else:
-                raise
+            if not any(
+                [
+                    lower_lat <= v <= upper_lat
+                    for v in cube.cube.coord("latitude").points
+                ]
+            ):
+                raise ValueError(
+                    error_msg.format(
+                        "latitudes",
+                        lower_lat,
+                        upper_lat,
+                        cube.cube.coord("latitude").points,
+                    )
+                )
 
-        mask_lat = ~np.array([
-            np.isclose(v, tmp_cube.coord("latitude").points).any()
-            for v in cube.cube.coord("latitude").points
-        ])
+            if not any(
+                [
+                    left_lon <= v <= right_lon
+                    for v in cube.cube.coord("longitude").points
+                ]
+            ):
+                raise ValueError(
+                    error_msg.format(
+                        "longitudes",
+                        left_lon,
+                        right_lon,
+                        cube.cube.coord("longitude").points,
+                    )
+                )
+
+            raise
+
+        mask_lat = ~np.array(
+            [
+                np.isclose(v, tmp_cube.coord("latitude").points).any()
+                for v in cube.cube.coord("latitude").points
+            ]
+        )
 
         modulus = cube.cube.coord("longitude").units.modulus
         kept_lons = wrap_lons(tmp_cube.coord("longitude").points, 0, modulus)
         cube_lons = wrap_lons(cube.cube.coord("longitude").points, 0, modulus)
-        mask_lon = ~np.array([
-            v in kept_lons
-            for v in cube_lons
-        ])
+        mask_lon = ~np.array([v in kept_lons for v in cube_lons])
         # Here we make a grid which we can use as a mask. We have to use all
         # of these nots so that our product (which uses AND logic) gives us
         # False in the NH and True in the SH (another way to think of this is
@@ -399,7 +421,10 @@ class CubeMasker:
         Raises
         ------
         InvalidMask
-            If the requested mask cannot be found or evaluated.
+            If the requested mask cannot be found or evaluated
+
+        ValueError
+            If the cube has no data which matches the input mask
 
         Returns
         -------
@@ -417,16 +442,16 @@ class CubeMasker:
                     mask = broadcast_to_shape(
                         mask,
                         self.cube.cube.shape,
-                        [self.cube.lat_dim_number, self.cube.lon_dim_number]
+                        [self.cube.lat_dim_number, self.cube.lon_dim_number],
                     )
                 self._masks[mask_name] = mask
             except KeyError:
                 raise InvalidMask("Unknown mask: {}".format(mask_name))
 
         if mask.all():
-            import pdb
-            pdb.set_trace()
-            raise ValueError("Your cube has no data which matches the `{}` mask".format(mask_name))
+            raise ValueError(
+                "Your cube has no data which matches the `{}` mask".format(mask_name)
+            )
 
         return mask
 
