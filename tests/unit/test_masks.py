@@ -15,6 +15,7 @@ from netcdf_scm.masks import (
     get_area_mask,
     get_land_mask,
     get_nh_mask,
+    get_default_sftlf_cube,
 )
 
 
@@ -53,15 +54,22 @@ def test_get_scm_masks(mock_nh_mask, mock_land_mask, test_all_cubes):
     np.testing.assert_array_equal(np.logical_or(nh_mask, land_mask), nh_land_mask)
 
     expected = {
-        "World": np.full(nh_mask.shape, False),
-        "World|Northern Hemisphere|Land": nh_land_mask,
-        "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
-        "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
-        "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
-        "World|Land": land_mask,
-        "World|Ocean": ~land_mask,
-        "World|Northern Hemisphere": nh_mask,
-        "World|Southern Hemisphere": ~nh_mask,
+        k: broadcast_to_shape(
+            v,
+            test_all_cubes.cube.shape,
+            [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
+        )
+        for k, v in {
+            "World": np.full(nh_mask.shape, False),
+            "World|Northern Hemisphere|Land": nh_land_mask,
+            "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
+            "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
+            "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
+            "World|Land": land_mask,
+            "World|Ocean": ~land_mask,
+            "World|Northern Hemisphere": nh_mask,
+            "World|Southern Hemisphere": ~nh_mask,
+        }.items()
     }
 
     with patch.dict(
@@ -102,18 +110,29 @@ def test_get_scm_masks_no_land_available(mock_nh_mask, test_all_cubes, caplog):
         ]
     )
     mock_nh_mask.return_value = nh_mask
+    default_sftlf_cube = get_default_sftlf_cube()
+    default_sftlf_cube = default_sftlf_cube.regrid(test_all_cubes.cube, iris.analysis.AreaWeighted())
+    expected_land_mask = ~(default_sftlf_cube.data > 50).data
 
     expected = {
-        "World": np.full(nh_mask.shape, False),
-        "World|Northern Hemisphere": nh_mask,
-        "World|Southern Hemisphere": ~nh_mask,
+        k: broadcast_to_shape(
+            v,
+            test_all_cubes.cube.shape,
+            [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
+        )
+        for k, v in {
+            "World": np.full(nh_mask.shape, False),
+            "World|Northern Hemisphere": nh_mask,
+            "World|Northern Hemisphere|Land": ~(~nh_mask & ~expected_land_mask),
+            "World|Southern Hemisphere": ~nh_mask,
+        }.items()
     }
     expected_warn = (
         "Land surface fraction (sftlf) data not available, using default instead"
     )
     with patch.dict(MASKS, {"World|Northern Hemisphere": mock_nh_mask}):
         masker = CubeMasker(test_all_cubes)
-        result = masker.get_masks(DEFAULT_REGIONS)
+        result = masker.get_masks(expected.keys())
 
     assert len(caplog.messages) == 1
     assert caplog.messages[0] == expected_warn
@@ -199,7 +218,8 @@ def test_get_land_mask_shape_errors(test_all_cubes):
 
 
 def test_get_nh_mask(test_all_cubes):
-    result = get_nh_mask(None, test_all_cubes)
+    masker = CubeMasker(test_all_cubes)
+    result = get_nh_mask(masker, test_all_cubes)
     expected_base = np.array(
         [
             [False, False, False, False],
@@ -214,6 +234,27 @@ def test_get_nh_mask(test_all_cubes):
     )
 
     np.testing.assert_array_equal(result, expected)
+
+
+def create_dummy_cube_from_lat_lon_points(lat_pts, lon_pts):
+    lat = iris.coords.DimCoord(
+        lat_pts,
+        standard_name="latitude",
+        units="degrees",
+    )
+    lon = iris.coords.DimCoord(
+        lon_pts,
+        standard_name="longitude",
+        units="degrees",
+        circular=True,
+    )
+
+    cube = iris.cube.Cube(
+        np.full((len(lat_pts), len(lon_pts)), 0),
+        dim_coords_and_dims=[(lat, 0), (lon, 1)],
+    )
+
+    return cube
 
 
 def test_nao_mask(test_all_cubes):
@@ -249,20 +290,88 @@ def test_elnino_mask(test_all_cubes):
 
     np.testing.assert_array_equal(result, expected)
 
+@pytest.mark.parametrize(
+    "lat_pts,lon_pts,expected",
+    [
+        (   # nothing within bounds, raises Error
+            np.array([-60, -1, 80]),
+            np.array([45, 135, 225, 315]),
+            "error",
+        ),
+        (   # nothing within bounds, raises Error
+            np.array([-60, 10, 80]),
+            np.array([45, 135, 225, 279]),
+            "error",
+        ),
+        (   # nothing within bounds negative co-ord, raises Error
+            np.array([-60, -1, 80]),
+            np.array([-135, -45, 45, 135]),
+            "error",
+        ),
+        (   # edge of bound included
+            np.array([65, 0, -60]),
+            np.array([45, 135, 225, 280]),
+            np.array(
+                [
+                    [True, True, True, False],
+                    [True, True, True, False],
+                    [True, True, True, True],
+                ]
+            ),
+        ),
+        (   # edge of bound included negative co-ord
+            np.array([66, 0, -60]),
+            np.array([-135, -80, 45, 135]),
+            np.array(
+                [
+                    [True, True, True, True],
+                    [True, False, True, True],
+                    [True, True, True, True],
+                ]
+            ),
+        ),
+        (   # one within bounds
+            np.array([80, 35, -70]),
+            np.array([10, 30, 50, 135, 320]),
+            np.array(
+                [
+                    [True, True, True, True, True],
+                    [True, True, True, True, False],
+                    [True, True, True, True, True],
+                ]
+            ),
+        ),
+        (   # one within bounds negative co-ord
+            np.array([80, 35, -70]),
+            np.array([-95, -40, 40, 135]),
+            np.array(
+                [
+                    [True, True, True, True],
+                    [True, False, True, True],
+                    [True, True, True, True],
+                ]
+            ),
+        ),
+    ],
+)
+@pytest.mark.parametrize("query", [[0, -80, 65, 0], [0, 280, 65, 360]])
+def test_area_mask(test_all_cubes, query, lat_pts, lon_pts, expected):
+    regrid_cube = create_dummy_cube_from_lat_lon_points(lat_pts, lon_pts)
+    test_all_cubes.cube = test_all_cubes.cube.regrid(regrid_cube, iris.analysis.Linear())
 
-def test_area_mask(test_all_cubes):
-    # increasing lons (test_nao_mask tests wrapping around)
-    result = get_area_mask(-20, 100, 20, 250)(None, test_all_cubes)
+    if isinstance(expected, str) and expected == "error":
+        error_msg = re.compile("None of the cube's.*lie within the bounds.*")
+        with pytest.raises(ValueError, match=error_msg):
+            get_area_mask(*query)(None, test_all_cubes)
+        return
 
-    expected_base = np.array(
-        [[True, True, True, True], [True, False, False, True], [True, True, True, True]]
-    )
+    result = get_area_mask(*query)(None, test_all_cubes)
+
     expected = broadcast_to_shape(
-        expected_base,
+        expected,
         test_all_cubes.cube.shape,
         [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
     )
-
     np.testing.assert_array_equal(result, expected)
 
 
