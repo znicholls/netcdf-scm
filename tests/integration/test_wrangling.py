@@ -21,13 +21,7 @@ def test_wrangling_unsupported_format(tmpdir, caplog):
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
-            [
-                INPUT_DIR,
-                OUTPUT_DIR,
-                "test-invalid-format",
-                "--out-format",
-                "junk",
-            ],
+            [INPUT_DIR, OUTPUT_DIR, "test-invalid-format", "--out-format", "junk"],
         )
     assert result.exit_code != 0
     assert "invalid choice: junk" in result.output
