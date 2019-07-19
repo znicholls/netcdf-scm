@@ -871,11 +871,9 @@ def _skip_file(out_file, force, symlink_dir):
         return True
 
     if os.path.isfile(out_file):
+        symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
+        os.unlink(symlink_file)
         os.remove(out_file)
-
-    symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
-    if os.path.isfile(symlink_file):
-        os.remove(symlink_file)
 
     return False
 
