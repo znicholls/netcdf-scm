@@ -101,7 +101,9 @@ def test_get_scm_masks(mock_nh_mask, mock_land_mask, test_all_cubes):
 
 @pytest.mark.parametrize("with_bounds", [True, False])
 @patch("netcdf_scm.masks.get_nh_mask")
-def test_get_scm_masks_no_land_available(mock_nh_mask, with_bounds, test_all_cubes, caplog):
+def test_get_scm_masks_no_land_available(
+    mock_nh_mask, with_bounds, test_all_cubes, caplog
+):
     test_all_cubes.get_metadata_cube = MagicMock(side_effect=OSError)
 
     nh_mask = np.array(
