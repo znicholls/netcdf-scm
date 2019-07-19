@@ -3,6 +3,7 @@ import json
 from glob import glob
 from os import walk
 from os.path import isdir, isfile, join
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
@@ -327,3 +328,19 @@ def test_crunching_wrong_cube(tmpdir, caplog):
     assert result.exit_code  # non-zero exit code
 
     assert "drs: {}".format(CUBE) in caplog.text
+
+
+@patch.object(
+    netcdf_scm.iris_cube_wrappers._CMIPCube, "_add_time_period_from_files_in_directory"
+)
+def test_crunching_broken_dir(mock_add_time_period, tmpdir, caplog):
+    mock_add_time_period.side_effect = ValueError
+    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
+    OUTPUT_DIR = str(tmpdir)
+    CUBE = "CMIP6Output"
+
+    runner = CliRunner()
+    result = runner.invoke(crunch_data, [INPUT_DIR, OUTPUT_DIR, "test", "--drs", CUBE])
+
+    assert result.exit_code  # assert failure raised
+    assert "Directory checking failed on" in result.output, result.output

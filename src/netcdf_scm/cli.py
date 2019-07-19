@@ -203,46 +203,18 @@ def crunch_data(
     regexp_to_match = re.compile(regexp)
     helper = _get_scmcube_helper(drs)
 
-    dirs_to_crunch = []
-    logger.info("Finding directories with files")
-    for dirpath, _, filenames in walk(src):
-        logger.debug("Entering %s", dirpath)
-        if filenames:
-            if not regexp_to_match.match(dirpath):
-                logger.debug("Skipping (did not match regexp) %s", dirpath)
-                continue
-            logger.info("Adding directory to queue %s", dirpath)
-            helper = _get_scmcube_helper(drs)
-            try:
-                helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
-                    dirpath
-                )
-            except Exception as e:  # pylint:disable=broad-except
-                logger.debug("Ignoring broken directory %s with error %s", dirpath, e)
-                continue
-            time_ids = helper._time_id.split(  # pylint:disable=protected-access
-                helper.time_period_separator
-            )
-            start_year = int(time_ids[0][:4].lstrip("0"))
-            end_year = int(time_ids[1][:4].lstrip("0"))
-            num_years = end_year - start_year
-            dirs_to_crunch.append((dirpath, filenames, num_years))
-
     def keep_dir(dpath):
         if not regexp_to_match.match(dpath):
             logger.debug("Skipping (did not match regexp) %s", dpath)
             return False
+        helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
+            dpath
+        )
         logger.info("Adding directory to queue %s", dpath)
-        try:
-            helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
-                dpath
-            )
-        except Exception as e:  # pylint:disable=broad-except
-            logger.debug("Ignoring broken directory %s with error %s", dpath, e)
-            return False
+
         return True
 
-    dirs_to_crunch = _find_dirs_meeting_func(src, keep_dir)
+    dirs_to_crunch, failures_dir_finding = _find_dirs_meeting_func(src, keep_dir)
 
     def get_nyears(dpath_h):
         helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
@@ -332,7 +304,7 @@ def crunch_data(
     if dirs_to_crunch_large:
         failures_large = crunch_from_list(dirs_to_crunch_large, n_workers=1)
 
-    if failures_small or failures_medium or failures_large:
+    if failures_dir_finding or failures_small or failures_medium or failures_large:
         raise click.ClickException(
             "Some files failed to process. See {} for more details".format(log_file)
         )
@@ -372,15 +344,22 @@ def _crunch_files(  # pylint:disable=too-many-arguments
 
 def _find_dirs_meeting_func(src, check_func):
     matching_dirs = []
+    failures = False
     logger.info("Finding directories with files")
     for dirpath, _, filenames in walk(src):
         logger.debug("Entering %s", dirpath)
         if filenames:
-            if check_func(dirpath):
-                matching_dirs.append((dirpath, filenames))
+            try:
+                if check_func(dirpath):
+                    matching_dirs.append((dirpath, filenames))
+            except Exception as e:  # pylint:disable=broad-except
+                logger.error(
+                    "Directory checking failed on %s with error %s", dirpath, e
+                )
+                failures = True
 
     logger.info("Found %s directories with files", len(matching_dirs))
-    return matching_dirs
+    return matching_dirs, failures
 
 
 def _apply_func(  # pylint:disable=too-many-arguments
@@ -672,11 +651,13 @@ def _do_wrangling(  # pylint:disable=too-many-arguments
         raise ValueError("Unsupported format: {}".format(out_format))
 
 
-def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
+def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
     src, dst, regexp_compiled, out_format, force, wrangle_contact, drs, number_workers
 ):
     scmcube = _get_scmcube_helper(drs)
-    crunch_list = _find_dirs_meeting_func(src, regexp_compiled.match)
+    crunch_list, failures_dir_finding = _find_dirs_meeting_func(
+        src, regexp_compiled.match
+    )
 
     def get_openscmdf_metadata_header(fnames, dpath):
         openscmdf = df_append(
@@ -710,25 +691,25 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments
         wrangle_to_mag_files = _get_wrangle_to_mag_files_func(
             force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
         )
-        failures = _apply_func(
+        failures_wrangling = _apply_func(
             wrangle_to_mag_files,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
             n_workers=number_workers,
             style="threads",
         )
 
-    elif out_format == "magicc-input-files-point-end-of-year":
+    else:  # out_format == "magicc-input-files-point-end-of-year":
         wrangle_to_magicc_input_files_point_end_of_year = _get_wrangle_to_magicc_input_files_point_end_of_year_func(
             force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
         )
-        failures = _apply_func(
+        failures_wrangling = _apply_func(
             wrangle_to_magicc_input_files_point_end_of_year,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
             n_workers=number_workers,
             style="threads",
         )
 
-    if failures:
+    if failures_dir_finding or failures_wrangling:
         raise click.ClickException(
             "Some files failed to process. See the logs for more details"
         )
