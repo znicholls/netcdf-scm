@@ -5,3 +5,4 @@ nc-time-axis
 cython
 netcdf4==1.4.1
 distributed==1.28.1
+pandas==0.24.2
