@@ -44,6 +44,7 @@ REQUIREMENTS_INSTALL = [
     "numpy",
     "pandas",
     "pyam-iamc>=0.2.0",
+    "pandas==0.24.2",  # pyam issue, see https://github.com/IAMconsortium/pyam/issues/245
     "python-dateutil",
     "progressbar2",
     "openscm>=0.1.0a",
