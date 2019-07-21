@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#75 <https://github.com/znicholls/netcdf-scm/pull/75>`_) Check ``land_mask_threshold`` is sensible when retrieving land mask (automatically update if not)
 - (`#72 <https://github.com/znicholls/netcdf-scm/pull/72>`_) Monkey patch iris to speed up crunching and go back to linear regridding of default sftlf mask
 - (`#74 <https://github.com/znicholls/netcdf-scm/pull/74>`_) Fix bug in mask generation
 - (`#70 <https://github.com/znicholls/netcdf-scm/pull/70>`_) Dynamically decide whether to handle data lazily (fix regression tests in process)
