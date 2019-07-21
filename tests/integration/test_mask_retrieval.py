@@ -380,21 +380,18 @@ def test_get_masks_unknown_mask_warning(test_all_cubes, caplog):
     assert caplog.records[0].levelname == "WARNING"
 
 
-@pytest.mark.parametrize("exp_warn,cube_max,land_mask_threshold",[
-    (False, 100, 50),
-    (True, 100, 0.5),
-    (False, 1, 0.5),
-    (True, 1, 50),
-])
+@pytest.mark.parametrize(
+    "exp_warn,cube_max,land_mask_threshold",
+    [(False, 100, 50), (True, 100, 0.5), (False, 1, 0.5), (True, 1, 50)],
+)
 def test_get_scm_masks_land_bound_checks(
     exp_warn, cube_max, land_mask_threshold, test_all_cubes, caplog
 ):
     tsftlf_cube = get_default_sftlf_cube().regrid(
-        test_all_cubes.cube,
-        iris.analysis.Linear(),
+        test_all_cubes.cube, iris.analysis.Linear()
     )
     tsftlf_cube_max = tsftlf_cube.data.max()
-    assert np.abs((tsftlf_cube_max - 100) / 100) < 10**-6
+    assert np.isclose(tsftlf_cube_max, 100)
     if cube_max == 1:
         tsftlf_cube.data = tsftlf_cube.data / 100
 
@@ -408,8 +405,15 @@ def test_get_scm_masks_land_bound_checks(
     masker.get_masks(["World|Land"])
 
     if exp_warn:
-        expected_warn = "sftlf cube max is {}, altering `land_mask_threshold`"
+        assumed_land_mask_threshold = (
+            land_mask_threshold / 100
+            if land_mask_threshold > 1
+            else land_mask_threshold * 100
+        )
+        expected_warn = "sftlf data max is {} and requested land_mask_threshold is {}, assuming land_mask_threshold should be {}".format(
+            tsftlf_cube.data.max(), land_mask_threshold, assumed_land_mask_threshold
+        )
         assert len(caplog.messages) == 1
-        assert expected_warn in caplog.messages[0]
+        assert expected_warn == caplog.messages[0]
     else:
         assert len(caplog.messages) == 0

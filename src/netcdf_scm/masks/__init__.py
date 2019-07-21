@@ -161,20 +161,46 @@ def get_land_mask(  # pylint:disable=unused-argument
         )
         logger.warning(warn_msg)
         try:
-            def_cube_regridded = get_default_sftlf_cube().copy().regrid(
-                cube.cube,
-                iris.analysis.Linear(),  # AreaWeighted() in future but too slow now
+            def_cube_regridded = (
+                get_default_sftlf_cube()
+                .copy()
+                .regrid(
+                    cube.cube,
+                    iris.analysis.Linear(),  # AreaWeighted() in future but too slow now
+                )
             )
         except ValueError:  # pragma: no cover # only required for AreaWeighted() regridding
             logger.warning("Guessing bounds to regrid default sftlf data")
             cube.lat_dim.guess_bounds()
             cube.lon_dim.guess_bounds()
-            def_cube_regridded = get_default_sftlf_cube().copy().regrid(
-                cube.cube,
-                iris.analysis.Linear(),  # AreaWeighted() in future but too slow now
+            def_cube_regridded = (
+                get_default_sftlf_cube()
+                .copy()
+                .regrid(
+                    cube.cube,
+                    iris.analysis.Linear(),  # AreaWeighted() in future but too slow now
+                )
             )
 
         sftlf_data = def_cube_regridded.data
+
+    sftlf_data_max = sftlf_data.max()
+    adjust_threshold = False
+    if land_mask_threshold <= 1 and np.isclose(sftlf_data_max, 100):
+        adjust_threshold = True
+        new_land_mask_threshold = land_mask_threshold * 100
+    elif land_mask_threshold > 1 and np.isclose(sftlf_data_max, 1):
+        adjust_threshold = True
+        new_land_mask_threshold = land_mask_threshold / 100
+
+    if adjust_threshold:
+        logger.warning(
+            "sftlf data max is %s and requested land_mask_threshold is %s, assuming land_mask_threshold should be %s",
+            sftlf_data_max,
+            land_mask_threshold,
+            new_land_mask_threshold,
+        )
+        land_mask_threshold = new_land_mask_threshold
 
     land_mask = np.where(
         sftlf_data > land_mask_threshold,
