@@ -161,7 +161,7 @@ def get_land_mask(  # pylint:disable=unused-argument
         )
         logger.warning(warn_msg)
         try:
-            def_cube_regridded = get_default_sftlf_cube().regrid(
+            def_cube_regridded = get_default_sftlf_cube().copy().regrid(
                 cube.cube,
                 iris.analysis.Linear(),  # AreaWeighted() in future but too slow now
             )
@@ -169,7 +169,7 @@ def get_land_mask(  # pylint:disable=unused-argument
             logger.warning("Guessing bounds to regrid default sftlf data")
             cube.lat_dim.guess_bounds()
             cube.lon_dim.guess_bounds()
-            def_cube_regridded = get_default_sftlf_cube().regrid(
+            def_cube_regridded = get_default_sftlf_cube().copy().regrid(
                 cube.cube,
                 iris.analysis.Linear(),  # AreaWeighted() in future but too slow now
             )

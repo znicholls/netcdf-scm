@@ -1,3 +1,4 @@
+import logging
 import re
 from unittest.mock import MagicMock, patch
 
@@ -7,6 +8,7 @@ import pytest
 from conftest import create_sftlf_cube
 from iris.util import broadcast_to_shape
 
+from netcdf_scm.iris_cube_wrappers import SCMCube
 from netcdf_scm.masks import (
     DEFAULT_REGIONS,
     MASKS,
@@ -376,3 +378,38 @@ def test_get_masks_unknown_mask_warning(test_all_cubes, caplog):
     assert len(caplog.messages) == 1
     assert caplog.messages[0] == "Failed to create junk mask: Unknown mask: junk"
     assert caplog.records[0].levelname == "WARNING"
+
+
+@pytest.mark.parametrize("exp_warn,cube_max,land_mask_threshold",[
+    (False, 100, 50),
+    (True, 100, 0.5),
+    (False, 1, 0.5),
+    (True, 1, 50),
+])
+def test_get_scm_masks_land_bound_checks(
+    exp_warn, cube_max, land_mask_threshold, test_all_cubes, caplog
+):
+    tsftlf_cube = get_default_sftlf_cube().regrid(
+        test_all_cubes.cube,
+        iris.analysis.Linear(),
+    )
+    tsftlf_cube_max = tsftlf_cube.data.max()
+    assert np.abs((tsftlf_cube_max - 100) / 100) < 10**-6
+    if cube_max == 1:
+        tsftlf_cube.data = tsftlf_cube.data / 100
+
+    test_all_cubes.get_metadata_cube = MagicMock()
+    tsftlf_scmcube = SCMCube()
+    tsftlf_scmcube.cube = tsftlf_cube
+    test_all_cubes.get_metadata_cube.return_value = tsftlf_scmcube
+
+    caplog.set_level(logging.INFO)
+    masker = CubeMasker(test_all_cubes, land_mask_threshold=land_mask_threshold)
+    masker.get_masks(["World|Land"])
+
+    if exp_warn:
+        expected_warn = "sftlf cube max is {}, altering `land_mask_threshold`"
+        assert len(caplog.messages) == 1
+        assert expected_warn in caplog.messages[0]
+    else:
+        assert len(caplog.messages) == 0
