@@ -123,6 +123,10 @@ def get_land_mask(  # pylint:disable=unused-argument
     """
     Get the land mask
 
+    If the ``land_mask_threshold`` is obviously assuming the wrong units (i.e. %
+    rather than fraction or vice versa) then it will be automatically adjusted and a
+    warning will be thrown.
+
     If the default sftlf cube is used, it is regridded onto ``cube``'s mask using a
     linear interpolation. We hope to use an area-weighted regridding in future but at
     the moment its performance is not good enough to be put into production (
