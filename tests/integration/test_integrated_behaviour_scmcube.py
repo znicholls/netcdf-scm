@@ -16,6 +16,7 @@ from conftest import (
     TEST_AREACELLA_FILE,
     TEST_CMIP6_OUTPUT_FILE,
     TEST_CMIP6_OUTPUT_FILE_1_UNIT,
+    TEST_CMIP6_OUTPUT_FILE_HFDS,
     TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
     TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE,
     TEST_DATA_MARBLE_CMIP5_DIR,
@@ -1202,6 +1203,52 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             ]
         )
         assert (ts["variable"] == "cSoilFast").all()
+        assert (
+            ts["variable_standard_name"] == "fast_soil_pool_mass_content_of_carbon"
+        ).all()
+        assert (ts["unit"] == "kg m^-2").all()
+        assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
+
+    def test_load_hfds_data(self, test_cube):
+        test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_HFDS)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        assert obs_time.units.name == "day since 1850-01-01 00:00:00.0000000 UTC"
+        assert obs_time.units.calendar == "gregorian"
+
+        obs_time_points = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+
+        assert obs_time_points[0] == datetime.datetime(1850, 1, 16, 12, 0)
+        assert obs_time_points[-1] == datetime.datetime(1852, 12, 16, 12, 0)
+
+        assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
+
+        ts = test_cube.get_scm_timeseries(
+            masks=[
+                "World",
+                "World|Northern Hemisphere",
+                # "World|Northern Hemisphere|Ocean",
+                # "World|Ocean",
+                "World|Southern Hemisphere",
+                # "World|Southern Hemisphere|Ocean",
+            ]
+        )
+        assert sorted(ts["region"].tolist()) == sorted(
+            [
+                "World",
+                "World|Land",
+                "World|Northern Hemisphere",
+                "World|Northern Hemisphere|Land",
+                "World|Northern Hemisphere|Ocean",
+                "World|Ocean",
+                "World|Southern Hemisphere",
+                "World|Southern Hemisphere|Land",
+                "World|Southern Hemisphere|Ocean",
+            ]
+        )
+        assert (ts["variable"] == "hfds").all()
         assert (
             ts["variable_standard_name"] == "fast_soil_pool_mass_content_of_carbon"
         ).all()

@@ -137,6 +137,20 @@ TEST_CMIP6_OUTPUT_FILE_1_UNIT = join(
     "v20180917",
     "lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.nc",
 )
+TEST_CMIP6_OUTPUT_FILE_HFDS = join(
+    TEST_DATA_CMIP6Output_DIR,
+    "CMIP6",
+    "CMIP",
+    "IPSL",
+    "IPSL-CM6A-LR",
+    "historical",
+    "r1i1p1f1",
+    "Omon",
+    "hfds",
+    "gn",
+    "v20180803",
+    "hfds_Omon_IPSL-CM6A-LR_historical_r1i1p1f1_gn_185001-185212.nc",
+)
 
 TEST_DATA_CMIP6_CRUNCH_OUTPUT = join(
     TEST_DATA_ROOT_DIR, "expected-crunching-output", "cmip6output"
