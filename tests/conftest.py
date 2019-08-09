@@ -141,16 +141,19 @@ TEST_CMIP6_OUTPUT_FILE_HFDS = join(
     TEST_DATA_CMIP6Output_DIR,
     "CMIP6",
     "CMIP",
-    "IPSL",
-    "IPSL-CM6A-LR",
+    "NCAR",
+    "CESM2",
     "historical",
-    "r1i1p1f1",
+    "r4i1p1f1",
     "Omon",
     "hfds",
-    "gn",
-    "v20180803",
-    "hfds_Omon_IPSL-CM6A-LR_historical_r1i1p1f1_gn_185001-185212.nc",
+    "gr",
+    # "gn",
+    "v20190308",
+    "hfds_Omon_CESM2_historical_r4i1p1f1_gr_185001-185006.nc",
+    # "hfds_Omon_CESM2_historical_r4i1p1f1_gn_185001-185006.nc",
 )
+
 
 TEST_DATA_CMIP6_CRUNCH_OUTPUT = join(
     TEST_DATA_ROOT_DIR, "expected-crunching-output", "cmip6output"
