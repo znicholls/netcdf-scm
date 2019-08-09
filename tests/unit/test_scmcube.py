@@ -296,7 +296,7 @@ class TestSCMCube(object):
 
     @pytest.mark.parametrize("transpose", [True, False])
     @pytest.mark.parametrize("input_format", ["scmcube", None])
-    @pytest.mark.parametrize("areacella_var", ["areacella", "area_other"])
+    @pytest.mark.parametrize("areacella_var", ["areacella", "areacello", "area_other"])
     def test_get_area_weights(
         self, test_cube, test_sftlf_cube, areacella_var, input_format, transpose
     ):
@@ -329,7 +329,7 @@ class TestSCMCube(object):
         "areacella",
         ["not a cube", "cube attr not a cube", "iris_error", "misshaped", "no file"],
     )
-    @pytest.mark.parametrize("areacella_var", ["areacella", "area_other"])
+    @pytest.mark.parametrize("areacella_var", ["areacella", "areaceallo", "area_other"])
     def test_get_area_weights_workarounds(
         self, test_cube, test_sftlf_cube, areacella_var, areacella, caplog
     ):
