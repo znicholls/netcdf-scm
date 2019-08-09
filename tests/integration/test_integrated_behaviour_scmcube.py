@@ -27,6 +27,7 @@ from conftest import (
     tdata_required,
 )
 from dateutil import parser
+from iris.exceptions import CoordinateMultiDimError
 from iris.util import broadcast_to_shape
 from openscm.scmdataframe import ScmDataFrame
 from pandas.testing import assert_frame_equal
@@ -1210,6 +1211,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         assert (ts["unit"] == "kg m^-2").all()
         assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
 
+    # TODO: test thetao read in
     @pytest.mark.parametrize("tdata_path", [TEST_CMIP6_OUTPUT_FILE_HFDS, TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID])
     def test_load_hfds_data(self, test_cube, tdata_path):
         test_cube.load_data_from_path(tdata_path)
@@ -1262,12 +1264,22 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         assert (ts["unit"] == "W m^-2").all()
         assert (ts["climate_model"] == "CESM2").all()
         np.testing.assert_allclose(ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(), 131.46116737, rtol=0.01)
-        # TODO:
-        # - test that areacello is loaded if required and guessed otherwise (can do
-        #   this by deleting areacello file for regular grid file for thetao as iris
-        #   can handle that)
-        # - test sensible error message is raised if you try to use native grid data
-        #   without areacello
+
+    @patch.object(tclass, "_get_areacell_scmcube", return_value=None)
+    def test_load_hfds_data_native_grid_no_areacello_error(self, mock_get_areacell_scmcube, test_cube):
+        test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID)
+        error_msg = re.escape(
+            "iris does not yet support multi-dimensional co-ordinates, you will "
+            "need your data's cell area information before you can crunch"
+        )
+        with pytest.raises(CoordinateMultiDimError, match=error_msg):
+            test_cube.get_scm_timeseries(
+                masks=[
+                    "World",
+                    "World|Northern Hemisphere",
+                    "World|Northern Hemisphere|Ocean",
+                ]
+            )
 
     def test_load_data_1_unit(self, test_cube):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_1_UNIT)

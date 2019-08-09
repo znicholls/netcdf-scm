@@ -37,7 +37,7 @@ try:
     from iris.util import unify_time_units
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
-    from iris.exceptions import CoordinateNotFoundError, ConcatenateError
+    from iris.exceptions import CoordinateNotFoundError, CoordinateMultiDimError, ConcatenateError
     from iris.fileformats import netcdf
     import cftime
     import cf_units
@@ -893,6 +893,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         )
         try:
             return iris.analysis.cartography.area_weights(self.cube)
+        except CoordinateMultiDimError:
+            error_msg = (
+                "iris does not yet support multi-dimensional co-ordinates, you will "
+                "need your data's cell area information before you can crunch"
+            )
+            raise CoordinateMultiDimError(error_msg)
         except ValueError:
             logger.warning("Guessing latitude and longitude bounds")
             self.cube.coord("latitude").guess_bounds()
