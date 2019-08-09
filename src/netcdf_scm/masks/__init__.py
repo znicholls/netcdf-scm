@@ -16,6 +16,7 @@ from ..utils import broadcast_onto_lat_lon_grid
 try:
     import iris
     from iris.analysis.cartography import wrap_lons
+    from iris.exceptions import CoordinateMultiDimError
     from iris.util import broadcast_to_shape
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from ..errors import raise_no_iris_warning
@@ -255,7 +256,10 @@ def get_nh_mask(masker, cube, **kwargs):  # pylint:disable=unused-argument
     # that we have to flip everything so False goes to True and True goes
     # to False, do all our operations with AND logic, then flip everything
     # back).
-    mask_nh = ~np.outer(~mask_nh_lat, ~mask_all_lon)
+    if len(mask_nh_lat.shape) == 2:
+        mask_nh = ~(~mask_nh_lat & ~mask_all_lon)
+    else:
+        mask_nh = ~np.outer(~mask_nh_lat, ~mask_all_lon)
 
     masker._masks[  # pylint:disable=protected-access
         "World|Northern Hemisphere"
