@@ -4,7 +4,7 @@ import logging
 import re
 import warnings
 from os.path import basename, dirname, join
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, call, patch, PropertyMock
 
 import cftime
 import iris
@@ -89,15 +89,23 @@ class TestSCMCube(object):
         caplog.set_level(logging.DEBUG)
         test_cube._process_load_data_from_identifiers_warnings(mock_warn_area)
 
-        assert len(caplog.messages) == 3  # warnings plus extra one exception
+        expected_msgs = 4 if isinstance(test_cube, _CMIPCube) else 3
+        assert len(caplog.messages) == expected_msgs
         assert caplog.messages[0] == warn_1
         assert caplog.records[0].levelname == "WARNING"
         assert caplog.messages[1] == warn_2
         assert caplog.records[1].levelname == "WARNING"
-        assert caplog.records[2].levelname == "DEBUG"
-        assert "Missing CF-netCDF measure variable" in str(caplog.records[2].message)
+        if isinstance(test_cube, _CMIPCube):
+            fallback_warn_idx = 3
+            assert caplog.messages[2] == "No realm attribute in cube, assuming not ocean data"
+            assert caplog.records[2].levelname == "INFO"
+        else:
+            fallback_warn_idx = 2
+
+        assert caplog.records[fallback_warn_idx].levelname == "DEBUG"
+        assert "Missing CF-netCDF measure variable" in str(caplog.records[fallback_warn_idx].message)
         assert "Tried to add areacella cube but another exception was raised:" in str(
-            caplog.records[2].message
+            caplog.records[fallback_warn_idx].message
         )
 
     @tdata_required
@@ -138,7 +146,7 @@ class TestSCMCube(object):
     def test_get_scm_timeseries(self, test_sftlf_cube, test_cube, masks):
         tsftlf_cube = "mocked 124"
         tland_mask_threshold = "mocked 51"
-        tareacella_scmcube = "mocked 4389"
+        tareacell_scmcube = "mocked 4389"
 
         exp_masks = DEFAULT_REGIONS if masks is None else masks
         test_cubes_return = {m: 3 for m in exp_masks}
@@ -152,14 +160,14 @@ class TestSCMCube(object):
         result = test_cube.get_scm_timeseries(
             sftlf_cube=tsftlf_cube,
             land_mask_threshold=tland_mask_threshold,
-            areacella_scmcube=tareacella_scmcube,
+            areacell_scmcube=tareacell_scmcube,
             masks=masks,
         )
 
         test_cube.get_scm_timeseries_cubes.assert_called_with(
             sftlf_cube=tsftlf_cube,
             land_mask_threshold=tland_mask_threshold,
-            areacella_scmcube=tareacella_scmcube,
+            areacell_scmcube=tareacell_scmcube,
             masks=exp_masks,
         )
         test_cube.convert_scm_timeseries_cubes_to_openscmdata.assert_called_with(
@@ -310,7 +318,7 @@ class TestSCMCube(object):
 
         test_areacella_input = test_sftlf_cube if input_format == "scmcube" else None
 
-        result = test_cube._get_area_weights(areacella_scmcube=test_areacella_input)
+        result = test_cube._get_area_weights(areacell_scmcube=test_areacella_input)
         test_cube.get_metadata_cube.assert_called_with(
             areacella_var, cube=test_areacella_input
         )
@@ -362,13 +370,16 @@ class TestSCMCube(object):
 
         test_cube.get_metadata_cube.assert_called_with(areacella_var, cube=None)
 
+        not_ocean_assumption_info = re.escape(
+            "No realm attribute in cube, assuming not ocean data"
+        )
         fallback_warn = re.escape(
             "Couldn't find/use areacella_cube, falling back to "
             "iris.analysis.cartography.area_weights"
         )
         radius_warn = re.escape("Using DEFAULT_SPHERICAL_EARTH_RADIUS.")
         if areacella == "iris_error":
-            specific_warn = "Could not calculate areacella"
+            specific_warn = "Could not calculate {}".format(areacella_var)
             exc_info = re.escape(iris_error_msg)
         elif areacella == "misshaped":
             specific_warn = "Could not broadcast onto lat lon grid"
@@ -378,7 +389,7 @@ class TestSCMCube(object):
             )
             exc_info = None
         elif areacella == "not a cube":
-            specific_warn = "Could not calculate areacella"
+            specific_warn = "Could not calculate {}".format(areacella_var)
             exc_info = re.escape("'str' object has no attribute 'cube'")
         elif areacella == "cube attr not a cube":
             specific_warn = re.escape(
@@ -386,19 +397,20 @@ class TestSCMCube(object):
             )
             exc_info = None
         elif areacella == "no file":
-            specific_warn = "Could not calculate areacella"
+            specific_warn = "Could not calculate {}".format(areacella_var)
             exc_info = re.escape(no_file_msg)
 
-        assert len(caplog.messages) == 2
+        assert len(caplog.messages) == 3
         assert re.match(radius_warn, str(record[0].message))
-        assert re.match(fallback_warn, str(caplog.messages[1]))
-        assert re.match(specific_warn, caplog.messages[0])
+
+        assert re.match(fallback_warn, str(caplog.messages[2]))
+        assert re.match(specific_warn, caplog.messages[1])
         if exc_info is not None:
             assert re.match(
-                "Could not calculate areacella, error message: {}".format(exc_info),
-                str(caplog.records[0].message),
+                "Could not calculate {}, error message: {}".format(areacella_var, exc_info),
+                str(caplog.records[1].message),
             )  # the actual message is stored in the exception
-
+        assert re.match(not_ocean_assumption_info, caplog.messages[0])
         np.testing.assert_array_equal(result, expected)
 
     @patch("netcdf_scm.iris_cube_wrappers.assert_all_time_axes_same")
@@ -926,7 +938,11 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         result = test_cube.get_variable_constraint()
         assert isinstance(result, iris.Constraint)
 
-    def test_get_metadata_load_arguments(self, test_cube):
+    @pytest.mark.parametrize("ocean_data", [True, False])
+    @patch.object(SCMCube, "is_ocean_data", new_callable=PropertyMock)
+    def test_get_metadata_load_arguments(self, mock_is_ocean_data, test_cube, ocean_data):
+        mock_is_ocean_data.return_value = ocean_data
+        assert test_cube.is_ocean_data == ocean_data
         tmetadata_var = "mdata_var"
         atts_to_set = [
             "root_dir",
@@ -946,7 +962,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir": test_cube.root_dir,
             "activity": test_cube.activity,
             "experiment": test_cube.experiment,
-            "mip_table": "fx",
+            "mip_table": "fx" if not ocean_data else "Ofx",
             "variable_name": tmetadata_var,
             "model": test_cube.model,
             "ensemble_member": "r0i0p0",
