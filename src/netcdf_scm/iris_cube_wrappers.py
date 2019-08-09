@@ -1620,8 +1620,7 @@ class MarbleCMIP5Cube(_CMIPCube):
         return self.filename_bits_separator.join(bits_to_join) + self.file_ext
 
     def _get_metadata_load_arguments(self, metadata_variable):
-        # TODO: test this properly
-        mip_table = "fx" if metadata_variable != self.areacello_var else "Ofx"
+        mip_table = "Ofx" if self.is_ocean_data else "fx"
         return {
             "root_dir": self.root_dir,
             "activity": self.activity,
@@ -1832,8 +1831,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             raise AssertionError("source_id must contain institution_id")
 
     def _get_metadata_load_arguments(self, metadata_variable):
-        # TODO: test this properly
-        frequency = "fx" if metadata_variable != self.areacello_var else "Ofx"
+        frequency = "Ofx" if self.is_ocean_data else "fx"
         return {
             "root_dir": self.root_dir,
             "activity_id": self.activity_id,
@@ -2091,8 +2089,7 @@ class CMIP6OutputCube(_CMIPCube):
         return join(self.get_data_directory(), self.get_data_filename())
 
     def _get_metadata_load_arguments(self, metadata_variable):
-        # TODO: test this properly
-        table_id = "fx" if metadata_variable != self.areacello_var else "Ofx"
+        table_id = "Ofx" if self.is_ocean_data else "fx"
         return {
             "root_dir": self.root_dir,
             "mip_era": self.mip_era,
