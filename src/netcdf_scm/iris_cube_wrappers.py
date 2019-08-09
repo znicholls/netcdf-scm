@@ -92,13 +92,24 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
     areacella_var = "areacella"
     """
-    str: The name of the variable associated with the area of each gridbox.
+    str: The name of the variable associated with the atmospheric cell area of each gridbox.
 
     If required, this is used to determine the area of each cell in a data file. For
     example, if our data file is ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then
     ``areacella_var`` can be used to work  out the name of the associated cell area
     file. In some cases, it might be as simple as replacing ``tas`` with the value of
     ``areacella_var``.
+    """
+
+    areacello_var = "areacello"
+    """
+    str: The name of the variable associated with the ocean cell area of each gridbox.
+
+    If required, this is used to determine the area of each cell in a data file. For
+    example, if our data file is
+    ``hfds_Omon_CESM2_historical_r4i1p1f1_gr_185001-185006.nc`` then ``areacello_var``
+    can be used to work  out the name of the associated cell area file. In some cases,
+    it might be as simple as replacing ``hfds`` with the value of ``areacello_var``.
     """
 
     lat_name = "latitude"
@@ -517,35 +528,37 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         }
 
     def _process_load_data_from_identifiers_warnings(self, w):
-        area_cell_warn = "Missing CF-netCDF measure variable 'areacella'"
-        # area_cell_o warning...
+        area_cella_warn = "Missing CF-netCDF measure variable 'areacella'"
+        area_cello_warn = "Missing CF-netCDF measure variable 'areacello'"
         for warn in w:
-            if area_cell_warn in str(warn.message):
-                try:
-                    self._add_areacella_measure()
-                except Exception:  # pylint:disable=broad-except
-                    error_msg = (
-                        str(warn.message)
-                        + ". Tried to add areacella cube but another exception was raised:"
-                    )
-                    logger.debug(error_msg)
+            if area_cella_warn in str(warn.message):
+                self._add_area_measure(warn, self.areacella_var)
+            elif area_cello_warn in str(warn.message):
+                self._add_area_measure(warn, self.areacello_var)
             else:
                 logger.warning(warn.message)
 
-    def _add_areacella_measure(self):
-        areacella_cube = self.get_metadata_cube(self.areacella_var).cube
-        areacella_measure = iris.coords.CellMeasure(
-            areacella_cube.core_data(),
-            standard_name=areacella_cube.standard_name,
-            long_name=areacella_cube.long_name,
-            var_name=areacella_cube.var_name,
-            units=areacella_cube.units,
-            attributes=areacella_cube.attributes,
-            measure="area",
-        )
-        self.cube.add_cell_measure(
-            areacella_measure, data_dims=[self.lat_dim_number, self.lon_dim_number]
-        )
+    def _add_area_measure(self, original_warn, area_variable):
+        try:
+            area_cube = self.get_metadata_cube(area_variable).cube
+            area_measure = iris.coords.CellMeasure(
+                area_cube.core_data(),
+                standard_name=area_cube.standard_name,
+                long_name=area_cube.long_name,
+                var_name=area_cube.var_name,
+                units=area_cube.units,
+                attributes=area_cube.attributes,
+                measure="area",
+            )
+            self.cube.add_cell_measure(
+                area_measure, data_dims=[self.lat_dim_number, self.lon_dim_number]
+            )
+        except Exception:  # pylint:disable=broad-except
+            error_msg = (
+                str(original_warn.message)
+                + ". Tried to add {} cube but another exception was raised:".format(area_variable)
+            )
+            logger.debug(error_msg)
 
     def get_metadata_cube(self, metadata_variable, cube=None):
         """
@@ -581,7 +594,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         self,
         sftlf_cube=None,
         land_mask_threshold=50,
-        areacella_scmcube=None,
+        areacell_scmcube=None,
         masks=None,
     ):
         """
@@ -597,7 +610,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             if the surface land fraction in a grid box is greater than
             ``land_mask_threshold``, it is considered to be a land grid box.
 
-        areacella_scmcube : :obj:`SCMCube`, optional
+        areacell_scmcube : :obj:`SCMCube`, optional
             cell area data which is used to take the latitude-longitude mean of the
             cube's data. If ``None``, we try to load this data automatically and if
             that fails we fall back onto ``iris.analysis.cartography.area_weights``.
@@ -615,7 +628,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
             sftlf_cube=sftlf_cube,
             land_mask_threshold=land_mask_threshold,
-            areacella_scmcube=areacella_scmcube,
+            areacell_scmcube=areacell_scmcube,
             masks=masks if masks is not None else DEFAULT_REGIONS,
         )
 
@@ -625,7 +638,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         self,
         sftlf_cube=None,
         land_mask_threshold=50,
-        areacella_scmcube=None,
+        areacell_scmcube=None,
         masks=None,
     ):
         """
@@ -653,7 +666,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             if the surface land fraction in a grid box is greater than
             ``land_mask_threshold``, it is considered to be a land grid box.
 
-        areacella_scmcube : :obj:`SCMCube`, optional
+        areacell_scmcube : :obj:`SCMCube`, optional
             cell area data which is used to take the latitude-longitude mean of the
             cube's data. If ``None``, we try to load this data automatically and if
             that fails we fall back onto ``iris.analysis.cartography.area_weights``.
@@ -672,7 +685,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
         )
-        area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
+        area_weights = self._get_area_weights(areacell_scmcube=areacell_scmcube)
 
         def crunch_timeseries(region, numpy_mask):
             scm_cube = self._get_masked_cube_with_metdata(
@@ -865,13 +878,13 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         masks = masks if masks is not None else DEFAULT_REGIONS
         return self._masker.get_masks(masks)
 
-    def _get_area_weights(self, areacella_scmcube=None):
-        areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
+    def _get_area_weights(self, areacell_scmcube=None):
+        areacell_scmcube = self._get_areacell_scmcube(areacell_scmcube)
 
-        if areacella_scmcube is not None:
+        if areacell_scmcube is not None:
             try:
-                areacella_cube = areacella_scmcube.cube
-                return broadcast_onto_lat_lon_grid(self, areacella_cube.data)
+                areacell_cube = areacell_scmcube.cube
+                return broadcast_onto_lat_lon_grid(self, areacell_cube.data)
             except AssertionError:
                 logger.exception("Could not broadcast onto lat lon grid")
 
@@ -886,17 +899,18 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             self.cube.coord("longitude").guess_bounds()
             return iris.analysis.cartography.area_weights(self.cube)
 
-    def _get_areacella_scmcube(self, areacella_scmcube):
+    def _get_areacell_scmcube(self, areacell_scmcube):
         try:
-            areacella_scmcube = self.get_metadata_cube(
-                self.areacella_var, cube=areacella_scmcube
+            areacell_var = self.areacello_var if self.is_ocean_data else self.areacella_var
+            areacell_scmcube = self.get_metadata_cube(
+                areacell_var, cube=areacell_scmcube
             )
-            if not isinstance(areacella_scmcube.cube, iris.cube.Cube):
+            if not isinstance(areacell_scmcube.cube, iris.cube.Cube):
                 logger.warning(
                     "areacella cube which was found has cube attribute which isn't an iris cube"
                 )
             else:
-                return areacella_scmcube
+                return areacell_scmcube
         except (
             iris.exceptions.ConstraintMismatchError,
             AttributeError,
@@ -904,7 +918,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             OSError,
             NotImplementedError,
         ) as e:
-            logger.debug("Could not calculate areacella, error message: %s", e)
+            logger.debug("Could not calculate %s, error message: %s", areacell_var, e)
 
         return None
 
@@ -1606,11 +1620,13 @@ class MarbleCMIP5Cube(_CMIPCube):
         return self.filename_bits_separator.join(bits_to_join) + self.file_ext
 
     def _get_metadata_load_arguments(self, metadata_variable):
+        # TODO: test this properly
+        mip_table = "fx" if metadata_variable != self.areacello_var else "Ofx"
         return {
             "root_dir": self.root_dir,
             "activity": self.activity,
             "experiment": self.experiment,
-            "mip_table": "fx",
+            "mip_table": mip_table,
             "variable_name": metadata_variable,
             "model": self.model,
             "ensemble_member": "r0i0p0",
@@ -1816,6 +1832,8 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             raise AssertionError("source_id must contain institution_id")
 
     def _get_metadata_load_arguments(self, metadata_variable):
+        # TODO: test this properly
+        frequency = "fx" if metadata_variable != self.areacello_var else "Ofx"
         return {
             "root_dir": self.root_dir,
             "activity_id": self.activity_id,
@@ -1824,7 +1842,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             "institution_id": self.institution_id,
             "source_id": self.source_id,
             "realm": self.realm,
-            "frequency": "fx",
+            "frequency": frequency,
             "variable_id": metadata_variable,
             "grid_label": self.grid_label,
             "version": self.version,
@@ -2073,6 +2091,8 @@ class CMIP6OutputCube(_CMIPCube):
         return join(self.get_data_directory(), self.get_data_filename())
 
     def _get_metadata_load_arguments(self, metadata_variable):
+        # TODO: test this properly
+        table_id = "fx" if metadata_variable != self.areacello_var else "Ofx"
         return {
             "root_dir": self.root_dir,
             "mip_era": self.mip_era,
@@ -2081,7 +2101,7 @@ class CMIP6OutputCube(_CMIPCube):
             "source_id": self.source_id,
             "experiment_id": self.experiment_id,
             "member_id": self.member_id,
-            "table_id": "fx",
+            "table_id": table_id,
             "variable_id": metadata_variable,
             "grid_label": self.grid_label,
             "version": self.version,

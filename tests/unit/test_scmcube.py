@@ -112,7 +112,7 @@ class TestSCMCube(object):
         tareacellacube.cube = iris.load_cube(TEST_AREACELLA_FILE)
         test_cube.get_metadata_cube = MagicMock(return_value=tareacellacube)
 
-        test_cube._add_areacella_measure()
+        test_cube._add_area_measure("not used", test_cube.get_metadata_cube().cube)
 
         assert any(["area" in cm.measure for cm in test_cube.cube.cell_measures()])
         assert any(

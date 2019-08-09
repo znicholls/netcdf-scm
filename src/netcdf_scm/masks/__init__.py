@@ -16,6 +16,7 @@ from ..utils import broadcast_onto_lat_lon_grid
 try:
     import iris
     from iris.analysis.cartography import wrap_lons
+    from iris.exceptions import CoordinateMultiDimError
     from iris.util import broadcast_to_shape
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from ..errors import raise_no_iris_warning
@@ -255,7 +256,10 @@ def get_nh_mask(masker, cube, **kwargs):  # pylint:disable=unused-argument
     # that we have to flip everything so False goes to True and True goes
     # to False, do all our operations with AND logic, then flip everything
     # back).
-    mask_nh = ~np.outer(~mask_nh_lat, ~mask_all_lon)
+    if len(mask_nh_lat.shape) == 2:
+        mask_nh = ~(~mask_nh_lat & ~mask_all_lon)
+    else:
+        mask_nh = ~np.outer(~mask_nh_lat, ~mask_all_lon)
 
     masker._masks[  # pylint:disable=protected-access
         "World|Northern Hemisphere"
@@ -344,6 +348,24 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
                 )
 
             raise  # pragma: no cover
+        except CoordinateMultiDimError:
+            modulus = cube.lon_dim.units.modulus
+            lon_dim_pts = cube.lon_dim.points
+            lon_min = np.floor(lon_dim_pts.min())
+            left_lon_wrapped, right_lon_wrapped = wrap_lons(
+                np.array([left_lon, right_lon]),
+                lon_min,
+                modulus
+            ).astype(int)
+            if left_lon_wrapped <= right_lon_wrapped:
+                mask_lon = (left_lon_wrapped <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped)
+            else:
+                mask_lon = ((lon_min <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped)) | ((left_lon_wrapped <= lon_dim_pts) & (lon_dim_pts <= lon_min + modulus))
+            lat_dim_pts = cube.lat_dim.points
+            mask_lat = (lower_lat <= lat_dim_pts) & (lat_dim_pts <= upper_lat)
+
+            mask = ~(~mask_lon & ~mask_lat)
+            return broadcast_onto_lat_lon_grid(cube, mask)
 
         mask_lat = ~np.array(
             [
