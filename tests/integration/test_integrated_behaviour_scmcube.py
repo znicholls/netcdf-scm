@@ -1261,11 +1261,13 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         ).all()
         assert (ts["unit"] == "W m^-2").all()
         assert (ts["climate_model"] == "CESM2").all()
-        np.testing.assert_allclose(ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(), 131.46116737)
+        np.testing.assert_allclose(ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(), 131.46116737, rtol=0.01)
         # TODO:
-        # - test that returned values are basically identical regardless of grid
-        # - test that areacello is loaded (can do this by deleting areacello file for
-        #   regular grid file as iris can handle that)
+        # - test that areacello is loaded if required and guessed otherwise (can do
+        #   this by deleting areacello file for regular grid file for thetao as iris
+        #   can handle that)
+        # - test sensible error message is raised if you try to use native grid data
+        #   without areacello
 
     def test_load_data_1_unit(self, test_cube):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_1_UNIT)
