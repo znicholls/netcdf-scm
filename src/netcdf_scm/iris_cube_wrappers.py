@@ -151,6 +151,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     _masker = None
     """:obj:`CubeMasker` to use to mask self"""
 
+    _realm_key = "realm"
+    """str: key which identifies the realm of the data"""
+
     def __init__(self):
         self._loaded_paths = []
         self._metadata_cubes = {}
@@ -1054,6 +1057,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             if start_date >= end_date:
                 self._raise_time_period_invalid_error(time_period_str)
 
+    @property
+    def is_ocean_data(self):
+        """Is the data in this cube ocean data?"""
+        try:
+            return self.cube.attributes[self._realm_key] in ("ocean", "ocnBgchem")
+        except KeyError:
+            logger.info("No realm attribute in cube, assuming not ocean data")
+            return False
+
     @staticmethod
     def _raise_time_period_invalid_error(time_period_str):
         message = "Your time_period indicator ({}) does not look right".format(
@@ -1411,8 +1423,8 @@ class MarbleCMIP5Cube(_CMIPCube):
     experiment = None
     """str: The experiment for which we want to load data e.g. '1pctCO2'"""
 
-    modeling_realm = None
-    """str: The modeling_realm for which we want to load data e.g. 'Amon'"""
+    mip_table = None
+    """str: The mip_table for which we want to load data e.g. 'Amon'"""
 
     variable_name = None
     """str: The variable for which we want to load data e.g. 'tas'"""
@@ -1436,6 +1448,8 @@ class MarbleCMIP5Cube(_CMIPCube):
 
     mip_era = "CMIP5"
     """str: The MIP era to which this cube belongs"""
+
+    _realm_key = "modeling_realm"
 
     def process_filename(self, filename):
         """
@@ -1467,7 +1481,7 @@ class MarbleCMIP5Cube(_CMIPCube):
 
         return {
             "variable_name": filename_bits[0],
-            "modeling_realm": filename_bits[1],
+            "mip_table": filename_bits[1],
             "model": filename_bits[2],
             "experiment": filename_bits[3],
             "ensemble_member": ensemble_member,
@@ -1505,7 +1519,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             "root_dir": root_dir,
             "activity": dirpath_bits[-6],
             "variable_name": dirpath_bits[-3],
-            "modeling_realm": dirpath_bits[-4],
+            "mip_table": dirpath_bits[-4],
             "model": dirpath_bits[-2],
             "experiment": dirpath_bits[-5],
             "ensemble_member": dirpath_bits[-1],
@@ -1551,7 +1565,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             self.root_dir,
             self.activity,
             self.experiment,
-            self.modeling_realm,
+            self.mip_table,
             self.variable_name,
             self.model,
             self.ensemble_member,
@@ -1568,7 +1582,7 @@ class MarbleCMIP5Cube(_CMIPCube):
         """
         bits_to_join = [
             self.variable_name,
-            self.modeling_realm,
+            self.mip_table,
             self.model,
             self.experiment,
             self.ensemble_member,
@@ -1583,7 +1597,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             "root_dir": self.root_dir,
             "activity": self.activity,
             "experiment": self.experiment,
-            "modeling_realm": "fx",
+            "mip_table": "fx",
             "variable_name": metadata_variable,
             "model": self.model,
             "ensemble_member": "r0i0p0",

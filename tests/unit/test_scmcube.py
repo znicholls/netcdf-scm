@@ -493,6 +493,26 @@ class TestSCMCube(object):
 
         assert res == exp
 
+    def _run_test_is_ocean_data(self, test_cube, nc_attr_to_set, value_to_set, expected):
+        test_cube.cube = MagicMock()
+        test_cube.cube.attributes = {}
+        test_cube.cube.attributes[nc_attr_to_set] = value_to_set
+        assert test_cube.is_ocean_data == expected
+
+    @pytest.mark.parametrize("value_to_set,expected", [("atmos", False), ("ocean", True), ("ocnBgchem", True)])
+    def test_is_ocean_data(self, test_cube, value_to_set, expected):
+        self._run_test_is_ocean_data(test_cube, "realm", value_to_set, expected)
+
+    def test_is_ocean_data_unknown(self, test_cube, caplog):
+        caplog.clear()
+        caplog.set_level(logging.INFO)
+
+        assert not test_cube.is_ocean_data
+
+        assert len(caplog.messages) == 1  # warnings plus extra one exception
+        assert caplog.messages[0] == "No realm attribute in cube, assuming not ocean data"
+        assert caplog.records[0].levelname == "INFO"
+
 
 class _CMIPCubeTester(TestSCMCube):
     tclass = _CMIPCube
@@ -676,7 +696,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
     troot_dir = TEST_DATA_MARBLE_CMIP5_DIR
     tactivity = "cmip5"
     texperiment = "1pctCO2"
-    tmodeling_realm = "Amon"
+    tmip_table = "Amon"
     tvariable_name = "tas"
     tmodel = "CanESM2"
     tensemble_member = "r1i1p1"
@@ -718,7 +738,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir",
             "activity",
             "experiment",
-            "modeling_realm",
+            "mip_table",
             "variable_name",
             "model",
             "ensemble_member",
@@ -734,7 +754,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         result = test_cube.process_filename(tname)
         expected = {
             "experiment": "1pctCO2",
-            "modeling_realm": "Amon",
+            "mip_table": "Amon",
             "variable_name": "fco2antt",
             "model": "CanESM2",
             "ensemble_member": "r1i1p1",
@@ -767,7 +787,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir": "/tests/test_data/marble_cmip5",
             "activity": "cmip5",
             "experiment": "1pctCO2",
-            "modeling_realm": "Amon",
+            "mip_table": "Amon",
             "variable_name": "fco2antt",
             "model": "CanESM2",
             "ensemble_member": "r1i1p1",
@@ -793,7 +813,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             self.troot_dir,
             self.tactivity,
             self.texperiment,
-            self.tmodeling_realm,
+            self.tmip_table,
             self.tvariable_name,
             self.tmodel,
             self.tensemble_member,
@@ -803,7 +823,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir",
             "activity",
             "experiment",
-            "modeling_realm",
+            "mip_table",
             "variable_name",
             "model",
             "ensemble_member",
@@ -820,7 +840,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "_".join(
                 [
                     self.tvariable_name,
-                    self.tmodeling_realm,
+                    self.tmip_table,
                     self.tmodel,
                     self.texperiment,
                     self.tensemble_member,
@@ -832,7 +852,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 
         atts_to_set = [
             "experiment",
-            "modeling_realm",
+            "mip_table",
             "variable_name",
             "model",
             "ensemble_member",
@@ -851,7 +871,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "_".join(
                 [
                     self.tvariable_name,
-                    self.tmodeling_realm,
+                    self.tmip_table,
                     self.tmodel,
                     self.texperiment,
                     self.tensemble_member,
@@ -862,7 +882,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 
         atts_to_set = [
             "experiment",
-            "modeling_realm",
+            "mip_table",
             "variable_name",
             "model",
             "ensemble_member",
@@ -884,7 +904,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir",
             "activity",
             "experiment",
-            "modeling_realm",
+            "mip_table",
             "variable_name",
             "model",
             "ensemble_member",
@@ -912,7 +932,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir",
             "activity",
             "experiment",
-            "modeling_realm",
+            "mip_table",
             "variable_name",
             "model",
             "ensemble_member",
@@ -926,7 +946,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir": test_cube.root_dir,
             "activity": test_cube.activity,
             "experiment": test_cube.experiment,
-            "modeling_realm": "fx",
+            "mip_table": "fx",
             "variable_name": tmetadata_var,
             "model": test_cube.model,
             "ensemble_member": "r0i0p0",
@@ -944,6 +964,10 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         super().test_get_scm_timeseries_ids_warnings(
             test_cube, caplog, expected_mip_era="CMIP5", expected_warns=5
         )
+
+    @pytest.mark.parametrize("value_to_set,expected", [("atmos", False), ("ocean", True), ("ocnBgchem", True)])
+    def test_is_ocean_data(self, test_cube, value_to_set, expected):
+        self._run_test_is_ocean_data(test_cube, "modeling_realm", value_to_set, expected)
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
@@ -1250,6 +1274,10 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
             setattr(test_cube, k, v)
         result = test_cube.get_variable_constraint()
         assert isinstance(result, iris.Constraint)
+
+    @pytest.mark.parametrize("value_to_set,expected", [("atmos", False), ("ocean", True), ("ocnBgchem", True)])
+    def test_is_ocean_data(self, test_cube, value_to_set, expected):
+        self._run_test_is_ocean_data(test_cube, "realm", value_to_set, expected)
 
 
 class TestCMIP6OutputCube(_CMIPCubeTester):
@@ -1559,3 +1587,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         assert res["activity_id"] == tactivity
         assert res["member_id"] == tensemble_member
         assert res["mip_era"] == tmip_era
+
+    @pytest.mark.parametrize("value_to_set,expected", [("atmos", False), ("ocnBgchem", True), ("ocean", True)])
+    def test_is_ocean_data(self, test_cube, value_to_set, expected):
+        self._run_test_is_ocean_data(test_cube, "realm", value_to_set, expected)
