@@ -1261,7 +1261,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         ).all()
         assert (ts["unit"] == "W m^-2").all()
         assert (ts["climate_model"] == "CESM2").all()
-        assert False  # need to check how split is being done properly...
+        np.testing.assert_allclose(ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(), 131.46116737)
         # TODO:
         # - test that returned values are basically identical regardless of grid
         # - test that areacello is loaded (can do this by deleting areacello file for
