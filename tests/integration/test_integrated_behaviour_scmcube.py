@@ -1213,15 +1213,15 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_HFDS)
 
         obs_time = test_cube.cube.dim_coords[0]
-        assert obs_time.units.name == "day since 1850-01-01 00:00:00.0000000 UTC"
-        assert obs_time.units.calendar == "gregorian"
+        assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
+        assert obs_time.units.calendar == "365_day"
 
         obs_time_points = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
 
-        assert obs_time_points[0] == datetime.datetime(1850, 1, 16, 12, 0)
-        assert obs_time_points[-1] == datetime.datetime(1852, 12, 16, 12, 0)
+        assert obs_time_points[0] == cftime.DatetimeNoLeap(1850, 1, 15, 13, 0, 0, 0, -1, 1)
+        assert obs_time_points[-1] == cftime.DatetimeNoLeap(1850, 6, 15, 0, 0, 0, 0, 1, 166)
 
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
@@ -1229,10 +1229,11 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             masks=[
                 "World",
                 "World|Northern Hemisphere",
-                # "World|Northern Hemisphere|Ocean",
-                # "World|Ocean",
+                "World|Northern Hemisphere|Ocean",
+                "World|Ocean",
+                "World|Land",
                 "World|Southern Hemisphere",
-                # "World|Southern Hemisphere|Ocean",
+                "World|Southern Hemisphere|Ocean",
             ]
         )
         assert sorted(ts["region"].tolist()) == sorted(
@@ -1240,20 +1241,28 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
                 "World",
                 "World|Land",
                 "World|Northern Hemisphere",
-                "World|Northern Hemisphere|Land",
+                # "World|Northern Hemisphere|Land",
                 "World|Northern Hemisphere|Ocean",
                 "World|Ocean",
                 "World|Southern Hemisphere",
-                "World|Southern Hemisphere|Land",
+                # "World|Southern Hemisphere|Land",
                 "World|Southern Hemisphere|Ocean",
             ]
         )
         assert (ts["variable"] == "hfds").all()
         assert (
-            ts["variable_standard_name"] == "fast_soil_pool_mass_content_of_carbon"
+            ts["variable_standard_name"] == "surface_downward_heat_flux_in_sea_water"
         ).all()
-        assert (ts["unit"] == "kg m^-2").all()
-        assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
+        assert (ts["unit"] == "W m^-2").all()
+        assert (ts["climate_model"] == "CESM2").all()
+        assert False  # need to check how split is being done properly...
+        # TODO:
+        # - parameterise tests to test both regular and native grids
+        # - test that no land data is returned, even if requested (may require new
+        #   logic)
+        # - test that returned values are basically identical regardless of grid
+        # - test that areacello is loaded (can do this by deleting areacello file for
+        #   regular grid file as iris can handle that)
 
     def test_load_data_1_unit(self, test_cube):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_1_UNIT)

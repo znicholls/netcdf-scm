@@ -515,6 +515,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
     def _process_load_data_from_identifiers_warnings(self, w):
         area_cell_warn = "Missing CF-netCDF measure variable 'areacella'"
+        # area_cell_o warning...
         for warn in w:
             if area_cell_warn in str(warn.message):
                 try:
