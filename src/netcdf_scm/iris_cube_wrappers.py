@@ -1325,7 +1325,6 @@ class _CMIPCube(SCMCube, ABC):
 
         return join(helper.get_data_directory(), helper.get_data_filename())
 
-    @abstractmethod
     def get_data_directory(self):
         """
         Get the path to a data file from self's attributes.
@@ -1339,8 +1338,15 @@ class _CMIPCube(SCMCube, ABC):
         str
             path to the data file from which this cube has been/will be loaded
         """
+        try:
+            return self._get_data_directory()
+        except TypeError:  # some required attributes still None
+            raise OSError
 
     @abstractmethod
+    def _get_data_directory(self):
+        pass
+
     def get_data_filename(self):
         """
         Get the name of a data file from self's attributes.
@@ -1354,7 +1360,14 @@ class _CMIPCube(SCMCube, ABC):
         str
             name of the data file from which this cube has been/will be loaded.
         """
-        raise NotImplementedError()
+        try:
+            return self._get_data_filename()
+        except TypeError:  # some required attributes still None
+            raise OSError
+
+    @abstractmethod
+    def _get_data_filename(self):
+        pass
 
     @abstractmethod
     def _get_metadata_load_arguments(self, metadata_variable):
@@ -1552,7 +1565,7 @@ class MarbleCMIP5Cube(_CMIPCube):
 
         return join(self.get_data_directory(), self.get_data_filename())
 
-    def get_data_directory(self):
+    def _get_data_directory(self):
         """
         Get the directory which matches the cube's data reference syntax
 
@@ -1571,7 +1584,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             self.ensemble_member,
         )
 
-    def get_data_filename(self):
+    def _get_data_filename(self):
         """
         Get the filename which matches the cube's data reference syntax
 
@@ -1820,29 +1833,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             "file_ext": self.file_ext,
         }
 
-    def get_data_filename(self):
-        """
-        Get the filename which matches the cube's data reference syntax
-
-        Returns
-        -------
-        str
-            Filename which matches the cube's data reference syntax
-        """
-        bits_to_join = [
-            self.variable_id,
-            self.activity_id,
-            self.dataset_category,
-            self.target_mip,
-            self.source_id,
-            self.grid_label,
-        ]
-        if self.time_range is not None:
-            bits_to_join.append(self.time_range)
-
-        return self.filename_bits_separator.join(bits_to_join) + self.file_ext
-
-    def get_data_directory(self):
+    def _get_data_directory(self):
         """
         Get the directory which matches the cube's data reference syntax
 
@@ -1864,6 +1855,28 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             self.grid_label,
             self.version,
         )
+
+    def _get_data_filename(self):
+        """
+        Get the filename which matches the cube's data reference syntax
+
+        Returns
+        -------
+        str
+            Filename which matches the cube's data reference syntax
+        """
+        bits_to_join = [
+            self.variable_id,
+            self.activity_id,
+            self.dataset_category,
+            self.target_mip,
+            self.source_id,
+            self.grid_label,
+        ]
+        if self.time_range is not None:
+            bits_to_join.append(self.time_range)
+
+        return self.filename_bits_separator.join(bits_to_join) + self.file_ext
 
     @property
     def _variable_name_for_constraint_loading(self):
@@ -2076,29 +2089,7 @@ class CMIP6OutputCube(_CMIPCube):
             "file_ext": self.file_ext,
         }
 
-    def get_data_filename(self):
-        """
-        Get the filename which matches the cube's data reference syntax
-
-        Returns
-        -------
-        str
-            Filename which matches the cube's data reference syntax
-        """
-        bits_to_join = [
-            self.variable_id,
-            self.table_id,
-            self.source_id,
-            self.experiment_id,
-            self.member_id,
-            self.grid_label,
-        ]
-        if self.time_range is not None:
-            bits_to_join.append(self.time_range)
-
-        return self.filename_bits_separator.join(bits_to_join) + self.file_ext
-
-    def get_data_directory(self):
+    def _get_data_directory(self):
         """
         Get the directory which matches the cube's data reference syntax
 
@@ -2120,6 +2111,28 @@ class CMIP6OutputCube(_CMIPCube):
             self.grid_label,
             self.version,
         )
+
+    def _get_data_filename(self):
+        """
+        Get the filename which matches the cube's data reference syntax
+
+        Returns
+        -------
+        str
+            Filename which matches the cube's data reference syntax
+        """
+        bits_to_join = [
+            self.variable_id,
+            self.table_id,
+            self.source_id,
+            self.experiment_id,
+            self.member_id,
+            self.grid_label,
+        ]
+        if self.time_range is not None:
+            bits_to_join.append(self.time_range)
+
+        return self.filename_bits_separator.join(bits_to_join) + self.file_ext
 
     @property
     def _variable_name_for_constraint_loading(self):

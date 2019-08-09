@@ -67,7 +67,14 @@ def invert(mask_to_invert):
     """
 
     def f(masker, cube, **kwargs):  # pylint:disable=unused-argument
-        return ~masker.get_mask(mask_to_invert)
+        try:
+            mask = masker.get_mask(mask_to_invert)
+        except ValueError as e:
+            if str(e) != "Your cube has no data which matches the `{}` mask".format(mask_to_invert):
+                raise
+            mask = masker._masks[mask_to_invert]
+
+        return ~mask
 
     return f
 
@@ -155,11 +162,14 @@ def get_land_mask(  # pylint:disable=unused-argument
     np.ndarray
         Land mask
     """
+    if cube.is_ocean_data:
+        return ~masker.get_mask("World")  # there is no land
+
     sftlf_data = None
     try:
         sftlf_cube = cube.get_metadata_cube(cube.sftlf_var, cube=sftlf_cube)
         sftlf_data = sftlf_cube.cube.data
-    except OSError:
+    except (OSError, KeyError):
         warn_msg = (
             "Land surface fraction (sftlf) data not available, using default instead"
         )
@@ -478,7 +488,7 @@ class CubeMasker:
             Any True values should be masked out and excluded from any further calculation.
         """
         try:
-            return self._masks[mask_name]
+            mask = self._masks[mask_name]
         except KeyError:
             try:
                 mask_func = MASKS[mask_name]
