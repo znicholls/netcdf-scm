@@ -12,6 +12,7 @@ from netcdf_scm.masks import (
     get_land_mask,
     get_nh_mask,
     or_masks,
+    invert,
 )
 
 
@@ -50,17 +51,26 @@ def test_unknown_mask_error(test_all_cubes):
 
 @patch(
     "netcdf_scm.masks.MASKS",
-    return_value={
+    {
         "Junk": or_masks(get_area_mask(0, 0, 30, 50), "World|Land"),
         "World|Land": get_land_mask,
+        "Inverse": invert("Junk"),
     },
 )
-def test_no_match_error(mock_masks, test_all_cubes):
+def test_no_match_error(test_all_cubes):
     tmask_name = "Junk"
 
     error_msg = re.escape(
         r"Your cube has no data which matches the `{}` mask".format(tmask_name)
     )
     masker = CubeMasker(test_all_cubes)
-    with pytest.raises(ValueError, match=error_msg):
-        masker.get_mask("Junk")
+    for i in range(3):  # make sure multiple asks still raises
+        # should be accessible without issue
+        masker.get_mask("World|Land")
+        with pytest.raises(ValueError, match=error_msg):
+            masker.get_mask("Junk")
+        # should be able to get inverse without problem
+        res = masker.get_mask("Inverse")
+        # inverse of Junk should all be False
+        assert not res.any()
+
