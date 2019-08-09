@@ -148,11 +148,26 @@ TEST_CMIP6_OUTPUT_FILE_HFDS = join(
     "Omon",
     "hfds",
     "gr",
-    # "gn",
     "v20190308",
     "hfds_Omon_CESM2_historical_r4i1p1f1_gr_185001-185006.nc",
-    # "hfds_Omon_CESM2_historical_r4i1p1f1_gn_185001-185006.nc",
 )
+TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID = TEST_CMIP6_OUTPUT_FILE_HFDS.replace("gr", "gn")
+# join(
+#     TEST_DATA_CMIP6Output_DIR,
+#     "CMIP6",
+#     "CMIP",
+#     "NCAR",
+#     "CESM2",
+#     "historical",
+#     "r4i1p1f1",
+#     "Omon",
+#     "hfds",
+#     "gr",
+#     # "gn",
+#     "v20190308",
+#     "hfds_Omon_CESM2_historical_r4i1p1f1_gr_185001-185006.nc",
+#     # "hfds_Omon_CESM2_historical_r4i1p1f1_gn_185001-185006.nc",
+# )
 
 
 TEST_DATA_CMIP6_CRUNCH_OUTPUT = join(
