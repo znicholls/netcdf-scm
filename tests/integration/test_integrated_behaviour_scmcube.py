@@ -18,6 +18,8 @@ from conftest import (
     TEST_CMIP6_OUTPUT_FILE_1_UNIT,
     TEST_CMIP6_OUTPUT_FILE_HFDS,
     TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID,
+    TEST_CMIP6_OUTPUT_FILE_THETAO,
+    TEST_CMIP6_OUTPUT_FILE_THETAO_NATIVE_GRID,
     TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
     TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE,
     TEST_DATA_MARBLE_CMIP5_DIR,
@@ -1211,7 +1213,6 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         assert (ts["unit"] == "kg m^-2").all()
         assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
 
-    # TODO: test thetao read in
     @pytest.mark.parametrize(
         "tdata_path",
         [TEST_CMIP6_OUTPUT_FILE_HFDS, TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID],
@@ -1295,6 +1296,68 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
                     "World|Northern Hemisphere|Ocean",
                 ]
             )
+
+    @pytest.mark.parametrize(
+        "tdata_path",
+        [TEST_CMIP6_OUTPUT_FILE_THETAO, TEST_CMIP6_OUTPUT_FILE_THETAO_NATIVE_GRID],
+    )
+    def test_load_thetao_data(self, test_cube, tdata_path):
+        test_cube.load_data_from_path(tdata_path)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
+        assert obs_time.units.calendar == "365_day"
+
+        obs_time_points = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+
+        assert obs_time_points[0] == cftime.DatetimeNoLeap(1, 1, 15, 13, 0, 0, 0, -1, 1)
+        assert obs_time_points[-1] == cftime.DatetimeNoLeap(1, 3, 15, 12, 0, 0, 0, 6, 74)
+
+        assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
+
+        error_msg = re.escape(
+            "Your cube has no data which matches the `World|Land` mask"
+        )
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.get_scm_timeseries(masks=["World|Land"])
+
+        ts = test_cube.get_scm_timeseries(
+            masks=[
+                "World",
+                "World|Northern Hemisphere",
+                "World|Northern Hemisphere|Ocean",
+                "World|Ocean",
+                "World|Southern Hemisphere",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            ]
+        )
+        assert sorted(ts["region"].tolist()) == sorted(
+            [
+                "World",
+                "World|Northern Hemisphere",
+                "World|Northern Hemisphere|Ocean",
+                "World|Ocean",
+                "World|Southern Hemisphere",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            ]
+        )
+        assert (ts["variable"] == "hfds").all()
+        assert (
+            ts["variable_standard_name"] == "surface_downward_heat_flux_in_sea_water"
+        ).all()
+        assert (ts["unit"] == "W m^-2").all()
+        assert (ts["climate_model"] == "CESM2").all()
+        np.testing.assert_allclose(
+            ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(),
+            131.46116737,
+            rtol=0.01,
+        )
 
     def test_load_data_1_unit(self, test_cube):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_1_UNIT)
