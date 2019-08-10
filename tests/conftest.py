@@ -154,6 +154,23 @@ TEST_CMIP6_OUTPUT_FILE_HFDS = join(
 TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID = TEST_CMIP6_OUTPUT_FILE_HFDS.replace(
     "gr", "gn"
 )
+TEST_CMIP6_OUTPUT_FILE_THETAO = join(
+    TEST_DATA_CMIP6Output_DIR,
+    "CMIP6",
+    "CMIP",
+    "NCAR",
+    "CESM2-WACCM",
+    "piControl",
+    "r1i1p1f1",
+    "Omon",
+    "thetao",
+    "gr",
+    "v20190320",
+    "thetao_Omon_CESM2-WACCM_piControl_r1i1p1f1_gr_000101-000103.nc",
+)
+TEST_CMIP6_OUTPUT_FILE_THETAO_NATIVE_GRID = TEST_CMIP6_OUTPUT_FILE_THETAO.replace(
+    "gr", "gn"
+)
 
 
 TEST_DATA_CMIP6_CRUNCH_OUTPUT = join(
