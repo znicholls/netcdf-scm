@@ -71,9 +71,11 @@ def invert(mask_to_invert):
         try:
             mask = masker.get_mask(mask_to_invert)
         except ValueError as e:
-            if str(e) != "Your cube has no data which matches the `{}` mask".format(mask_to_invert):
+            if str(e) != "Your cube has no data which matches the `{}` mask".format(
+                mask_to_invert
+            ):
                 raise
-            mask = masker._masks[mask_to_invert]
+            mask = masker._masks[mask_to_invert]  # pylint:disable=protected-access
 
         return ~mask
 
@@ -355,14 +357,21 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
             lon_dim_pts = cube.lon_dim.points
             lon_min = np.floor(lon_dim_pts.min())
             left_lon_wrapped, right_lon_wrapped = wrap_lons(
-                np.array([left_lon, right_lon]),
-                lon_min,
-                modulus
+                np.array([left_lon, right_lon]), lon_min, modulus
             ).astype(int)
             if left_lon_wrapped <= right_lon_wrapped:
-                mask_lon = ~((left_lon_wrapped <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped))
+                mask_lon = ~(
+                    (left_lon_wrapped <= lon_dim_pts)
+                    & (lon_dim_pts <= right_lon_wrapped)
+                )
             else:
-                mask_lon = ~(((lon_min <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped)) | ((left_lon_wrapped <= lon_dim_pts) & (lon_dim_pts <= lon_min + modulus)))
+                mask_lon = ~(
+                    ((lon_min <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped))
+                    | (
+                        (left_lon_wrapped <= lon_dim_pts)
+                        & (lon_dim_pts <= lon_min + modulus)
+                    )
+                )
             lat_dim_pts = cube.lat_dim.points
             mask_lat = ~((lower_lat <= lat_dim_pts) & (lat_dim_pts <= upper_lat))
 

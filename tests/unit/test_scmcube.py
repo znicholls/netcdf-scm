@@ -4,7 +4,7 @@ import logging
 import re
 import warnings
 from os.path import basename, dirname, join
-from unittest.mock import MagicMock, call, patch, PropertyMock
+from unittest.mock import MagicMock, PropertyMock, call, patch
 
 import cftime
 import iris
@@ -97,13 +97,18 @@ class TestSCMCube(object):
         assert caplog.records[1].levelname == "WARNING"
         if isinstance(test_cube, _CMIPCube):
             fallback_warn_idx = 3
-            assert caplog.messages[2] == "No realm attribute in cube, assuming not ocean data"
+            assert (
+                caplog.messages[2]
+                == "No realm attribute in cube, assuming not ocean data"
+            )
             assert caplog.records[2].levelname == "INFO"
         else:
             fallback_warn_idx = 2
 
         assert caplog.records[fallback_warn_idx].levelname == "DEBUG"
-        assert "Missing CF-netCDF measure variable" in str(caplog.records[fallback_warn_idx].message)
+        assert "Missing CF-netCDF measure variable" in str(
+            caplog.records[fallback_warn_idx].message
+        )
         assert "Tried to add areacella cube but another exception was raised:" in str(
             caplog.records[fallback_warn_idx].message
         )
@@ -407,7 +412,9 @@ class TestSCMCube(object):
         assert re.match(specific_warn, caplog.messages[1])
         if exc_info is not None:
             assert re.match(
-                "Could not calculate {}, error message: {}".format(areacella_var, exc_info),
+                "Could not calculate {}, error message: {}".format(
+                    areacella_var, exc_info
+                ),
                 str(caplog.records[1].message),
             )  # the actual message is stored in the exception
         assert re.match(not_ocean_assumption_info, caplog.messages[0])
@@ -505,13 +512,18 @@ class TestSCMCube(object):
 
         assert res == exp
 
-    def _run_test_is_ocean_data(self, test_cube, nc_attr_to_set, value_to_set, expected):
+    def _run_test_is_ocean_data(
+        self, test_cube, nc_attr_to_set, value_to_set, expected
+    ):
         test_cube.cube = MagicMock()
         test_cube.cube.attributes = {}
         test_cube.cube.attributes[nc_attr_to_set] = value_to_set
         assert test_cube.is_ocean_data == expected
 
-    @pytest.mark.parametrize("value_to_set,expected", [("atmos", False), ("ocean", True), ("ocnBgchem", True)])
+    @pytest.mark.parametrize(
+        "value_to_set,expected",
+        [("atmos", False), ("ocean", True), ("ocnBgchem", True)],
+    )
     def test_is_ocean_data(self, test_cube, value_to_set, expected):
         self._run_test_is_ocean_data(test_cube, "realm", value_to_set, expected)
 
@@ -522,7 +534,9 @@ class TestSCMCube(object):
         assert not test_cube.is_ocean_data
 
         assert len(caplog.messages) == 1  # warnings plus extra one exception
-        assert caplog.messages[0] == "No realm attribute in cube, assuming not ocean data"
+        assert (
+            caplog.messages[0] == "No realm attribute in cube, assuming not ocean data"
+        )
         assert caplog.records[0].levelname == "INFO"
 
 
@@ -940,7 +954,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
 
     @pytest.mark.parametrize("ocean_data", [True, False])
     @patch.object(SCMCube, "is_ocean_data", new_callable=PropertyMock)
-    def test_get_metadata_load_arguments(self, mock_is_ocean_data, test_cube, ocean_data):
+    def test_get_metadata_load_arguments(
+        self, mock_is_ocean_data, test_cube, ocean_data
+    ):
         mock_is_ocean_data.return_value = ocean_data
         assert test_cube.is_ocean_data == ocean_data
         tmetadata_var = "mdata_var"
@@ -981,9 +997,14 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             test_cube, caplog, expected_mip_era="CMIP5", expected_warns=5
         )
 
-    @pytest.mark.parametrize("value_to_set,expected", [("atmos", False), ("ocean", True), ("ocnBgchem", True)])
+    @pytest.mark.parametrize(
+        "value_to_set,expected",
+        [("atmos", False), ("ocean", True), ("ocnBgchem", True)],
+    )
     def test_is_ocean_data(self, test_cube, value_to_set, expected):
-        self._run_test_is_ocean_data(test_cube, "modeling_realm", value_to_set, expected)
+        self._run_test_is_ocean_data(
+            test_cube, "modeling_realm", value_to_set, expected
+        )
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
@@ -1291,7 +1312,10 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
         result = test_cube.get_variable_constraint()
         assert isinstance(result, iris.Constraint)
 
-    @pytest.mark.parametrize("value_to_set,expected", [("atmos", False), ("ocean", True), ("ocnBgchem", True)])
+    @pytest.mark.parametrize(
+        "value_to_set,expected",
+        [("atmos", False), ("ocean", True), ("ocnBgchem", True)],
+    )
     def test_is_ocean_data(self, test_cube, value_to_set, expected):
         self._run_test_is_ocean_data(test_cube, "realm", value_to_set, expected)
 
@@ -1604,6 +1628,9 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         assert res["member_id"] == tensemble_member
         assert res["mip_era"] == tmip_era
 
-    @pytest.mark.parametrize("value_to_set,expected", [("atmos", False), ("ocnBgchem", True), ("ocean", True)])
+    @pytest.mark.parametrize(
+        "value_to_set,expected",
+        [("atmos", False), ("ocnBgchem", True), ("ocean", True)],
+    )
     def test_is_ocean_data(self, test_cube, value_to_set, expected):
         self._run_test_is_ocean_data(test_cube, "realm", value_to_set, expected)

@@ -139,7 +139,7 @@ class _SCMCubeIntegrationTester(object):
     def test_get_scm_timeseries_cubes(self, test_cube):
         tsftlf_cube = "mocked 124"
         tland_mask_threshold = "mocked 51"
-        tareacella_scmcube = "mocked 4389"
+        tareacell_scmcube = "mocked 4389"
 
         land_mask = np.array(
             [
@@ -228,7 +228,7 @@ class _SCMCubeIntegrationTester(object):
             expected[label] = exp_cube
 
         result = test_cube.get_scm_timeseries_cubes(
-            tsftlf_cube, tland_mask_threshold, tareacella_scmcube
+            tsftlf_cube, tland_mask_threshold, tareacell_scmcube
         )
 
         for label, cube in expected.items():
@@ -250,7 +250,7 @@ class _SCMCubeIntegrationTester(object):
             masks=DEFAULT_REGIONS,
         )
         test_cube._get_area_weights.assert_called_with(
-            areacella_scmcube=tareacella_scmcube
+            areacell_scmcube=tareacell_scmcube
         )
 
     @pytest.mark.parametrize("out_calendar", [None, "gregorian", "365_day"])
@@ -605,7 +605,7 @@ class _CMIPCubeTester(_SCMCubeIntegrationTester):
         sftlf.cube = iris.load_cube(TEST_SFTLF_FILE)
 
         var.get_scm_timeseries(
-            sftlf_cube=sftlf, land_mask_threshold=50, areacella_scmcube=None
+            sftlf_cube=sftlf, land_mask_threshold=50, areacell_scmcube=None
         )
 
     def test_get_data_reference_syntax(self):
@@ -683,7 +683,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir": "tests/test_data/marble_cmip5",
             "activity": "cmip5",
             "experiment": "1pctCO2",
-            "modeling_realm": "Amon",
+            "mip_table": "Amon",
             "variable_name": "fco2antt",
             "model": "CanESM2",
             "ensemble_member": "r1i1p1",
@@ -704,7 +704,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir": "tests/test_data/marble_cmip5",
             "activity": "cmip5",
             "experiment": "1pctCO2",
-            "modeling_realm": "fx",
+            "mip_table": "fx",
             "variable_name": "sftlf",
             "model": "CanESM2",
             "ensemble_member": "r0i0p0",
@@ -726,11 +726,11 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root-dir",
             "activity",
             "experiment",
-            "modeling-realm",
+            "mip-table",
             "variable-name",
             "model",
             "ensemble-member",
-            "variable-name_modeling-realm_model_experiment_ensemble-member_time-periodfile-ext",
+            "variable-name_mip-table_model_experiment_ensemble-member_time-periodfile-ext",
         )
         tkwargs = {}
         if file_ext is not None:
@@ -755,7 +755,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             "root_dir": ".",
             "activity": "cmip5",
             "experiment": "1pctCO2",
-            "modeling_realm": "fx",
+            "mip_table": "fx",
             "variable_name": "sftlf",
             "model": "CanESM2",
             "ensemble_member": "r0i0p0",
@@ -1212,7 +1212,10 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         assert (ts["climate_model"] == "IPSL-CM6A-LR").all()
 
     # TODO: test thetao read in
-    @pytest.mark.parametrize("tdata_path", [TEST_CMIP6_OUTPUT_FILE_HFDS, TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID])
+    @pytest.mark.parametrize(
+        "tdata_path",
+        [TEST_CMIP6_OUTPUT_FILE_HFDS, TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID],
+    )
     def test_load_hfds_data(self, test_cube, tdata_path):
         test_cube.load_data_from_path(tdata_path)
 
@@ -1224,12 +1227,18 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
 
-        assert obs_time_points[0] == cftime.DatetimeNoLeap(1850, 1, 15, 13, 0, 0, 0, -1, 1)
-        assert obs_time_points[-1] == cftime.DatetimeNoLeap(1850, 6, 15, 0, 0, 0, 0, 1, 166)
+        assert obs_time_points[0] == cftime.DatetimeNoLeap(
+            1850, 1, 15, 13, 0, 0, 0, -1, 1
+        )
+        assert obs_time_points[-1] == cftime.DatetimeNoLeap(
+            1850, 6, 15, 0, 0, 0, 0, 1, 166
+        )
 
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
-        error_msg = re.escape("Your cube has no data which matches the `World|Land` mask")
+        error_msg = re.escape(
+            "Your cube has no data which matches the `World|Land` mask"
+        )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_scm_timeseries(masks=["World|Land"])
 
@@ -1263,10 +1272,16 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         ).all()
         assert (ts["unit"] == "W m^-2").all()
         assert (ts["climate_model"] == "CESM2").all()
-        np.testing.assert_allclose(ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(), 131.46116737, rtol=0.01)
+        np.testing.assert_allclose(
+            ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(),
+            131.46116737,
+            rtol=0.01,
+        )
 
     @patch.object(tclass, "_get_areacell_scmcube", return_value=None)
-    def test_load_hfds_data_native_grid_no_areacello_error(self, mock_get_areacell_scmcube, test_cube):
+    def test_load_hfds_data_native_grid_no_areacello_error(
+        self, mock_get_areacell_scmcube, test_cube
+    ):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID)
         error_msg = re.escape(
             "iris does not yet support multi-dimensional co-ordinates, you will "

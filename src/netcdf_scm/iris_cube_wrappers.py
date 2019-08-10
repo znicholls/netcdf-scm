@@ -37,7 +37,11 @@ try:
     from iris.util import unify_time_units
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
-    from iris.exceptions import CoordinateNotFoundError, CoordinateMultiDimError, ConcatenateError
+    from iris.exceptions import (
+        CoordinateNotFoundError,
+        CoordinateMultiDimError,
+        ConcatenateError,
+    )
     from iris.fileformats import netcdf
     import cftime
     import cf_units
@@ -554,9 +558,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 area_measure, data_dims=[self.lat_dim_number, self.lon_dim_number]
             )
         except Exception:  # pylint:disable=broad-except
-            error_msg = (
-                str(original_warn.message)
-                + ". Tried to add {} cube but another exception was raised:".format(area_variable)
+            error_msg = str(
+                original_warn.message
+            ) + ". Tried to add {} cube but another exception was raised:".format(
+                area_variable
             )
             logger.debug(error_msg)
 
@@ -591,11 +596,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self._metadata_cubes[metadata_variable]
 
     def get_scm_timeseries(
-        self,
-        sftlf_cube=None,
-        land_mask_threshold=50,
-        areacell_scmcube=None,
-        masks=None,
+        self, sftlf_cube=None, land_mask_threshold=50, areacell_scmcube=None, masks=None
     ):
         """
         Get SCM relevant timeseries from ``self``.
@@ -635,11 +636,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
     def get_scm_timeseries_cubes(
-        self,
-        sftlf_cube=None,
-        land_mask_threshold=50,
-        areacell_scmcube=None,
-        masks=None,
+        self, sftlf_cube=None, land_mask_threshold=50, areacell_scmcube=None, masks=None
     ):
         """
         Get SCM relevant cubes
@@ -907,7 +904,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
     def _get_areacell_scmcube(self, areacell_scmcube):
         try:
-            areacell_var = self.areacello_var if self.is_ocean_data else self.areacella_var
+            areacell_var = (
+                self.areacello_var if self.is_ocean_data else self.areacella_var
+            )
             areacell_scmcube = self.get_metadata_cube(
                 areacell_var, cube=areacell_scmcube
             )
@@ -1357,6 +1356,11 @@ class _CMIPCube(SCMCube, ABC):
         -------
         str
             path to the data file from which this cube has been/will be loaded
+
+        Raises
+        ------
+        OSError
+            The data directory cannot be determined
         """
         try:
             return self._get_data_directory()
@@ -1379,6 +1383,11 @@ class _CMIPCube(SCMCube, ABC):
         -------
         str
             name of the data file from which this cube has been/will be loaded.
+
+        Raises
+        ------
+        OSError
+            The data directory cannot be determined
         """
         try:
             return self._get_data_filename()

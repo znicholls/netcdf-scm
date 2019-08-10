@@ -121,6 +121,9 @@ def test_get_scm_masks_no_land_available(
     )
     expected_land_mask = ~(default_sftlf_cube.data > 50).data
 
+    caplog.clear()
+    caplog.set_level(logging.WARNING, logger="netcdf_scm")
+    assert len(caplog.messages) == 0
     expected = {
         k: broadcast_to_shape(
             v,
@@ -400,7 +403,9 @@ def test_get_scm_masks_land_bound_checks(
     tsftlf_scmcube.cube = tsftlf_cube
     test_all_cubes.get_metadata_cube.return_value = tsftlf_scmcube
 
-    caplog.set_level(logging.INFO)
+    caplog.clear()
+    assert len(caplog.messages) == 0
+    caplog.set_level(logging.WARNING, logger="netcdf_scm")
     masker = CubeMasker(test_all_cubes, land_mask_threshold=land_mask_threshold)
     masker.get_masks(["World|Land"])
 
