@@ -71,9 +71,11 @@ def invert(mask_to_invert):
         try:
             mask = masker.get_mask(mask_to_invert)
         except ValueError as e:
-            if str(e) != "Your cube has no data which matches the `{}` mask".format(mask_to_invert):
+            if str(e) != "Your cube has no data which matches the `{}` mask".format(
+                mask_to_invert
+            ):
                 raise
-            mask = masker._masks[mask_to_invert]
+            mask = masker._masks[mask_to_invert]  # pylint:disable=protected-access
 
         return ~mask
 

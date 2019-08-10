@@ -11,8 +11,8 @@ from netcdf_scm.masks import (
     get_area_mask,
     get_land_mask,
     get_nh_mask,
-    or_masks,
     invert,
+    or_masks,
 )
 
 
@@ -73,4 +73,3 @@ def test_no_match_error(test_all_cubes):
         res = masker.get_mask("Inverse")
         # inverse of Junk should all be False
         assert not res.any()
-
