@@ -949,9 +949,41 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         data = []
         metadata = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
         for scm_cube in scm_timeseries_cubes.values():
-            data.append(get_cube_timeseries_data(scm_cube))
-            for metadata_column, metadata_values in metadata.items():
-                metadata_values.append(scm_cube.cube.attributes[metadata_column])
+            if len(scm_cube.cube.dim_coords) == 1:
+                data.append(get_cube_timeseries_data(scm_cube))
+                for metadata_column, metadata_values in metadata.items():
+                    metadata_values.append(scm_cube.cube.attributes[metadata_column])
+            else:
+                if len(scm_cube.cube.dim_coords) > 2:
+                    raise NotImplementedError()
+                else:
+                    # import pdb
+                    # pdb.set_trace()
+                    # extra_coords = [c.var_name for c in scm_cube.cube.dim_coords if c.var_name != "time"]
+                    # assert len(extra_coords) == 1, "No idea how to represent this in a table..."
+                    # extra_coords = extra_coords[0]
+                    for coord_slice in scm_cube.cube.slices("time"):
+                        extra_coord_info = {
+                            c.name(): "{}-{}{}".format(
+                                c.bounds[0][0], c.bounds[0][1], c.units
+                            ) for c in coord_slice.coords()
+                            if c.name() not in ("latitude", "longitude", "time")
+                        }
+                        helper = self.__class__()
+                        helper.cube = coord_slice
+                        data.append(get_cube_timeseries_data(helper))
+                        for metadata_column, metadata_values in metadata.items():
+                            val_to_append = scm_cube.cube.attributes[metadata_column]
+                            if metadata_column == "region":
+                                extra_coord_id = ";".join([
+                                    "{} {}".format(k, v)
+                                    for k, v in extra_coord_info.items()
+                                ])
+                                val_to_append = "{}|{}".format(
+                                    val_to_append,
+                                    extra_coord_id
+                                )
+                            metadata_values.append(val_to_append)
 
         data = np.vstack(data).T
 
