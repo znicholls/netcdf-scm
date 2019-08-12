@@ -1359,6 +1359,23 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             rtol=0.01,
         )
 
+    @tdata_required
+    def test_load_data_auto_add_areacella(self, test_cube):
+        test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_HFDS)
+
+        cell_measures = test_cube.cube.cell_measures()
+        assert len(cell_measures) == 1
+        assert cell_measures[0].standard_name == "cell_area"
+
+    @tdata_required
+    def test_load_data_auto_add_areacello_and_volcello(self, test_cube):
+        test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_THETAO_NATIVE_GRID)
+
+        cell_measures = test_cube.cube.cell_measures()
+        assert len(cell_measures) == 2
+        assert cell_measures[0].standard_name == "cell_area"
+        assert cell_measures[0].standard_name == "cell_volume"
+
     def test_load_data_1_unit(self, test_cube):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_1_UNIT)
 
