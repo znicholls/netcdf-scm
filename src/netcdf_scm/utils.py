@@ -44,7 +44,8 @@ def get_cube_timeseries_data(scm_cube, realise_data=False):
     Returns
     -------
     np.ndarray
-        The cube's timeseries data.
+        The cube's timeseries data (will be a dask Array if the data is lazy and
+        ``realise_data == False``.
     """
     _assert_only_cube_dim_coord_is_time(scm_cube)
     raw_data = scm_cube.cube.core_data()
@@ -66,7 +67,7 @@ def get_scm_cube_time_axis_in_calendar(scm_cube, calendar):
 
     Returns
     -------
-    np.ndarray, da.Array
+    np.ndarray
         Array of datetimes, containing the cube's calendar.
     """
     time_coord_number = scm_cube.cube.coord_dims("time")[0]

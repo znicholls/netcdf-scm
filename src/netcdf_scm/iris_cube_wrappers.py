@@ -995,16 +995,21 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         -------
         :obj:`ScmDataFrame`
             :obj:`ScmDataFrame` containing the data from the SCM timeseries cubes
+
+        Raises
+        ------
+        NotImplementedError
+            The cubes we are trying to convert have dimensions other than time.
         """
         data = []
         metadata = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
-        if len(self.cube.dim_coords) > 1:
-            raise NotImplementedError(
-                "Converting cubes with dimensions other than lat, lon and time to scm "
-                "timeseries is not yet supported. It will be added in "
-                "https://github.com/znicholls/netcdf-scm/pull/76"
-            )
         for scm_cube in scm_timeseries_cubes.values():
+            if len(scm_cube.cube.dim_coords) > 1:
+                raise NotImplementedError(
+                    "Converting cubes with dimensions other than time to SCM "
+                    "timeseries is not yet supported. It will be added in "
+                    "https://github.com/znicholls/netcdf-scm/pull/76"
+                )
             data.append(get_cube_timeseries_data(scm_cube, realise_data=True))
 
             for metadata_column, metadata_values in metadata.items():
@@ -1423,7 +1428,7 @@ class _CMIPCube(SCMCube, ABC):
         try:
             return self._get_data_directory()
         except TypeError:  # some required attributes still None
-            raise OSError
+            raise OSError("Failed to determine data directory")
 
     @abstractmethod
     def _get_data_directory(self):
@@ -1450,7 +1455,7 @@ class _CMIPCube(SCMCube, ABC):
         try:
             return self._get_data_filename()
         except TypeError:  # some required attributes still None
-            raise OSError
+            raise OSError("Failed to determine data filename")
 
     @abstractmethod
     def _get_data_filename(self):
