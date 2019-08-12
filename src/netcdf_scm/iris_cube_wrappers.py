@@ -732,7 +732,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         if self.is_ocean_data:
             if any(["Land" in m for m in masks]):
                 masks = [m for m in masks if "Land" not in m]
-                logger.debug("Detected ocean data so land masks were dropped, they are now: %s", masks)
+                logger.debug(
+                    "Detected ocean data so land masks were dropped, they are now: %s",
+                    masks,
+                )
 
         scm_masks = self._get_scm_masks(
             sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
