@@ -16,7 +16,6 @@ from ..utils import broadcast_onto_lat_lon_grid
 try:
     import iris
     from iris.analysis.cartography import wrap_lons
-    from iris.exceptions import CoordinateMultiDimError
     from iris.util import broadcast_to_shape
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from ..errors import raise_no_iris_warning

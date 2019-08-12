@@ -1006,6 +1006,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             )
         for scm_cube in scm_timeseries_cubes.values():
             data.append(get_cube_timeseries_data(scm_cube, realise_data=True))
+
             for metadata_column, metadata_values in metadata.items():
                 metadata_values.append(scm_cube.cube.attributes[metadata_column])
 
