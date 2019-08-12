@@ -601,15 +601,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 attributes=volume_cube.attributes,
                 measure="volume",
             )
-            data_dims = [
-                self.cube.shape.index(v)
-                for v in volume_cube.shape
-            ]
+            data_dims = [self.cube.shape.index(v) for v in volume_cube.shape]
             if len(data_dims) != len(volume_cube.shape):
-                raise AssertionError("Edge case where dimensions are same size not implemented")
-            self.cube.add_cell_measure(
-                volume_measure, data_dims=data_dims
-            )
+                raise AssertionError(
+                    "Edge case where dimensions are same size not implemented"
+                )
+            self.cube.add_cell_measure(volume_measure, data_dims=data_dims)
         except Exception as e:  # pylint:disable=broad-except
             error_msg = str(
                 original_warn.message
@@ -1001,6 +998,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         data = []
         metadata = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
+        if len(self.cube.dim_coords) > 1:
+            raise NotImplementedError(
+                "Converting cubes with dimensions other than lat, lon and time to scm "
+                "timeseries is not yet supported. It will be added in "
+                "https://github.com/znicholls/netcdf-scm/pull/76"
+            )
         for scm_cube in scm_timeseries_cubes.values():
             data.append(get_cube_timeseries_data(scm_cube, realise_data=True))
             for metadata_column, metadata_values in metadata.items():
