@@ -116,6 +116,17 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     it might be as simple as replacing ``hfds`` with the value of ``areacello_var``.
     """
 
+    volcello_var = "volcello"
+    """
+    str: The name of the variable associated with the ocean cell volume of each gridbox.
+
+    If required, this is used to determine the volume of each cell in a data file. For
+    example, if our data file is
+    ``thetao_Omon_CESM2_historical_r4i1p1f1_gr_185001-185006.nc`` then ``volcello_var``
+    can be used to work  out the name of the associated cell area file. In some cases,
+    it might be as simple as replacing ``thetao`` with the value of ``volcello_var``.
+    """
+
     lat_name = "latitude"
     """str: The expected name of the latitude co-ordinate in data."""
 
@@ -223,6 +234,16 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self._timestamp_definitions
 
     @property
+    def dim_names(self):
+        """
+        list: Names of the dimensions in this cube
+
+        Here the names are the ``standard_names`` which means there can be
+        ``None`` in the output.
+        """
+        return [c.standard_name for c in self.cube.coords()]
+
+    @property
     def lon_dim(self):
         """:obj:`iris.coords.DimCoord` The longitude dimension of the data."""
         return self.cube.coord(self.lon_name)
@@ -235,7 +256,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         e.g. if longitude is the third dimension of the data, then
         ``self.lon_dim_number`` will be ``2`` (Python is zero-indexed).
         """
-        return self.cube.coord_dims(self.lon_name)[0]
+        return self.dim_names.index(self.lon_name)
 
     @property
     def lat_dim(self):
@@ -250,7 +271,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         e.g. if latitude is the first dimension of the data, then
         ``self.lat_dim_number`` will be ``0`` (Python is zero-indexed).
         """
-        return self.cube.coord_dims(self.lat_name)[0]
+        return self.dim_names.index(self.lat_name)
 
     @property
     def time_dim(self):
@@ -534,11 +555,14 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     def _process_load_data_from_identifiers_warnings(self, w):
         area_cella_warn = "Missing CF-netCDF measure variable 'areacella'"
         area_cello_warn = "Missing CF-netCDF measure variable 'areacello'"
+        vol_cello_warn = "Missing CF-netCDF measure variable 'volcello'"
         for warn in w:
             if area_cella_warn in str(warn.message):
                 self._add_area_measure(warn, self.areacella_var)
             elif area_cello_warn in str(warn.message):
                 self._add_area_measure(warn, self.areacello_var)
+            elif vol_cello_warn in str(warn.message):
+                self._add_volume_measure(warn, self.volcello_var)
             else:
                 logger.warning(warn.message)
 
@@ -557,11 +581,40 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             self.cube.add_cell_measure(
                 area_measure, data_dims=[self.lat_dim_number, self.lon_dim_number]
             )
-        except Exception:  # pylint:disable=broad-except
+        except Exception as e:  # pylint:disable=broad-except
             error_msg = str(
                 original_warn.message
-            ) + ". Tried to add {} cube but another exception was raised:".format(
-                area_variable
+            ) + ". Tried to add {} cube but another exception was raised: {}".format(
+                area_variable, str(e)
+            )
+            logger.debug(error_msg)
+
+    def _add_volume_measure(self, original_warn, volume_variable):
+        try:
+            volume_cube = self.get_metadata_cube(volume_variable).cube
+            volume_measure = iris.coords.CellMeasure(
+                volume_cube.core_data(),
+                standard_name=volume_cube.standard_name,
+                long_name=volume_cube.long_name,
+                var_name=volume_cube.var_name,
+                units=volume_cube.units,
+                attributes=volume_cube.attributes,
+                measure="volume",
+            )
+            data_dims = [
+                self.cube.shape.index(v)
+                for v in volume_cube.shape
+            ]
+            if len(data_dims) != len(volume_cube.shape):
+                raise AssertionError("Edge case where dimensions are same size not implemented")
+            self.cube.add_cell_measure(
+                volume_measure, data_dims=data_dims
+            )
+        except Exception as e:  # pylint:disable=broad-except
+            error_msg = str(
+                original_warn.message
+            ) + ". Tried to add {} cube but another exception was raised: {}".format(
+                volume_variable, str(e)
             )
             logger.debug(error_msg)
 
@@ -758,8 +811,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                     )
         else:
             logger.warning(
-                "Not calculating land fractions as all required cubes are not "
-                "available"
+                "Not calculating land fractions because we don't have all the "
+                "required cubes"
             )
 
         return timeseries_cubes
