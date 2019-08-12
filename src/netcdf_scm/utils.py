@@ -213,20 +213,20 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
     and a longitude dimension of length 2 (shape 3x4x2) and ``array_in`` of shape 4x2, results in
     a 3x4x2 array where each slice in the broadcasted array's time dimension is identical to ``array_in``.
     """
-    if len(cube.lat_dim.shape) == 2:
-        # dimension order unclear but can be worked around
-        dim_x_len = cube.lat_dim.shape[0]
-        dim_y_len = cube.lat_dim.shape[1]
-        dim_x_position = cube.cube.data.shape.index(dim_x_len)
-        dim_y_position = cube.cube.data.shape.index(dim_y_len)
-        dim_order = [dim_x_position, dim_y_position]
-        base_shape = (dim_x_len, dim_y_len)
-    else:
-        lat_length = len(cube.lat_dim.points)
-        lon_length = len(cube.lon_dim.points)
+    # TODO: update this to use better handling of multi-dimensional co-ords
+    # if len(cube.lat_dim.shape) == 2:
+    #     # dimension order unclear but can be worked around
 
-        dim_order = [cube.lat_dim_number, cube.lon_dim_number]
-        base_shape = (lat_length, lon_length)
+    #     dim_x_len = cube.lat_dim.shape[0]
+    #     dim_y_len = cube.lat_dim.shape[1]
+    #     dim_x_position = cube.cube.data.shape.index(dim_x_len)
+    #     dim_y_position = cube.cube.data.shape.index(dim_y_len)
+    # else:
+    lat_length = cube.cube.shape[cube.lat_dim_number]
+    lon_length = cube.cube.shape[cube.lon_dim_number]
+
+    dim_order = [cube.lat_dim_number, cube.lon_dim_number]
+    base_shape = (lat_length, lon_length)
 
     if array_in.shape != base_shape:
         array_in = np.transpose(array_in)

@@ -1335,7 +1335,7 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
                 "World|El Nino N3.4",
             ]
         )
-        assert sorted(ts["region"].tolist()) == sorted(
+        assert sorted(ts["region"].unique().tolist()) == sorted(
             [
                 "World",
                 "World|Northern Hemisphere",
@@ -1347,17 +1347,20 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
                 "World|El Nino N3.4",
             ]
         )
-        assert (ts["variable"] == "hfds").all()
+        assert (ts["variable"] == "thetao").all()
         assert (
-            ts["variable_standard_name"] == "surface_downward_heat_flux_in_sea_water"
+            ts["variable_standard_name"] == "sea_water_potential_temperature"
         ).all()
-        assert (ts["unit"] == "W m^-2").all()
-        assert (ts["climate_model"] == "CESM2").all()
+        assert (ts["unit"] == "degC").all()
+        assert (ts["climate_model"] == "CESM2-WACCM").all()
         np.testing.assert_allclose(
-            ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(),
-            131.46116737,
+            ts.filter(region="World|El Nino N3.4", month=3, **{"ocean model level":range(0, 20)}).values.squeeze(),
+            np.array([27.23915 , 27.211277]),
             rtol=0.01,
         )
+        # TODO: implement filtering with pint arrays so units can be used and make
+        # columns not have spaces in them
+        assert False
 
     @tdata_required
     def test_load_data_auto_add_areacella(self, test_cube):
@@ -1369,12 +1372,13 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
 
     @tdata_required
     def test_load_data_auto_add_areacello_and_volcello(self, test_cube):
+        # currently failing due to https://github.com/SciTools/iris/issues/3367
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_THETAO_NATIVE_GRID)
 
         cell_measures = test_cube.cube.cell_measures()
         assert len(cell_measures) == 2
         assert cell_measures[0].standard_name == "cell_area"
-        assert cell_measures[0].standard_name == "cell_volume"
+        assert cell_measures[1].standard_name == "cell_volume"
 
     def test_load_data_1_unit(self, test_cube):
         test_cube.load_data_from_path(TEST_CMIP6_OUTPUT_FILE_1_UNIT)
