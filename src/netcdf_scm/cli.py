@@ -311,7 +311,7 @@ def crunch_data(
         )
 
 
-def _crunch_files(  # pylint:disable=too-many-arguments
+def _crunch_files(  # pylint:disable=too-many-arguments,too-many-locals
     fnames,
     dpath,
     drs=None,
@@ -337,7 +337,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments
         logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
         return None
 
-    masks = [m for m in MASKS.keys()]
+    masks = list(MASKS.keys())
     if scmcube.is_ocean_data:
         if any(["Land" in m for m in masks]):
             masks = [m for m in masks if "Land" not in m]
@@ -347,8 +347,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments
             )
 
     results = scmcube.get_scm_timeseries_cubes(
-        land_mask_threshold=land_mask_threshold,
-        masks=masks,
+        land_mask_threshold=land_mask_threshold, masks=masks
     )
     results = _set_crunch_contact_in_results(results, crunch_contact)
 
