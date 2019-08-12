@@ -926,7 +926,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         data = []
         metadata = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
         for scm_cube in scm_timeseries_cubes.values():
-            data.append(get_cube_timeseries_data(scm_cube))
+            data.append(get_cube_timeseries_data(scm_cube, realise_data=True))
             for metadata_column, metadata_values in metadata.items():
                 metadata_values.append(scm_cube.cube.attributes[metadata_column])
 
@@ -938,8 +938,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         unit = str(self.cube.units).replace("-", "^-")
         if unit == "1":
             unit = "dimensionless"  # ensure units behave with pint
+
         output = ScmDataFrame(
-            data,
+            data if isinstance(data, np.ndarray) else data.compute(),
             index=time_index,
             columns={**{"unit": str(unit), "model": "unspecified"}, **metadata},
         )
