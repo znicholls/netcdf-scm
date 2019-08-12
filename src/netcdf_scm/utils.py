@@ -27,7 +27,7 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
     raise_no_iris_warning()
 
 
-def get_cube_timeseries_data(scm_cube):
+def get_cube_timeseries_data(scm_cube, realise_data=False):
     """
     Get a timeseries from a cube.
 
@@ -38,13 +38,19 @@ def get_cube_timeseries_data(scm_cube):
     scm_cube : :obj:`SCMCube`
         An ``SCMCube`` instance with only a 'time' dimension.
 
+    realise_data : bool
+        If ``True``, force the data to be realised before returning
+
     Returns
     -------
     np.ndarray
         The cube's timeseries data.
     """
     _assert_only_cube_dim_coord_is_time(scm_cube)
-    return scm_cube.cube.core_data()
+    raw_data = scm_cube.cube.core_data()
+    if isinstance(raw_data, da.Array) and realise_data:
+        return raw_data.compute()
+    return raw_data
 
 
 def get_scm_cube_time_axis_in_calendar(scm_cube, calendar):
@@ -60,7 +66,7 @@ def get_scm_cube_time_axis_in_calendar(scm_cube, calendar):
 
     Returns
     -------
-    np.ndarray
+    np.ndarray, da.Array
         Array of datetimes, containing the cube's calendar.
     """
     time_coord_number = scm_cube.cube.coord_dims("time")[0]
