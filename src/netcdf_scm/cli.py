@@ -24,6 +24,7 @@ from .iris_cube_wrappers import (
     MarbleCMIP5Cube,
     SCMCube,
 )
+from .masks import MASKS
 from .output import OutputFileDatabase
 from .wranglers import convert_scmdf_to_tuningstruc
 
@@ -336,7 +337,19 @@ def _crunch_files(  # pylint:disable=too-many-arguments
         logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
         return None
 
-    results = scmcube.get_scm_timeseries_cubes(land_mask_threshold=land_mask_threshold)
+    masks = [m for m in MASKS.keys()]
+    if scmcube.is_ocean_data:
+        if any(["Land" in m for m in masks]):
+            masks = [m for m in masks if "Land" not in m]
+            logger.debug(
+                "Detected ocean data so land masks were dropped, they are now: %s",
+                masks,
+            )
+
+    results = scmcube.get_scm_timeseries_cubes(
+        land_mask_threshold=land_mask_threshold,
+        masks=masks,
+    )
     results = _set_crunch_contact_in_results(results, crunch_contact)
 
     return results, out_filepath, scmcube.info
