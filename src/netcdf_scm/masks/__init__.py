@@ -283,77 +283,72 @@ def get_area_mask(lower_lat, left_lon, upper_lat, right_lon):
     """
 
     def f(masker, cube, **kwargs):  # pylint:disable=unused-argument
-        # iris standard behaviour is to include any point whose bounds overlap with
+        # Iris' standard behaviour is to include any point whose bounds overlap with
         # the given ranges e.g. if the range is (0, 130) then a cell whose bounds were
-        # (-90, 5) would be included even if its point were -42.5
+        # (-90, 5) would be included even if its point were -42.5.
 
-        # this can be altered with the `ignore_bounds` keyword argument. In this case
-        # only cells whose points lie within the range are included so if the range is
-        # (0, 130) then a cell whose bounds were (-90, 5) would be excluded if its
-        # point were -42.5
+        # This can be altered with the ``ignore_bounds`` keyword argument to
+        # ``cube.intersection``. In this case only cells whose points lie within the
+        # range are included so if the range is (0, 130) then a cell whose bounds were
+        # (-90, 5) would be excluded if its point were -42.5.
 
-        # if we want to only include if the entire box is within a point we're going
-        # to need something custom...
-        try:
-            tmp_cube = cube.cube.intersection(
-                latitude=(lower_lat, upper_lat, True, True),  # include bounds
-                longitude=(left_lon, right_lon, True, True),  # include bounds
-                ignore_bounds=True,
-            )
-        except IndexError:
-            # TODO: make issue in Iris about this being a cryptic error message
-            error_msg = "None of the cube's {} lie within the bounds:\nquery: ({}, {})\ncube points: {}"
-            if not any(
-                [
-                    lower_lat <= v <= upper_lat
-                    for v in cube.cube.coord("latitude").points
-                ]
-            ):
-                raise ValueError(
-                    error_msg.format(
-                        "latitudes",
-                        lower_lat,
-                        upper_lat,
-                        cube.cube.coord("latitude").points,
-                    )
-                )
+        # Here we follow this ``ignore_bounds=True`` behaviour (i.e. only include if
+        # the point lies within the specified range). If we want to only include the
+        # cell if the entire box is within a point we're going to need to tweak things.
+        # Given this isn't available in iris, it seems to be an unusual way to do
+        # intersection so we haven't implemented it.
+        lon_dim_pts = cube.lon_dim.points
+        lat_dim_pts = cube.lat_dim.points
 
-            if not any(
-                [
-                    left_lon <= v <= right_lon
-                    for v in cube.cube.coord("longitude").points
-                ]
-            ):
-                raise ValueError(
-                    error_msg.format(
-                        "longitudes",
-                        left_lon,
-                        right_lon,
-                        cube.cube.coord("longitude").points,
-                    )
-                )
-
-            raise  # pragma: no cover
-
-        mask_lat = ~np.array(
-            [
-                np.isclose(v, tmp_cube.coord("latitude").points).any()
-                for v in cube.cube.coord("latitude").points
-            ]
+        lat_lon_size = (
+            cube.cube.shape[cube.lat_dim_number],
+            cube.cube.shape[cube.lon_dim_number],
         )
 
-        modulus = cube.cube.coord("longitude").units.modulus
-        kept_lons = wrap_lons(tmp_cube.coord("longitude").points, 0, modulus)
-        cube_lons = wrap_lons(cube.cube.coord("longitude").points, 0, modulus)
-        mask_lon = ~np.array([v in kept_lons for v in cube_lons])
-        # Here we make a grid which we can use as a mask. We have to use all
-        # of these nots so that our product (which uses AND logic) gives us
-        # False in the NH and True in the SH (another way to think of this is
-        # that we have to flip everything so False goes to True and True goes
-        # to False, do all our operations with AND logic, then flip everything
-        # back).
-        mask = ~np.outer(~mask_lat, ~mask_lon)
+        if len(lat_dim_pts.shape) == 1:
+            lat_dim_pts = np.broadcast_to(lat_dim_pts, lat_lon_size[::-1]).T
+        if len(lon_dim_pts.shape) == 1:
+            lon_dim_pts = np.broadcast_to(lon_dim_pts, lat_lon_size)
 
+        mask_lat = ~((lower_lat <= lat_dim_pts) & (lat_dim_pts <= upper_lat))
+
+        lon_modulus = cube.lon_dim.units.modulus
+        lon_min = np.floor(lon_dim_pts.min())
+        left_lon_wrapped, right_lon_wrapped = wrap_lons(
+            np.array([left_lon, right_lon]), lon_min, lon_modulus
+        ).astype(int)
+        if left_lon_wrapped <= right_lon_wrapped:
+            mask_lon = ~(
+                (left_lon_wrapped <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped)
+            )
+        else:
+            mask_lon = ~(
+                ((lon_min <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped))
+                | (
+                    (left_lon_wrapped <= lon_dim_pts)
+                    & (lon_dim_pts <= lon_min + lon_modulus)
+                )
+            )
+
+        # TODO: make issue in Iris about the fact that ``cube.intersection``'s errors
+        # are cryptic
+        error_msg = "None of the cube's {} lie within the bounds:\nquery: ({}, {})\ncube points: {}"
+        if mask_lon.all():
+            raise ValueError(
+                error_msg.format("latitudes", lower_lat, upper_lat, cube.lat_dim.points)
+            )
+
+        if mask_lat.all():
+            raise ValueError(
+                error_msg.format("longitudes", left_lon, right_lon, cube.lon_dim.points)
+            )
+
+        # Here we make our mask. We have to use all of these nots so that our product (
+        # which uses AND logic) gives us False in the regions we want to keep and True
+        # in the regions we don't want to keep (another way to think of this is that
+        # we have to flip everything so False goes to True and True goes to False, do
+        # all our operations with AND logic, then flip everything back).
+        mask = ~(~mask_lon & ~mask_lat)
         return broadcast_onto_lat_lon_grid(cube, mask)
 
     return f
