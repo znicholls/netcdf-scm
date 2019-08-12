@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#78 <https://github.com/znicholls/netcdf-scm/pull/78>`_) Add ability to read ``hfds`` files and other files which have irregular grids (as long as they provide cell area supplementary information)
 - (`#77 <https://github.com/znicholls/netcdf-scm/pull/77>`_) Refactor ``netcdf_scm.masks.get_area_mask`` logic to make multi-dimensional co-ordinate support easier
 - (`#75 <https://github.com/znicholls/netcdf-scm/pull/75>`_) Check ``land_mask_threshold`` is sensible when retrieving land mask (automatically update if not)
 - (`#72 <https://github.com/znicholls/netcdf-scm/pull/72>`_) Monkey patch iris to speed up crunching and go back to linear regridding of default sftlf mask
