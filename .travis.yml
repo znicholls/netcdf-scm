@@ -9,7 +9,16 @@ python:
 
 before_install:
   - sudo apt-get update
+  - sudo apt-get install git-lfs
 install:
+  # Pull lfs files
+  # --------------
+  - git status
+  - git lfs install
+  - GIT_TRACE=1 git lfs pull
+  - git pull
+  - cat tests/test-data/expected-crunching-output/cmip6output/CMIP6/CMIP/BCC/BCC-CSM2-MR/1pctCO2/r1i1p1f1/Amon/rlut/gn/v20181015/netcdf-scm_rlut_Amon_BCC-CSM2-MR_1pctCO2_r1i1p1f1_gn_185001-185912.nc
+
   # Install miniconda
   # -----------------
   - >
