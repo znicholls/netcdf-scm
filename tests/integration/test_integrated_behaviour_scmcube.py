@@ -18,9 +18,9 @@ from conftest import (
     TEST_CMIP6_OUTPUT_FILE_1_UNIT,
     TEST_CMIP6_OUTPUT_FILE_HFDS,
     TEST_CMIP6_OUTPUT_FILE_HFDS_NATIVE_GRID,
+    TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
     TEST_CMIP6_OUTPUT_FILE_THETAO,
     TEST_CMIP6_OUTPUT_FILE_THETAO_NATIVE_GRID,
-    TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS,
     TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE,
     TEST_DATA_MARBLE_CMIP5_DIR,
     TEST_SFTLF_FILE,
@@ -1313,7 +1313,9 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
         )
 
         assert obs_time_points[0] == cftime.DatetimeNoLeap(1, 1, 15, 13, 0, 0, 0, -1, 1)
-        assert obs_time_points[-1] == cftime.DatetimeNoLeap(1, 3, 15, 12, 0, 0, 0, 6, 74)
+        assert obs_time_points[-1] == cftime.DatetimeNoLeap(
+            1, 3, 15, 12, 0, 0, 0, 6, 74
+        )
 
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
@@ -1348,14 +1350,16 @@ class TestCMIP6OutputCube(_CMIPCubeTester):
             ]
         )
         assert (ts["variable"] == "thetao").all()
-        assert (
-            ts["variable_standard_name"] == "sea_water_potential_temperature"
-        ).all()
+        assert (ts["variable_standard_name"] == "sea_water_potential_temperature").all()
         assert (ts["unit"] == "degC").all()
         assert (ts["climate_model"] == "CESM2-WACCM").all()
         np.testing.assert_allclose(
-            ts.filter(region="World|El Nino N3.4", month=3, **{"ocean model level":range(0, 20)}).values.squeeze(),
-            np.array([27.23915 , 27.211277]),
+            ts.filter(
+                region="World|El Nino N3.4",
+                month=3,
+                **{"ocean model level": range(0, 20)},
+            ).values.squeeze(),
+            np.array([27.23915, 27.211277]),
             rtol=0.01,
         )
         # TODO: implement filtering with pint arrays so units can be used and make

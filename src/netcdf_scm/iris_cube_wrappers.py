@@ -601,15 +601,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 attributes=volume_cube.attributes,
                 measure="volume",
             )
-            data_dims = [
-                self.cube.shape.index(v)
-                for v in volume_cube.shape
-            ]
+            data_dims = [self.cube.shape.index(v) for v in volume_cube.shape]
             if len(data_dims) != len(volume_cube.shape):
-                raise AssertionError("Edge case where dimensions are same size not implemented")
-            self.cube.add_cell_measure(
-                volume_measure, data_dims=data_dims
-            )
+                raise AssertionError(
+                    "Edge case where dimensions are same size not implemented"
+                )
+            self.cube.add_cell_measure(volume_measure, data_dims=data_dims)
         except Exception as e:  # pylint:disable=broad-except
             error_msg = str(
                 original_warn.message
@@ -1011,7 +1008,11 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                     raise NotImplementedError()
                 else:
                     for coord_slice in scm_cube.cube.slices("time"):
-                        extra_coords = {c.name(): coord_slice.coords(c.name()) for c in coord_slice.coords() if c.name() not in ("latitude", "longitude", "time")}
+                        extra_coords = {
+                            c.name(): coord_slice.coords(c.name())
+                            for c in coord_slice.coords()
+                            if c.name() not in ("latitude", "longitude", "time")
+                        }
                         extra_cols = [
                             "{}{}".format(name, tail)
                             for tail in ["", "_upper", "_lower"]
@@ -1026,14 +1027,22 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                         for metadata_column, metadata_values in metadata.items():
                             if metadata_column in extra_cols:
                                 if "upper" in metadata_column:
-                                    val_to_append = extra_coords[metadata_column.replace("_upper", "")][0].bounds.squeeze()[0]
+                                    val_to_append = extra_coords[
+                                        metadata_column.replace("_upper", "")
+                                    ][0].bounds.squeeze()[0]
                                 elif "lower" in metadata_column:
-                                    val_to_append = extra_coords[metadata_column.replace("_lower", "")][0].bounds.squeeze()[1]
+                                    val_to_append = extra_coords[
+                                        metadata_column.replace("_lower", "")
+                                    ][0].bounds.squeeze()[1]
                                 else:
-                                    val_to_append = extra_coords[metadata_column][0].points.squeeze()
+                                    val_to_append = extra_coords[metadata_column][
+                                        0
+                                    ].points.squeeze()
                                 val_to_append = float(val_to_append)
                             else:
-                                val_to_append = scm_cube.cube.attributes[metadata_column]
+                                val_to_append = scm_cube.cube.attributes[
+                                    metadata_column
+                                ]
 
                             metadata_values.append(val_to_append)
 
