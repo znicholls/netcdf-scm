@@ -321,6 +321,7 @@ def run_crunching_comparison(res, expected, update=False):
                     res_f = join(dirpath, f)
                     exp_f = res_f.replace(res, expected)
                     if update:
+                        print("Updating {}".format(exp_f))
                         shutil.copy(res_f, exp_f)
                     else:
                         res_scmdf = load_scmdataframe(res_f)
@@ -328,12 +329,12 @@ def run_crunching_comparison(res, expected, update=False):
                         assert_scmdata_frames_allclose(res_scmdf, exp_scmdf)
 
     if update:
-        print("Updated {}".format(expected))
-        pytest.skip()
+        pytest.skip("Updated {}".format(expected))
 
 
 def assert_scmdata_frames_allclose(res_scmdf, exp_scmdf):
     res_df = res_scmdf.timeseries().sort_index()
+    assert not res_df.isnull().any().any()
     assert (
         (res_df.values > -10 ** 5) & (res_df.values < 10 ** 5)
     ).all(), "Failed sanity check"
