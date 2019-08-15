@@ -23,7 +23,7 @@ from netcdf_scm.iris_cube_wrappers import (
     SCMCube,
     _CMIPCube,
 )
-from netcdf_scm.masks import DEFAULT_REGIONS, CubeMasker
+from netcdf_scm.weights import DEFAULT_REGIONS, CubeWeightCalculator
 
 
 class TestSCMCube(object):
@@ -135,14 +135,16 @@ class TestSCMCube(object):
         test_cube.load_data_in_directory(tdir)
         test_cube._load_and_concatenate_files_in_directory.assert_called_with(tdir)
 
-    @pytest.mark.parametrize("masks", [None, ["World"]])
-    def test_get_scm_timeseries(self, test_sftlf_cube, test_cube, masks):
+    @pytest.mark.parametrize("regions", [None, ["World"]])
+    def test_get_scm_timeseries(self, test_sftlf_cube, test_cube, regions):
         tsftlf_cube = "mocked 124"
-        tland_mask_threshold = "mocked 51"
         tareacella_scmcube = "mocked 4389"
 
-        exp_masks = DEFAULT_REGIONS if masks is None else masks
-        test_cubes_return = {m: 3 for m in exp_masks}
+        test_weights_return = "mocked weights"
+        test_cube.get_scm_timeseries_weights = MagicMock(return_value=test_weights_return)
+
+        exp_regions = DEFAULT_REGIONS if regions is None else regions
+        test_cubes_return = {m: 3 for m in exp_regions}
         test_cube.get_scm_timeseries_cubes = MagicMock(return_value=test_cubes_return)
 
         test_conversion_return = pd.DataFrame(data=np.array([1, 2, 3]))
@@ -152,16 +154,18 @@ class TestSCMCube(object):
 
         result = test_cube.get_scm_timeseries(
             sftlf_cube=tsftlf_cube,
-            land_mask_threshold=tland_mask_threshold,
             areacella_scmcube=tareacella_scmcube,
-            masks=masks,
+            regions=regions,
+        )
+
+        test_cube.get_scm_timeseries_weights.assert_called_with(
+            sftlf_cube=tsftlf_cube,
+            areacella_scmcube=tareacella_scmcube,
+            regions=exp_regions,
         )
 
         test_cube.get_scm_timeseries_cubes.assert_called_with(
-            sftlf_cube=tsftlf_cube,
-            land_mask_threshold=tland_mask_threshold,
-            areacella_scmcube=tareacella_scmcube,
-            masks=exp_masks,
+            scm_timeseries_weights=test_weights_return,
         )
         test_cube.convert_scm_timeseries_cubes_to_openscmdata.assert_called_with(
             test_cubes_return
@@ -207,85 +211,49 @@ class TestSCMCube(object):
         assert res["member_id"] == tensemble_member
         assert res["mip_era"] == tmip_era
 
-    # TODO: re-write unit test for get_scm_timeseries_cubes
 
-    @patch("netcdf_scm.iris_cube_wrappers.apply_mask")
-    def test_get_scm_cubes(self, mock_apply_mask, test_cube):
-        tsftlf_cube = "mocked out"
-        tland_mask_threshold = 48
-        tmasks = ["hi", "bye", "1", "2", "3"]
-
-        tscm_masks = {"mask 1": 12, "mask 2": 83}
-        test_cube._get_scm_masks = MagicMock(return_value=tscm_masks)
-
-        mock_apply_mask.return_value = copy.deepcopy(test_cube)
-
-        expected = {k: test_cube for k in tscm_masks}
-        for region, scmc in expected.items():
-            scmc.cube.attributes["crunch_land_mask_threshold"] = tland_mask_threshold
-            scmc.cube.attributes[
-                "crunch_netcdf_scm_version"
-            ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(
-                netcdf_scm.__version__
-            )
-            scmc.cube.attributes["crunch_source_files"] = "Files: []"
-            scmc.cube.attributes["region"] = region
-            scmc.cube.attributes.update(test_cube._get_scm_timeseries_ids())
-
-        result = test_cube.get_scm_cubes(
-            sftlf_cube=tsftlf_cube,
-            land_mask_threshold=tland_mask_threshold,
-            masks=tmasks,
-        )
-
-        for k, res in result.items():
-            exp = expected[k]
-            np.testing.assert_allclose(res.cube.data, exp.cube.data)
-            assert res.cube.attributes == exp.cube.attributes
-
-        test_cube._get_scm_masks.assert_called_with(
-            sftlf_cube=tsftlf_cube,
-            land_mask_threshold=tland_mask_threshold,
-            masks=tmasks,
-        )
-
-        mock_apply_mask.call_count == len(tscm_masks)
-        mock_apply_mask.assert_has_calls(
-            [call(test_cube, c) for c in tscm_masks.values()], any_order=True
-        )
-
-    @pytest.mark.parametrize("tmasks", (None, ["a", "b", "custom", "World|Land"]))
-    @patch.object(CubeMasker, "get_masks")
-    @patch.object(CubeMasker, "__init__")
-    @patch("netcdf_scm.iris_cube_wrappers.apply_mask")
-    def test_get_scm_masks(
-        self, mock_apply_mask, mock_cube_init, mock_get_masks, test_cube, tmasks
+    @pytest.mark.parametrize("tregions", (None, ["a", "b", "custom", "World|Land"]))
+    @pytest.mark.parametrize("tareacella_scmcube", (None, "mocked areacella cube"))
+    @pytest.mark.parametrize("tsftlf_scmcube", (None, "mocked sftlf cube"))
+    @patch.object(CubeWeightCalculator, "get_weights")
+    @patch.object(CubeWeightCalculator, "__init__")
+    @patch.object(SCMCube, "get_metadata_cube")
+    def test_get_scm_timeseries_weights(
+        self, mock_get_metadata_cube, mock_weight_calculator_init, mock_get_weights, test_cube, tsftlf_scmcube, tareacella_scmcube, tregions
     ):
-        tgetmasks_return = "mock return"
-        mock_get_masks.return_value = tgetmasks_return
-        mock_cube_init.return_value = None
+        tgetweights_return = "mock return"
+        mock_get_weights.return_value = tgetweights_return
+        mock_weight_calculator_init.return_value = None
 
-        tsftlf_cube = "mocked out"
-        tland_mask_threshold = "mocked land"
-
-        res = test_cube._get_scm_masks(
-            sftlf_cube=tsftlf_cube,
-            land_mask_threshold=tland_mask_threshold,
-            masks=tmasks,
+        res = test_cube.get_scm_timeseries_weights(
+            sftlf_cube=tsftlf_scmcube,
+            areacella_scmcube=tareacella_scmcube,
+            regions=tregions,
         )
 
-        assert res == tgetmasks_return
+        assert res == tgetweights_return
 
-        expected_masks = tmasks if tmasks is not None else DEFAULT_REGIONS
-        mock_get_masks.assert_called_with(expected_masks)
-        assert mock_cube_init.call_count == 1
+        if tareacella_scmcube is not None:
+            mock_get_metadata_cube.assert_has_calls(
+                [call(test_cube.areacella_var, cube=tareacella_scmcube)]
+            )
+
+        if tsftlf_scmcube is not None:
+            mock_get_metadata_cube.assert_has_calls(
+                [call(test_cube.sftlf_var, cube=tsftlf_scmcube)]
+            )
+
+        expected_regions = tregions if tregions is not None else DEFAULT_REGIONS
+        mock_get_weights.assert_called_with(expected_regions)
+        assert mock_weight_calculator_init.call_count == 1
+        mock_weight_calculator_init.assert_called_with(test_cube)
         # test calling again does not call masker again
-        test_cube._get_scm_masks(
-            sftlf_cube=tsftlf_cube,
-            land_mask_threshold=tland_mask_threshold,
-            masks=tmasks,
+        test_cube.get_scm_timeseries_weights(
+            sftlf_cube=tsftlf_scmcube,
+            areacella_scmcube=tareacella_scmcube,
+            regions=tregions,
         )
-        assert mock_cube_init.call_count == 1
+        assert mock_weight_calculator_init.call_count == 1
 
     @pytest.mark.parametrize("transpose", [True, False])
     @pytest.mark.parametrize("input_format", ["scmcube", None])

@@ -37,13 +37,13 @@ DEFAULT_REGIONS = (
 )
 
 
-class InvalidWeight(Exception):
+class InvalidWeights(Exception):
     """
     Raised when a weight cannot be calculated.
 
     This error usually propogates. For example, if a child weight used in the
     calculation of a parent weight fails then the parent weight should also raise an
-    InvalidWeight exception (unless it can be satisfactorily handled).
+    InvalidWeights exception (unless it can be satisfactorily handled).
     """
 
 
@@ -160,7 +160,7 @@ def get_land_weights(  # pylint:disable=unused-argument
     try:
         sftlf_cube = cube.get_metadata_cube(cube.sftlf_var, cube=sftlf_cube)
         sftlf_data = sftlf_cube.cube.data
-    except OSError:
+    except (OSError, KeyError):  # TODO: fix reading so TypeError and KeyError not needed
         warn_msg = (
             "Land surface fraction (sftlf) data not available, using default instead"
         )
@@ -461,18 +461,13 @@ class CubeWeightCalculator:
 
                 self._weights_no_area_weighting[weights_name] = weights
             except KeyError:
-                raise InvalidWeight("Unknown weights: {}".format(weights_name))
+                raise InvalidWeights("Unknown weights: {}".format(weights_name))
 
         return weights
 
     def _get_area_weights(self):
         if self._area_weights is None:
-            raw_area_weights = self.cube.get_metadata_cube(
-                self.cube.areacella_var
-            ).cube.data
-            self._area_weights = broadcast_onto_lat_lon_grid(
-                self.cube, raw_area_weights
-            )
+            self._area_weights = self.cube._get_area_weights()
 
         return self._area_weights
 
@@ -490,7 +485,7 @@ class CubeWeightCalculator:
 
         Raises
         ------
-        InvalidWeight
+        InvalidWeights
             If the requested weights cannot be found or evaluated
 
         ValueError
@@ -513,7 +508,7 @@ class CubeWeightCalculator:
 
         if np.equal(np.sum(weights), 0):
             raise ValueError(
-                "Your cube has no data which matches the `{}` weights".format(
+                "All weights are zero for region: `{}`".format(
                     weights_name
                 )
             )
@@ -542,7 +537,7 @@ class CubeWeightCalculator:
             try:
                 weights_for_name = self.get_weights_array(name)
                 weights[name] = weights_for_name
-            except InvalidWeight as e:
+            except InvalidWeights as e:
                 logger.warning("Failed to create %s weights: %s", name, str(e))
 
         return weights
