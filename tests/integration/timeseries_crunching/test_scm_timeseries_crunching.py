@@ -21,9 +21,21 @@ from openscm.scmdataframe import ScmDataFrame
 
 from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
 
-_root_dir = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+RAW_DATA = np.array(
+    [
+        [[30, 40, 50, 60], [110, 120, 190, 260], [3, 60, 20, 40]],
+        [[0, 15, 45, 90], [300, 350, 450, 270], [10, 70, 90, 130]],
+        [[60, 120, 60, 60], [510, 432, 220, 280], [50, 60, 55, 60]],
+    ]
+)
+
+SURFACE_FRACS = np.array([[0, 30, 0, 10], [80, 100, 0, 50], [20, 10, 51, 15]])
+AREA_WEIGHTS = np.array([[1.2, 1.2, 1.2, 1.2], [2, 2, 2, 2], [1.1, 1.1, 1.1, 1.1]])
+
 TEST_RSDT_PATH = os.path.join(
-    _root_dir,
+    ROOT_DIR,
     "cmip5",
     "experiment",
     "Amon",
@@ -33,7 +45,7 @@ TEST_RSDT_PATH = os.path.join(
     "rsdt_Amon_model_experiment_realisation_185001-185003.nc",
 )
 TEST_GPP_PATH = os.path.join(
-    _root_dir,
+    ROOT_DIR,
     "cmip5",
     "experiment",
     "Lmon",
@@ -43,7 +55,7 @@ TEST_GPP_PATH = os.path.join(
     "gpp_Lmon_model_experiment_realisation_185001-185003.nc",
 )
 TEST_CSOILFAST_PATH = os.path.join(
-    _root_dir,
+    ROOT_DIR,
     "cmip5",
     "experiment",
     "Lmon",
@@ -53,7 +65,7 @@ TEST_CSOILFAST_PATH = os.path.join(
     "cSoilFast_Lmon_model_experiment_realisation_185001-185003.nc",
 )
 TEST_HFDS_PATH = os.path.join(
-    _root_dir,
+    ROOT_DIR,
     "cmip5",
     "experiment",
     "Omon",
@@ -64,7 +76,7 @@ TEST_HFDS_PATH = os.path.join(
 )
 
 TEST_AREACEALLA_PATH = os.path.join(
-    _root_dir,
+    ROOT_DIR,
     "cmip5",
     "experiment",
     "fx",  # TODO: Be careful when writing table id retrieval test as this is Ofx for CMIP6Output
@@ -74,7 +86,7 @@ TEST_AREACEALLA_PATH = os.path.join(
     "areacella_fx_model_experiment_r0i0p0.nc",
 )
 TEST_AREACEALLO_PATH = os.path.join(
-    _root_dir,
+    ROOT_DIR,
     "cmip5",
     "experiment",
     "fx",
@@ -85,7 +97,7 @@ TEST_AREACEALLO_PATH = os.path.join(
 )
 
 TEST_SFTLF_PATH = os.path.join(
-    _root_dir,
+    ROOT_DIR,
     "cmip5",
     "experiment",
     "fx",
@@ -95,7 +107,7 @@ TEST_SFTLF_PATH = os.path.join(
     "sftlf_fx_model_experiment_r0i0p0.nc",
 )
 TEST_SFTOF_PATH = os.path.join(
-    _root_dir,
+    ROOT_DIR,
     "cmip5",
     "experiment",
     "fx",
@@ -113,87 +125,61 @@ def get_rsdt_expected_results():
         dt.datetime(1850, 3, 16, 12),
     ]
 
-    # We do this by hand to make sure we haven't made an error. Yes, it is very slow
-    # but that is the point.
-    world_values = np.array(
-        [
-            (30 + 40 + 50 + 60) * 1.2
-            + (110 + 120 + 190 + 260) * 2
-            + (3 + 60 + 20 + 40) * 1.1,
-            (0 + 15 + 45 + 90) * 1.2
-            + (300 + 350 + 450 + 270) * 2
-            + (10 + 70 + 90 + 130) * 1.1,
-            (60 + 120 + 60 + 60) * 1.2
-            + (510 + 432 + 220 + 280) * 2
-            + (50 + 60 + 55 + 60) * 1.1,
-        ]
-    ) / (4 * 1.2 + 4 * 2 + 4 * 1.1)
 
-    world_land_values = np.array(
-        [
-            (30*0 + 40*30 + 50*0 + 60*10) * 1.2
-            + (110*80 + 120*100 + 190*0 + 260*50) * 2
-            + (3*20 + 60*10 + 20*51 + 40*15) * 1.1,
-            (0*0 + 15*30 + 45*0 + 90*10) * 1.2
-            + (300*80 + 350*100 + 450*0 + 270*50) * 2
-            + (10*20 + 70*10 + 90*51 + 130*15) * 1.1,
-            (60*0 + 120*30 + 60*0 + 60*10) * 1.2
-            + (510*80 + 432*100 + 220*0 + 280*50) * 2
-            + (50*20 + 60*10 + 55*51 + 60*15) * 1.1,
-        ]
-    ) / ((0 + 30 + 0 + 10) * 1.2 + (80 + 100 + 0 + 50) * 2 + (20 + 10 + 51 + 15) * 1.1)
 
-    world_ocean_values = np.array(
-        [
-            (30*(100-0) + 40*(100-30) + 50*(100-0) + 60*(100-10)) * 1.2
-            + (110*(100-80) + 120*(100-100) + 190*(100-0) + 260*(100-50)) * 2
-            + (3*(100-20) + 60*(100-10) + 20*(100-51) + 40*(100-15)) * 1.1,
-            (0*(100-0) + 15*(100-30) + 45*(100-0) + 90*(100-10)) * 1.2
-            + (300*(100-80) + 350*(100-100) + 450*(100-0) + 270*(100-50)) * 2
-            + (10*(100-20) + 70*(100-10) + 90*(100-51) + 130*(100-15)) * 1.1,
-            (60*(100-0) + 120*(100-30) + 60*(100-0) + 60*(100-10)) * 1.2
-            + (510*(100-80) + 432*(100-100) + 220*(100-0) + 280*(100-50)) * 2
-            + (50*(100-20) + 60*(100-10) + 55*(100-51) + 60*(100-15)) * 1.1,
-        ]
-    ) / (((100-0) + (100-30) + (100-0) + (100-10)) * 1.2 + ((100-80) + (100-100) + (100-0) + (100-50)) * 2 + ((100-20) + (100-10) + (100-51) + (100-15)) * 1.1)
 
-    world_nh_values = np.array(
-        [
-            (30 + 40 + 50 + 60) * 1.2 + (110 + 120 + 190 + 260) * 2,
-            (0 + 15 + 45 + 90) * 1.2 + (300 + 350 + 450 + 270) * 2,
-            (60 + 120 + 60 + 60) * 1.2 + (510 + 432 + 220 + 280) * 2,
-        ]
-    ) / (4 * 1.2 + 4 * 2)
+    world_values = np.sum(np.sum(RAW_DATA * AREA_WEIGHTS, axis=2), axis=1) / np.sum(AREA_WEIGHTS)
 
-    world_sh_values = np.array(
-        [
-            (3 + 60 + 20 + 40) * 1.1,
-            (10 + 70 + 90 + 130) * 1.1,
-            (50 + 60 + 55 + 60) * 1.1,
-        ]
-    ) / (4 * 1.1)
+    land_weights = SURFACE_FRACS * AREA_WEIGHTS
+    world_land_values = np.sum(np.sum(RAW_DATA * land_weights, axis=2), axis=1) / np.sum(land_weights)
 
+    ocean_weights = (100-SURFACE_FRACS) * AREA_WEIGHTS
+    world_ocean_values = np.sum(np.sum(RAW_DATA * ocean_weights, axis=2), axis=1) / np.sum(ocean_weights)
+
+    nh_weights = np.copy(AREA_WEIGHTS)
+    nh_weights[2, :] = 0
+    world_nh_values = np.sum(np.sum(RAW_DATA * nh_weights, axis=2), axis=1) / np.sum(nh_weights)
+
+    sh_weights = np.copy(AREA_WEIGHTS)
+    sh_weights[:2, :] = 0
+    world_sh_values = np.sum(np.sum(RAW_DATA * sh_weights, axis=2), axis=1) / np.sum(sh_weights)
+
+    # we do these by hand: yes they're very slow but that's the point
     world_nh_land_values = np.array(
-        [(110 + 120) * 2, (300 + 350) * 2, (510 + 432) * 2]
-    ) / (2 * 2)
+        [
+            (40*30 + 60*10)*1.2 + (110*80 + 120*100 + 260*50)*2,
+            (15*30 + 90*10)*1.2 + (300*80 + 350*100 + 270*50)*2,
+            (120*30 + 60*10)*1.2 + (510*80 + 432*100 + 280*50)*2,
+        ]
+    ) / ((30 + 10) * 1.2 + (80 + 100 + 50) * 2)
 
-    world_sh_land_values = np.array([(20) * 1.1, (90) * 1.1, (55) * 1.1]) / (1 * 1.1)
+    world_sh_land_values = np.array(
+        [
+            (3*20 + 60*10 + 20*51 + 40*15)*1.1,
+            (10*20 + 70*10 + 90*51 + 130*15)*1.1,
+            (50*20 + 60*10 + 55*51 + 60*15)*1.1,
+        ]
+    ) / ((20 + 10 + 51 + 15) * 1.1)
 
     world_nh_ocean_values = np.array(
         [
-            (30 + 40 + 50 + 60) * 1.2 + (190 + 260) * 2,
-            (0 + 15 + 45 + 90) * 1.2 + (450 + 270) * 2,
-            (60 + 120 + 60 + 60) * 1.2 + (220 + 280) * 2,
+            (30*100 + 40*70 + 50*100 + 60*90)*1.2 + (110*20 + 190*100 + 260*50)*2,
+            (0*100 + 15*70 + 45*100 + 90*90)*1.2 + (300*20 + 450*100 + 270*50)*2,
+            (60*100 + 120*70 + 60*100 + 60*90)*1.2 + (510*20 + 220*100 + 280*50)*2,
         ]
-    ) / (4 * 1.2 + 2 * 2)
+    ) / ((30 + 10) * 1.2 + (80 + 100 + 50) * 2)
 
     world_sh_ocean_values = np.array(
-        [(3 + 60 + 40) * 1.1, (10 + 70 + 130) * 1.1, (50 + 60 + 60) * 1.1]
-    ) / (3 * 1.1)
+        [
+            (3*80 + 60*90 + 20*49 + 40*85)*1.1,
+            (10*80 + 70*90 + 90*49 + 130*85)*1.1,
+            (50*80 + 60*90 + 55*49 + 60*85)*1.1,
+        ]
+    ) / ((20 + 10 + 51 + 15) * 1.1)
 
-    world_na_values = np.array([(260) * 2, (270) * 2, (280) * 2]) / (2)
+    world_north_atlantic_values = np.array([260, 270, 280])
 
-    world_elnino_values = np.array([(190) * 2, (450) * 2, (220) * 2]) / (1 * 2)
+    world_elnino_values = np.array([190, 450, 220])
 
     data = np.vstack(
         [
@@ -206,7 +192,7 @@ def get_rsdt_expected_results():
             world_sh_land_values,
             world_nh_ocean_values,
             world_sh_ocean_values,
-            world_na_values,
+            world_north_atlantic_values,
             world_elnino_values,
         ]
     ).T
@@ -243,12 +229,14 @@ def get_rsdt_expected_results():
 
     return exp
 
-@pytest.mark.parametrize("test_data,invalid_regions,expected_results",
-    [
-        (TEST_RSDT_PATH, None, get_rsdt_expected_results()),
-    ]
+
+@pytest.mark.parametrize(
+    "test_data,invalid_regions,expected_results",
+    [(TEST_RSDT_PATH, None, get_rsdt_expected_results())],
 )
-def test_scm_timeseries_crunching(assert_scmdata_frames_allclose, test_data, invalid_regions, expected_results):
+def test_scm_timeseries_crunching(
+    assert_scmdata_frames_allclose, test_data, invalid_regions, expected_results
+):
     tcube = MarbleCMIP5Cube()
     tcube.load_data_from_path(TEST_RSDT_PATH)
     all_regions = {
@@ -264,7 +252,11 @@ def test_scm_timeseries_crunching(assert_scmdata_frames_allclose, test_data, inv
         "World|North Atlantic Ocean",
         "World|El Nino N3.4",
     }
-    regions = list(all_regions - invalid_regions) if invalid_regions is not None else list(all_regions)
+    regions = (
+        list(all_regions - invalid_regions)
+        if invalid_regions is not None
+        else list(all_regions)
+    )
     if invalid_regions is not None:
         for r in invalid_regions:
             with pytest.raises(ValueError, match="to be written"):
@@ -288,20 +280,46 @@ def write_test_files(write_path):
         units="degrees",
         circular=True,
     )
-    write_surface_frac_file(TEST_SFTLF_PATH, lat, lon, "land_area_fraction", "sftlf", "%")
-    write_surface_frac_file(TEST_SFTOF_PATH, lat, lon, "sea_area_fraction", "sftof", "%")
+    write_surface_frac_file(
+        TEST_SFTLF_PATH, lat, lon, "land_area_fraction", "sftlf", "%"
+    )
+    write_surface_frac_file(
+        TEST_SFTOF_PATH, lat, lon, "sea_area_fraction", "sftof", "%"
+    )
     write_area_file(TEST_AREACEALLA_PATH, lat, lon, "cell_area", "areacella", "m^2")
     write_area_file(TEST_AREACEALLO_PATH, lat, lon, "cell_area", "areacello", "m^2")
-    write_data_file(TEST_RSDT_PATH, lat, lon, "toa_incoming_shortwave_flux", "rsdt", "W m-2")
-    write_data_file(TEST_GPP_PATH, lat, lon, "gross_primary_productivity_of_carbon", "gpp", "kg m-2 s-1")
-    write_data_file(TEST_CSOILFAST_PATH, lat, lon, "fast_soil_pool_carbon_content", "cSoilFast", "kg m-2")
-    write_data_file(TEST_HFDS_PATH, lat, lon, "surface_downward_heat_flux_in_sea_water", "hfds", "W m-2")
+    write_data_file(
+        TEST_RSDT_PATH, lat, lon, "toa_incoming_shortwave_flux", "rsdt", "W m-2"
+    )
+    write_data_file(
+        TEST_GPP_PATH,
+        lat,
+        lon,
+        "gross_primary_productivity_of_carbon",
+        "gpp",
+        "kg m-2 s-1",
+    )
+    write_data_file(
+        TEST_CSOILFAST_PATH,
+        lat,
+        lon,
+        "fast_soil_pool_carbon_content",
+        "cSoilFast",
+        "kg m-2",
+    )
+    write_data_file(
+        TEST_HFDS_PATH,
+        lat,
+        lon,
+        "surface_downward_heat_flux_in_sea_water",
+        "hfds",
+        "W m-2",
+    )
 
 
 def write_surface_frac_file(write_path, lat, lon, standard_name, var_name, units):
-    data = np.array([[0, 30, 0, 10], [80, 100, 0, 50], [20, 10, 51, 15]])
     cube = iris.cube.Cube(
-        data,
+        SURFACE_FRACS,
         standard_name=standard_name,
         var_name=var_name,
         units=units,
@@ -311,9 +329,8 @@ def write_surface_frac_file(write_path, lat, lon, standard_name, var_name, units
 
 
 def write_area_file(write_path, lat, lon, standard_name, var_name, units):
-    data = np.array([[1.2, 1.2, 1.2, 1.2], [2, 2, 2, 2], [1.1, 1.1, 1.1, 1.1]])
     cube = iris.cube.Cube(
-        data,
+        AREA_WEIGHTS,
         standard_name=standard_name,
         var_name=var_name,
         units=units,
@@ -330,21 +347,15 @@ def write_data_file(write_path, lat, lon, standard_name, var_name, units):
     )
     time.guess_bounds()
 
-    data = np.array(
-        [
-            [[30, 40, 50, 60], [110, 120, 190, 260], [3, 60, 20, 40]],
-            [[0, 15, 45, 90], [300, 350, 450, 270], [10, 70, 90, 130]],
-            [[60, 120, 60, 60], [510, 432, 220, 280], [50, 60, 55, 60]],
-        ]
-    )
     cube = iris.cube.Cube(
-        data,
+        RAW_DATA,
         standard_name=standard_name,
         var_name=var_name,
         units=units,
         dim_coords_and_dims=[(time, 0), (lat, 1), (lon, 2)],
     )
     save_cube_in_path(cube, write_path)
+
 
 def save_cube_in_path(cube, write_path):
     dir_to_save = os.path.dirname(write_path)
