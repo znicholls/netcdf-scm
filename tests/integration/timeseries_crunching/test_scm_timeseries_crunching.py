@@ -21,26 +21,68 @@ from openscm.scmdataframe import ScmDataFrame
 from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
 
 _root_dir = os.path.dirname(os.path.abspath(__file__))
-TEST_DATA_PATH = os.path.join(
+TEST_RSDT_PATH = os.path.join(
     _root_dir,
     "cmip5",
     "experiment",
-    "table",
+    "Amon",
     "rsdt",
     "model",
     "realisation",
-    "rsdt_table_model_experiment_realisation_185001-185003.nc",
+    "rsdt_Amon_model_experiment_realisation_185001-185003.nc",
 )
+TEST_GPP_PATH = os.path.join(
+    _root_dir,
+    "cmip5",
+    "experiment",
+    "Lmon",
+    "gpp",
+    "model",
+    "realisation",
+    "gpp_Lmon_model_experiment_realisation_185001-185003.nc",
+)
+TEST_CSOILFAST_PATH = os.path.join(
+    _root_dir,
+    "cmip5",
+    "experiment",
+    "Lmon",
+    "cSoilFast",
+    "model",
+    "realisation",
+    "cSoilFast_Lmon_model_experiment_realisation_185001-185003.nc",
+)
+TEST_HFDS_PATH = os.path.join(
+    _root_dir,
+    "cmip5",
+    "experiment",
+    "Omon",
+    "hfds",
+    "model",
+    "realisation",
+    "hfds_Omon_model_experiment_realisation_185001-185003.nc",
+)
+
 TEST_AREACEALLA_PATH = os.path.join(
     _root_dir,
     "cmip5",
     "experiment",
-    "fx",
+    "fx",  # TODO: Be careful when writing table id retrieval test as this is Ofx for CMIP6Output
     "areacella",
     "model",
     "r0i0p0",
     "areacella_fx_model_experiment_r0i0p0.nc",
 )
+TEST_AREACEALLO_PATH = os.path.join(
+    _root_dir,
+    "cmip5",
+    "experiment",
+    "fx",
+    "areacello",
+    "model",
+    "r0i0p0",
+    "areacello_fx_model_experiment_r0i0p0.nc",
+)
+
 TEST_SFTLF_PATH = os.path.join(
     _root_dir,
     "cmip5",
@@ -51,11 +93,21 @@ TEST_SFTLF_PATH = os.path.join(
     "r0i0p0",
     "sftlf_fx_model_experiment_r0i0p0.nc",
 )
+TEST_SFTOF_PATH = os.path.join(
+    _root_dir,
+    "cmip5",
+    "experiment",
+    "fx",
+    "sftof",
+    "model",
+    "r0i0p0",
+    "sftof_fx_model_experiment_r0i0p0.nc",
+)
 
 
 def test_scm_timeseries_crunching(assert_scmdata_frames_allclose):
     tcube = MarbleCMIP5Cube()
-    tcube.load_data_from_path(TEST_DATA_PATH)
+    tcube.load_data_from_path(TEST_RSDT_PATH)
     regions = [
         "World",
         "World|Land",
@@ -198,36 +250,41 @@ def write_test_files(write_path):
         units="degrees",
         circular=True,
     )
-    write_sftlf_file(TEST_SFTLF_PATH, lat, lon)
-    write_area_file(TEST_AREACEALLA_PATH, lat, lon)
-    write_data_file(TEST_DATA_PATH, lat, lon)
+    write_surface_frac_file(TEST_SFTLF_PATH, lat, lon, "land_area_fraction", "sftlf", "%")
+    write_surface_frac_file(TEST_SFTOF_PATH, lat, lon, "sea_area_fraction", "sftof", "%")
+    write_area_file(TEST_AREACEALLA_PATH, lat, lon, "cell_area", "areacella", "m^2")
+    write_area_file(TEST_AREACEALLO_PATH, lat, lon, "cell_area", "areacello", "m^2")
+    write_data_file(TEST_RSDT_PATH, lat, lon, "toa_incoming_shortwave_flux", "rsdt", "W m-2")
+    write_data_file(TEST_GPP_PATH, lat, lon, "gross_primary_productivity_of_carbon", "gpp", "kg m-2 s-1")
+    write_data_file(TEST_CSOILFAST_PATH, lat, lon, "fast_soil_pool_carbon_content", "cSoilFast", "kg m-2")
+    write_data_file(TEST_HFDS_PATH, lat, lon, "surface_downward_heat_flux_in_sea_water", "hfds", "W m-2")
 
 
-def write_sftlf_file(write_path, lat, lon):
+def write_surface_frac_file(write_path, lat, lon, standard_name, var_name, units):
     data = np.array([[0, 30, 0, 10], [80, 100, 0, 50], [20, 10, 51, 15]])
     cube = iris.cube.Cube(
         data,
-        standard_name="land_area_fraction",
-        var_name="sftlf",
-        units="%",
+        standard_name=standard_name,
+        var_name=var_name,
+        units=units,
         dim_coords_and_dims=[(lat, 0), (lon, 1)],
     )
-    iris.save(cube, write_path)
+    save_cube_in_path(cube, write_path)
 
 
-def write_area_file(write_path, lat, lon):
+def write_area_file(write_path, lat, lon, standard_name, var_name, units):
     data = np.array([[1.2, 1.2, 1.2, 1.2], [2, 2, 2, 2], [1.1, 1.1, 1.1, 1.1]])
     cube = iris.cube.Cube(
         data,
-        standard_name="cell_area",
-        var_name="areacella",
-        units="m^2",
+        standard_name=standard_name,
+        var_name=var_name,
+        units=units,
         dim_coords_and_dims=[(lat, 0), (lon, 1)],
     )
-    iris.save(cube, write_path)
+    save_cube_in_path(cube, write_path)
 
 
-def write_data_file(write_path, lat, lon):
+def write_data_file(write_path, lat, lon, standard_name, var_name, units):
     time = iris.coords.DimCoord(
         np.array([15.5, 45, 74.5]),
         standard_name="time",
@@ -244,9 +301,16 @@ def write_data_file(write_path, lat, lon):
     )
     cube = iris.cube.Cube(
         data,
-        standard_name="toa_incoming_shortwave_flux",
-        var_name="rsdt",
-        units="W m-2",
+        standard_name=standard_name,
+        var_name=var_name,
+        units=units,
         dim_coords_and_dims=[(time, 0), (lat, 1), (lon, 2)],
     )
+    save_cube_in_path(cube, write_path)
+
+def save_cube_in_path(cube, write_path):
+    dir_to_save = os.path.dirname(write_path)
+    if not os.path.isdir(dir_to_save):
+        os.makedirs(dir_to_save)
+
     iris.save(cube, write_path)
