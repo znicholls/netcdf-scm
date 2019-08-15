@@ -110,32 +110,32 @@ def init_logging(params, out_filename=None):
     help="Sub-directory of ``dst`` to save data in.",
 )
 @click.option(
-    "--force/--do-not-force",  # pylint:disable=too-many-arguments
+    "--force/--do-not-force",
     "-f",
     help="Overwrite any existing files.",
     default=False,
     show_default=True,
 )
 @click.option(
-    "--small-number-workers",  # pylint:disable=too-many-arguments
+    "--small-number-workers",
     default=10,
     show_default=True,
     help="Maximum number of workers to use when crunching files.",
 )
 @click.option(
-    "--small-threshold",  # pylint:disable=too-many-arguments
+    "--small-threshold",
     default=300,
     show_default=True,
     help="Maximum number of years in a file for it to be processed in parallel with ``small-number-workers``",
 )
 @click.option(
     "--medium-number-workers",
-    default=3,  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
-    show_default=True,
+    default=3,
+    show_default=True,  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
     help="Maximum number of workers to use when crunching files.",
 )
 @click.option(
-    "--medium-threshold",  # pylint:disable=too-many-arguments
+    "--medium-threshold",
     default=900,
     show_default=True,
     help="Maximum number of years in a file for it to be processed in parallel with ``medium-number-workers``",
@@ -509,7 +509,7 @@ def _set_crunch_contact_in_results(res, crunch_contact):
     help="Data reference syntax to use to decipher paths. This is required to ensure the output folders match the input data reference syntax.",
 )
 @click.option(
-    "--force/--do-not-force",  # pylint:disable=too-many-arguments
+    "--force/--do-not-force",
     "-f",
     help="Overwrite any existing files.",
     default=False,
