@@ -922,6 +922,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         except AttributeError:
             output.metadata = {"calendar": out_calendar}
 
+        return self._add_metadata_to_scmdataframe(output, scm_timeseries_cubes)
+
+    @staticmethod
+    def _add_metadata_to_scmdataframe(scmdf, scm_timeseries_cubes):
         for i, scm_cube in enumerate(scm_timeseries_cubes.values()):
             for coord in scm_cube.cube.coords():
                 if coord.standard_name in ["time", "latitude", "longitude", "height"]:
@@ -940,22 +944,20 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 if not new_val.shape:
                     new_val = float(new_val)
 
-                if i == 0:
-                    output.metadata[new_col] = new_val
-                else:
-                    if output.metadata[new_col] != new_val:  # pragma: no cover
-                        raise AssertionError("Cubes have different metadata...")
+                if not i:
+                    scmdf.metadata[new_col] = new_val
+                elif scmdf.metadata[new_col] != new_val:  # pragma: no cover
+                    raise AssertionError("Cubes have different metadata...")
 
             for k, v in scm_cube.cube.attributes.items():
-                if k in columns:
+                if k in scmdf.meta:
                     continue
-                if i == 0:
-                    output.metadata[k] = v
-                else:
-                    if output.metadata[k] != v:  # pragma: no cover
-                        raise AssertionError("Cubes have different metadata...")
+                if not i:
+                    scmdf.metadata[k] = v
+                elif scmdf.metadata[k] != v:  # pragma: no cover
+                    raise AssertionError("Cubes have different metadata...")
 
-        return output
+        return scmdf
 
     def _get_scm_timeseries_ids(self):
         output = {}
@@ -1326,6 +1328,7 @@ class _CMIPCube(SCMCube, ABC):
         This can take multiple forms, it may just return a previously set
         filepath attribute or it could combine a number of different metadata
         elements (e.g. model name, experiment name) to create the data path.
+
         Returns
         -------
         str
@@ -1352,6 +1355,7 @@ class _CMIPCube(SCMCube, ABC):
         This can take multiple forms, it may just return a previously set
         filename attribute or it could combine a number of different metadata
         elements (e.g. model name, experiment name) to create the data name.
+
         Returns
         -------
         str
