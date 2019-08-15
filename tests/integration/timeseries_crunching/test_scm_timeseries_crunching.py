@@ -135,11 +135,11 @@ def get_rsdt_expected_results():
 
     nh_area_weights = np.copy(AREA_WEIGHTS)
     nh_area_weights[2, :] = 0
-    world_nh_values = np.sum(np.sum(RAW_DATA * SURFACE_FRACS * nh_area_weights, axis=2), axis=1) / np.sum(nh_area_weights)
+    world_nh_values = np.sum(np.sum(RAW_DATA * nh_area_weights, axis=2), axis=1) / np.sum(nh_area_weights)
 
     sh_area_weights = np.copy(AREA_WEIGHTS)
     sh_area_weights[:2, :] = 0
-    world_sh_values = np.sum(np.sum(RAW_DATA * SURFACE_FRACS * sh_area_weights, axis=2), axis=1) / np.sum(sh_area_weights)
+    world_sh_values = np.sum(np.sum(RAW_DATA * sh_area_weights, axis=2), axis=1) / np.sum(sh_area_weights)
 
     # we do these by hand: yes they're very slow but that's the point
     world_nh_land_values = np.array(
@@ -164,7 +164,7 @@ def get_rsdt_expected_results():
             (0*100 + 15*70 + 45*100 + 90*90)*1.2 + (300*20 + 450*100 + 270*50)*2,
             (60*100 + 120*70 + 60*100 + 60*90)*1.2 + (510*20 + 220*100 + 280*50)*2,
         ]
-    ) / ((30 + 10) * 1.2 + (80 + 100 + 50) * 2)
+    ) / ((100 + 70 + 100 + 90) * 1.2 + (20 + 100 + 50) * 2)
 
     world_sh_ocean_values = np.array(
         [
@@ -172,7 +172,7 @@ def get_rsdt_expected_results():
             (10*80 + 70*90 + 90*49 + 130*85)*1.1,
             (50*80 + 60*90 + 55*49 + 60*85)*1.1,
         ]
-    ) / ((20 + 10 + 51 + 15) * 1.1)
+    ) / ((80 + 90 + 49 + 85) * 1.1)
 
     world_north_atlantic_values = np.array([260, 270, 280])
 
