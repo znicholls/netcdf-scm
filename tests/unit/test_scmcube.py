@@ -1,4 +1,3 @@
-import copy
 import datetime as dt
 import logging
 import re
@@ -15,7 +14,6 @@ from iris.exceptions import ConstraintMismatchError
 from iris.util import broadcast_to_shape
 from pandas.testing import assert_frame_equal, assert_index_equal
 
-import netcdf_scm
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -204,7 +202,6 @@ class TestSCMCube(object):
         assert res["member_id"] == tensemble_member
         assert res["mip_era"] == tmip_era
 
-
     @pytest.mark.parametrize("tregions", (None, ["a", "b", "custom", "World|Land"]))
     @pytest.mark.parametrize("tareacella_scmcube", (None, "mocked areacella cube"))
     @pytest.mark.parametrize("tsftlf_scmcube", (None, "mocked sftlf cube"))
@@ -212,7 +209,14 @@ class TestSCMCube(object):
     @patch.object(CubeWeightCalculator, "__init__")
     @patch.object(SCMCube, "get_metadata_cube")
     def test_get_scm_timeseries_weights(
-        self, mock_get_metadata_cube, mock_weight_calculator_init, mock_get_weights, test_cube, tsftlf_scmcube, tareacella_scmcube, tregions
+        self,
+        mock_get_metadata_cube,
+        mock_weight_calculator_init,
+        mock_get_weights,
+        test_cube,
+        tsftlf_scmcube,
+        tareacella_scmcube,
+        tregions,
     ):
         tgetweights_return = "mock return"
         mock_get_weights.return_value = tgetweights_return

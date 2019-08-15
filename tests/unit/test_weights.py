@@ -8,9 +8,9 @@ from iris.util import broadcast_to_shape
 from netcdf_scm.weights import (
     CubeWeightCalculator,
     InvalidWeights,
-    get_weights_for_area,
     get_land_weights,
     get_nh_weights,
+    get_weights_for_area,
     multiply_weights,
 )
 
@@ -26,13 +26,7 @@ def test_get_land_mask_input_type_errors(test_all_cubes, inp):
 def test_get_nh_mask(test_all_cubes):
     masker = CubeWeightCalculator(test_all_cubes)
     result = get_nh_weights(masker, test_all_cubes)
-    expected_base = np.array(
-        [
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [0, 0, 0, 0],
-        ]
-    )
+    expected_base = np.array([[1, 1, 1, 1], [1, 1, 1, 1], [0, 0, 0, 0]])
     expected = broadcast_to_shape(
         expected_base,
         test_all_cubes.cube.shape,
@@ -58,9 +52,7 @@ def test_unknown_mask_error(test_all_cubes):
 def test_no_match_error(test_all_cubes):
     tmask_name = "Junk"
 
-    error_msg = re.escape(
-        r"All weights are zero for region: `{}`".format(tmask_name)
-    )
+    error_msg = re.escape(r"All weights are zero for region: `{}`".format(tmask_name))
     masker = CubeWeightCalculator(test_all_cubes)
     with pytest.raises(ValueError, match=error_msg):
         masker.get_weights_array("Junk")

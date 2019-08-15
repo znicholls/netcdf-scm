@@ -599,9 +599,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
-            sftlf_cube=sftlf_cube,
-            areacella_scmcube=areacella_scmcube,
-            regions=regions,
+            sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
@@ -648,7 +646,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return scm_weights
 
-    def get_scm_timeseries_cubes(self, sftlf_cube=None, areacella_scmcube=None, regions=None):
+    def get_scm_timeseries_cubes(
+        self, sftlf_cube=None, areacella_scmcube=None, regions=None
+    ):
         """
         Get SCM relevant cubes
 
@@ -685,7 +685,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             SCM relevant regions.
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
-        scm_timeseries_weights = self.get_scm_timeseries_weights(sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions)
+        scm_timeseries_weights = self.get_scm_timeseries_weights(
+            sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions
+        )
 
         def crunch_timeseries(region, weights):
             scm_cube = take_lat_lon_mean(self, weights)
