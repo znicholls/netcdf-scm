@@ -104,12 +104,6 @@ def init_logging(params, out_filename=None):
     help="Regular expression to apply to file directory (only crunches matches).",
 )
 @click.option(
-    "--land-mask-threshold",
-    default=50.0,
-    show_default=True,
-    help="Minimum land fraction for a box to be considered land.",
-)
-@click.option(
     "--data-sub-dir",
     default="netcdf-scm-crunched",
     show_default=True,
@@ -152,7 +146,6 @@ def crunch_data(
     crunch_contact,
     drs,
     regexp,
-    land_mask_threshold,
     data_sub_dir,
     force,
     small_number_workers,
@@ -189,7 +182,6 @@ def crunch_data(
             ("destination", out_dir),
             ("drs", drs),
             ("regexp", regexp),
-            ("land_mask_threshold", land_mask_threshold),
             ("force", force),
             ("small_number_workers", small_number_workers),
             ("small_threshold", small_threshold),
@@ -238,7 +230,6 @@ def crunch_data(
         "out_dir": out_dir,
         "force": force,
         "existing_files": tracker._data,  # pylint:disable=protected-access
-        "land_mask_threshold": land_mask_threshold,
         "crunch_contact": crunch_contact,
     }
 
@@ -319,7 +310,6 @@ def _crunch_files(  # pylint:disable=too-many-arguments
     out_dir=None,
     force=None,
     existing_files=None,
-    land_mask_threshold=None,
     crunch_contact=None,
 ):
     logger.info("Attempting to process: %s", fnames)
@@ -336,7 +326,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments
         logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
         return None
 
-    results = scmcube.get_scm_timeseries_cubes(land_mask_threshold=land_mask_threshold)
+    results = scmcube.get_scm_timeseries_cubes()
     results = _set_crunch_contact_in_results(results, crunch_contact)
 
     return results, out_filepath, scmcube.info
