@@ -597,14 +597,11 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             An OpenSCM DataFrame instance with the data in the ``data`` attribute and
             metadata in the ``metadata`` attribute.
         """
-        scm_timeseries_weights = self.get_scm_timeseries_weights(
+        regions = regions if regions is not None else DEFAULT_REGIONS
+        scm_timeseries_cubes = self.get_scm_timeseries_cubes(
             sftlf_cube=sftlf_cube,
             areacella_scmcube=areacella_scmcube,
-            regions=regions if regions is not None else DEFAULT_REGIONS,
-        )
-
-        scm_timeseries_cubes = self.get_scm_timeseries_cubes(
-            scm_timeseries_weights=scm_timeseries_weights
+            regions=regions,
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
@@ -613,7 +610,22 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         self, sftlf_cube=None, areacella_scmcube=None, regions=None
     ):
         """
-        Get the scm regions.
+        Get the scm timeseries weights
+
+        Parameters
+        ----------
+        sftlf_cube : :obj:`SCMCube`, optional
+            land surface fraction data which is used to determine whether a given
+            gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
+
+        areacella_scmcube : :obj:`SCMCube`, optional
+            cell area data which is used to take the latitude-longitude mean of the
+            cube's data. If ``None``, we try to load this data automatically and if
+            that fails we fall back onto ``iris.analysis.cartography.area_weights``.
+
+        regions : list[str]
+            List of regions to use. If ``None`` then
+            ``netcdf_scm.regions.DEFAULT_REGIONS`` is used.
 
         Returns
         -------
@@ -636,7 +648,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return scm_weights
 
-    def get_scm_timeseries_cubes(self, scm_timeseries_weights):
+    def get_scm_timeseries_cubes(self, sftlf_cube=None, areacella_scmcube=None, regions=None):
         """
         Get SCM relevant cubes
 
@@ -653,8 +665,18 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         Parameters
         ----------
-        scm_timeseries_weights : dict
-            Dictionary of region name-weights key-value pairs
+        sftlf_cube : :obj:`SCMCube`, optional
+            land surface fraction data which is used to determine whether a given
+            gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
+
+        areacella_scmcube : :obj:`SCMCube`, optional
+            cell area data which is used to take the latitude-longitude mean of the
+            cube's data. If ``None``, we try to load this data automatically and if
+            that fails we fall back onto ``iris.analysis.cartography.area_weights``.
+
+        regions : list[str]
+            List of regions to use. If ``None`` then
+            ``netcdf_scm.regions.DEFAULT_REGIONS`` is used.
 
         Returns
         -------
@@ -662,6 +684,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             Cubes, with latitude-longitude mean data as appropriate for each of the
             SCM relevant regions.
         """
+        regions = regions if regions is not None else DEFAULT_REGIONS
+        scm_timeseries_weights = self.get_scm_timeseries_weights(sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions)
 
         def crunch_timeseries(region, weights):
             scm_cube = take_lat_lon_mean(self, weights)
@@ -669,6 +693,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
             if region in _LAND_FRACTION_REGIONS:
                 area = np.sum(weights)
+                if "Land" in region:
+                    area *= 1 / 100
             else:
                 area = None
             return region, scm_cube, area
