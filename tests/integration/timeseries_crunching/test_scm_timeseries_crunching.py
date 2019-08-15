@@ -16,7 +16,6 @@ import os.path
 
 import iris
 import numpy as np
-from conftest import assert_scmdata_frames_allclose
 from openscm.scmdataframe import ScmDataFrame
 
 from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
@@ -54,7 +53,7 @@ TEST_SFTLF_PATH = os.path.join(
 )
 
 
-def test_scm_timeseries_crunching():
+def test_scm_timeseries_crunching(assert_scmdata_frames_allclose):
     tcube = MarbleCMIP5Cube()
     tcube.load_data_from_path(TEST_DATA_PATH)
     regions = [
