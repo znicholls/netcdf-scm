@@ -2,7 +2,7 @@
 Test that crunching timeseries behaves as expected using files we have written
 
 Helpful snippets:
-python -c "from test_scm_timeseries_crunching import write_test_files, write_sftlf_file, write_area_file, write_data_file; wp = '.'; write_test_files(wp)"
+python -c "from test_scm_timeseries_crunching import write_test_files; wp = '.'; write_test_files(wp)"
 
 from matplotlib import pyplot as plt
 import iris.quickplot as qplt
@@ -198,9 +198,9 @@ def write_test_files(write_path):
         units="degrees",
         circular=True,
     )
-    write_sftlf_file(write_path, lat, lon)
-    write_area_file(write_path, lat, lon)
-    write_data_file(write_path, lat, lon)
+    write_sftlf_file(TEST_SFTLF_PATH, lat, lon)
+    write_area_file(TEST_AREACEALLA_PATH, lat, lon)
+    write_data_file(TEST_DATA_PATH, lat, lon)
 
 
 def write_sftlf_file(write_path, lat, lon):
@@ -212,7 +212,7 @@ def write_sftlf_file(write_path, lat, lon):
         units="%",
         dim_coords_and_dims=[(lat, 0), (lon, 1)],
     )
-    iris.save(cube, TEST_SFTLF_PATH)
+    iris.save(cube, write_path)
 
 
 def write_area_file(write_path, lat, lon):
@@ -224,7 +224,7 @@ def write_area_file(write_path, lat, lon):
         units="m^2",
         dim_coords_and_dims=[(lat, 0), (lon, 1)],
     )
-    iris.save(cube, TEST_AREACEALLA_PATH)
+    iris.save(cube, write_path)
 
 
 def write_data_file(write_path, lat, lon):
@@ -249,4 +249,4 @@ def write_data_file(write_path, lat, lon):
         units="W m-2",
         dim_coords_and_dims=[(time, 0), (lat, 1), (lon, 2)],
     )
-    iris.save(cube, TEST_DATA_PATH)
+    iris.save(cube, write_path)
