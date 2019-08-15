@@ -13,10 +13,10 @@ qplt.plot(cube[:, 1, 3]); plt.show()  # timeseries
 """
 import datetime as dt
 import os.path
-import pytest
 
 import iris
 import numpy as np
+import pytest
 from openscm.scmdataframe import ScmDataFrame
 
 from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
@@ -125,52 +125,65 @@ def get_rsdt_expected_results():
         dt.datetime(1850, 3, 16, 12),
     ]
 
-    world_values = np.sum(np.sum(RAW_DATA * AREA_WEIGHTS, axis=2), axis=1) / np.sum(AREA_WEIGHTS)
+    world_values = np.sum(np.sum(RAW_DATA * AREA_WEIGHTS, axis=2), axis=1) / np.sum(
+        AREA_WEIGHTS
+    )
 
     land_weights = SURFACE_FRACS * AREA_WEIGHTS
-    world_land_values = np.sum(np.sum(RAW_DATA * land_weights, axis=2), axis=1) / np.sum(land_weights)
+    world_land_values = np.sum(
+        np.sum(RAW_DATA * land_weights, axis=2), axis=1
+    ) / np.sum(land_weights)
 
-    ocean_weights = (100-SURFACE_FRACS) * AREA_WEIGHTS
-    world_ocean_values = np.sum(np.sum(RAW_DATA * ocean_weights, axis=2), axis=1) / np.sum(ocean_weights)
+    ocean_weights = (100 - SURFACE_FRACS) * AREA_WEIGHTS
+    world_ocean_values = np.sum(
+        np.sum(RAW_DATA * ocean_weights, axis=2), axis=1
+    ) / np.sum(ocean_weights)
 
     nh_area_weights = np.copy(AREA_WEIGHTS)
     nh_area_weights[2, :] = 0
-    world_nh_values = np.sum(np.sum(RAW_DATA * nh_area_weights, axis=2), axis=1) / np.sum(nh_area_weights)
+    world_nh_values = np.sum(
+        np.sum(RAW_DATA * nh_area_weights, axis=2), axis=1
+    ) / np.sum(nh_area_weights)
 
     sh_area_weights = np.copy(AREA_WEIGHTS)
     sh_area_weights[:2, :] = 0
-    world_sh_values = np.sum(np.sum(RAW_DATA * sh_area_weights, axis=2), axis=1) / np.sum(sh_area_weights)
+    world_sh_values = np.sum(
+        np.sum(RAW_DATA * sh_area_weights, axis=2), axis=1
+    ) / np.sum(sh_area_weights)
 
     # we do these by hand: yes they're very slow but that's the point
     world_nh_land_values = np.array(
         [
-            (40*30 + 60*10)*1.2 + (110*80 + 120*100 + 260*50)*2,
-            (15*30 + 90*10)*1.2 + (300*80 + 350*100 + 270*50)*2,
-            (120*30 + 60*10)*1.2 + (510*80 + 432*100 + 280*50)*2,
+            (40 * 30 + 60 * 10) * 1.2 + (110 * 80 + 120 * 100 + 260 * 50) * 2,
+            (15 * 30 + 90 * 10) * 1.2 + (300 * 80 + 350 * 100 + 270 * 50) * 2,
+            (120 * 30 + 60 * 10) * 1.2 + (510 * 80 + 432 * 100 + 280 * 50) * 2,
         ]
     ) / ((30 + 10) * 1.2 + (80 + 100 + 50) * 2)
 
     world_sh_land_values = np.array(
         [
-            (3*20 + 60*10 + 20*51 + 40*15)*1.1,
-            (10*20 + 70*10 + 90*51 + 130*15)*1.1,
-            (50*20 + 60*10 + 55*51 + 60*15)*1.1,
+            (3 * 20 + 60 * 10 + 20 * 51 + 40 * 15) * 1.1,
+            (10 * 20 + 70 * 10 + 90 * 51 + 130 * 15) * 1.1,
+            (50 * 20 + 60 * 10 + 55 * 51 + 60 * 15) * 1.1,
         ]
     ) / ((20 + 10 + 51 + 15) * 1.1)
 
     world_nh_ocean_values = np.array(
         [
-            (30*100 + 40*70 + 50*100 + 60*90)*1.2 + (110*20 + 190*100 + 260*50)*2,
-            (0*100 + 15*70 + 45*100 + 90*90)*1.2 + (300*20 + 450*100 + 270*50)*2,
-            (60*100 + 120*70 + 60*100 + 60*90)*1.2 + (510*20 + 220*100 + 280*50)*2,
+            (30 * 100 + 40 * 70 + 50 * 100 + 60 * 90) * 1.2
+            + (110 * 20 + 190 * 100 + 260 * 50) * 2,
+            (0 * 100 + 15 * 70 + 45 * 100 + 90 * 90) * 1.2
+            + (300 * 20 + 450 * 100 + 270 * 50) * 2,
+            (60 * 100 + 120 * 70 + 60 * 100 + 60 * 90) * 1.2
+            + (510 * 20 + 220 * 100 + 280 * 50) * 2,
         ]
     ) / ((100 + 70 + 100 + 90) * 1.2 + (20 + 100 + 50) * 2)
 
     world_sh_ocean_values = np.array(
         [
-            (3*80 + 60*90 + 20*49 + 40*85)*1.1,
-            (10*80 + 70*90 + 90*49 + 130*85)*1.1,
-            (50*80 + 60*90 + 55*49 + 60*85)*1.1,
+            (3 * 80 + 60 * 90 + 20 * 49 + 40 * 85) * 1.1,
+            (10 * 80 + 70 * 90 + 90 * 49 + 130 * 85) * 1.1,
+            (50 * 80 + 60 * 90 + 55 * 49 + 60 * 85) * 1.1,
         ]
     ) / ((80 + 90 + 49 + 85) * 1.1)
 
@@ -225,11 +238,13 @@ def get_rsdt_expected_results():
     exp.metadata = {
         "calendar": "gregorian",
         "land_fraction": np.sum(AREA_WEIGHTS * SURFACE_FRACS) / np.sum(AREA_WEIGHTS),
-        "land_fraction_northern_hemisphere": np.sum(nh_area_weights * SURFACE_FRACS) / np.sum(nh_area_weights),
-        "land_fraction_southern_hemisphere": np.sum(sh_area_weights * SURFACE_FRACS) / np.sum(sh_area_weights),
+        "land_fraction_northern_hemisphere": np.sum(nh_area_weights * SURFACE_FRACS)
+        / np.sum(nh_area_weights),
+        "land_fraction_southern_hemisphere": np.sum(sh_area_weights * SURFACE_FRACS)
+        / np.sum(sh_area_weights),
         "realm": "atmos",
         "Conventions": "CF-1.5",
-        "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']"
+        "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']",
     }
 
     return exp
@@ -294,7 +309,13 @@ def write_test_files(write_path):
     write_area_file(TEST_AREACEALLA_PATH, lat, lon, "cell_area", "areacella", "m^2")
     write_area_file(TEST_AREACEALLO_PATH, lat, lon, "cell_area", "areacello", "m^2")
     write_data_file(
-        TEST_RSDT_PATH, lat, lon, "toa_incoming_shortwave_flux", "rsdt", "W m-2", {"realm": "atmos"}
+        TEST_RSDT_PATH,
+        lat,
+        lon,
+        "toa_incoming_shortwave_flux",
+        "rsdt",
+        "W m-2",
+        {"realm": "atmos"},
     )
     write_data_file(
         TEST_GPP_PATH,
@@ -303,7 +324,7 @@ def write_test_files(write_path):
         "gross_primary_productivity_of_carbon",
         "gpp",
         "kg m-2 s-1",
-        {"realm": "land"}
+        {"realm": "land"},
     )
     write_data_file(
         TEST_CSOILFAST_PATH,
@@ -312,7 +333,7 @@ def write_test_files(write_path):
         "fast_soil_pool_carbon_content",
         "cSoilFast",
         "kg m-2",
-        {"realm": "land"}
+        {"realm": "land"},
     )
     write_data_file(
         TEST_HFDS_PATH,
@@ -321,7 +342,7 @@ def write_test_files(write_path):
         "surface_downward_heat_flux_in_sea_water",
         "hfds",
         "W m-2",
-        {"realm": "ocean"}
+        {"realm": "ocean"},
     )
 
 
