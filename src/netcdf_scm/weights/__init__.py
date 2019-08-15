@@ -70,7 +70,7 @@ def subtract_weights(weights_to_subtract, subtract_from):
     """
 
     def f(weight_calculator, cube, **kwargs):  # pylint:disable=unused-argument
-        return subtract_from - weight_calculator.get_weights_array(weights_to_subtract)
+        return subtract_from - weight_calculator.get_weights_array_without_area_weighting(weights_to_subtract)
 
     return f
 
@@ -99,12 +99,12 @@ def multiply_weights(weight_a, weight_b):
         a = (
             weight_a(weight_calculator, cube, **kwargs)
             if callable(weight_a)
-            else weight_calculator.get_weights_array(weight_a)
+            else weight_calculator.get_weights_array_without_area_weighting(weight_a)
         )
         b = (
             weight_b(weight_calculator, cube, **kwargs)
             if callable(weight_b)
-            else weight_calculator.get_weights_array(weight_b)
+            else weight_calculator.get_weights_array_without_area_weighting(weight_b)
         )
         return a * b
 
@@ -192,7 +192,7 @@ def get_land_weights(  # pylint:disable=unused-argument
         )
         sftlf_data = sftlf_data * 100
 
-    weight_calculator._weights["World|Land"] = sftlf_data  # pylint:disable=protected-access
+    weight_calculator._weights_no_area_weighting["World|Land"] = sftlf_data  # pylint:disable=protected-access
     return broadcast_onto_lat_lon_grid(cube, sftlf_data)
 
 
@@ -220,8 +220,7 @@ def get_nh_weights(weight_calculator, cube, **kwargs):  # pylint:disable=unused-
     weights_all_lon = np.ones(cube.lon_dim.points.shape)
 
     weights_nh = np.outer(weights_nh_lat, weights_all_lon)
-
-    weight_calculator._weights[  # pylint:disable=protected-access
+    weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
         "World|Northern Hemisphere"
     ] = weights_nh
     return broadcast_onto_lat_lon_grid(cube, weights_nh)
@@ -343,11 +342,11 @@ def get_world_weights(weight_calculator, cube, **kwargs):  # pylint:disable=unus
     :obj:`np.ndarray`
         Weights which can be used for the world mean calculation
     """
-    return np.ones(weight_calculator.get_weights_array("World|Northern Hemisphere").shape)
+    return np.ones(weight_calculator.get_weights_array_without_area_weighting("World|Northern Hemisphere").shape)
 
 
-"""dict: in-built functions to calculate weights for different regions"""
-WEIGHTS_FUNCTIONS = {
+"""dict: in-built functions to calculate weights for different regions without area weighting"""
+WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING = {
     "World": get_world_weights,
     "World|Northern Hemisphere": get_nh_weights,
     "World|Southern Hemisphere": subtract_weights("World|Northern Hemisphere", 1),
@@ -413,12 +412,54 @@ class CubeWeightCalculator:
                 land_weights_threshold : float default: 50.
         """
         self.cube = cube
+        self._weights_no_area_weighting = {}
         self._weights = {}
+        self._area_weights = None
         self.kwargs = kwargs
+
+    def get_weights_array_without_area_weighting(self, weights_name):
+        """
+        Get a single weights array without any consideration of area weighting
+
+        Parameters
+        ----------
+        weights_name : str
+
+
+        """
+        try:
+            return self._weights_no_area_weighting[weights_name]
+        except KeyError:
+            try:
+                weights_func = WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING[weights_name]
+                weights = weights_func(self, self.cube, **self.kwargs)
+                if len(weights.shape) == 2:
+                    # ensure weights can be used directly on cube
+                    weights = broadcast_to_shape(
+                        weights,
+                        self.cube.cube.shape,
+                        [self.cube.lat_dim_number, self.cube.lon_dim_number],
+                    )
+
+                self._weights_no_area_weighting[weights_name] = weights
+            except KeyError:
+                raise InvalidWeight("Unknown weights: {}".format(weights_name))
+
+        return weights
+
+    def _get_area_weights(self):
+        if self._area_weights is None:
+            raw_area_weights = self.cube.get_metadata_cube(self.cube.areacella_var).cube.data
+            self._area_weights = broadcast_onto_lat_lon_grid(
+                self.cube,
+                raw_area_weights
+            )
+
+        return self._area_weights
 
     def get_weights_array(self, weights_name):
         """
-        Get a single weights
+        Get a single weights array
 
         If the weights has previously been calculated the precalculated result is
         returned from the cache. Otherwise the appropriate WeightFunc is called with any
@@ -444,19 +485,10 @@ class CubeWeightCalculator:
         try:
             return self._weights[weights_name]
         except KeyError:
-            try:
-                weights_func = WEIGHTS_FUNCTIONS[weights_name]
-                weights = weights_func(self, self.cube, **self.kwargs)
-                if len(weights.shape) == 2:
-                    # ensure weights can be used directly on cube
-                    weights = broadcast_to_shape(
-                        weights,
-                        self.cube.cube.shape,
-                        [self.cube.lat_dim_number, self.cube.lon_dim_number],
-                    )
-                self._weights[weights_name] = weights
-            except KeyError:
-                raise InvalidWeight("Unknown weights: {}".format(weights_name))
+            weights_without_area = self.get_weights_array_without_area_weighting(weights_name)
+            area_weights = self._get_area_weights()
+            weights = weights_without_area * area_weights
+            self._weights[weights_name] = weights
 
         if np.equal(np.sum(weights), 0):
             raise ValueError(
