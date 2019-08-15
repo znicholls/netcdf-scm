@@ -685,6 +685,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             SCM relevant regions.
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
+        # TODO: fix weights so that we store single slices for as long as possible
         scm_timeseries_weights = self.get_scm_timeseries_weights(
             sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions
         )
