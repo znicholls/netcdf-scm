@@ -13,6 +13,7 @@ qplt.plot(cube[:, 1, 3]); plt.show()  # timeseries
 """
 import datetime as dt
 import os.path
+import pytest
 
 import iris
 import numpy as np
@@ -105,23 +106,7 @@ TEST_SFTOF_PATH = os.path.join(
 )
 
 
-def test_scm_timeseries_crunching(assert_scmdata_frames_allclose):
-    tcube = MarbleCMIP5Cube()
-    tcube.load_data_from_path(TEST_RSDT_PATH)
-    regions = [
-        "World",
-        "World|Land",
-        "World|Ocean",
-        "World|Northern Hemisphere",
-        "World|Southern Hemisphere",
-        "World|Northern Hemisphere|Land",
-        "World|Southern Hemisphere|Land",
-        "World|Northern Hemisphere|Ocean",
-        "World|Southern Hemisphere|Ocean",
-        "World|North Atlantic Ocean",
-        "World|El Nino N3.4",
-    ]
-
+def get_rsdt_expected_results():
     time = [
         dt.datetime(1850, 1, 16, 12),
         dt.datetime(1850, 2, 15, 0),
@@ -197,7 +182,6 @@ def test_scm_timeseries_crunching(assert_scmdata_frames_allclose):
     world_na_values = np.array([(260) * 2, (270) * 2, (280) * 2]) / (2)
 
     world_elnino_values = np.array([(190) * 2, (450) * 2, (220) * 2]) / (1 * 2)
-    # get_area_mask(-5, -170, 5, -120)
 
     data = np.vstack(
         [
@@ -221,7 +205,19 @@ def test_scm_timeseries_crunching(assert_scmdata_frames_allclose):
         columns={
             "model": "unspecified",
             "scenario": "experiment",
-            "region": regions,
+            "region": [
+                "World",
+                "World|Land",
+                "World|Ocean",
+                "World|Northern Hemisphere",
+                "World|Southern Hemisphere",
+                "World|Northern Hemisphere|Land",
+                "World|Southern Hemisphere|Land",
+                "World|Northern Hemisphere|Ocean",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            ],
             "variable": "rsdt",
             "unit": "W m^-2",
             "climate_model": "model",
@@ -232,8 +228,38 @@ def test_scm_timeseries_crunching(assert_scmdata_frames_allclose):
         },
     )
     exp.metadata = {"calendar": "gregorian"}
+
+    return exp
+
+@pytest.mark.parametrize("test_data,invalid_regions,expected_results",
+    [
+        (TEST_RSDT_PATH, None, get_rsdt_expected_results()),
+    ]
+)
+def test_scm_timeseries_crunching(assert_scmdata_frames_allclose, test_data, invalid_regions, expected_results):
+    tcube = MarbleCMIP5Cube()
+    tcube.load_data_from_path(TEST_RSDT_PATH)
+    all_regions = {
+        "World",
+        "World|Land",
+        "World|Ocean",
+        "World|Northern Hemisphere",
+        "World|Southern Hemisphere",
+        "World|Northern Hemisphere|Land",
+        "World|Southern Hemisphere|Land",
+        "World|Northern Hemisphere|Ocean",
+        "World|Southern Hemisphere|Ocean",
+        "World|North Atlantic Ocean",
+        "World|El Nino N3.4",
+    }
+    regions = list(all_regions - invalid_regions) if invalid_regions is not None else list(all_regions)
+    if invalid_regions is not None:
+        for r in invalid_regions:
+            with pytest.raises(ValueError, match="to be written"):
+                tcube.get_scm_timeseries(masks=[r])
+
     res = tcube.get_scm_timeseries(masks=regions)
-    assert_scmdata_frames_allclose(res, exp)
+    assert_scmdata_frames_allclose(res, expected_results)
 
 
 def write_test_files(write_path):
