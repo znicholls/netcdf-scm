@@ -200,7 +200,9 @@ def test_cmip6_crunch_output(test_data_root_dir):
 
 @pytest.fixture
 def test_marble_cmip5_crunch_output(test_data_root_dir):
-    return join(test_data_root_dir, "expected-crunching-output", "marble-cmip5", "cmip5")
+    return join(
+        test_data_root_dir, "expected-crunching-output", "marble-cmip5", "cmip5"
+    )
 
 
 @pytest.fixture
