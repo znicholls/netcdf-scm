@@ -51,10 +51,15 @@ install:
 
 
 script:
-  - pytest tests/unit -r a -vv
-  - pytest tests/integration/timeseries_crunching/ -r a -vv
-  - pytest tests/integration/test_crunching.py -r a -vv
-  - pytest --cov -r a --cov-report term-missing
+  - pytest tests/unit -r a
+  - pytest tests/integration/timeseries_crunching/ -r a
+  - netcdf-scm-crunch tests/test-data/cmip6output/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/ ./tmp/ tmp@here.com --drs "CMIP6Output" --small-threshold 1 --medium-number-workers 1
+  - pytest tests/integration/test_crunching.py::test_crunching_arguments
+  - pytest tests/integration/test_crunching.py::test_crunching_wrong_cube
+  - pytest tests/integration/test_crunching.py::test_crunching_broken_dir
+  - pytest tests/integration/test_crunching.py::test_crunching
+  - pytest tests/integration/test_crunching.py::test_crunching_join_files
+  # - pytest --cov -r a --cov-report term-missing
   - bash scripts/scratch-process.sh
   # Only test notebooks closely on Python 3.7 otherwise there's too many html errors etc.
   - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then pytest -rfsxEX --nbval ./notebooks --sanitize ./notebooks/tests_sanitize.cfg; fi
