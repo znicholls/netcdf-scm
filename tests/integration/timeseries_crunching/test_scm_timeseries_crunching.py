@@ -125,9 +125,6 @@ def get_rsdt_expected_results():
         dt.datetime(1850, 3, 16, 12),
     ]
 
-
-
-
     world_values = np.sum(np.sum(RAW_DATA * AREA_WEIGHTS, axis=2), axis=1) / np.sum(AREA_WEIGHTS)
 
     land_weights = SURFACE_FRACS * AREA_WEIGHTS
@@ -136,13 +133,13 @@ def get_rsdt_expected_results():
     ocean_weights = (100-SURFACE_FRACS) * AREA_WEIGHTS
     world_ocean_values = np.sum(np.sum(RAW_DATA * ocean_weights, axis=2), axis=1) / np.sum(ocean_weights)
 
-    nh_weights = np.copy(AREA_WEIGHTS)
-    nh_weights[2, :] = 0
-    world_nh_values = np.sum(np.sum(RAW_DATA * nh_weights, axis=2), axis=1) / np.sum(nh_weights)
+    nh_area_weights = np.copy(AREA_WEIGHTS)
+    nh_area_weights[2, :] = 0
+    world_nh_values = np.sum(np.sum(RAW_DATA * SURFACE_FRACS * nh_area_weights, axis=2), axis=1) / np.sum(nh_area_weights)
 
-    sh_weights = np.copy(AREA_WEIGHTS)
-    sh_weights[:2, :] = 0
-    world_sh_values = np.sum(np.sum(RAW_DATA * sh_weights, axis=2), axis=1) / np.sum(sh_weights)
+    sh_area_weights = np.copy(AREA_WEIGHTS)
+    sh_area_weights[:2, :] = 0
+    world_sh_values = np.sum(np.sum(RAW_DATA * SURFACE_FRACS * sh_area_weights, axis=2), axis=1) / np.sum(sh_area_weights)
 
     # we do these by hand: yes they're very slow but that's the point
     world_nh_land_values = np.array(
@@ -225,7 +222,12 @@ def get_rsdt_expected_results():
             "mip_era": "CMIP5",
         },
     )
-    exp.metadata = {"calendar": "gregorian"}
+    exp.metadata = {
+        "calendar": "gregorian",
+        "land_fraction": np.sum(AREA_WEIGHTS * SURFACE_FRACS) / np.sum(AREA_WEIGHTS),
+        "land_fraction_northern_hemisphere": np.sum(nh_area_weights * SURFACE_FRACS) / np.sum(nh_area_weights),
+        "land_fraction_southern_hemisphere": np.sum(sh_area_weights * SURFACE_FRACS) / np.sum(sh_area_weights),
+    }
 
     return exp
 
@@ -260,9 +262,9 @@ def test_scm_timeseries_crunching(
     if invalid_regions is not None:
         for r in invalid_regions:
             with pytest.raises(ValueError, match="to be written"):
-                tcube.get_scm_timeseries(masks=[r])
+                tcube.get_scm_timeseries(regions=[r])
 
-    res = tcube.get_scm_timeseries(masks=regions)
+    res = tcube.get_scm_timeseries(regions=regions)
     assert_scmdata_frames_allclose(res, expected_results)
 
 
