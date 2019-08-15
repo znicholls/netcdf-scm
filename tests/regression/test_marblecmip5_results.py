@@ -1,19 +1,12 @@
 from os.path import join
 
 from click.testing import CliRunner
-from conftest import (
-    TEST_DATA_MARBLE_CMIP5_DIR,
-    TEST_DATA_ROOT_DIR,
-    run_crunching_comparison,
-)
 
 from netcdf_scm.cli import crunch_data
 
-EXPECTED_FILES_DIR = join(TEST_DATA_ROOT_DIR, "expected-crunching-output")
 
-
-def test_crunching(tmpdir, update_expected_files):
-    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
+def test_crunching(tmpdir, update_expected_files, test_data_marble_cmip5_dir, test_marble_cmip5_crunch_output, run_crunching_comparison):
+    INPUT_DIR = test_data_marble_cmip5_dir
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
@@ -33,6 +26,6 @@ def test_crunching(tmpdir, update_expected_files):
     assert result.exit_code == 0, result.output
     run_crunching_comparison(
         join(OUTPUT_DIR, "netcdf-scm-crunched", "cmip5"),
-        join(EXPECTED_FILES_DIR, "marble-cmip5", "cmip5"),
+        test_marble_cmip5_crunch_output,
         update=update_expected_files,
     )
