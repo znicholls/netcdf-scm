@@ -2,7 +2,7 @@ import datetime
 import logging
 import re
 import warnings
-from os.path import basename, join
+from os.path import join
 from unittest.mock import MagicMock, patch
 
 import cf_units
@@ -24,8 +24,8 @@ from netcdf_scm.iris_cube_wrappers import (
     SCMCube,
     _CMIPCube,
 )
-from netcdf_scm.weights import DEFAULT_REGIONS
 from netcdf_scm.utils import broadcast_onto_lat_lon_grid
+from netcdf_scm.weights import DEFAULT_REGIONS
 
 
 class _SCMCubeIntegrationTester(object):
@@ -41,21 +41,9 @@ class _SCMCubeIntegrationTester(object):
         tsftlf_cube = "mocked 124"
         tareacella_scmcube = "mocked 4389"
 
-        land_mask = np.array(
-            [
-                [100, 0, 0, 100],
-                [100, 0, 100, 0],
-                [100, 100, 0, 100],
-            ]
-        )
+        land_mask = np.array([[100, 0, 0, 100], [100, 0, 100, 0], [100, 100, 0, 100]])
         land_mask = broadcast_onto_lat_lon_grid(test_cube, land_mask)
-        nh_mask = np.array(
-            [
-                [1, 1, 1, 1],
-                [1, 1, 1, 1],
-                [0, 0, 0, 0],
-            ]
-        )
+        nh_mask = np.array([[1, 1, 1, 1], [1, 1, 1, 1], [0, 0, 0, 0]])
         nh_mask = broadcast_onto_lat_lon_grid(test_cube, nh_mask)
 
         mocked_area_weights = broadcast_to_shape(
@@ -66,34 +54,37 @@ class _SCMCubeIntegrationTester(object):
         mocked_weights = {
             "World": np.full(nh_mask.shape, 1),
             "World|Land": land_mask,
-            "World|Ocean": 100-land_mask,
+            "World|Ocean": 100 - land_mask,
             "World|Northern Hemisphere": nh_mask,
-            "World|Southern Hemisphere": 1-nh_mask,
+            "World|Southern Hemisphere": 1 - nh_mask,
             "World|Northern Hemisphere|Land": nh_mask * land_mask,
-            "World|Southern Hemisphere|Land": (1-nh_mask) * land_mask,
+            "World|Southern Hemisphere|Land": (1 - nh_mask) * land_mask,
             "World|Northern Hemisphere|Ocean": nh_mask * (100 - land_mask),
-            "World|Southern Hemisphere|Ocean": (1-nh_mask)*(100-land_mask),
+            "World|Southern Hemisphere|Ocean": (1 - nh_mask) * (100 - land_mask),
         }
-        mocked_weights = {k: v*mocked_area_weights for k, v in mocked_weights.items()}
+        mocked_weights = {k: v * mocked_area_weights for k, v in mocked_weights.items()}
         test_cube.get_scm_timeseries_weights = MagicMock(return_value=mocked_weights)
 
         total_area = mocked_area_weights[0, :, :].sum()
         # do this calculation by hand to be doubly sure, can automate in future if it
         # becomes too annoyting
-        ocean_area = ((100 - land_mask[0, :, :]) * mocked_area_weights[0, :, :]).sum() / 100
+        ocean_area = (
+            (100 - land_mask[0, :, :]) * mocked_area_weights[0, :, :]
+        ).sum() / 100
         land_frac = ((total_area - ocean_area) / (total_area)).squeeze()
         land_frac = float(land_frac)
 
-        land_frac_nh = ((
-                            (land_mask * nh_mask) * mocked_area_weights[0, :, :]
-                        ).sum() / (100*nh_mask * mocked_area_weights[0, :, :]).sum()).squeeze()
+        land_frac_nh = (
+            ((land_mask * nh_mask) * mocked_area_weights[0, :, :]).sum()
+            / (100 * nh_mask * mocked_area_weights[0, :, :]).sum()
+        ).squeeze()
         land_frac_nh = float(land_frac_nh)
 
-        land_frac_sh = ((
-                            land_mask * (1-nh_mask) * mocked_area_weights[0, :, :]
-                        ).sum() / (100*(1-nh_mask) * mocked_area_weights[0, :, :]).sum()).squeeze()
+        land_frac_sh = (
+            (land_mask * (1 - nh_mask) * mocked_area_weights[0, :, :]).sum()
+            / (100 * (1 - nh_mask) * mocked_area_weights[0, :, :]).sum()
+        ).squeeze()
         land_frac_sh = float(land_frac_sh)
-
 
         expected = {}
         for label, weights in mocked_weights.items():
@@ -126,9 +117,7 @@ class _SCMCubeIntegrationTester(object):
             exp_cube.cube.attributes.update(test_cube._get_scm_timeseries_ids())
             expected[label] = exp_cube
 
-        result = test_cube.get_scm_timeseries_cubes(
-            tsftlf_cube, tareacella_scmcube
-        )
+        result = test_cube.get_scm_timeseries_cubes(tsftlf_cube, tareacella_scmcube)
 
         for label, cube in expected.items():
             assert cube.cube.attributes == result[label].cube.attributes
@@ -239,11 +228,12 @@ class _SCMCubeIntegrationTester(object):
 
         expected = ScmDataFrame(expected_df)
         expected.metadata = {
-            'Creator': 'Blinky Bill',
-          'Supervisor': 'Patch',
-          'attribute 3': 'attribute 3',
-          'attribute d': 'hello, attribute d',
-            "calendar": expected_calendar}
+            "Creator": "Blinky Bill",
+            "Supervisor": "Patch",
+            "attribute 3": "attribute 3",
+            "attribute d": "hello, attribute d",
+            "calendar": expected_calendar,
+        }
 
         assert result.metadata == expected.metadata
         assert_frame_equal(result.timeseries(), expected.timeseries())
@@ -514,9 +504,7 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         sftlf = self.tclass()
         sftlf.cube = iris.load_cube(test_sftlf_file)
 
-        var.get_scm_timeseries(
-            sftlf_cube=sftlf, areacella_scmcube=None
-        )
+        var.get_scm_timeseries(sftlf_cube=sftlf, areacella_scmcube=None)
 
     def test_get_data_reference_syntax(self):
         """
