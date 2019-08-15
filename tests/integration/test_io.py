@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-from conftest import TEST_CMIP6_OUTPUT_FILE, TEST_DATA_NETCDFSCM_NC_FILE, tdata_required
 
 import netcdf_scm
 from netcdf_scm.io import load_scmdataframe, save_netcdf_scm_nc
@@ -14,9 +13,8 @@ def _assert_scm_dataframe(scmdf, expected, **kwargs):
     np.testing.assert_allclose(d.values.squeeze(), expected)
 
 
-@tdata_required
-def test_load_scmdataframe():
-    loaded = load_scmdataframe(TEST_DATA_NETCDFSCM_NC_FILE)
+def test_load_scmdataframe(test_data_netcdfscm_nc_file):
+    loaded = load_scmdataframe(test_data_netcdfscm_nc_file)
     assert (loaded["scenario"] == "rcp45").all()
     assert (loaded["climate_model"] == "ACCESS1-0").all()
     assert (loaded["variable"] == "tas").all()
@@ -55,10 +53,9 @@ def test_load_scmdataframe():
     )
 
 
-@tdata_required
-def test_save_cube_and_load_scmdataframe(tmpdir):
+def test_save_cube_and_load_scmdataframe(tmpdir, test_cmip6_output_file):
     base = CMIP6OutputCube()
-    base.load_data_from_path(TEST_CMIP6_OUTPUT_FILE)
+    base.load_data_from_path(test_cmip6_output_file)
     out_file = os.path.join(tmpdir, "test_save_file.nc")
 
     save_netcdf_scm_nc(base.get_scm_timeseries_cubes(), out_file)

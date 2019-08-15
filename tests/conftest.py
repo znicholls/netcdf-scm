@@ -336,7 +336,7 @@ def test_generic_tas_cube(test_tas_file):
 
 
 @pytest.fixture
-def run_crunching_comparison():
+def run_crunching_comparison(assert_scmdata_frames_allclose):
     def _do_comparison(res, expected, update=False):
         """Run test that crunched files are unchanged
 
@@ -382,19 +382,22 @@ def run_crunching_comparison():
     return _do_comparison
 
 
+@pytest.fixture
+def assert_scmdata_frames_allclose():
+    def _do_assertion(res_scmdf, exp_scmdf):
+        res_df = res_scmdf.timeseries().sort_index()
+        assert (
+            (res_df.values > -10 ** 5) & (res_df.values < 10 ** 5)
+        ).all(), "Failed sanity check"
 
-def assert_scmdata_frames_allclose(res_scmdf, exp_scmdf):
-    res_df = res_scmdf.timeseries().sort_index()
-    assert (
-        (res_df.values > -10 ** 5) & (res_df.values < 10 ** 5)
-    ).all(), "Failed sanity check"
+        exp_df = exp_scmdf.timeseries().sort_index()
+        pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
+        for k, v in res_scmdf.metadata.items():
+            if k == "crunch_netcdf_scm_version":
+                continue  # will change with version
+            if isinstance(v, np.ndarray):
+                np.testing.assert_allclose(v, exp_scmdf.metadata[k])
+            else:
+                assert v == exp_scmdf.metadata[k]
 
-    exp_df = exp_scmdf.timeseries().sort_index()
-    pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
-    for k, v in res_scmdf.metadata.items():
-        if k == "crunch_netcdf_scm_version":
-            continue  # will change with version
-        if isinstance(v, np.ndarray):
-            np.testing.assert_allclose(v, exp_scmdf.metadata[k])
-        else:
-            assert v == exp_scmdf.metadata[k]
+    return _do_assertion
