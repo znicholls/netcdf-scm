@@ -47,7 +47,6 @@ def load_scmdataframe(path):
     """
     helper, scm_cubes = _load_helper_and_scm_cubes(path)
     scmdf = helper.convert_scm_timeseries_cubes_to_openscmdata(scm_cubes)
-    scmdf.metadata = {k: v for k, v in helper.cube.attributes.items() if k != "region"}
 
     # TODO: decide whether assuming point data is a good idea or not
     return scmdf
