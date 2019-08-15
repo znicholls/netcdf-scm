@@ -227,6 +227,9 @@ def get_rsdt_expected_results():
         "land_fraction": np.sum(AREA_WEIGHTS * SURFACE_FRACS) / np.sum(AREA_WEIGHTS),
         "land_fraction_northern_hemisphere": np.sum(nh_area_weights * SURFACE_FRACS) / np.sum(nh_area_weights),
         "land_fraction_southern_hemisphere": np.sum(sh_area_weights * SURFACE_FRACS) / np.sum(sh_area_weights),
+        "realm": "atmos",
+        "Conventions": "CF-1.5",
+        "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']"
     }
 
     return exp
@@ -291,7 +294,7 @@ def write_test_files(write_path):
     write_area_file(TEST_AREACEALLA_PATH, lat, lon, "cell_area", "areacella", "m^2")
     write_area_file(TEST_AREACEALLO_PATH, lat, lon, "cell_area", "areacello", "m^2")
     write_data_file(
-        TEST_RSDT_PATH, lat, lon, "toa_incoming_shortwave_flux", "rsdt", "W m-2"
+        TEST_RSDT_PATH, lat, lon, "toa_incoming_shortwave_flux", "rsdt", "W m-2", {"realm": "atmos"}
     )
     write_data_file(
         TEST_GPP_PATH,
@@ -300,6 +303,7 @@ def write_test_files(write_path):
         "gross_primary_productivity_of_carbon",
         "gpp",
         "kg m-2 s-1",
+        {"realm": "land"}
     )
     write_data_file(
         TEST_CSOILFAST_PATH,
@@ -308,6 +312,7 @@ def write_test_files(write_path):
         "fast_soil_pool_carbon_content",
         "cSoilFast",
         "kg m-2",
+        {"realm": "land"}
     )
     write_data_file(
         TEST_HFDS_PATH,
@@ -316,6 +321,7 @@ def write_test_files(write_path):
         "surface_downward_heat_flux_in_sea_water",
         "hfds",
         "W m-2",
+        {"realm": "ocean"}
     )
 
 
@@ -341,7 +347,7 @@ def write_area_file(write_path, lat, lon, standard_name, var_name, units):
     save_cube_in_path(cube, write_path)
 
 
-def write_data_file(write_path, lat, lon, standard_name, var_name, units):
+def write_data_file(write_path, lat, lon, standard_name, var_name, units, attributes):
     time = iris.coords.DimCoord(
         np.array([15.5, 45, 74.5]),
         standard_name="time",
@@ -356,6 +362,7 @@ def write_data_file(write_path, lat, lon, standard_name, var_name, units):
         units=units,
         dim_coords_and_dims=[(time, 0), (lat, 1), (lon, 2)],
     )
+    cube.attributes = attributes
     save_cube_in_path(cube, write_path)
 
 
