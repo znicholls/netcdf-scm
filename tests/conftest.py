@@ -412,9 +412,9 @@ def assert_scmdata_frames_allclose():
         for k, v in res_scmdf.metadata.items():
             if k == "crunch_netcdf_scm_version":
                 continue  # will change with version
-            if isinstance(v, np.ndarray):
+            if isinstance(v, (np.ndarray, np.float, np.int)):
                 np.testing.assert_allclose(v, exp_scmdf.metadata[k])
             else:
-                assert v == exp_scmdf.metadata[k]
+                v == exp_scmdf.metadata[k]
 
     return _do_assertion
