@@ -24,7 +24,7 @@ from netcdf_scm.iris_cube_wrappers import (
     SCMCube,
     _CMIPCube,
 )
-from netcdf_scm.masks import DEFAULT_REGIONS
+from netcdf_scm.weights import DEFAULT_REGIONS
 from netcdf_scm.utils import broadcast_onto_lat_lon_grid
 
 
@@ -37,159 +37,71 @@ class _SCMCubeIntegrationTester(object):
         for attribute_to_set, fixture_name in data.items():
             setattr(self, attribute_to_set, request.getfixturevalue(fixture_name))
 
-    def test_get_scm_cubes_last_resort(self, test_cube):
-        tloaded_paths = ["/path/1", "/path/2"]
-
-        class MockCube:
-            @property
-            def info(self):
-                return {"files": ["/area/cella/a/path/file.nc"]}
-
-        tmetadata_cubes = {"areacella": MockCube()}
-        tsftlf_cube = "mocked 124"
-        tland_mask_threshold = "mocked 51"
-
-        test_cube._loaded_paths = tloaded_paths
-        test_cube._metadata_cubes = tmetadata_cubes
-
-        land_mask = np.array(
-            [
-                [False, True, True, False],
-                [False, True, False, True],
-                [False, False, True, False],
-            ]
-        )
-        land_mask = broadcast_onto_lat_lon_grid(test_cube, land_mask)
-        nh_mask = np.array(
-            [
-                [False, False, False, False],
-                [False, False, False, False],
-                [True, True, True, True],
-            ]
-        )
-        nh_mask = broadcast_onto_lat_lon_grid(test_cube, nh_mask)
-
-        mocked_masks = {
-            "World": np.full(nh_mask.shape, False),
-            "World|Land": land_mask,
-            "World|Ocean": ~land_mask,
-            "World|Northern Hemisphere": nh_mask,
-            "World|Southern Hemisphere": ~nh_mask,
-            "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
-            "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
-            "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
-            "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
-        }
-        test_cube._get_scm_masks = MagicMock(return_value=mocked_masks)
-
-        expected = {}
-        for label, mask in mocked_masks.items():
-            exp_cube = type(test_cube)()
-
-            rcube = test_cube.cube.copy()
-            rcube.data.mask = mask
-            exp_cube.cube = rcube
-
-            exp_cube.cube.attributes[
-                "crunch_netcdf_scm_version"
-            ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(
-                netcdf_scm.__version__
-            )
-            exp_cube.cube.attributes[
-                "crunch_land_mask_threshold"
-            ] = tland_mask_threshold
-            exp_cube.cube.attributes[
-                "crunch_source_files"
-            ] = "Files: {}; areacella: {}".format(
-                [basename(p) for p in tloaded_paths],
-                [basename(p) for p in tmetadata_cubes["areacella"].info["files"]],
-            )
-            exp_cube.cube.attributes["variable"] = "air_temperature"
-            exp_cube.cube.attributes["variable_standard_name"] = "air_temperature"
-            exp_cube.cube.attributes["scenario"] = "unspecified"
-            exp_cube.cube.attributes["climate_model"] = "unspecified"
-            exp_cube.cube.attributes["member_id"] = "unspecified"
-            exp_cube.cube.attributes["mip_era"] = (
-                "CMIP5" if isinstance(test_cube, MarbleCMIP5Cube) else "unspecified"
-            )
-            exp_cube.cube.attributes["activity_id"] = "unspecified"
-            exp_cube.cube.attributes["region"] = label
-            expected[label] = exp_cube
-
-        result = test_cube.get_scm_cubes(tsftlf_cube, tland_mask_threshold)
-
-        for label, cube in expected.items():
-            assert cube.cube.attributes == result[label].cube.attributes
-            assert cube.cube == result[label].cube
-
-        test_cube._get_scm_masks.assert_called_with(
-            sftlf_cube=tsftlf_cube, land_mask_threshold=tland_mask_threshold, masks=None
-        )
-
     def test_get_scm_timeseries_cubes(self, test_cube):
         tsftlf_cube = "mocked 124"
-        tland_mask_threshold = "mocked 51"
         tareacella_scmcube = "mocked 4389"
 
         land_mask = np.array(
             [
-                [False, True, True, False],
-                [False, True, False, True],
-                [False, False, True, False],
+                [100, 0, 0, 100],
+                [100, 0, 100, 0],
+                [100, 100, 0, 100],
             ]
         )
         land_mask = broadcast_onto_lat_lon_grid(test_cube, land_mask)
         nh_mask = np.array(
             [
-                [False, False, False, False],
-                [False, False, False, False],
-                [True, True, True, True],
+                [1, 1, 1, 1],
+                [1, 1, 1, 1],
+                [0, 0, 0, 0],
             ]
         )
         nh_mask = broadcast_onto_lat_lon_grid(test_cube, nh_mask)
 
-        mocked_masks = {
-            "World": np.full(nh_mask.shape, False),
-            "World|Land": land_mask,
-            "World|Ocean": ~land_mask,
-            "World|Northern Hemisphere": nh_mask,
-            "World|Southern Hemisphere": ~nh_mask,
-            "World|Northern Hemisphere|Land": np.logical_or(nh_mask, land_mask),
-            "World|Southern Hemisphere|Land": np.logical_or(~nh_mask, land_mask),
-            "World|Northern Hemisphere|Ocean": np.logical_or(nh_mask, ~land_mask),
-            "World|Southern Hemisphere|Ocean": np.logical_or(~nh_mask, ~land_mask),
-        }
-        test_cube._get_scm_masks = MagicMock(return_value=mocked_masks)
-
-        mocked_weights = broadcast_to_shape(
+        mocked_area_weights = broadcast_to_shape(
             np.array([[1, 2, 3, 4], [1, 4, 8, 9], [0, 4, 1, 9]]),
             test_cube.cube.shape,
             [test_cube.lat_dim_number, test_cube.lon_dim_number],
         )
-        total_area = mocked_weights[0, :, :].sum()
+        mocked_weights = {
+            "World": np.full(nh_mask.shape, 1),
+            "World|Land": land_mask,
+            "World|Ocean": 100-land_mask,
+            "World|Northern Hemisphere": nh_mask,
+            "World|Southern Hemisphere": 1-nh_mask,
+            "World|Northern Hemisphere|Land": nh_mask * land_mask,
+            "World|Southern Hemisphere|Land": (1-nh_mask) * land_mask,
+            "World|Northern Hemisphere|Ocean": nh_mask * (100 - land_mask),
+            "World|Southern Hemisphere|Ocean": (1-nh_mask)*(100-land_mask),
+        }
+        mocked_weights = {k: v*mocked_area_weights for k, v in mocked_weights.items()}
+        test_cube.get_scm_timeseries_weights = MagicMock(return_value=mocked_weights)
+
+        total_area = mocked_area_weights[0, :, :].sum()
         # do this calculation by hand to be doubly sure, can automate in future if it
         # becomes too annoyting
-        ocean_area = 2 + 3 + 4 + 9 + 1
-        land_frac = (total_area - ocean_area) / total_area
+        ocean_area = ((100 - land_mask[0, :, :]) * mocked_area_weights[0, :, :]).sum() / 100
+        land_frac = ((total_area - ocean_area) / (total_area)).squeeze()
+        land_frac = float(land_frac)
 
-        land_frac_nh = (
-            (~land_mask & ~nh_mask).astype(int) * mocked_weights[0, :, :]
-        ).sum() / ((~nh_mask).astype(int) * mocked_weights[0, :, :]).sum()
+        land_frac_nh = ((
+                            (land_mask * nh_mask) * mocked_area_weights[0, :, :]
+                        ).sum() / (100*nh_mask * mocked_area_weights[0, :, :]).sum()).squeeze()
+        land_frac_nh = float(land_frac_nh)
 
-        land_frac_sh = (
-            (~land_mask & nh_mask).astype(int) * mocked_weights[0, :, :]
-        ).sum() / ((nh_mask).astype(int) * mocked_weights[0, :, :]).sum()
+        land_frac_sh = ((
+                            land_mask * (1-nh_mask) * mocked_area_weights[0, :, :]
+                        ).sum() / (100*(1-nh_mask) * mocked_area_weights[0, :, :]).sum()).squeeze()
+        land_frac_sh = float(land_frac_sh)
 
-        test_cube._get_area_weights = MagicMock(return_value=mocked_weights)
 
         expected = {}
-        for label, mask in mocked_masks.items():
+        for label, weights in mocked_weights.items():
             exp_cube = type(test_cube)()
 
             rcube = test_cube.cube.copy()
-            rcube.data.mask = mask
             exp_cube.cube = rcube.collapsed(
-                ["latitude", "longitude"], iris.analysis.MEAN, weights=mocked_weights
+                ["latitude", "longitude"], iris.analysis.MEAN, weights=weights
             )
             exp_cube.cube.add_aux_coord(
                 iris.coords.AuxCoord(land_frac, long_name="land_fraction", units=1)
@@ -205,9 +117,6 @@ class _SCMCubeIntegrationTester(object):
                 )
             )
             exp_cube.cube.attributes[
-                "crunch_land_mask_threshold"
-            ] = tland_mask_threshold
-            exp_cube.cube.attributes[
                 "crunch_netcdf_scm_version"
             ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(
                 netcdf_scm.__version__
@@ -218,12 +127,12 @@ class _SCMCubeIntegrationTester(object):
             expected[label] = exp_cube
 
         result = test_cube.get_scm_timeseries_cubes(
-            tsftlf_cube, tland_mask_threshold, tareacella_scmcube
+            tsftlf_cube, tareacella_scmcube
         )
 
         for label, cube in expected.items():
             assert cube.cube.attributes == result[label].cube.attributes
-            assert cube.cube == result[label].cube
+            np.testing.assert_allclose(cube.cube.data, result[label].cube.data)
             assert result[label].cube.coord("land_fraction").points == land_frac
             assert (
                 result[label].cube.coord("land_fraction_northern_hemisphere").points
@@ -234,13 +143,10 @@ class _SCMCubeIntegrationTester(object):
                 == land_frac_sh
             )
 
-        test_cube._get_scm_masks.assert_called_with(
+        test_cube.get_scm_timeseries_weights.assert_called_with(
             sftlf_cube=tsftlf_cube,
-            land_mask_threshold=tland_mask_threshold,
-            masks=DEFAULT_REGIONS,
-        )
-        test_cube._get_area_weights.assert_called_with(
-            areacella_scmcube=tareacella_scmcube
+            areacella_scmcube=tareacella_scmcube,
+            regions=DEFAULT_REGIONS,
         )
 
     @pytest.mark.parametrize("out_calendar", [None, "gregorian", "365_day"])
@@ -332,7 +238,12 @@ class _SCMCubeIntegrationTester(object):
         )
 
         expected = ScmDataFrame(expected_df)
-        expected.metadata = {"calendar": expected_calendar}
+        expected.metadata = {
+            'Creator': 'Blinky Bill',
+          'Supervisor': 'Patch',
+          'attribute 3': 'attribute 3',
+          'attribute d': 'hello, attribute d',
+            "calendar": expected_calendar}
 
         assert result.metadata == expected.metadata
         assert_frame_equal(result.timeseries(), expected.timeseries())
@@ -604,7 +515,7 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         sftlf.cube = iris.load_cube(test_sftlf_file)
 
         var.get_scm_timeseries(
-            sftlf_cube=sftlf, land_mask_threshold=50, areacella_scmcube=None
+            sftlf_cube=sftlf, areacella_scmcube=None
         )
 
     def test_get_data_reference_syntax(self):
