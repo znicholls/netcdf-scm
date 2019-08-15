@@ -19,11 +19,24 @@ from netcdf_scm.iris_cube_wrappers import (
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test-data")
 
-TEST_DATA_KNMI_DIR = join(TEST_DATA_ROOT_DIR, "knmi-climate-explorer")
+@pytest.fixture
+def test_data_root_dir():
+    if not isdir(TEST_DATA_ROOT_DIR):
+        pytest.skip("test data required")
+    return TEST_DATA_ROOT_DIR
 
-TEST_DATA_MARBLE_CMIP5_DIR = join(TEST_DATA_ROOT_DIR, "marble-cmip5")
-TEST_TAS_FILE = join(
-    TEST_DATA_MARBLE_CMIP5_DIR,
+@pytest.fixture
+def test_data_knmi_dir(test_data_root_dir):
+    return join(test_data_root_dir, "knmi-climate-explorer")
+
+@pytest.fixture
+def test_data_marble_cmip5_dir(test_data_root_dir):
+    return join(test_data_root_dir, "marble-cmip5")
+
+@pytest.fixture
+def test_tas_file(test_data_marble_cmip5_dir):
+    return join(
+    test_data_marble_cmip5_dir,
     "cmip5",
     "1pctCO2",
     "Amon",
@@ -32,8 +45,11 @@ TEST_TAS_FILE = join(
     "r1i1p1",
     "tas_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
 )
-TEST_SFTLF_FILE = join(
-    TEST_DATA_MARBLE_CMIP5_DIR,
+
+@pytest.fixture
+def test_sftlf_file(test_data_marble_cmip5_dir):
+    return join(
+    test_data_marble_cmip5_dir,
     "cmip5",
     "1pctCO2",
     "fx",
@@ -42,8 +58,11 @@ TEST_SFTLF_FILE = join(
     "r0i0p0",
     "sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc",
 )
-TEST_AREACELLA_FILE = join(
-    TEST_DATA_MARBLE_CMIP5_DIR,
+
+@pytest.fixture
+def test_areacella_file(test_data_marble_cmip5_dir):
+    return join(
+    test_data_marble_cmip5_dir,
     "cmip5",
     "1pctCO2",
     "fx",
@@ -52,8 +71,11 @@ TEST_AREACELLA_FILE = join(
     "r0i0p0",
     "areacella_fx_CanESM2_1pctCO2_r0i0p0.nc",
 )
-TEST_ACCESS_CMIP5_FILE = join(
-    TEST_DATA_MARBLE_CMIP5_DIR,
+
+@pytest.fixture
+def test_access_cmip5_file(test_data_marble_cmip5_dir):
+    return join(
+    test_data_marble_cmip5_dir,
     "cmip5",
     "rcp45",
     "Amon",
@@ -63,9 +85,14 @@ TEST_ACCESS_CMIP5_FILE = join(
     "tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc",
 )
 
-TEST_DATA_CMIP6Input4MIPS_DIR = join(TEST_DATA_ROOT_DIR, "cmip6input4mips")
-TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE = join(
-    TEST_DATA_CMIP6Input4MIPS_DIR,
+@pytest.fixture
+def test_data_cmip6input4mips_dir(test_data_root_dir):
+    return join(test_data_root_dir, "cmip6input4mips")
+
+@pytest.fixture
+def test_cmip6input4mips_historical_concs_file(test_data_cmip6input4mips_dir):
+    return join(
+    test_data_cmip6input4mips_dir,
     "input4MIPs",
     "CMIP6",
     "CMIP",
@@ -78,8 +105,11 @@ TEST_CMIP6INPUT4MIPS_HISTORICAL_CONCS_FILE = join(
     "v20100304",
     "mole-fraction-of-so2f2-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_0000-2014.nc",
 )
-TEST_CMIP6INPUT4MIPS_PROJECTION_CONCS_FILE = join(
-    TEST_DATA_CMIP6Input4MIPS_DIR,
+
+@pytest.fixture
+def test_cmip6input4mips_projection_concs_file(test_data_cmip6input4mips_dir):
+    return join(
+    test_data_cmip6input4mips_dir,
     "input4MIPs",
     "CMIP6",
     "ScenarioMIP",
@@ -93,10 +123,14 @@ TEST_CMIP6INPUT4MIPS_PROJECTION_CONCS_FILE = join(
     "mole-fraction-of-carbon-dioxide-in-air_input4MIPs_GHGConcentrations_ScenarioMIP_UoM-MESSAGE-GLOBIOM-ssp245-1-2-1_gn-15x360deg_201501-203012.nc",
 )
 
+@pytest.fixture
+def test_data_cmip6output_dir(test_data_root_dir):
+    return join(test_data_root_dir, "cmip6output")
 
-TEST_DATA_CMIP6Output_DIR = join(TEST_DATA_ROOT_DIR, "cmip6output")
-TEST_CMIP6_OUTPUT_FILE = join(
-    TEST_DATA_CMIP6Output_DIR,
+@pytest.fixture
+def test_cmip6_output_file(test_data_cmip6output_dir):
+    return join(
+    test_data_cmip6output_dir,
     "CMIP6",
     "CMIP",
     "BCC",
@@ -109,8 +143,11 @@ TEST_CMIP6_OUTPUT_FILE = join(
     "v20181015",
     "rlut_Amon_BCC-CSM2-MR_1pctCO2_r1i1p1f1_gn_185001-185912.nc",
 )
-TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS = join(
-    TEST_DATA_CMIP6Output_DIR,
+
+@pytest.fixture
+def test_cmip6_output_file_missing_bounds(test_data_cmip6output_dir):
+    return join(
+    test_data_cmip6output_dir,
     "CMIP6",
     "ScenarioMIP",
     "IPSL",
@@ -123,8 +160,11 @@ TEST_CMIP6_OUTPUT_FILE_MISSING_BOUNDS = join(
     "v20190121",
     "cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_201501-210012.nc",
 )
-TEST_CMIP6_OUTPUT_FILE_1_UNIT = join(
-    TEST_DATA_CMIP6Output_DIR,
+
+@pytest.fixture
+def test_cmip6_output_file_1_unit(test_data_cmip6output_dir):
+    return join(
+    test_data_cmip6output_dir,
     "CMIP6",
     "CMIP",
     "CNRM-CERFACS",
@@ -138,20 +178,26 @@ TEST_CMIP6_OUTPUT_FILE_1_UNIT = join(
     "lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.nc",
 )
 
-TEST_DATA_CMIP6_CRUNCH_OUTPUT = join(
-    TEST_DATA_ROOT_DIR, "expected-crunching-output", "cmip6output"
-)
-TEST_DATA_MARBLE_CMIP5_CRUNCH_OUTPUT = join(
-    TEST_DATA_ROOT_DIR, "expected-crunching-output", "marble-cmip5"
-)
-
-TEST_DATA_NETCDFSCM_NCS_DIR = join(TEST_DATA_ROOT_DIR, "netcdf-scm-ncs")
-TEST_DATA_NETCDFSCM_NC_FILE = join(
-    TEST_DATA_ROOT_DIR, "netcdf-scm_tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc"
+@pytest.fixture
+def test_cmip6_crunch_output(test_data_root_dir):
+    return join(
+    test_data_root_dir, "expected-crunching-output", "cmip6output"
 )
 
-tdata_required = pytest.mark.skipif(
-    not isdir(TEST_DATA_ROOT_DIR), reason="test data required"
+@pytest.fixture
+def test_marble_cmip5_crunch_output(test_data_root_dir):
+    return join(
+    test_data_root_dir, "expected-crunching-output", "marble-cmip5"
+)
+
+@pytest.fixture
+def test_data_netcdfscm_ncs_dir(test_data_root_dir):
+    return join(test_data_root_dir, "netcdf-scm-ncs")
+
+@pytest.fixture
+def test_data_netcdfscm_nc_file(test_data_root_dir):
+    return join(
+    test_data_root_dir, "netcdf-scm_tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc"
 )
 
 
@@ -277,14 +323,14 @@ def test_sftlf_cube(request):
 
 
 @pytest.fixture(scope="function")
-def test_generic_tas_cube():
+def test_generic_tas_cube(test_tas_file):
     test_generic_tas_cube = SCMCube()
     # can safely ignore these warnings here
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore", "Missing CF-netCDF measure variable 'areacella'"
         )
-        test_generic_tas_cube.cube = iris.load_cube(TEST_TAS_FILE)
+        test_generic_tas_cube.cube = iris.load_cube(test_tas_file)
 
     return test_generic_tas_cube
 
