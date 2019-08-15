@@ -160,7 +160,10 @@ def get_land_weights(  # pylint:disable=unused-argument
     try:
         sftlf_cube = cube.get_metadata_cube(cube.sftlf_var, cube=sftlf_cube)
         sftlf_data = sftlf_cube.cube.data
-    except (OSError, KeyError):  # TODO: fix reading so TypeError and KeyError not needed
+    except (
+        OSError,
+        KeyError,
+    ):  # TODO: fix reading so TypeError and KeyError not needed
         warn_msg = (
             "Land surface fraction (sftlf) data not available, using default instead"
         )
@@ -508,9 +511,7 @@ class CubeWeightCalculator:
 
         if np.equal(np.sum(weights), 0):
             raise ValueError(
-                "All weights are zero for region: `{}`".format(
-                    weights_name
-                )
+                "All weights are zero for region: `{}`".format(weights_name)
             )
 
         return weights
