@@ -20,10 +20,8 @@ from openscm.scmdataframe import ScmDataFrame
 
 from . import __version__
 from .definitions import _LAND_FRACTION_REGIONS, _SCM_TIMESERIES_META_COLUMNS
-from .weights import DEFAULT_REGIONS, CubeWeightCalculator
 from .utils import (
     _vector_cftime_conversion,
-    apply_mask,
     assert_all_time_axes_same,
     broadcast_onto_lat_lon_grid,
     get_cube_timeseries_data,
@@ -31,6 +29,7 @@ from .utils import (
     take_lat_lon_mean,
     unify_lat_lon,
 )
+from .weights import DEFAULT_REGIONS, CubeWeightCalculator
 
 try:
     import iris
@@ -573,12 +572,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self._metadata_cubes[metadata_variable]
 
-    def get_scm_timeseries(
-        self,
-        sftlf_cube=None,
-        areacella_scmcube=None,
-        regions=None,
-    ):
+    def get_scm_timeseries(self, sftlf_cube=None, areacella_scmcube=None, regions=None):
         """
         Get SCM relevant timeseries from ``self``.
 
@@ -610,16 +604,13 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         )
 
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
-            scm_timeseries_weights=scm_timeseries_weights,
+            scm_timeseries_weights=scm_timeseries_weights
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
     def get_scm_timeseries_weights(
-        self,
-        sftlf_cube=None,
-        areacella_scmcube=None,
-        regions=None,
+        self, sftlf_cube=None, areacella_scmcube=None, regions=None
     ):
         """
         Get the scm regions.
@@ -631,7 +622,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         if self._weight_calculator is None:
             self._weight_calculator = CubeWeightCalculator(
-                self, sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube,
+                self, sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube
             )
 
         regions = regions if regions is not None else DEFAULT_REGIONS
@@ -639,10 +630,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return scm_weights
 
-    def get_scm_timeseries_cubes(
-        self,
-        scm_timeseries_weights,
-    ):
+    def get_scm_timeseries_cubes(self, scm_timeseries_weights):
         """
         Get SCM relevant cubes
 
@@ -668,11 +656,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             Cubes, with latitude-longitude mean data as appropriate for each of the
             SCM relevant regions.
         """
+
         def crunch_timeseries(region, weights):
             scm_cube = take_lat_lon_mean(self, weights)
-            scm_cube = self._add_metadata_to_region_timeseries_cube(
-                scm_cube, region
-            )
+            scm_cube = self._add_metadata_to_region_timeseries_cube(scm_cube, region)
 
             if region in _LAND_FRACTION_REGIONS:
                 area = np.sum(weights)
@@ -681,7 +668,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             return region, scm_cube, area
 
         try:
-            crunch_list = self._crunch_in_memory(crunch_timeseries, scm_timeseries_weights)
+            crunch_list = self._crunch_in_memory(
+                crunch_timeseries, scm_timeseries_weights
+            )
         except MemoryError:
             logger.warning(
                 "Data won't fit in memory, will process lazily (hence slowly)"
@@ -704,7 +693,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
     @staticmethod
     def _crunch_serial(crunch_timeseries, scm_regions):
-        return [crunch_timeseries(region, weights) for region, weights in scm_regions.items()]
+        return [
+            crunch_timeseries(region, weights)
+            for region, weights in scm_regions.items()
+        ]
 
     def _ensure_data_realised(self):
         # force the data to realise
@@ -786,7 +778,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             regions.
         """
         scm_regions = self._get_scm_regions(
-            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, regions=regions
+            sftlf_cube=sftlf_cube,
+            land_mask_threshold=land_mask_threshold,
+            regions=regions,
         )
 
         # ensure data is realised so it's not read multiple times while applying
@@ -794,7 +788,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         self._ensure_data_realised()
 
         cubes = {
-            k: self._add_metadata_to_region_timeseries_cube(k, mask, land_mask_threshold)
+            k: self._add_metadata_to_region_timeseries_cube(
+                k, mask, land_mask_threshold
+            )
             for k, mask in scm_regions.items()
         }
 
@@ -970,7 +966,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                     if output.metadata[new_col] != new_val:  # pragma: no cover
                         raise AssertionError("Cubes have different metadata...")
 
-            for k,  v in scm_cube.cube.attributes.items():
+            for k, v in scm_cube.cube.attributes.items():
                 if k in columns:
                     continue
                 if i == 0:
