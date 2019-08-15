@@ -70,7 +70,12 @@ def subtract_weights(weights_to_subtract, subtract_from):
     """
 
     def f(weight_calculator, cube, **kwargs):  # pylint:disable=unused-argument
-        return subtract_from - weight_calculator.get_weights_array_without_area_weighting(weights_to_subtract)
+        return (
+            subtract_from
+            - weight_calculator.get_weights_array_without_area_weighting(
+                weights_to_subtract
+            )
+        )
 
     return f
 
@@ -192,7 +197,9 @@ def get_land_weights(  # pylint:disable=unused-argument
         )
         sftlf_data = sftlf_data * 100
 
-    weight_calculator._weights_no_area_weighting["World|Land"] = sftlf_data  # pylint:disable=protected-access
+    weight_calculator._weights_no_area_weighting[
+        "World|Land"
+    ] = sftlf_data  # pylint:disable=protected-access
     return broadcast_onto_lat_lon_grid(cube, sftlf_data)
 
 
@@ -281,7 +288,9 @@ def get_weights_for_area(lower_lat, left_lon, upper_lat, right_lon):
         if len(lon_dim_pts.shape) == 1:
             lon_dim_pts = np.broadcast_to(lon_dim_pts, lat_lon_size)
 
-        weights_lat = ((lower_lat <= lat_dim_pts) & (lat_dim_pts <= upper_lat)).astype(int)
+        weights_lat = ((lower_lat <= lat_dim_pts) & (lat_dim_pts <= upper_lat)).astype(
+            int
+        )
 
         lon_modulus = cube.lon_dim.units.modulus
         lon_min = np.floor(lon_dim_pts.min())
@@ -289,16 +298,15 @@ def get_weights_for_area(lower_lat, left_lon, upper_lat, right_lon):
             np.array([left_lon, right_lon]), lon_min, lon_modulus
         ).astype(int)
         if left_lon_wrapped <= right_lon_wrapped:
-            weights_lon = (
-                (left_lon_wrapped <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped)
+            weights_lon = (left_lon_wrapped <= lon_dim_pts) & (
+                lon_dim_pts <= right_lon_wrapped
             )
         else:
             weights_lon = (
-                ((lon_min <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped))
-                | (
-                    (left_lon_wrapped <= lon_dim_pts)
-                    & (lon_dim_pts <= lon_min + lon_modulus)
-                )
+                (lon_min <= lon_dim_pts) & (lon_dim_pts <= right_lon_wrapped)
+            ) | (
+                (left_lon_wrapped <= lon_dim_pts)
+                & (lon_dim_pts <= lon_min + lon_modulus)
             )
 
         weights_lon = weights_lon.astype(int)
@@ -322,7 +330,9 @@ def get_weights_for_area(lower_lat, left_lon, upper_lat, right_lon):
     return f
 
 
-def get_world_weights(weight_calculator, cube, **kwargs):  # pylint:disable=unused-argument
+def get_world_weights(
+    weight_calculator, cube, **kwargs
+):  # pylint:disable=unused-argument
     """
     Get weights for the world
 
@@ -342,7 +352,11 @@ def get_world_weights(weight_calculator, cube, **kwargs):  # pylint:disable=unus
     :obj:`np.ndarray`
         Weights which can be used for the world mean calculation
     """
-    return np.ones(weight_calculator.get_weights_array_without_area_weighting("World|Northern Hemisphere").shape)
+    return np.ones(
+        weight_calculator.get_weights_array_without_area_weighting(
+            "World|Northern Hemisphere"
+        ).shape
+    )
 
 
 """dict: in-built functions to calculate weights for different regions without area weighting"""
@@ -364,10 +378,14 @@ WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING = {
     "World|Southern Hemisphere|Ocean": multiply_weights(
         "World|Southern Hemisphere", "World|Ocean"
     ),
-    "World|North Atlantic Ocean": multiply_weights(get_weights_for_area(0, -80, 65, 0), "World|Ocean"),
+    "World|North Atlantic Ocean": multiply_weights(
+        get_weights_for_area(0, -80, 65, 0), "World|Ocean"
+    ),
     # 5N-5S, 170W-120W (i.e. 190E to 240E) see
     # https://climatedataguide.ucar.edu/climate-data/nino-sst-indices-nino-12-3-34-4-oni-and-tni
-    "World|El Nino N3.4": multiply_weights(get_weights_for_area(-5, 190, 5, 240), "World|Ocean"),
+    "World|El Nino N3.4": multiply_weights(
+        get_weights_for_area(-5, 190, 5, 240), "World|Ocean"
+    ),
 }
 
 
@@ -449,10 +467,11 @@ class CubeWeightCalculator:
 
     def _get_area_weights(self):
         if self._area_weights is None:
-            raw_area_weights = self.cube.get_metadata_cube(self.cube.areacella_var).cube.data
+            raw_area_weights = self.cube.get_metadata_cube(
+                self.cube.areacella_var
+            ).cube.data
             self._area_weights = broadcast_onto_lat_lon_grid(
-                self.cube,
-                raw_area_weights
+                self.cube, raw_area_weights
             )
 
         return self._area_weights
@@ -485,14 +504,18 @@ class CubeWeightCalculator:
         try:
             return self._weights[weights_name]
         except KeyError:
-            weights_without_area = self.get_weights_array_without_area_weighting(weights_name)
+            weights_without_area = self.get_weights_array_without_area_weighting(
+                weights_name
+            )
             area_weights = self._get_area_weights()
             weights = weights_without_area * area_weights
             self._weights[weights_name] = weights
 
         if np.equal(np.sum(weights), 0):
             raise ValueError(
-                "Your cube has no data which matches the `{}` weights".format(weights_name)
+                "Your cube has no data which matches the `{}` weights".format(
+                    weights_name
+                )
             )
 
         return weights
