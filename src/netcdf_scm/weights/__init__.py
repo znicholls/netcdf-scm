@@ -200,9 +200,9 @@ def get_land_weights(  # pylint:disable=unused-argument
         )
         sftlf_data = sftlf_data * 100
 
-    weight_calculator._weights_no_area_weighting[
+    weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
         "World|Land"
-    ] = sftlf_data  # pylint:disable=protected-access
+    ] = sftlf_data
     return broadcast_onto_lat_lon_grid(cube, sftlf_data)
 
 
@@ -445,8 +445,17 @@ class CubeWeightCalculator:
         Parameters
         ----------
         weights_name : str
+            Region to get weights for
 
+        Returns
+        -------
+        np.ndarray
+            Weights
 
+        Raises
+        ------
+        InvalidWeights
+            If the requested weights cannot be found or evaluated
         """
         try:
             return self._weights_no_area_weighting[weights_name]
@@ -470,7 +479,9 @@ class CubeWeightCalculator:
 
     def _get_area_weights(self):
         if self._area_weights is None:
-            self._area_weights = self.cube._get_area_weights()
+            self._area_weights = (
+                self.cube._get_area_weights()  # pylint:disable=protected-access
+            )
 
         return self._area_weights
 
@@ -485,19 +496,17 @@ class CubeWeightCalculator:
         Parameters
         ----------
         weights_name : str
-
-        Raises
-        ------
-        InvalidWeights
-            If the requested weights cannot be found or evaluated
-
-        ValueError
-            If the cube has no data which matches the input weights
+            Region to get weights for
 
         Returns
         -------
         ndarray[bool]
             Any True values should be weightsed out and excluded from any further calculation.
+
+        Raises
+        ------
+        ValueError
+            If the cube has no data which matches the input weights
         """
         try:
             return self._weights[weights_name]
