@@ -11,12 +11,6 @@ import iris
 import numpy as np
 import pandas as pd
 import pytest
-from conftest import (
-    TEST_AREACELLA_FILE,
-    TEST_DATA_MARBLE_CMIP5_DIR,
-    TEST_TAS_FILE,
-    tdata_required,
-)
 from iris.exceptions import ConstraintMismatchError
 from iris.util import broadcast_to_shape
 from pandas.testing import assert_frame_equal, assert_index_equal
@@ -34,6 +28,14 @@ from netcdf_scm.masks import DEFAULT_REGIONS, CubeMasker
 
 class TestSCMCube(object):
     tclass = SCMCube
+
+    attributes_to_set_from_fixtures = {}
+
+    @pytest.fixture(autouse=True)
+    def auto_injector_fixture(self, request):
+        data = self.attributes_to_set_from_fixtures
+        for attribute_to_set, fixture_name in data.items():
+            setattr(self, attribute_to_set, request.getfixturevalue(fixture_name))
 
     def run_test_of_method_to_overload(
         self, test_cube, method_to_overload, junk_args={}
@@ -100,16 +102,15 @@ class TestSCMCube(object):
             caplog.records[2].message
         )
 
-    @tdata_required
-    def test_add_areacella_measure(self, test_cube):
+    def test_add_areacella_measure(self, test_cube, test_areacella_file, test_tas_file):
         # can safely ignore warnings here
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", ".*Missing CF-netCDF measure.*")
-            test_cube.cube = iris.load_cube(TEST_TAS_FILE)
+            test_cube.cube = iris.load_cube(test_tas_file)
 
         tareacellacube = type(test_cube)()
 
-        tareacellacube.cube = iris.load_cube(TEST_AREACELLA_FILE)
+        tareacellacube.cube = iris.load_cube(test_areacella_file)
         test_cube.get_metadata_cube = MagicMock(return_value=tareacellacube)
 
         test_cube._add_areacella_measure()
@@ -555,9 +556,9 @@ class _CMIPCubeTester(TestSCMCube):
 
         assert test_cube._loaded_paths == [tfile]
 
-    @tdata_required
-    def test_load_missing_variable_error(self, test_cube):
-        tfile = TEST_TAS_FILE
+
+    def test_load_missing_variable_error(self, test_cube, test_tas_file):
+        tfile = test_tas_file
         test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
             return_value=tfile
         )
@@ -673,7 +674,6 @@ class _CMIPCubeTester(TestSCMCube):
 
 class TestMarbleCMIP5Cube(_CMIPCubeTester):
     tclass = MarbleCMIP5Cube
-    troot_dir = TEST_DATA_MARBLE_CMIP5_DIR
     tactivity = "cmip5"
     texperiment = "1pctCO2"
     tmodeling_realm = "Amon"
@@ -682,6 +682,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
     tensemble_member = "r1i1p1"
     ttime_period = "185001-198912"
     tfile_ext = ".nc"
+    attributes_to_set_from_fixtures = {
+        "troot_dir": "test_data_marble_cmip5_dir"
+    }
 
     @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
     @pytest.mark.parametrize(
