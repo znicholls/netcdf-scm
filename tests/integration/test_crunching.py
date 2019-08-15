@@ -203,7 +203,6 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*fco2antt.*"
     DATA_SUB_DIR = "custom-name"
-    LAND_MASK_TRESHHOLD = 45
     CRUNCH_CONTACT = "test crunch contact info <email>"
 
     runner = CliRunner()
@@ -220,8 +219,6 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
                 VAR_TO_CRUNCH,
                 "--data-sub-dir",
                 DATA_SUB_DIR,
-                "--land-mask-threshold",
-                LAND_MASK_TRESHHOLD,
                 "-f",
                 "--small-threshold",
                 1,
@@ -240,8 +237,6 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
     assert "Attempting to process: ['tas" not in caplog.text
 
     assert isdir(join(OUTPUT_DIR, DATA_SUB_DIR, "cmip5"))
-
-    assert "land_mask_threshold: {}".format(LAND_MASK_TRESHHOLD) in caplog.text
 
     out_file = join(
         OUTPUT_DIR,
@@ -286,8 +281,6 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
                 VAR_TO_CRUNCH,
                 "--data-sub-dir",
                 DATA_SUB_DIR,
-                "--land-mask-threshold",
-                LAND_MASK_TRESHHOLD,
                 "--small-number-workers",
                 1,
             ],
