@@ -921,11 +921,11 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             :obj:`ScmDataFrame` containing the data from the SCM timeseries cubes
         """
         data = []
-        metadata = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
+        columns = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
         for scm_cube in scm_timeseries_cubes.values():
             data.append(get_cube_timeseries_data(scm_cube, realise_data=True))
-            for metadata_column, metadata_values in metadata.items():
-                metadata_values.append(scm_cube.cube.attributes[metadata_column])
+            for column_name, column_values in columns.items():
+                column_values.append(scm_cube.cube.attributes[column_name])
 
         data = np.vstack(data).T
 
@@ -939,7 +939,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         output = ScmDataFrame(
             data,
             index=time_index,
-            columns={**{"unit": str(unit), "model": "unspecified"}, **metadata},
+            columns={**{"unit": str(unit), "model": "unspecified"}, **columns},
         )
         try:
             output.metadata["calendar"] = out_calendar
@@ -968,6 +968,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                     output.metadata[new_col] = new_val
                 else:
                     if output.metadata[new_col] != new_val:  # pragma: no cover
+                        raise AssertionError("Cubes have different metadata...")
+
+            for k,  v in scm_cube.cube.attributes.items():
+                if k in columns:
+                    continue
+                if i == 0:
+                    output.metadata[k] = v
+                else:
+                    if output.metadata[k] != v:  # pragma: no cover
                         raise AssertionError("Cubes have different metadata...")
 
         return output

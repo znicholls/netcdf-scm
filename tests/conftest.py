@@ -409,12 +409,13 @@ def assert_scmdata_frames_allclose():
 
         exp_df = exp_scmdf.timeseries().sort_index()
         pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
-        for k, v in res_scmdf.metadata.items():
-            if k == "crunch_netcdf_scm_version":
-                continue  # will change with version
-            if isinstance(v, (np.ndarray, np.float, np.int)):
-                np.testing.assert_allclose(v, exp_scmdf.metadata[k])
-            else:
-                v == exp_scmdf.metadata[k]
+        for base, check in [(exp_scmdf, res_scmdf), (res_scmdf, exp_scmdf)]:
+            for k, v in base.metadata.items():
+                if k == "crunch_netcdf_scm_version":
+                    continue  # will change with version
+                if isinstance(v, (np.ndarray, np.float, np.int)):
+                    np.testing.assert_allclose(v, check.metadata[k])
+                else:
+                    v == check.metadata[k]
 
     return _do_assertion
