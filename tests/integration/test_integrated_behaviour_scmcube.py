@@ -29,9 +29,7 @@ from netcdf_scm.utils import broadcast_onto_lat_lon_grid
 
 
 class _SCMCubeIntegrationTester(object):
-    attributes_to_set_from_fixtures = {
-        "_test_get_scm_timeseries_file": "test_tas_file"
-    }
+    attributes_to_set_from_fixtures = {"_test_get_scm_timeseries_file": "test_tas_file"}
 
     @pytest.fixture(autouse=True)
     def auto_injector_fixture(self, request):
@@ -427,7 +425,9 @@ class _SCMCubeIntegrationTester(object):
 class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
     tclass = SCMCube
 
-    def test_load_and_concatenate_files_in_directory_same_time(self, test_cube, test_data_marble_cmip5_dir):
+    def test_load_and_concatenate_files_in_directory_same_time(
+        self, test_cube, test_data_marble_cmip5_dir
+    ):
         tdir = join(
             test_data_marble_cmip5_dir,
             "cmip5",
@@ -454,7 +454,9 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
             with pytest.raises(KeyError):
                 test_cube.cube.attributes[removed_attribute]
 
-    def test_load_and_concatenate_files_in_directory_different_time(self, test_cube, test_data_marble_cmip5_dir):
+    def test_load_and_concatenate_files_in_directory_different_time(
+        self, test_cube, test_data_marble_cmip5_dir
+    ):
         tdir = join(
             test_data_marble_cmip5_dir,
             "cmip5",
@@ -480,7 +482,9 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
             with pytest.raises(KeyError):
                 test_cube.cube.attributes[removed_attribute]
 
-    def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog, test_cmip6input4mips_historical_concs_file):
+    def test_load_gregorian_calendar_with_pre_zero_years(
+        self, test_cube, caplog, test_cmip6input4mips_historical_concs_file
+    ):
         caplog.set_level(logging.WARNING, logger="netcdf_scm")
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
@@ -533,7 +537,9 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
 class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
     tclass = _CMIPCube
 
-    def test_load_data_from_identifiers_and_areacella(self, test_cube, test_areacella_file, test_tas_file):
+    def test_load_data_from_identifiers_and_areacella(
+        self, test_cube, test_areacella_file, test_tas_file
+    ):
         tfile = test_tas_file
         test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
             return_value=tfile
@@ -571,7 +577,9 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         assert cell_measures[0].standard_name == "cell_area"
 
     @pytest.mark.parametrize("force_lazy_load", [True, False])
-    def test_get_scm_timeseries(self, test_cube, force_lazy_load, assert_scmdata_frames_allclose):
+    def test_get_scm_timeseries(
+        self, test_cube, force_lazy_load, assert_scmdata_frames_allclose
+    ):
         var = self.tclass()
         var.load_data_from_path(self._test_get_scm_timeseries_file)
 
@@ -586,7 +594,9 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
             res_lazy = var_lazy.get_scm_timeseries()
             assert_scmdata_frames_allclose(res, res_lazy)
 
-    def test_get_scm_timeseries_no_areacealla(self, test_cube, test_sftlf_file, test_tas_file):
+    def test_get_scm_timeseries_no_areacealla(
+        self, test_cube, test_sftlf_file, test_tas_file
+    ):
         var = self.tclass()
         var.cube = iris.load_cube(test_tas_file)
 
@@ -608,11 +618,11 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
 
 class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
     tclass = MarbleCMIP5Cube
-    attributes_to_set_from_fixtures = {
-        "_test_get_scm_timeseries_file": "test_tas_file"
-    }
+    attributes_to_set_from_fixtures = {"_test_get_scm_timeseries_file": "test_tas_file"}
 
-    def test_load_and_concatenate_files_in_directory_same_time(self, test_cube, test_data_marble_cmip5_dir):
+    def test_load_and_concatenate_files_in_directory_same_time(
+        self, test_cube, test_data_marble_cmip5_dir
+    ):
         tdir = join(
             test_data_marble_cmip5_dir,
             "cmip5",
@@ -641,7 +651,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
             with pytest.raises(KeyError):
                 test_cube.cube.attributes[removed_attribute]
 
-    def test_load_and_concatenate_files_in_directory_different_time(self, test_cube, test_data_marble_cmip5_dir):
+    def test_load_and_concatenate_files_in_directory_different_time(
+        self, test_cube, test_data_marble_cmip5_dir
+    ):
         tdir = join(
             test_data_marble_cmip5_dir,
             "cmip5",
@@ -799,7 +811,9 @@ class TestCMIP6Input4MIPsCube(_CMIPCubeIntegrationTester):
     tclass = CMIP6Input4MIPsCube
     _test_get_scm_timeseries_file = None  # I don't have any test files for this
 
-    def test_load_gregorian_calendar_with_pre_zero_years(self, test_cube, caplog, test_cmip6input4mips_historical_concs_file):
+    def test_load_gregorian_calendar_with_pre_zero_years(
+        self, test_cube, caplog, test_cmip6input4mips_historical_concs_file
+    ):
         caplog.set_level(logging.WARNING, logger="netcdf_scm")
         expected_warn = (
             "Your calendar is gregorian yet has units of 'days since 0-1-1'. We "
@@ -1155,7 +1169,9 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
         assert (ts["unit"] == "W m^-2").all()
         assert (ts["climate_model"] == "BCC-CSM2-MR").all()
 
-    def test_load_data_missing_bounds(self, test_cube, test_cmip6_output_file_missing_bounds):
+    def test_load_data_missing_bounds(
+        self, test_cube, test_cmip6_output_file_missing_bounds
+    ):
         test_cube.load_data_from_path(test_cmip6_output_file_missing_bounds)
 
         obs_time = test_cube.cube.dim_coords[0]

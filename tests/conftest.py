@@ -19,186 +19,201 @@ from netcdf_scm.iris_cube_wrappers import (
 
 TEST_DATA_ROOT_DIR = join(dirname(abspath(__file__)), "test-data")
 
+
 @pytest.fixture
 def test_data_root_dir():
     if not isdir(TEST_DATA_ROOT_DIR):
         pytest.skip("test data required")
     return TEST_DATA_ROOT_DIR
 
+
 @pytest.fixture
 def test_data_knmi_dir(test_data_root_dir):
     return join(test_data_root_dir, "knmi-climate-explorer")
+
 
 @pytest.fixture
 def test_data_marble_cmip5_dir(test_data_root_dir):
     return join(test_data_root_dir, "marble-cmip5")
 
+
 @pytest.fixture
 def test_tas_file(test_data_marble_cmip5_dir):
     return join(
-    test_data_marble_cmip5_dir,
-    "cmip5",
-    "1pctCO2",
-    "Amon",
-    "tas",
-    "CanESM2",
-    "r1i1p1",
-    "tas_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
-)
+        test_data_marble_cmip5_dir,
+        "cmip5",
+        "1pctCO2",
+        "Amon",
+        "tas",
+        "CanESM2",
+        "r1i1p1",
+        "tas_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
+    )
+
 
 @pytest.fixture
 def test_sftlf_file(test_data_marble_cmip5_dir):
     return join(
-    test_data_marble_cmip5_dir,
-    "cmip5",
-    "1pctCO2",
-    "fx",
-    "sftlf",
-    "CanESM2",
-    "r0i0p0",
-    "sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc",
-)
+        test_data_marble_cmip5_dir,
+        "cmip5",
+        "1pctCO2",
+        "fx",
+        "sftlf",
+        "CanESM2",
+        "r0i0p0",
+        "sftlf_fx_CanESM2_1pctCO2_r0i0p0.nc",
+    )
+
 
 @pytest.fixture
 def test_areacella_file(test_data_marble_cmip5_dir):
     return join(
-    test_data_marble_cmip5_dir,
-    "cmip5",
-    "1pctCO2",
-    "fx",
-    "areacella",
-    "CanESM2",
-    "r0i0p0",
-    "areacella_fx_CanESM2_1pctCO2_r0i0p0.nc",
-)
+        test_data_marble_cmip5_dir,
+        "cmip5",
+        "1pctCO2",
+        "fx",
+        "areacella",
+        "CanESM2",
+        "r0i0p0",
+        "areacella_fx_CanESM2_1pctCO2_r0i0p0.nc",
+    )
+
 
 @pytest.fixture
 def test_access_cmip5_file(test_data_marble_cmip5_dir):
     return join(
-    test_data_marble_cmip5_dir,
-    "cmip5",
-    "rcp45",
-    "Amon",
-    "tas",
-    "ACCESS1-0",
-    "r1i1p1",
-    "tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc",
-)
+        test_data_marble_cmip5_dir,
+        "cmip5",
+        "rcp45",
+        "Amon",
+        "tas",
+        "ACCESS1-0",
+        "r1i1p1",
+        "tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc",
+    )
+
 
 @pytest.fixture
 def test_data_cmip6input4mips_dir(test_data_root_dir):
     return join(test_data_root_dir, "cmip6input4mips")
 
+
 @pytest.fixture
 def test_cmip6input4mips_historical_concs_file(test_data_cmip6input4mips_dir):
     return join(
-    test_data_cmip6input4mips_dir,
-    "input4MIPs",
-    "CMIP6",
-    "CMIP",
-    "UoM",
-    "UoM-CMIP-1-2-0",
-    "atmos",
-    "yr",
-    "mole-fraction-of-so2f2-in-air",
-    "gr1-GMNHSH",
-    "v20100304",
-    "mole-fraction-of-so2f2-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_0000-2014.nc",
-)
+        test_data_cmip6input4mips_dir,
+        "input4MIPs",
+        "CMIP6",
+        "CMIP",
+        "UoM",
+        "UoM-CMIP-1-2-0",
+        "atmos",
+        "yr",
+        "mole-fraction-of-so2f2-in-air",
+        "gr1-GMNHSH",
+        "v20100304",
+        "mole-fraction-of-so2f2-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_0000-2014.nc",
+    )
+
 
 @pytest.fixture
 def test_cmip6input4mips_projection_concs_file(test_data_cmip6input4mips_dir):
     return join(
-    test_data_cmip6input4mips_dir,
-    "input4MIPs",
-    "CMIP6",
-    "ScenarioMIP",
-    "UoM",
-    "UoM-MESSAGE-GLOBIOM-ssp245-1-2-1",
-    "atmos",
-    "mon",
-    "mole-fraction-of-carbon-dioxide-in-air",
-    "gn-15x360deg",
-    "v20100304",
-    "mole-fraction-of-carbon-dioxide-in-air_input4MIPs_GHGConcentrations_ScenarioMIP_UoM-MESSAGE-GLOBIOM-ssp245-1-2-1_gn-15x360deg_201501-203012.nc",
-)
+        test_data_cmip6input4mips_dir,
+        "input4MIPs",
+        "CMIP6",
+        "ScenarioMIP",
+        "UoM",
+        "UoM-MESSAGE-GLOBIOM-ssp245-1-2-1",
+        "atmos",
+        "mon",
+        "mole-fraction-of-carbon-dioxide-in-air",
+        "gn-15x360deg",
+        "v20100304",
+        "mole-fraction-of-carbon-dioxide-in-air_input4MIPs_GHGConcentrations_ScenarioMIP_UoM-MESSAGE-GLOBIOM-ssp245-1-2-1_gn-15x360deg_201501-203012.nc",
+    )
+
 
 @pytest.fixture
 def test_data_cmip6output_dir(test_data_root_dir):
     return join(test_data_root_dir, "cmip6output")
 
+
 @pytest.fixture
 def test_cmip6_output_file(test_data_cmip6output_dir):
     return join(
-    test_data_cmip6output_dir,
-    "CMIP6",
-    "CMIP",
-    "BCC",
-    "BCC-CSM2-MR",
-    "1pctCO2",
-    "r1i1p1f1",
-    "Amon",
-    "rlut",
-    "gn",
-    "v20181015",
-    "rlut_Amon_BCC-CSM2-MR_1pctCO2_r1i1p1f1_gn_185001-185912.nc",
-)
+        test_data_cmip6output_dir,
+        "CMIP6",
+        "CMIP",
+        "BCC",
+        "BCC-CSM2-MR",
+        "1pctCO2",
+        "r1i1p1f1",
+        "Amon",
+        "rlut",
+        "gn",
+        "v20181015",
+        "rlut_Amon_BCC-CSM2-MR_1pctCO2_r1i1p1f1_gn_185001-185912.nc",
+    )
+
 
 @pytest.fixture
 def test_cmip6_output_file_missing_bounds(test_data_cmip6output_dir):
     return join(
-    test_data_cmip6output_dir,
-    "CMIP6",
-    "ScenarioMIP",
-    "IPSL",
-    "IPSL-CM6A-LR",
-    "ssp126",
-    "r1i1p1f1",
-    "Lmon",
-    "cSoilFast",
-    "gr",
-    "v20190121",
-    "cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_201501-210012.nc",
-)
+        test_data_cmip6output_dir,
+        "CMIP6",
+        "ScenarioMIP",
+        "IPSL",
+        "IPSL-CM6A-LR",
+        "ssp126",
+        "r1i1p1f1",
+        "Lmon",
+        "cSoilFast",
+        "gr",
+        "v20190121",
+        "cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_201501-210012.nc",
+    )
+
 
 @pytest.fixture
 def test_cmip6_output_file_1_unit(test_data_cmip6output_dir):
     return join(
-    test_data_cmip6output_dir,
-    "CMIP6",
-    "CMIP",
-    "CNRM-CERFACS",
-    "CNRM-CM6-1",
-    "historical",
-    "r1i1p1f2",
-    "Lmon",
-    "lai",
-    "gr",
-    "v20180917",
-    "lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.nc",
-)
+        test_data_cmip6output_dir,
+        "CMIP6",
+        "CMIP",
+        "CNRM-CERFACS",
+        "CNRM-CM6-1",
+        "historical",
+        "r1i1p1f2",
+        "Lmon",
+        "lai",
+        "gr",
+        "v20180917",
+        "lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.nc",
+    )
+
 
 @pytest.fixture
 def test_cmip6_crunch_output(test_data_root_dir):
-    return join(
-    test_data_root_dir, "expected-crunching-output", "cmip6output", "CMIP6"
-)
+    return join(test_data_root_dir, "expected-crunching-output", "cmip6output", "CMIP6")
+
 
 @pytest.fixture
 def test_marble_cmip5_crunch_output(test_data_root_dir):
-    return join(
-    test_data_root_dir, "expected-crunching-output", "marble-cmip5"
-)
+    return join(test_data_root_dir, "expected-crunching-output", "marble-cmip5")
+
 
 @pytest.fixture
 def test_data_netcdfscm_ncs_dir(test_data_root_dir):
     return join(test_data_root_dir, "netcdf-scm-ncs")
 
+
 @pytest.fixture
 def test_data_netcdfscm_nc_file(test_data_root_dir):
     return join(
-    test_data_root_dir, "netcdf-scm_tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc"
-)
+        test_data_root_dir,
+        "netcdf-scm_tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc",
+    )
 
 
 def pytest_addoption(parser):

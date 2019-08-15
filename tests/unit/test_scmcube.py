@@ -556,7 +556,6 @@ class _CMIPCubeTester(TestSCMCube):
 
         assert test_cube._loaded_paths == [tfile]
 
-
     def test_load_missing_variable_error(self, test_cube, test_tas_file):
         tfile = test_tas_file
         test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
@@ -682,9 +681,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
     tensemble_member = "r1i1p1"
     ttime_period = "185001-198912"
     tfile_ext = ".nc"
-    attributes_to_set_from_fixtures = {
-        "troot_dir": "test_data_marble_cmip5_dir"
-    }
+    attributes_to_set_from_fixtures = {"troot_dir": "test_data_marble_cmip5_dir"}
 
     @patch("netcdf_scm.iris_cube_wrappers.os.listdir")
     @pytest.mark.parametrize(
