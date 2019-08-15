@@ -5,7 +5,13 @@ from click.testing import CliRunner
 from netcdf_scm.cli import crunch_data
 
 
-def test_crunching(tmpdir, update_expected_files, test_data_marble_cmip5_dir, test_marble_cmip5_crunch_output, run_crunching_comparison):
+def test_crunching(
+    tmpdir,
+    update_expected_files,
+    test_data_marble_cmip5_dir,
+    test_marble_cmip5_crunch_output,
+    run_crunching_comparison,
+):
     INPUT_DIR = test_data_marble_cmip5_dir
     OUTPUT_DIR = str(tmpdir)
 

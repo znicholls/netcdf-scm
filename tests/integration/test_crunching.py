@@ -328,7 +328,9 @@ def test_crunching_wrong_cube(tmpdir, caplog, test_data_marble_cmip5_dir):
 @patch.object(
     netcdf_scm.iris_cube_wrappers._CMIPCube, "_add_time_period_from_files_in_directory"
 )
-def test_crunching_broken_dir(mock_add_time_period, tmpdir, caplog, test_data_marble_cmip5_dir):
+def test_crunching_broken_dir(
+    mock_add_time_period, tmpdir, caplog, test_data_marble_cmip5_dir
+):
     mock_add_time_period.side_effect = ValueError
     INPUT_DIR = test_data_marble_cmip5_dir
     OUTPUT_DIR = str(tmpdir)
