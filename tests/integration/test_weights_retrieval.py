@@ -13,9 +13,9 @@ from netcdf_scm.weights import (
     DEFAULT_REGIONS,
     WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING,
     CubeWeightCalculator,
-    get_weights_for_area,
     get_default_sftlf_cube,
     get_land_weights,
+    get_weights_for_area,
 )
 
 
@@ -24,37 +24,20 @@ from netcdf_scm.weights import (
 def test_get_scm_masks(mock_nh_weights, mock_land_weights, test_all_cubes):
     tsftlf_cube = "mocked 124"
 
-    land_weights = np.array(
-        [
-            [1, 0, 0, 1],
-            [1, 0, 1, 0],
-            [1, 1, 0, 1],
-        ]
-    )
+    land_weights = np.array([[1, 0, 0, 1], [1, 0, 1, 0], [1, 1, 0, 1]])
     mock_land_weights.return_value = land_weights
 
-    nh_weights = np.array(
-        [
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [0, 0, 0, 0],
-        ]
-    )
+    nh_weights = np.array([[1, 1, 1, 1], [1, 1, 1, 1], [0, 0, 0, 0]])
     mock_nh_weights.return_value = nh_weights
 
-    nh_land_weights = np.array(
-        [
-            [1, 0, 0, 1],
-            [1, 0, 1, 0],
-            [0, 0, 0, 0],
-        ]
-    )
+    nh_land_weights = np.array([[1, 0, 0, 1], [1, 0, 1, 0], [0, 0, 0, 0]])
     # check our logic while we're here
     np.testing.assert_array_equal(nh_weights * land_weights, nh_land_weights)
 
     area_weights = test_all_cubes._get_area_weights()
     expected = {
-        k: area_weights*broadcast_to_shape(
+        k: area_weights
+        * broadcast_to_shape(
             v,
             test_all_cubes.cube.shape,
             [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
@@ -63,36 +46,26 @@ def test_get_scm_masks(mock_nh_weights, mock_land_weights, test_all_cubes):
             "World": np.full(nh_weights.shape, 1),
             "World|Northern Hemisphere|Land": nh_land_weights,
             "World|Southern Hemisphere|Land": (1 - nh_weights) * land_weights,
-            "World|Northern Hemisphere|Ocean": nh_weights * (100-land_weights),
-            "World|Southern Hemisphere|Ocean": (1-nh_weights) * (100 -land_weights),
+            "World|Northern Hemisphere|Ocean": nh_weights * (100 - land_weights),
+            "World|Southern Hemisphere|Ocean": (1 - nh_weights) * (100 - land_weights),
             "World|Land": land_weights,
-            "World|Ocean": 100-land_weights,
+            "World|Ocean": 100 - land_weights,
             "World|Northern Hemisphere": nh_weights,
-            "World|Southern Hemisphere": 1-nh_weights,
+            "World|Southern Hemisphere": 1 - nh_weights,
         }.items()
     }
 
     with patch.dict(
-        WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING, {"World|Northern Hemisphere": mock_nh_weights, "World|Land": mock_land_weights}
+        WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING,
+        {"World|Northern Hemisphere": mock_nh_weights, "World|Land": mock_land_weights},
     ):
-        masker = CubeWeightCalculator(
-            test_all_cubes,
-            sftlf_cube=tsftlf_cube,
-        )
+        masker = CubeWeightCalculator(test_all_cubes, sftlf_cube=tsftlf_cube)
         result = masker.get_weights(DEFAULT_REGIONS)
 
     for label, array in expected.items():
         np.testing.assert_array_equal(array, result[label])
-    mock_land_weights.assert_called_with(
-        masker,
-        test_all_cubes,
-        sftlf_cube=tsftlf_cube,
-    )
-    mock_nh_weights.assert_called_with(
-        masker,
-        test_all_cubes,
-        sftlf_cube=tsftlf_cube,
-    )
+    mock_land_weights.assert_called_with(masker, test_all_cubes, sftlf_cube=tsftlf_cube)
+    mock_nh_weights.assert_called_with(masker, test_all_cubes, sftlf_cube=tsftlf_cube)
 
 
 @pytest.mark.parametrize("with_bounds", [True, False])
@@ -103,13 +76,7 @@ def test_get_scm_masks_no_land_available(
     caplog.set_level(logging.WARNING, logger="netcdf_scm.iris_cube_wrappers")
     test_all_cubes.get_metadata_cube = MagicMock(side_effect=OSError)
 
-    nh_weights = np.array(
-        [
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [0, 0, 0, 0],
-        ]
-    )
+    nh_weights = np.array([[1, 1, 1, 1], [1, 1, 1, 1], [0, 0, 0, 0]])
     mock_nh_weights.return_value = nh_weights
     default_sftlf_cube = get_default_sftlf_cube()
     default_sftlf_cube = default_sftlf_cube.regrid(
@@ -121,7 +88,8 @@ def test_get_scm_masks_no_land_available(
 
     area_weights = test_all_cubes._get_area_weights()
     expected = {
-        k: area_weights*broadcast_to_shape(
+        k: area_weights
+        * broadcast_to_shape(
             v,
             test_all_cubes.cube.shape,
             [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
@@ -130,13 +98,16 @@ def test_get_scm_masks_no_land_available(
             "World": np.full(nh_weights.shape, 1),
             "World|Northern Hemisphere": nh_weights,
             "World|Northern Hemisphere|Land": nh_weights * expected_land_weights,
-            "World|Southern Hemisphere": 1-nh_weights,
+            "World|Southern Hemisphere": 1 - nh_weights,
         }.items()
     }
     expected_warn = (
         "Land surface fraction (sftlf) data not available, using default instead"
     )
-    with patch.dict(WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING, {"World|Northern Hemisphere": mock_nh_weights}):
+    with patch.dict(
+        WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING,
+        {"World|Northern Hemisphere": mock_nh_weights},
+    ):
         if not with_bounds:
             test_all_cubes.lat_dim.bounds = None
             test_all_cubes.lon_dim.bounds = None
@@ -145,16 +116,21 @@ def test_get_scm_masks_no_land_available(
 
     if not with_bounds:
         assert len(caplog.messages) == 4
-        assert caplog.messages[0] == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+        assert (
+            caplog.messages[0]
+            == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+        )
         assert caplog.messages[0] == caplog.messages[1]
         assert caplog.messages[2] == "Guessing latitude and longitude bounds"
         assert caplog.messages[3] == expected_warn
     else:
         assert len(caplog.messages) == 3
-        assert caplog.messages[0] == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+        assert (
+            caplog.messages[0]
+            == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+        )
         assert caplog.messages[0] == caplog.messages[1]
         assert caplog.messages[2] == expected_warn
-
 
     for label, array in expected.items():
         np.testing.assert_array_equal(array, result[label])
@@ -164,9 +140,7 @@ def test_get_scm_masks_no_land_available(
 @pytest.mark.parametrize("transpose", [True, False])
 @pytest.mark.parametrize("input_format", ["scmcube", None])
 @pytest.mark.parametrize("sftlf_var", ["sftlf", "sftlf_other"])
-def test_get_land_weights(
-    test_all_cubes, input_format, sftlf_var, transpose
-):
+def test_get_land_weights(test_all_cubes, input_format, sftlf_var, transpose):
     sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
     test_all_cubes.sftlf_var = sftlf_var
     original_data = sftlf_cube.cube.data
@@ -179,9 +153,7 @@ def test_get_land_weights(
 
     masker = CubeWeightCalculator(test_all_cubes)
     result = get_land_weights(
-        masker,
-        test_all_cubes,
-        sftlf_cube=test_land_fraction_input,
+        masker, test_all_cubes, sftlf_cube=test_land_fraction_input
     )
 
     expected = broadcast_to_shape(
@@ -230,12 +202,14 @@ def create_dummy_cube_from_lat_lon_points(lat_pts, lon_pts):
 
 def test_nao_weights(test_all_cubes):
     sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
-    masker = CubeWeightCalculator(test_all_cubes, sftlf_cube=sftlf_cube,)
-    result = masker.get_weights_array_without_area_weighting("World|North Atlantic Ocean")
+    masker = CubeWeightCalculator(test_all_cubes, sftlf_cube=sftlf_cube)
+    result = masker.get_weights_array_without_area_weighting(
+        "World|North Atlantic Ocean"
+    )
 
-    expected_base = np.array(
-        [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]]
-    ) * (100 - sftlf_cube.cube.data)
+    expected_base = np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]]) * (
+        100 - sftlf_cube.cube.data
+    )
     expected = broadcast_to_shape(
         expected_base,
         test_all_cubes.cube.shape,
@@ -250,9 +224,9 @@ def test_elnino_weights(test_all_cubes):
     masker = CubeWeightCalculator(test_all_cubes, sftlf_cube=sftlf_cube)
     result = masker.get_weights_array_without_area_weighting("World|El Nino N3.4")
     # 5N-5S, 190E-240E
-    expected_base = np.array(
-        [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]]
-    ) * (100 - sftlf_cube.cube.data)
+    expected_base = np.array([[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]]) * (
+        100 - sftlf_cube.cube.data
+    )
     expected = broadcast_to_shape(
         expected_base,
         test_all_cubes.cube.shape,
@@ -283,46 +257,22 @@ def test_elnino_weights(test_all_cubes):
         (  # edge of bound included
             np.array([65, 0, -60]),
             np.array([45, 135, 225, 280]),
-            np.array(
-                [
-                    [0, 0, 0, 1],
-                    [0, 0, 0, 1],
-                    [0, 0, 0, 0],
-                ]
-            ),
+            np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]]),
         ),
         (  # edge of bound included negative co-ord
             np.array([66, 0, -60]),
             np.array([-135, -80, 45, 135]),
-            np.array(
-                [
-                    [0, 0, 0, 0],
-                    [0, 1, 0, 0],
-                    [0, 0, 0, 0],
-                ]
-            ),
+            np.array([[0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]]),
         ),
         (  # one within bounds
             np.array([80, 35, -70]),
             np.array([10, 30, 50, 135, 320]),
-            np.array(
-                [
-                    [0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 1],
-                    [0, 0, 0, 0, 0],
-                ]
-            ),
+            np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 1], [0, 0, 0, 0, 0]]),
         ),
         (  # one within bounds negative co-ord
             np.array([80, 35, -70]),
             np.array([-95, -40, 40, 135]),
-            np.array(
-                [
-                    [0, 0, 0, 0],
-                    [0, 1, 0, 0],
-                    [0, 0, 0, 0],
-                ]
-            ),
+            np.array([[0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]]),
         ),
     ],
 )
@@ -352,9 +302,7 @@ def test_get_weights_for_area(test_all_cubes, query, lat_pts, lon_pts, expected)
 def test_area_mask_wrapped_lons(test_all_cubes):
     result = get_weights_for_area(0, -80, 65, 0)(None, test_all_cubes)
 
-    expected_base = np.array(
-        [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]]
-    )
+    expected_base = np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]])
     expected = broadcast_to_shape(
         expected_base,
         test_all_cubes.cube.shape,
@@ -372,7 +320,10 @@ def test_get_masks_unknown_weights_warning(test_all_cubes, caplog):
     np.testing.assert_allclose(res["World"], test_all_cubes._get_area_weights())
 
     assert len(caplog.messages) == 3
-    assert caplog.messages[0] == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+    assert (
+        caplog.messages[0]
+        == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+    )
     assert caplog.records[0].levelname == "WARNING"
     assert caplog.messages[1] == "Failed to create junk weights: Unknown weights: junk"
     assert caplog.records[1].levelname == "WARNING"
@@ -380,13 +331,8 @@ def test_get_masks_unknown_weights_warning(test_all_cubes, caplog):
     assert caplog.records[0].levelname == caplog.records[2].levelname
 
 
-@pytest.mark.parametrize(
-    "exp_warn,cube_max",
-    [(False, 100), (True, 1)],
-)
-def test_get_scm_weights_land_bound_checks(
-    exp_warn, cube_max, test_all_cubes, caplog
-):
+@pytest.mark.parametrize("exp_warn,cube_max", [(False, 100), (True, 1)])
+def test_get_scm_weights_land_bound_checks(exp_warn, cube_max, test_all_cubes, caplog):
     tsftlf_cube = get_default_sftlf_cube().regrid(
         test_all_cubes.cube, iris.analysis.Linear()
     )
