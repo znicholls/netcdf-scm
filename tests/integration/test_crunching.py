@@ -8,19 +8,14 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 from click.testing import CliRunner
-from conftest import (
-    TEST_DATA_KNMI_DIR,
-    TEST_DATA_MARBLE_CMIP5_DIR,
-    TEST_DATA_CMIP6Output_DIR,
-)
 
 import netcdf_scm
 from netcdf_scm.cli import crunch_data
 from netcdf_scm.io import load_scmdataframe
 
 
-def test_crunching(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
+def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_dir):
+    INPUT_DIR = test_data_marble_cmip5_dir
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*tas.*"
     crunch_contact = "knmi-verification"
@@ -86,7 +81,7 @@ def test_crunching(tmpdir, caplog):
             files_found += 1
 
             knmi_data_name = "global_{}.dat".format("_".join(filename.split("_")[1:6]))
-            knmi_data_path = join(TEST_DATA_KNMI_DIR, knmi_data_name)
+            knmi_data_path = join(test_data_knmi_dir, knmi_data_name)
 
             if not isfile(knmi_data_path):
                 print("No data available for {}".format(knmi_data_path))
@@ -143,9 +138,9 @@ def test_crunching(tmpdir, caplog):
     assert files_found == 5
 
 
-def test_crunching_join_files(tmpdir, caplog):
+def test_crunching_join_files(tmpdir, caplog, test_data_cmip6output_dir):
     INPUT_DIR = join(
-        TEST_DATA_CMIP6Output_DIR,
+        test_data_cmip6output_dir,
         "CMIP6",
         "CMIP",
         "IPSL",
@@ -203,8 +198,8 @@ def test_crunching_join_files(tmpdir, caplog):
     assert crunched_data["time"].max() == dt.datetime(2859, 12, 16, 12)
 
 
-def test_crunching_arguments(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
+def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
+    INPUT_DIR = test_data_marble_cmip5_dir
     OUTPUT_DIR = str(tmpdir)
     VAR_TO_CRUNCH = ".*fco2antt.*"
     DATA_SUB_DIR = "custom-name"
@@ -315,8 +310,8 @@ def test_crunching_arguments(tmpdir, caplog):
     assert skip_str in caplog.text
 
 
-def test_crunching_wrong_cube(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
+def test_crunching_wrong_cube(tmpdir, caplog, test_data_marble_cmip5_dir):
+    INPUT_DIR = test_data_marble_cmip5_dir
     OUTPUT_DIR = str(tmpdir)
     CUBE = "CMIP6Output"
 
@@ -333,9 +328,9 @@ def test_crunching_wrong_cube(tmpdir, caplog):
 @patch.object(
     netcdf_scm.iris_cube_wrappers._CMIPCube, "_add_time_period_from_files_in_directory"
 )
-def test_crunching_broken_dir(mock_add_time_period, tmpdir, caplog):
+def test_crunching_broken_dir(mock_add_time_period, tmpdir, caplog, test_data_marble_cmip5_dir):
     mock_add_time_period.side_effect = ValueError
-    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_DIR
+    INPUT_DIR = test_data_marble_cmip5_dir
     OUTPUT_DIR = str(tmpdir)
     CUBE = "CMIP6Output"
 
