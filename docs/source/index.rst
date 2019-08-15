@@ -29,7 +29,7 @@ NetCDF-SCM
 
     utils
     iris-cube-wrappers
-    masks
+    weights
     cli
 
 .. toctree::
