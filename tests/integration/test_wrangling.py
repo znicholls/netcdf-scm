@@ -3,18 +3,13 @@ from os.path import isdir, join
 
 import pytest
 from click.testing import CliRunner
-from conftest import (
-    TEST_DATA_CMIP6_CRUNCH_OUTPUT,
-    TEST_DATA_MARBLE_CMIP5_CRUNCH_OUTPUT,
-    TEST_DATA_ROOT_DIR,
-)
 
 import netcdf_scm
 from netcdf_scm.cli import wrangle_netcdf_scm_ncs
 
 
-def test_wrangling_unsupported_format(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
+def test_wrangling_unsupported_format(tmpdir, caplog, test_cmip6_crunch_output):
+    INPUT_DIR = test_cmip6_crunch_output
     OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
 
     runner = CliRunner()
@@ -28,8 +23,8 @@ def test_wrangling_unsupported_format(tmpdir, caplog):
     assert isinstance(result.exception, SystemExit)
 
 
-def test_wrangling_defaults(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
+def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
+    INPUT_DIR = test_cmip6_crunch_output
     OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
     test_wrangler = "test-defaults"
 
@@ -92,8 +87,8 @@ def test_wrangling_defaults(tmpdir, caplog):
     assert "Contact: {}".format(test_wrangler) in content
 
 
-def test_wrangling_magicc_input_files(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_MARBLE_CMIP5_CRUNCH_OUTPUT
+def test_wrangling_magicc_input_files(tmpdir, caplog, test_marble_cmip5_crunch_output):
+    INPUT_DIR = test_marble_cmip5_crunch_output
     OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
     test_wrangler = "test wrangling magicc input point end of year files <email>"
     runner = CliRunner()
@@ -145,8 +140,8 @@ def test_wrangling_magicc_input_files(tmpdir, caplog):
     assert "2036." not in content
 
 
-def test_wrangling_magicc_input_files_error(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
+def test_wrangling_magicc_input_files_error(tmpdir, caplog, test_cmip6_crunch_output):
+    INPUT_DIR = test_cmip6_crunch_output
     OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
 
     runner = CliRunner()
@@ -175,8 +170,8 @@ def test_wrangling_magicc_input_files_error(tmpdir, caplog):
     )
 
 
-def test_wrangling_blend_models(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
+def test_wrangling_blend_models(tmpdir, caplog, test_cmip6_crunch_output):
+    INPUT_DIR = test_cmip6_crunch_output
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
@@ -204,8 +199,8 @@ def test_wrangling_blend_models(tmpdir, caplog):
     assert len(glob(join(OUTPUT_DIR, "*.mat"))) == 45
 
 
-def test_wrangling_handles_integer_units(tmpdir, caplog):
-    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
+def test_wrangling_handles_integer_units(tmpdir, caplog, test_cmip6_crunch_output):
+    INPUT_DIR = test_cmip6_crunch_output
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
@@ -232,8 +227,8 @@ def test_wrangling_handles_integer_units(tmpdir, caplog):
 
 
 @pytest.mark.parametrize("out_format", ["mag-files", "tuningstrucs-blend-model"])
-def test_wrangling_force(tmpdir, caplog, out_format):
-    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
+def test_wrangling_force(tmpdir, caplog, out_format, test_cmip6_crunch_output):
+    INPUT_DIR = test_cmip6_crunch_output
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
@@ -318,8 +313,8 @@ def test_wrangling_force(tmpdir, caplog, out_format):
     assert skip_str_file not in result_force.output
 
 
-def test_wrangling_blended_models_default_drs_error(tmpdir):
-    INPUT_DIR = TEST_DATA_CMIP6_CRUNCH_OUTPUT
+def test_wrangling_blended_models_default_drs_error(tmpdir, test_cmip6_crunch_output):
+    INPUT_DIR = test_cmip6_crunch_output
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
@@ -335,8 +330,8 @@ def test_wrangling_blended_models_default_drs_error(tmpdir):
     )
 
 
-def test_wrangling_drs_replication(tmpdir):
-    INPUT_DIR = join(TEST_DATA_CMIP6_CRUNCH_OUTPUT, "CMIP6/CMIP/CNRM-CERFACS")
+def test_wrangling_drs_replication(tmpdir, test_cmip6_crunch_output):
+    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/CNRM-CERFACS")
     OUTPUT_DIR = str(tmpdir)
 
     runner = CliRunner()
@@ -358,9 +353,9 @@ def test_wrangling_drs_replication(tmpdir):
     assert isdir(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS"))
 
 
-def test_wrangling_annual_mean_file(tmpdir):
+def test_wrangling_annual_mean_file(tmpdir, test_data_root_dir):
     INPUT_DIR = join(
-        TEST_DATA_ROOT_DIR,
+        test_data_root_dir,
         "marble-cmip5-annual-output/cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1",
     )
     OUTPUT_DIR = str(tmpdir)
