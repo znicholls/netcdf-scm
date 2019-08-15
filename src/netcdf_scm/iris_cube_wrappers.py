@@ -2,7 +2,7 @@
 Wrappers of the iris cube.
 
 These classes automate handling of a number of netCDF processing steps.
-For example, finding surface land fraction files, applying masks to data and
+For example, finding surface land fraction files, applying regions to data and
 returning timeseries in key regions for simple climate models.
 """
 import logging
@@ -20,7 +20,7 @@ from openscm.scmdataframe import ScmDataFrame
 
 from . import __version__
 from .definitions import _LAND_FRACTION_REGIONS, _SCM_TIMESERIES_META_COLUMNS
-from .masks import DEFAULT_REGIONS, CubeMasker
+from .weights import DEFAULT_REGIONS, CubeWeightCalculator
 from .utils import (
     _vector_cftime_conversion,
     apply_mask,
@@ -148,8 +148,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     }
     """Mapping from cube attributes (derived from read files) to SCM timeseries metadata"""
 
-    _masker = None
-    """:obj:`CubeMasker` to use to mask self"""
+    _weight_calculator = None
+    """:obj:`CubeWeightCalculator` to use to mask self"""
 
     def __init__(self):
         self._loaded_paths = []
@@ -576,9 +576,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     def get_scm_timeseries(
         self,
         sftlf_cube=None,
-        land_mask_threshold=50,
         areacella_scmcube=None,
-        masks=None,
+        regions=None,
     ):
         """
         Get SCM relevant timeseries from ``self``.
@@ -589,18 +588,14 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             land surface fraction data which is used to determine whether a given
             gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
 
-        land_mask_threshold : float, optional
-            if the surface land fraction in a grid box is greater than
-            ``land_mask_threshold``, it is considered to be a land grid box.
-
         areacella_scmcube : :obj:`SCMCube`, optional
             cell area data which is used to take the latitude-longitude mean of the
             cube's data. If ``None``, we try to load this data automatically and if
             that fails we fall back onto ``iris.analysis.cartography.area_weights``.
 
-        masks : list[str]
-            List of masks to use. If ``None`` then
-            ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
+        regions : list[str]
+            List of regions to use. If ``None`` then
+            ``netcdf_scm.regions.DEFAULT_REGIONS`` is used.
 
         Returns
         -------
@@ -608,21 +603,45 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             An OpenSCM DataFrame instance with the data in the ``data`` attribute and
             metadata in the ``metadata`` attribute.
         """
-        scm_timeseries_cubes = self.get_scm_timeseries_cubes(
+        scm_timeseries_weights = self.get_scm_timeseries_weights(
             sftlf_cube=sftlf_cube,
-            land_mask_threshold=land_mask_threshold,
             areacella_scmcube=areacella_scmcube,
-            masks=masks if masks is not None else DEFAULT_REGIONS,
+            regions=regions if regions is not None else DEFAULT_REGIONS,
+        )
+
+        scm_timeseries_cubes = self.get_scm_timeseries_cubes(
+            scm_timeseries_weights=scm_timeseries_weights,
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
-    def get_scm_timeseries_cubes(
+    def get_scm_timeseries_weights(
         self,
         sftlf_cube=None,
-        land_mask_threshold=50,
         areacella_scmcube=None,
-        masks=None,
+        regions=None,
+    ):
+        """
+        Get the scm regions.
+
+        Returns
+        -------
+        dict
+            Dictionary of region name-weights key-value pairs
+        """
+        if self._weight_calculator is None:
+            self._weight_calculator = CubeWeightCalculator(
+                self, sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube,
+            )
+
+        regions = regions if regions is not None else DEFAULT_REGIONS
+        scm_weights = self._weight_calculator.get_weights(regions)
+
+        return scm_weights
+
+    def get_scm_timeseries_cubes(
+        self,
+        scm_timeseries_weights,
     ):
         """
         Get SCM relevant cubes
@@ -640,23 +659,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         Parameters
         ----------
-        sftlf_cube : :obj:`SCMCube`, optional
-            land surface fraction data which is used to determine whether a given
-            gridbox is land or ocean. If ``None``, we try to load the land surface
-            fraction automatically.
-
-        land_mask_threshold : float, optional
-            if the surface land fraction in a grid box is greater than
-            ``land_mask_threshold``, it is considered to be a land grid box.
-
-        areacella_scmcube : :obj:`SCMCube`, optional
-            cell area data which is used to take the latitude-longitude mean of the
-            cube's data. If ``None``, we try to load this data automatically and if
-            that fails we fall back onto ``iris.analysis.cartography.area_weights``.
-
-        masks : list[str]
-            List of masks to use. If ``None`` then
-            ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
+        scm_timeseries_weights : dict
+            Dictionary of region name-weights key-value pairs
 
         Returns
         -------
@@ -664,25 +668,20 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             Cubes, with latitude-longitude mean data as appropriate for each of the
             SCM relevant regions.
         """
-        masks = masks if masks is not None else DEFAULT_REGIONS
-        scm_masks = self._get_scm_masks(
-            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
-        )
-        area_weights = self._get_area_weights(areacella_scmcube=areacella_scmcube)
-
-        def crunch_timeseries(region, numpy_mask):
-            scm_cube = self._get_masked_cube_with_metdata(
-                region, numpy_mask, land_mask_threshold
+        def crunch_timeseries(region, weights):
+            scm_cube = take_lat_lon_mean(self, weights)
+            scm_cube = self._add_metadata_to_region_timeseries_cube(
+                scm_cube, region
             )
 
             if region in _LAND_FRACTION_REGIONS:
-                area = self._get_area(scm_cube, area_weights)
+                area = np.sum(weights)
             else:
                 area = None
-            return region, take_lat_lon_mean(scm_cube, area_weights), area
+            return region, scm_cube, area
 
         try:
-            crunch_list = self._crunch_in_memory(crunch_timeseries, scm_masks)
+            crunch_list = self._crunch_in_memory(crunch_timeseries, scm_timeseries_weights)
         except MemoryError:
             logger.warning(
                 "Data won't fit in memory, will process lazily (hence slowly)"
@@ -690,22 +689,22 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             data_dir = dirname(self.info["files"][0])
             self.__init__()
             self.load_data_in_directory(data_dir)
-            crunch_list = self._crunch_serial(crunch_timeseries, scm_masks)
+            crunch_list = self._crunch_serial(crunch_timeseries, scm_timeseries_weights)
 
-        timeseries_cubes = {mask: ts_cube for mask, ts_cube, _ in crunch_list}
-        areas = {mask: area for mask, _, area in crunch_list if area is not None}
+        timeseries_cubes = {region: ts_cube for region, ts_cube, _ in crunch_list}
+        areas = {region: area for region, _, area in crunch_list if area is not None}
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 
-    def _crunch_in_memory(self, crunch_timeseries, scm_masks):
+    def _crunch_in_memory(self, crunch_timeseries, scm_regions):
         # crunching in parallel could go here
         self._ensure_data_realised()
         logger.debug("Crunching SCM timeseries in memory")
-        return self._crunch_serial(crunch_timeseries, scm_masks)
+        return self._crunch_serial(crunch_timeseries, scm_regions)
 
     @staticmethod
-    def _crunch_serial(crunch_timeseries, scm_masks):
-        return [crunch_timeseries(region, mask) for region, mask in scm_masks.items()]
+    def _crunch_serial(crunch_timeseries, scm_regions):
+        return [crunch_timeseries(region, weights) for region, weights in scm_regions.items()]
 
     def _ensure_data_realised(self):
         # force the data to realise
@@ -750,7 +749,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return timeseries_cubes
 
-    def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
+    def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50, regions=None):
         """
         Get SCM relevant cubes from the ``self``.
 
@@ -777,8 +776,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             If the surface land fraction in a grid box is greater than
             ``land_mask_threshold``, it is considered to be a land grid box.
 
-        masks : list[str]
-            List of masks to use. If ``None`` then ``netcdf_scm.masks.DEFAULT_REGIONS`` is used.
+        regions : list[str]
+            List of regions to use. If ``None`` then ``netcdf_scm.regions.DEFAULT_REGIONS`` is used.
 
         Returns
         -------
@@ -786,23 +785,22 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             Cubes, with data masked as appropriate for each of the SCM relevant
             regions.
         """
-        scm_masks = self._get_scm_masks(
-            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, masks=masks
+        scm_regions = self._get_scm_regions(
+            sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold, regions=regions
         )
 
         # ensure data is realised so it's not read multiple times while applying
-        # masks
+        # regions
         self._ensure_data_realised()
 
         cubes = {
-            k: self._get_masked_cube_with_metdata(k, mask, land_mask_threshold)
-            for k, mask in scm_masks.items()
+            k: self._add_metadata_to_region_timeseries_cube(k, mask, land_mask_threshold)
+            for k, mask in scm_regions.items()
         }
 
         return cubes
 
-    def _get_masked_cube_with_metdata(self, region, numpy_mask, land_mask_threshold):
-        scmcube = apply_mask(self, numpy_mask)
+    def _add_metadata_to_region_timeseries_cube(self, scmcube, region):
         has_root_dir = (
             hasattr(self, "root_dir")  # pylint:disable=no-member
             and self.root_dir is not None  # pylint:disable=no-member
@@ -835,7 +833,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 + ["{}: {}".format(k, v) for k, v in source_meta.items()]
             )
 
-        scmcube.cube.attributes["crunch_land_mask_threshold"] = land_mask_threshold
         scmcube.cube.attributes[
             "crunch_netcdf_scm_version"
         ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(__version__)
@@ -845,21 +842,21 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return scmcube
 
-    def _get_scm_masks(self, sftlf_cube=None, land_mask_threshold=50, masks=None):
+    def _get_scm_regions(self, sftlf_cube=None, land_mask_threshold=50, regions=None):
         """
-        Get the scm masks.
+        Get the scm regions.
 
         Returns
         -------
         dict
             Dictionary of region name-mask key-value pairs
         """
-        if self._masker is None:
-            self._masker = CubeMasker(
+        if self._weight_calculator is None:
+            self._weight_calculator = CubeWeightCalculator(
                 self, sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
             )
-        masks = masks if masks is not None else DEFAULT_REGIONS
-        return self._masker.get_masks(masks)
+        regions = regions if regions is not None else DEFAULT_REGIONS
+        return self._weight_calculator.get_regions(regions)
 
     def _get_area_weights(self, areacella_scmcube=None):
         areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
@@ -940,7 +937,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             unit = "dimensionless"  # ensure units behave with pint
 
         output = ScmDataFrame(
-            data if isinstance(data, np.ndarray) else data.compute(),
+            data,
             index=time_index,
             columns={**{"unit": str(unit), "model": "unspecified"}, **metadata},
         )
@@ -948,6 +945,30 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             output.metadata["calendar"] = out_calendar
         except AttributeError:
             output.metadata = {"calendar": out_calendar}
+
+        for i, scm_cube in enumerate(scm_timeseries_cubes.values()):
+            for coord in scm_cube.cube.coords():
+                if coord.standard_name in ["time", "latitude", "longitude", "height"]:
+                    continue
+
+                if coord.long_name.startswith("land_fraction"):
+                    new_col = coord.long_name
+                    new_val = coord.points.squeeze()
+                else:  # pragma: no cover
+                    # this is really how it should work for land_fraction too but we don't
+                    # have a stable solution for parameter handling in OpenSCMDataFrame yet so
+                    # I've done the above instead
+                    new_col = "{} ({})".format(coord.long_name, str(coord.units))
+                    new_val = coord.points.squeeze()
+
+                if not new_val.shape:
+                    new_val = float(new_val)
+
+                if i == 0:
+                    output.metadata[new_col] = new_val
+                else:
+                    if output.metadata[new_col] != new_val:  # pragma: no cover
+                        raise AssertionError("Cubes have different metadata...")
 
         return output
 

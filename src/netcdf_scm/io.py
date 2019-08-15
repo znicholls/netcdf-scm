@@ -48,17 +48,6 @@ def load_scmdataframe(path):
     helper, scm_cubes = _load_helper_and_scm_cubes(path)
     scmdf = helper.convert_scm_timeseries_cubes_to_openscmdata(scm_cubes)
     scmdf.metadata = {k: v for k, v in helper.cube.attributes.items() if k != "region"}
-    for coord in helper.cube.coords():
-        if coord.standard_name in ["time", "latitude", "longitude", "height"]:
-            continue
-        elif coord.long_name.startswith("land_fraction"):
-            scmdf.metadata[coord.long_name] = coord.points.squeeze()
-        else:  # pragma: no cover
-            # this is really how it should work for land_fraction too but we don't
-            # have a stable solution for parameter handling in OpenSCMDataFrame yet so
-            # I've done the above instead
-            extra_str = "{} ({})".format(coord.long_name, str(coord.units))
-            scmdf[extra_str] = coord.points.squeeze()
 
     # TODO: decide whether assuming point data is a good idea or not
     return scmdf
