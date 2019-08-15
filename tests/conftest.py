@@ -181,7 +181,7 @@ def test_cmip6_output_file_1_unit(test_data_cmip6output_dir):
 @pytest.fixture
 def test_cmip6_crunch_output(test_data_root_dir):
     return join(
-    test_data_root_dir, "expected-crunching-output", "cmip6output"
+    test_data_root_dir, "expected-crunching-output", "cmip6output", "CMIP6"
 )
 
 @pytest.fixture
@@ -335,47 +335,52 @@ def test_generic_tas_cube(test_tas_file):
     return test_generic_tas_cube
 
 
-def run_crunching_comparison(res, expected, update=False):
-    """Run test that crunched files are unchanged
+@pytest.fixture
+def run_crunching_comparison():
+    def _do_comparison(res, expected, update=False):
+        """Run test that crunched files are unchanged
 
-    Parameters
-    ----------
-    res : str
-        Directory written as part of the test
-    expected : str
-        Directory against which the comparison should be done
-    update : bool
-        If True, don't perform the test and instead simply
-        overwrite the ``expected`` with ``res``
+        Parameters
+        ----------
+        res : str
+            Directory written as part of the test
+        expected : str
+            Directory against which the comparison should be done
+        update : bool
+            If True, don't perform the test and instead simply
+            overwrite the ``expected`` with ``res``
 
-    Raises
-    ------
-    AssertionError
-        If ``update`` is ``False`` and ``res`` and ``expected``
-        are not identical.
-    """
-    paths_to_walk = [expected, res] if not update else [res]
-    for p in paths_to_walk:
-        for dirpath, _, filenames in walk(p):
-            if filenames:
-                if update:
-                    path_to_check = dirpath.replace(res, expected)
-                    if not path.exists(path_to_check):
-                        makedirs(path_to_check)
-
-                for f in filenames:
-                    res_f = join(dirpath, f)
-                    exp_f = res_f.replace(res, expected)
+        Raises
+        ------
+        AssertionError
+            If ``update`` is ``False`` and ``res`` and ``expected``
+            are not identical.
+        """
+        paths_to_walk = [expected, res] if not update else [res]
+        for p in paths_to_walk:
+            for dirpath, _, filenames in walk(p):
+                if filenames:
                     if update:
-                        shutil.copy(res_f, exp_f)
-                    else:
-                        res_scmdf = load_scmdataframe(res_f)
-                        exp_scmdf = load_scmdataframe(exp_f)
-                        assert_scmdata_frames_allclose(res_scmdf, exp_scmdf)
+                        path_to_check = dirpath.replace(res, expected)
+                        if not path.exists(path_to_check):
+                            makedirs(path_to_check)
 
-    if update:
-        print("Updated {}".format(expected))
-        pytest.skip()
+                    for f in filenames:
+                        res_f = join(dirpath, f)
+                        exp_f = res_f.replace(res, expected)
+                        if update:
+                            shutil.copy(res_f, exp_f)
+                        else:
+                            res_scmdf = load_scmdataframe(res_f)
+                            exp_scmdf = load_scmdataframe(exp_f)
+                            assert_scmdata_frames_allclose(res_scmdf, exp_scmdf)
+
+        if update:
+            print("Updated {}".format(expected))
+            pytest.skip()
+
+    return _do_comparison
+
 
 
 def assert_scmdata_frames_allclose(res_scmdf, exp_scmdf):
