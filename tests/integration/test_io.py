@@ -72,12 +72,12 @@ def test_save_cube_and_load_scmdataframe(tmpdir, test_cmip6_output_file):
     assert (loaded["activity_id"] == "CMIP").all()
 
     _assert_scm_dataframe(loaded, 236.569464, region="World", year=1859, month=12)
-    _assert_scm_dataframe(loaded, 243.116852, region="World|Ocean", year=1856, month=10)
+    _assert_scm_dataframe(loaded, 243.072575, region="World|Ocean", year=1856, month=10)
     _assert_scm_dataframe(
         loaded, 235.025871, region="World|Southern Hemisphere", year=1853, month=6
     )
     _assert_scm_dataframe(
-        loaded, 234.468913, region="World|Southern Hemisphere|Land", year=1850, month=1
+        loaded, 234.333421, region="World|Southern Hemisphere|Land", year=1850, month=1
     )
 
     assert loaded.metadata[
@@ -91,7 +91,7 @@ def test_save_cube_and_load_scmdataframe(tmpdir, test_cmip6_output_file):
     )
     assert loaded.metadata["title"] == "BCC-CSM2-MR output prepared for CMIP6"
     np.testing.assert_allclose(
-        loaded.metadata["land_fraction_northern_hemisphere"], 0.38279115
+        loaded.metadata["land_fraction_northern_hemisphere"], 0.38681185060261924
     )
     assert (
         loaded.metadata["source"]
