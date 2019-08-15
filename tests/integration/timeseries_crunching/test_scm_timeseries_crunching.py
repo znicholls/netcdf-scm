@@ -237,11 +237,11 @@ def get_rsdt_expected_results():
     )
     exp.metadata = {
         "calendar": "gregorian",
-        "land_fraction": np.sum(AREA_WEIGHTS * SURFACE_FRACS) / np.sum(AREA_WEIGHTS),
+        "land_fraction": np.sum(AREA_WEIGHTS * SURFACE_FRACS) / (100*np.sum(AREA_WEIGHTS)),
         "land_fraction_northern_hemisphere": np.sum(nh_area_weights * SURFACE_FRACS)
-        / np.sum(nh_area_weights),
+        / (100*np.sum(nh_area_weights)),
         "land_fraction_southern_hemisphere": np.sum(sh_area_weights * SURFACE_FRACS)
-        / np.sum(sh_area_weights),
+        / (100*np.sum(sh_area_weights)),
         "realm": "atmos",
         "Conventions": "CF-1.5",
         "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']",

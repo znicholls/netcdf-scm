@@ -140,9 +140,6 @@ class TestSCMCube(object):
         tsftlf_cube = "mocked 124"
         tareacella_scmcube = "mocked 4389"
 
-        test_weights_return = "mocked weights"
-        test_cube.get_scm_timeseries_weights = MagicMock(return_value=test_weights_return)
-
         exp_regions = DEFAULT_REGIONS if regions is None else regions
         test_cubes_return = {m: 3 for m in exp_regions}
         test_cube.get_scm_timeseries_cubes = MagicMock(return_value=test_cubes_return)
@@ -158,14 +155,10 @@ class TestSCMCube(object):
             regions=regions,
         )
 
-        test_cube.get_scm_timeseries_weights.assert_called_with(
+        test_cube.get_scm_timeseries_cubes.assert_called_with(
             sftlf_cube=tsftlf_cube,
             areacella_scmcube=tareacella_scmcube,
             regions=exp_regions,
-        )
-
-        test_cube.get_scm_timeseries_cubes.assert_called_with(
-            scm_timeseries_weights=test_weights_return,
         )
         test_cube.convert_scm_timeseries_cubes_to_openscmdata.assert_called_with(
             test_cubes_return
