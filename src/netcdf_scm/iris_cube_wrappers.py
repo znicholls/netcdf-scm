@@ -620,10 +620,16 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         dict
             Dictionary of region name-weights key-value pairs
         """
+        if areacella_scmcube is not None:
+            # set area cube to appropriate variable
+            self.get_metadata_cube(self.areacella_var, cube=areacella_scmcube)
+
+        if sftlf_cube is not None:
+            # set area cube to appropriate variable
+            self.get_metadata_cube(self.sftlf_var, cube=sftlf_cube)
+
         if self._weight_calculator is None:
-            self._weight_calculator = CubeWeightCalculator(
-                self, sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube
-            )
+            self._weight_calculator = CubeWeightCalculator(self)
 
         regions = regions if regions is not None else DEFAULT_REGIONS
         scm_weights = self._weight_calculator.get_weights(regions)
@@ -741,61 +747,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return timeseries_cubes
 
-    def get_scm_cubes(self, sftlf_cube=None, land_mask_threshold=50, regions=None):
-        """
-        Get SCM relevant cubes from the ``self``.
-
-        Each cube comes with extra information in its ``attributes`` property. The
-        extra information comprises of crunching information (e.g. the
-        land_mask_treshold, netcdf_scm_version and source files used to generate the
-        cube) and SCM timeseries metadata (e.g. scenario, climate_model,
-        standard_variable_name).
-
-        In particular, the timeseries'
-        `CMOR name <https://www.earthsystemcog.org/projects/wip/CMIP6DataRequest>`_
-        (see `here <http://clipc-services.ceda.ac.uk/dreq/mipVars.html>`_ for more
-        details) is put in the ``variable`` attribute whilst the timeseries` 'standard name' (see
-        `CF documentation <http://cfconventions.org/Data/cf-standard-names/66/build/cf-standard-name-table.html>`_
-        ) is put in the ``variable_standard_name`` attribute.
-
-        Parameters
-        ----------
-        sftlf_cube : :obj:`SCMCube`, optional
-            Land surface fraction data which is used to determine whether a given
-            gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
-
-        land_mask_threshold : float, optional
-            If the surface land fraction in a grid box is greater than
-            ``land_mask_threshold``, it is considered to be a land grid box.
-
-        regions : list[str]
-            List of regions to use. If ``None`` then ``netcdf_scm.regions.DEFAULT_REGIONS`` is used.
-
-        Returns
-        -------
-        dict
-            Cubes, with data masked as appropriate for each of the SCM relevant
-            regions.
-        """
-        scm_regions = self._get_scm_regions(
-            sftlf_cube=sftlf_cube,
-            land_mask_threshold=land_mask_threshold,
-            regions=regions,
-        )
-
-        # ensure data is realised so it's not read multiple times while applying
-        # regions
-        self._ensure_data_realised()
-
-        cubes = {
-            k: self._add_metadata_to_region_timeseries_cube(
-                k, mask, land_mask_threshold
-            )
-            for k, mask in scm_regions.items()
-        }
-
-        return cubes
-
     def _add_metadata_to_region_timeseries_cube(self, scmcube, region):
         has_root_dir = (
             hasattr(self, "root_dir")  # pylint:disable=no-member
@@ -892,6 +843,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             TypeError,
             OSError,
             NotImplementedError,
+            KeyError,
         ) as e:
             logger.debug("Could not calculate areacella, error message: %s", e)
 
@@ -981,7 +933,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         output = {}
         for k in _SCM_TIMESERIES_META_COLUMNS:
             if k == "region":
-                continue  # handled in self.get_scm_cubes
+                continue  # handled elsewhere
             if k == "variable_standard_name":
                 output[k] = self.cube.standard_name
                 continue
@@ -1339,7 +1291,6 @@ class _CMIPCube(SCMCube, ABC):
 
         return join(helper.get_data_directory(), helper.get_data_filename())
 
-    @abstractmethod
     def get_data_directory(self):
         """
         Get the path to a data file from self's attributes.
@@ -1347,14 +1298,25 @@ class _CMIPCube(SCMCube, ABC):
         This can take multiple forms, it may just return a previously set
         filepath attribute or it could combine a number of different metadata
         elements (e.g. model name, experiment name) to create the data path.
-
         Returns
         -------
         str
             path to the data file from which this cube has been/will be loaded
+
+        Raises
+        ------
+        OSError
+            The data directory cannot be determined
         """
+        try:
+            return self._get_data_directory()
+        except TypeError:  # some required attributes still None
+            raise OSError("Could not determine data directory")
 
     @abstractmethod
+    def _get_data_directory(self):
+        pass
+
     def get_data_filename(self):
         """
         Get the name of a data file from self's attributes.
@@ -1362,13 +1324,24 @@ class _CMIPCube(SCMCube, ABC):
         This can take multiple forms, it may just return a previously set
         filename attribute or it could combine a number of different metadata
         elements (e.g. model name, experiment name) to create the data name.
-
         Returns
         -------
         str
             name of the data file from which this cube has been/will be loaded.
+
+        Raises
+        ------
+        OSError
+            The data directory cannot be determined
         """
-        raise NotImplementedError()
+        try:
+            return self._get_data_filename()
+        except TypeError:  # some required attributes still None
+            raise OSError("Could not determine data filename")
+
+    @abstractmethod
+    def _get_data_filename(self):
+        pass
 
     @abstractmethod
     def _get_metadata_load_arguments(self, metadata_variable):
@@ -1564,15 +1537,7 @@ class MarbleCMIP5Cube(_CMIPCube):
 
         return join(self.get_data_directory(), self.get_data_filename())
 
-    def get_data_directory(self):
-        """
-        Get the directory which matches the cube's data reference syntax
-
-        Returns
-        -------
-        str
-            Directory which matches the cube's data reference syntax
-        """
+    def _get_data_directory(self):
         return join(
             self.root_dir,
             self.activity,
@@ -1583,15 +1548,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             self.ensemble_member,
         )
 
-    def get_data_filename(self):
-        """
-        Get the filename which matches the cube's data reference syntax
-
-        Returns
-        -------
-        str
-            Filename which matches the cube's data reference syntax
-        """
+    def _get_data_filename(self):
         bits_to_join = [
             self.variable_name,
             self.modeling_realm,
@@ -1832,15 +1789,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
             "file_ext": self.file_ext,
         }
 
-    def get_data_filename(self):
-        """
-        Get the filename which matches the cube's data reference syntax
-
-        Returns
-        -------
-        str
-            Filename which matches the cube's data reference syntax
-        """
+    def _get_data_filename(self):
         bits_to_join = [
             self.variable_id,
             self.activity_id,
@@ -1854,15 +1803,7 @@ class CMIP6Input4MIPsCube(_CMIPCube):
 
         return self.filename_bits_separator.join(bits_to_join) + self.file_ext
 
-    def get_data_directory(self):
-        """
-        Get the directory which matches the cube's data reference syntax
-
-        Returns
-        -------
-        str
-            Directory which matches the cube's data reference syntax
-        """
+    def _get_data_directory(self):
         return join(
             self.root_dir,
             self.activity_id,
@@ -2088,15 +2029,7 @@ class CMIP6OutputCube(_CMIPCube):
             "file_ext": self.file_ext,
         }
 
-    def get_data_filename(self):
-        """
-        Get the filename which matches the cube's data reference syntax
-
-        Returns
-        -------
-        str
-            Filename which matches the cube's data reference syntax
-        """
+    def _get_data_filename(self):
         bits_to_join = [
             self.variable_id,
             self.table_id,
@@ -2110,15 +2043,7 @@ class CMIP6OutputCube(_CMIPCube):
 
         return self.filename_bits_separator.join(bits_to_join) + self.file_ext
 
-    def get_data_directory(self):
-        """
-        Get the directory which matches the cube's data reference syntax
-
-        Returns
-        -------
-        str
-            Directory which matches the cube's data reference syntax
-        """
+    def _get_data_directory(self):
         return join(
             self.root_dir,
             self.mip_era,
