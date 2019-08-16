@@ -210,7 +210,6 @@ def unify_lat_lon(cubes, rtol=10 ** -6):
         cube.add_dim_coord(cubes[0].coords("longitude")[0], lon_dim_no)
 
 
-# TODO: test this properly
 def cube_lat_lon_grid_compatible_with_array(cube, array_in):
     """
     Assert that an array can be broadcast onto the cube's lat-lon grid
