@@ -259,9 +259,27 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
 
     Parameters
     ----------
+    cube : :obj:`ScmCube`
+        :obj:`ScmCube` instance whose lat-lon grid we want to check agains
+
+    array_in : np.ndarray
+        The array we want to broadcast
 
     Returns
     -------
+    np.ndarray
+        The original array, broadcast onto the cube's lat-lon grid (i.e. duplicated
+        along all dimensions except for latitude and longitude)
+
+    Raises
+    ------
+    AssertionError
+        ``array_in`` cannot be broadcast onto the cube's lat-lon grid because their
+        shapes are not compatible
+
+    ValueError
+        ``array_in`` cannot be broadcast onto the cube's lat-lon grid by
+        ``iris.util.broadcast_to_shape``
     """
     if not cube_lat_lon_grid_compatible_with_array(cube, array_in):
         shape_assert_msg = (
