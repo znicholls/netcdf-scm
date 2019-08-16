@@ -807,6 +807,19 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return scmcube
 
     def get_area_weights(self, areacella_scmcube=None):
+        """
+        Get area weights for this cube
+
+        Parameters
+        ----------
+        areacella_scmcube : :obj:`ScmCube`
+            :obj:`ScmCube` containing areacella data. If ``None``, we calculate the weights using iris.
+
+        Returns
+        -------
+        np.ndarray
+            Weights on the cube's latitude-longitude grid.
+        """
         areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
 
         if areacella_scmcube is not None:
