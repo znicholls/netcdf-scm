@@ -3,7 +3,7 @@ import logging
 import re
 import warnings
 from os.path import basename, dirname, join
-from unittest.mock import PropertyMock, MagicMock, call, patch
+from unittest.mock import MagicMock, PropertyMock, call, patch
 
 import cftime
 import iris
@@ -253,7 +253,9 @@ class TestSCMCube(object):
 
     @pytest.mark.parametrize("input_format", ["scmcube", None])
     @pytest.mark.parametrize("areacell_var", ["areacella", "area_other"])
-    @patch("netcdf_scm.iris_cube_wrappers.SCMCube.areacell_var", new_callable=PropertyMock)
+    @patch(
+        "netcdf_scm.iris_cube_wrappers.SCMCube.areacell_var", new_callable=PropertyMock
+    )
     def test_get_area_weights(
         self, mock_areacell_var, test_cube, test_sftlf_cube, areacell_var, input_format
     ):
@@ -275,9 +277,17 @@ class TestSCMCube(object):
         ["not a cube", "cube attr not a cube", "iris_error", "misshaped", "no file"],
     )
     @pytest.mark.parametrize("areacell_var", ["areacella", "area_other"])
-    @patch("netcdf_scm.iris_cube_wrappers.SCMCube.areacell_var", new_callable=PropertyMock)
+    @patch(
+        "netcdf_scm.iris_cube_wrappers.SCMCube.areacell_var", new_callable=PropertyMock
+    )
     def test_get_area_weights_workarounds(
-        self, mock_areacell_var, test_cube, test_sftlf_cube, areacell_var, areacella, caplog
+        self,
+        mock_areacell_var,
+        test_cube,
+        test_sftlf_cube,
+        areacell_var,
+        areacella,
+        caplog,
     ):
         mock_areacell_var.return_value = areacell_var
 
