@@ -739,17 +739,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             self.cube.data  # pylint:disable=pointless-statement
 
     @staticmethod
-    def _get_area(scmcube, area_weights):
-        time_slice = [slice(None)] * len(scmcube.cube.shape)
-        time_slice[scmcube.time_dim_number] = 0
-        area = (
-            (~scmcube.cube.data[tuple(time_slice)].mask).astype(int)
-            * area_weights[tuple(time_slice)]
-        ).sum()
-
-        return area
-
-    @staticmethod
     def _add_land_fraction(timeseries_cubes, areas):
         add_land_frac = all([r in areas for r in _LAND_FRACTION_REGIONS])
 
