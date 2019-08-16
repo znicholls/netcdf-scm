@@ -14,6 +14,19 @@ def test_crunching(
 ):
     INPUT_DIR = test_data_marble_cmip5_dir
     OUTPUT_DIR = str(tmpdir)
+    REGIONS_TO_GET = [
+        "World",
+        "World|Northern Hemisphere",
+        "World|Southern Hemisphere",
+        "World|Land",
+        "World|Ocean",
+        "World|Northern Hemisphere|Land",
+        "World|Southern Hemisphere|Land",
+        "World|Northern Hemisphere|Ocean",
+        "World|Southern Hemisphere|Ocean",
+        "World|North Atlantic Ocean",
+        "World|El Nino N3.4",
+    ]
 
     runner = CliRunner()
     result = runner.invoke(
@@ -27,6 +40,8 @@ def test_crunching(
             "-f",
             "--small-number-workers",
             1,
+            "--regions",
+            ",".join(REGIONS_TO_GET)
         ],
     )
     assert result.exit_code == 0, result.output
