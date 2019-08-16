@@ -685,7 +685,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             SCM relevant regions.
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
-        # TODO: make _get_area_weights public
         scm_timeseries_weights = self.get_scm_timeseries_weights(
             sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions
         )
@@ -697,7 +696,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             if region in _LAND_FRACTION_REGIONS:
                 area = np.sum(weights)
                 if "Land" in region:
-                    area *= 1 / 100
+                    area *= 1 / 100  # correct for sftlf weights being 0-100
             else:
                 area = None
             return region, scm_cube, area
@@ -807,7 +806,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return scmcube
 
-    def _get_area_weights(self, areacella_scmcube=None):
+    def get_area_weights(self, areacella_scmcube=None):
         areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
 
         if areacella_scmcube is not None:
