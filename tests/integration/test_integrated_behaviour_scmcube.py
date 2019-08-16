@@ -553,7 +553,7 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
             **tkwargs
         )
         test_cube.get_variable_constraint.assert_called_with()
-        test_cube.get_metadata_cube.assert_called_with(test_cube.areacella_var)
+        test_cube.get_metadata_cube.assert_called_with(test_cube.areacell_var)
 
         cell_measures = test_cube.cube.cell_measures()
         assert len(cell_measures) == 1
@@ -667,7 +667,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
             "root_dir": "tests/test_data/marble_cmip5",
             "activity": "cmip5",
             "experiment": "1pctCO2",
-            "modeling_realm": "Amon",
+            "mip_table": "Amon",
             "variable_name": "fco2antt",
             "model": "CanESM2",
             "ensemble_member": "r1i1p1",
@@ -688,7 +688,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
             "root_dir": "tests/test_data/marble_cmip5",
             "activity": "cmip5",
             "experiment": "1pctCO2",
-            "modeling_realm": "fx",
+            "mip_table": "fx",
             "variable_name": "sftlf",
             "model": "CanESM2",
             "ensemble_member": "r0i0p0",
@@ -710,11 +710,11 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
             "root-dir",
             "activity",
             "experiment",
-            "modeling-realm",
+            "mip-table",
             "variable-name",
             "model",
             "ensemble-member",
-            "variable-name_modeling-realm_model_experiment_ensemble-member_time-periodfile-ext",
+            "variable-name_mip-table_model_experiment_ensemble-member_time-periodfile-ext",
         )
         tkwargs = {}
         if file_ext is not None:
@@ -739,7 +739,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
             "root_dir": ".",
             "activity": "cmip5",
             "experiment": "1pctCO2",
-            "modeling_realm": "fx",
+            "mip_table": "fx",
             "variable_name": "sftlf",
             "model": "CanESM2",
             "ensemble_member": "r0i0p0",
