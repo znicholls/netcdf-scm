@@ -624,6 +624,18 @@ class _CMIPCubeTester(TestSCMCube):
         assert test_cube.get_data_directory.call_count == 1
         assert test_cube.get_data_filename.call_count == 1
 
+    def test_get_data_directory_error(self):
+        inst = self.tclass()
+        error_msg = re.escape("Could not determine data directory")
+        with pytest.raises(OSError, match=error_msg):
+            inst.get_data_directory()
+
+    def test_get_data_filename_error(self):
+        inst = self.tclass()
+        error_msg = re.escape("Could not determine data filename")
+        with pytest.raises(OSError, match=error_msg):
+            inst.get_data_filename()
+
 
 class TestMarbleCMIP5Cube(_CMIPCubeTester):
     tclass = MarbleCMIP5Cube
