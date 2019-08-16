@@ -272,10 +272,10 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
 
     dim_order = [cube.lat_dim_number, cube.lon_dim_number]
     try:
-        import pdb
-        pdb.set_trace()
         return broadcast_to_shape(array_in, cube.cube.shape, dim_order)
-    except:
+    except ValueError as e:
+        if str(e) != "shape and array are not compatible":
+            raise
         return broadcast_to_shape(array_in.T, cube.cube.shape, dim_order)
 
 

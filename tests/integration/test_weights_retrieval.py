@@ -6,7 +6,6 @@ import iris
 import numpy as np
 import pytest
 from conftest import create_sftlf_cube
-from iris.util import broadcast_to_shape
 
 from netcdf_scm.iris_cube_wrappers import SCMCube
 from netcdf_scm.weights import (
