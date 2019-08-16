@@ -117,14 +117,12 @@ TEST_SFTOF_PATH = os.path.join(
     "sftof_fx_model_experiment_r0i0p0.nc",
 )
 
-
-def get_rsdt_expected_results():
-    time = [
+SCMDF_TIME = [
         dt.datetime(1850, 1, 16, 12),
         dt.datetime(1850, 2, 15, 0),
         dt.datetime(1850, 3, 16, 12),
     ]
-
+def get_rsdt_expected_results():
     world_values = np.sum(np.sum(RAW_DATA * AREA_WEIGHTS, axis=2), axis=1) / np.sum(
         AREA_WEIGHTS
     )
@@ -209,7 +207,7 @@ def get_rsdt_expected_results():
 
     exp = ScmDataFrame(
         data=data,
-        index=time,
+        index=SCMDF_TIME,
         columns={
             "model": "unspecified",
             "scenario": "experiment",
@@ -250,10 +248,103 @@ def get_rsdt_expected_results():
 
     return exp
 
+def get_gpp_expected_results():
+    land_weights = SURFACE_FRACS * AREA_WEIGHTS
+    world_values = np.sum(np.sum(RAW_DATA * land_weights, axis=2), axis=1) / np.sum(
+        land_weights
+    )
+
+    world_land_values = world_values
+
+    nh_area_weights = np.copy(AREA_WEIGHTS)
+    nh_area_weights[2, :] = 0
+    # we do these by hand: yes they're very slow but that's the point
+    world_nh_land_values = np.array(
+        [
+            (40 * 30 + 60 * 10) * 1.2 + (110 * 80 + 120 * 100 + 260 * 50) * 2,
+            (15 * 30 + 90 * 10) * 1.2 + (300 * 80 + 350 * 100 + 270 * 50) * 2,
+            (120 * 30 + 60 * 10) * 1.2 + (510 * 80 + 432 * 100 + 280 * 50) * 2,
+        ]
+    ) / ((30 + 10) * 1.2 + (80 + 100 + 50) * 2)
+    world_nh_values = world_nh_land_values
+
+    sh_area_weights = np.copy(AREA_WEIGHTS)
+    sh_area_weights[:2, :] = 0
+    world_sh_land_values = np.array(
+        [
+            (3 * 20 + 60 * 10 + 20 * 51 + 40 * 15) * 1.1,
+            (10 * 20 + 70 * 10 + 90 * 51 + 130 * 15) * 1.1,
+            (50 * 20 + 60 * 10 + 55 * 51 + 60 * 15) * 1.1,
+        ]
+    ) / ((20 + 10 + 51 + 15) * 1.1)
+    world_sh_values = world_sh_land_values
+
+    data = np.vstack(
+        [
+            world_values,
+            world_land_values,
+            world_nh_values,
+            world_sh_values,
+            world_nh_land_values,
+            world_sh_land_values,
+        ]
+    ).T
+
+    exp = ScmDataFrame(
+        data=data,
+        index=SCMDF_TIME,
+        columns={
+            "model": "unspecified",
+            "scenario": "experiment",
+            "region": [
+                "World",
+                "World|Land",
+                "World|Northern Hemisphere",
+                "World|Southern Hemisphere",
+                "World|Northern Hemisphere|Land",
+                "World|Southern Hemisphere|Land",
+            ],
+            "variable": "rsdt",
+            "unit": "W m^-2",
+            "climate_model": "model",
+            "activity_id": "cmip5",
+            "member_id": "realisation",
+            "variable_standard_name": "toa_incoming_shortwave_flux",
+            "mip_era": "CMIP5",
+        },
+    )
+    exp.metadata = {
+        "calendar": "gregorian",
+        "land_fraction": np.sum(AREA_WEIGHTS * SURFACE_FRACS)
+        / (100 * np.sum(AREA_WEIGHTS)),
+        "land_fraction_northern_hemisphere": np.sum(nh_area_weights * SURFACE_FRACS)
+        / (100 * np.sum(nh_area_weights)),
+        "land_fraction_southern_hemisphere": np.sum(sh_area_weights * SURFACE_FRACS)
+        / (100 * np.sum(sh_area_weights)),
+        "realm": "atmos",
+        "Conventions": "CF-1.5",
+        "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']",
+    }
+
+    return exp
+
 
 @pytest.mark.parametrize(
     "test_data,invalid_regions,expected_results",
-    [(TEST_RSDT_PATH, None, get_rsdt_expected_results())],
+    [
+        (TEST_RSDT_PATH, None, get_rsdt_expected_results()),
+        (
+            TEST_GPP_PATH,
+            {
+                "World|Ocean",
+                "World|Northern Hemisphere|Ocean",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            },
+            get_gpp_expected_results()
+        ),
+    ],
 )
 def test_scm_timeseries_crunching(
     assert_scmdata_frames_allclose, test_data, invalid_regions, expected_results
