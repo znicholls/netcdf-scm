@@ -264,7 +264,7 @@ class TestSCMCube(object):
 
         test_areacella_input = test_sftlf_cube if input_format == "scmcube" else None
 
-        result = test_cube._get_area_weights(areacella_scmcube=test_areacella_input)
+        result = test_cube.get_area_weights(areacella_scmcube=test_areacella_input)
         test_cube._get_areacella_scmcube.assert_called_with(test_areacella_input)
 
         np.testing.assert_array_equal(result, expected)
@@ -313,7 +313,7 @@ class TestSCMCube(object):
 
         # Function under test
         with pytest.warns(None) as record:
-            result = test_cube._get_area_weights()
+            result = test_cube.get_area_weights()
 
         test_cube.get_metadata_cube.assert_called_with(areacella_var, cube=None)
 

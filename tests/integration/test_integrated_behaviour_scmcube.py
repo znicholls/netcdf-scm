@@ -338,10 +338,14 @@ class _SCMCubeIntegrationTester(object):
     @pytest.mark.parametrize("guess_bounds", [True, False])
     @pytest.mark.parametrize("input_format", ["areacella_scmcube", None])
     @patch.object(SCMCube, "_get_areacella_scmcube")
-    def test_get_area_weights(self, mock_get_areacella_scmcube, test_cube, guess_bounds, input_format, caplog):
+    def test_get_area_weights(
+        self, mock_get_areacella_scmcube, test_cube, guess_bounds, input_format, caplog
+    ):
         caplog.set_level(logging.WARNING, logger="netcdf_scm")
 
-        lat_lon_slice = next(test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name]))
+        lat_lon_slice = next(
+            test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name])
+        )
         if input_format == "areacella_scmcube":
             tareacella_scmcube = self.tclass()
             tareacella_scmcube.cube = lat_lon_slice.copy()
@@ -362,18 +366,24 @@ class _SCMCubeIntegrationTester(object):
             expected = iris.analysis.cartography.area_weights(lat_lon_slice)
 
         np.testing.assert_allclose(res, expected)
-        mock_get_areacella_scmcube.assert_called_with(tareacella_scmcube
-            )
+        mock_get_areacella_scmcube.assert_called_with(tareacella_scmcube)
         if guess_bounds and tareacella_scmcube is None:
             assert len(caplog.messages) == 2
-            assert caplog.messages[0] == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+            assert (
+                caplog.messages[0]
+                == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+            )
             assert caplog.messages[1] == "Guessing latitude and longitude bounds"
 
     @patch.object(SCMCube, "_get_areacella_scmcube")
-    def test_get_area_weights_incompatible(self, mock_get_areacella_scmcube, test_cube, caplog):
+    def test_get_area_weights_incompatible(
+        self, mock_get_areacella_scmcube, test_cube, caplog
+    ):
         caplog.set_level(logging.WARNING, logger="netcdf_scm")
 
-        lat_lon_slice = next(test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name]))
+        lat_lon_slice = next(
+            test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name])
+        )
 
         tareacella_scmcube = self.tclass()
         tareacella_scmcube.cube = lat_lon_slice[1:, 1:].copy()
@@ -385,12 +395,14 @@ class _SCMCubeIntegrationTester(object):
         expected = iris.analysis.cartography.area_weights(lat_lon_slice)
 
         np.testing.assert_allclose(res, expected)
-        mock_get_areacella_scmcube.assert_called_with(tareacella_scmcube
-            )
+        mock_get_areacella_scmcube.assert_called_with(tareacella_scmcube)
 
         assert len(caplog.messages) == 2
         assert caplog.messages[0] == "Area weights incompatible with lat lon grid"
-        assert caplog.messages[1] == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+        assert (
+            caplog.messages[1]
+            == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+        )
 
 
 class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
