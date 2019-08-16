@@ -194,10 +194,13 @@ def test_cmip6_output_file_1_unit(test_data_cmip6output_dir):
 
 
 # land file (lai?)
+#   - requires areacella, sftlf
 # hfds file: gn and gr
+#   - requires areacello, sftof
 # thetao file: gn and gr (eventually...)
-#     - add_volcello test (from tos-hfds branch)
-
+#   - requires volcello, areacello, sftof
+#   - add_volcello test (from tos-hfds branch)
+# do timseries crunching tests first, then crunching from file tests
 
 @pytest.fixture
 def test_cmip6_crunch_output(test_data_root_dir):
@@ -384,6 +387,7 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
             for dirpath, _, filenames in walk(p):
                 if filenames:
                     if update:
+                        print("Updating {}".format(exp_f))
                         path_to_check = dirpath.replace(res, expected)
                         if not path.exists(path_to_check):
                             makedirs(path_to_check)
@@ -399,8 +403,7 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
                             assert_scmdata_frames_allclose(res_scmdf, exp_scmdf)
 
         if update:
-            print("Updated {}".format(expected))
-            pytest.skip()
+            pytest.skip("Updated {}".format(expected))
 
     return _do_comparison
 
@@ -409,9 +412,11 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
 def assert_scmdata_frames_allclose():
     def _do_assertion(res_scmdf, exp_scmdf):
         res_df = res_scmdf.timeseries().sort_index()
+        assert not res_df.isnull().any().any(), "Failed sanity check"
         assert (
             (res_df.values > -10 ** 5) & (res_df.values < 10 ** 5)
         ).all(), "Failed sanity check"
+
 
         exp_df = exp_scmdf.timeseries().sort_index()
         pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
