@@ -23,7 +23,6 @@ from .definitions import _LAND_FRACTION_REGIONS, _SCM_TIMESERIES_META_COLUMNS
 from .utils import (
     _vector_cftime_conversion,
     assert_all_time_axes_same,
-    broadcast_onto_lat_lon_grid,
     cube_lat_lon_grid_compatible_with_array,
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,

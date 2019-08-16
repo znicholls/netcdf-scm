@@ -14,7 +14,6 @@ from ..utils import cube_lat_lon_grid_compatible_with_array
 try:
     import iris
     from iris.analysis.cartography import wrap_lons
-    from iris.util import broadcast_to_shape
 except ModuleNotFoundError:  # pragma: no cover # emergency valve
     from ..errors import raise_no_iris_warning
 
