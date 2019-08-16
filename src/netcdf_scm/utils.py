@@ -293,7 +293,7 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
     try:
         return broadcast_to_shape(array_in, cube.cube.shape, dim_order)
     except ValueError as e:
-        if str(e) != "shape and array are not compatible":
+        if str(e) != "shape and array are not compatible":  # pragma: no cover
             raise
         return broadcast_to_shape(array_in.T, cube.cube.shape, dim_order)
 

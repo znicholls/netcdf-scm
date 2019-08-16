@@ -17,6 +17,7 @@ from openscm.scmdataframe import ScmDataFrame
 from pandas.testing import assert_frame_equal
 
 import netcdf_scm
+from netcdf_scm.definitions import _LAND_FRACTION_REGIONS
 from netcdf_scm.iris_cube_wrappers import (
     CMIP6Input4MIPsCube,
     CMIP6OutputCube,
@@ -37,7 +38,8 @@ class _SCMCubeIntegrationTester(object):
         for attribute_to_set, fixture_name in data.items():
             setattr(self, attribute_to_set, request.getfixturevalue(fixture_name))
 
-    def test_get_scm_timeseries_cubes(self, test_cube):
+    @pytest.mark.parametrize("regions_to_get", ["all", ["World", "World|Ocean"]])
+    def test_get_scm_timeseries_cubes(self, test_cube, regions_to_get):
         tsftlf_cube = "mocked 124"
         tareacella_scmcube = "mocked 4389"
 
@@ -63,6 +65,9 @@ class _SCMCubeIntegrationTester(object):
             "World|Southern Hemisphere|Ocean": (1 - nh_mask) * (100 - land_mask),
         }
         mocked_weights = {k: v * mocked_area_weights for k, v in mocked_weights.items()}
+        if regions_to_get != "all":
+            mocked_weights = {k: v for k, v in mocked_weights.items() if k in regions_to_get}
+
         test_cube.get_scm_timeseries_weights = MagicMock(return_value=mocked_weights)
 
         total_area = mocked_area_weights[0, :, :].sum()
@@ -94,19 +99,20 @@ class _SCMCubeIntegrationTester(object):
             exp_cube.cube = rcube.collapsed(
                 ["latitude", "longitude"], iris.analysis.MEAN, weights=weights
             )
-            exp_cube.cube.add_aux_coord(
-                iris.coords.AuxCoord(land_frac, long_name="land_fraction", units=1)
-            )
-            exp_cube.cube.add_aux_coord(
-                iris.coords.AuxCoord(
-                    land_frac_nh, long_name="land_fraction_northern_hemisphere", units=1
+            if all([r in regions_to_get for r in _LAND_FRACTION_REGIONS]):
+                exp_cube.cube.add_aux_coord(
+                    iris.coords.AuxCoord(land_frac, long_name="land_fraction", units=1)
                 )
-            )
-            exp_cube.cube.add_aux_coord(
-                iris.coords.AuxCoord(
-                    land_frac_sh, long_name="land_fraction_southern_hemisphere", units=1
+                exp_cube.cube.add_aux_coord(
+                    iris.coords.AuxCoord(
+                        land_frac_nh, long_name="land_fraction_northern_hemisphere", units=1
+                    )
                 )
-            )
+                exp_cube.cube.add_aux_coord(
+                    iris.coords.AuxCoord(
+                        land_frac_sh, long_name="land_fraction_southern_hemisphere", units=1
+                    )
+                )
             exp_cube.cube.attributes[
                 "crunch_netcdf_scm_version"
             ] = "{} (more info at github.com/znicholls/netcdf-scm)".format(
@@ -122,15 +128,16 @@ class _SCMCubeIntegrationTester(object):
         for label, cube in expected.items():
             assert cube.cube.attributes == result[label].cube.attributes
             np.testing.assert_allclose(cube.cube.data, result[label].cube.data)
-            assert result[label].cube.coord("land_fraction").points == land_frac
-            assert (
-                result[label].cube.coord("land_fraction_northern_hemisphere").points
-                == land_frac_nh
-            )
-            assert (
-                result[label].cube.coord("land_fraction_southern_hemisphere").points
-                == land_frac_sh
-            )
+            if all([r in regions_to_get for r in _LAND_FRACTION_REGIONS]):
+                assert result[label].cube.coord("land_fraction").points == land_frac
+                assert (
+                    result[label].cube.coord("land_fraction_northern_hemisphere").points
+                    == land_frac_nh
+                )
+                assert (
+                    result[label].cube.coord("land_fraction_southern_hemisphere").points
+                    == land_frac_sh
+                )
 
         test_cube.get_scm_timeseries_weights.assert_called_with(
             sftlf_cube=tsftlf_cube,

@@ -12,6 +12,7 @@ from netcdf_scm.utils import (
     _assert_only_cube_dim_coord_is_time,
     apply_mask,
     assert_all_time_axes_same,
+    broadcast_onto_lat_lon_grid,
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
     take_lat_lon_mean,
@@ -168,3 +169,27 @@ def test_unify_lat_lon(test_generic_tas_cube, ttol):
             unify_lat_lon(tlist)
         else:
             unify_lat_lon(tlist, rtol=ttol)
+
+
+@pytest.mark.parametrize("transpose", [True, False])
+def test_broadcast_onto_lat_lon_grid(test_generic_tas_cube, test_sftlf_file, transpose):
+    original = iris.load_cube(test_sftlf_file).data
+    if transpose:
+        ar_to_broadcast = np.transpose(original)
+    else:
+        ar_to_broadcast = original
+
+    res = broadcast_onto_lat_lon_grid(test_generic_tas_cube, ar_to_broadcast)
+    expected = np.broadcast_to(original, test_generic_tas_cube.cube.shape)
+
+    np.testing.assert_allclose(res, expected)
+
+
+def test_broadcast_onto_lat_lon_grid_errors(test_generic_tas_cube, test_sftlf_file):
+    ar_to_broadcast = iris.load_cube(test_sftlf_file).data[1:, 1:]
+    error_msg = re.escape(
+        "the ``array_in`` must be the same shape as the "
+        "cube's longitude-latitude grid"
+    )
+    with pytest.raises(AssertionError, match=error_msg):
+        broadcast_onto_lat_lon_grid(test_generic_tas_cube, ar_to_broadcast)
