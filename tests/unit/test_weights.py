@@ -3,7 +3,6 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
-from iris.util import broadcast_to_shape
 
 from netcdf_scm.weights import (
     CubeWeightCalculator,

@@ -11,7 +11,6 @@ import numpy as np
 import pandas as pd
 import pytest
 from iris.exceptions import ConstraintMismatchError
-from iris.util import broadcast_to_shape
 from pandas.testing import assert_frame_equal, assert_index_equal
 
 from netcdf_scm.iris_cube_wrappers import (
@@ -266,9 +265,7 @@ class TestSCMCube(object):
         test_areacella_input = test_sftlf_cube if input_format == "scmcube" else None
 
         result = test_cube._get_area_weights(areacella_scmcube=test_areacella_input)
-        test_cube._get_areacella_scmcube.assert_called_with(
-            test_areacella_input
-        )
+        test_cube._get_areacella_scmcube.assert_called_with(test_areacella_input)
 
         np.testing.assert_array_equal(result, expected)
 
@@ -285,7 +282,9 @@ class TestSCMCube(object):
         # can safely ignore these warnings here
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", ".*Using DEFAULT_SPHERICAL.*")
-            lat_lon_slice = next(test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name]))
+            lat_lon_slice = next(
+                test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name])
+            )
             expected = iris.analysis.cartography.area_weights(lat_lon_slice)
 
         # we can use test_sftlf_cube here as all we need is an array of the
