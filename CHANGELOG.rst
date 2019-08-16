@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#82 <https://github.com/znicholls/netcdf-scm/pull/82>`_) Prepare to add land data handling
 - (`#81 <https://github.com/znicholls/netcdf-scm/pull/81>`_) Refactor masks to use weighting instead of masking, doing all the renaming in the process
 - (`#80 <https://github.com/znicholls/netcdf-scm/pull/80>`_) Refactor to avoid ``import conftest`` in tests
 - (`#77 <https://github.com/znicholls/netcdf-scm/pull/77>`_) Refactor ``netcdf_scm.masks.get_area_mask`` logic to make multi-dimensional co-ordinate support easier
