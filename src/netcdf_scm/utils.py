@@ -118,9 +118,7 @@ def take_lat_lon_mean(in_scmcube, in_weights):
         An ``SCMCube`` instance.
 
     in_weights : np.ndarray
-        Weights to use when taking the mean. If you don't have another source, these
-        can be generated using
-        ``iris.analysis.cartography.area_weights(iris_cube_instance)``
+        Weights to use when taking the mean.
 
     Returns
     -------
@@ -129,6 +127,9 @@ def take_lat_lon_mean(in_scmcube, in_weights):
         of the input cube's data
     """
     out_cube = type(in_scmcube)()
+    if in_weights.shape != in_scmcube.cube.shape:
+        in_weights = broadcast_onto_lat_lon_grid(in_scmcube, in_weights)
+
     out_cube.cube = in_scmcube.cube.collapsed(
         [in_scmcube.lat_name, in_scmcube.lon_name],
         iris.analysis.MEAN,
