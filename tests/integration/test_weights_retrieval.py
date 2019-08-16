@@ -1,6 +1,6 @@
 import logging
 import re
-from unittest.mock import MagicMock, patch
+from unittest.mock import PropertyMock, MagicMock, patch
 
 import iris
 import numpy as np
@@ -128,9 +128,10 @@ def test_get_scm_masks_no_land_available(
 
 @pytest.mark.parametrize("input_format", ["scmcube", None])
 @pytest.mark.parametrize("sftlf_var", ["sftlf", "sftlf_other"])
-def test_get_land_weights(test_all_cubes, input_format, sftlf_var):
+@patch("netcdf_scm.iris_cube_wrappers.SCMCube.surface_fraction_var", new_callable=PropertyMock)
+def test_get_land_weights(mock_surface_fraction_var, test_all_cubes, input_format, sftlf_var):
     sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
-    test_all_cubes.sftlf_var = sftlf_var
+    mock_surface_fraction_var.return_value = sftlf_var
     original_data = sftlf_cube.cube.data
 
     test_all_cubes.get_metadata_cube = MagicMock(return_value=sftlf_cube)
