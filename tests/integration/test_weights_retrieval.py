@@ -36,12 +36,7 @@ def test_get_scm_masks(mock_nh_weights, mock_land_weights, test_all_cubes):
 
     area_weights = test_all_cubes._get_area_weights()
     expected = {
-        k: area_weights
-        * broadcast_to_shape(
-            v,
-            test_all_cubes.cube.shape,
-            [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
-        )
+        k: area_weights * v
         for k, v in {
             "World": np.full(nh_weights.shape, 1),
             "World|Northern Hemisphere|Land": nh_land_weights,
@@ -88,12 +83,7 @@ def test_get_scm_masks_no_land_available(
 
     area_weights = test_all_cubes._get_area_weights()
     expected = {
-        k: area_weights
-        * broadcast_to_shape(
-            v,
-            test_all_cubes.cube.shape,
-            [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
-        )
+        k: area_weights * v
         for k, v in {
             "World": np.full(nh_weights.shape, 1),
             "World|Northern Hemisphere": nh_weights,
@@ -137,16 +127,13 @@ def test_get_scm_masks_no_land_available(
     mock_nh_weights.assert_called_with(masker, test_all_cubes)
 
 
-@pytest.mark.parametrize("transpose", [True, False])
 @pytest.mark.parametrize("input_format", ["scmcube", None])
 @pytest.mark.parametrize("sftlf_var", ["sftlf", "sftlf_other"])
-def test_get_land_weights(test_all_cubes, input_format, sftlf_var, transpose):
+def test_get_land_weights(test_all_cubes, input_format, sftlf_var):
     sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
     test_all_cubes.sftlf_var = sftlf_var
     original_data = sftlf_cube.cube.data
 
-    if transpose:
-        sftlf_cube.cube = iris.cube.Cube(data=np.transpose(sftlf_cube.cube.data))
     test_all_cubes.get_metadata_cube = MagicMock(return_value=sftlf_cube)
 
     test_land_fraction_input = sftlf_cube if input_format == "scmcube" else None
@@ -156,11 +143,7 @@ def test_get_land_weights(test_all_cubes, input_format, sftlf_var, transpose):
         masker, test_all_cubes, sftlf_cube=test_land_fraction_input
     )
 
-    expected = broadcast_to_shape(
-        original_data,
-        test_all_cubes.cube.shape,
-        [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
-    )
+    expected = original_data
     np.testing.assert_array_equal(result, expected)
     # Check that the sftlf meta cube is always registered
     test_all_cubes.get_metadata_cube.assert_called_with(
@@ -207,13 +190,8 @@ def test_nao_weights(test_all_cubes):
         "World|North Atlantic Ocean"
     )
 
-    expected_base = np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]]) * (
+    expected = np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]]) * (
         100 - sftlf_cube.cube.data
-    )
-    expected = broadcast_to_shape(
-        expected_base,
-        test_all_cubes.cube.shape,
-        [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
     )
 
     np.testing.assert_array_equal(result, expected)
@@ -224,13 +202,8 @@ def test_elnino_weights(test_all_cubes):
     masker = CubeWeightCalculator(test_all_cubes, sftlf_cube=sftlf_cube)
     result = masker.get_weights_array_without_area_weighting("World|El Nino N3.4")
     # 5N-5S, 190E-240E
-    expected_base = np.array([[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]]) * (
+    expected = np.array([[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]]) * (
         100 - sftlf_cube.cube.data
-    )
-    expected = broadcast_to_shape(
-        expected_base,
-        test_all_cubes.cube.shape,
-        [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
     )
 
     np.testing.assert_array_equal(result, expected)
@@ -290,24 +263,13 @@ def test_get_weights_for_area(test_all_cubes, query, lat_pts, lon_pts, expected)
         return
 
     result = get_weights_for_area(*query)(None, test_all_cubes)
-
-    expected = broadcast_to_shape(
-        expected,
-        test_all_cubes.cube.shape,
-        [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
-    )
     np.testing.assert_array_equal(result, expected)
 
 
 def test_area_mask_wrapped_lons(test_all_cubes):
     result = get_weights_for_area(0, -80, 65, 0)(None, test_all_cubes)
 
-    expected_base = np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]])
-    expected = broadcast_to_shape(
-        expected_base,
-        test_all_cubes.cube.shape,
-        [test_all_cubes.lat_dim_number, test_all_cubes.lon_dim_number],
-    )
+    expected = np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]])
 
     np.testing.assert_array_equal(result, expected)
 

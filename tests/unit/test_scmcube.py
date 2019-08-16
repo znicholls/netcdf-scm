@@ -252,33 +252,22 @@ class TestSCMCube(object):
         )
         assert mock_weight_calculator_init.call_count == 1
 
-    @pytest.mark.parametrize("transpose", [True, False])
     @pytest.mark.parametrize("input_format", ["scmcube", None])
     @pytest.mark.parametrize("areacella_var", ["areacella", "area_other"])
     def test_get_area_weights(
-        self, test_cube, test_sftlf_cube, areacella_var, input_format, transpose
+        self, test_cube, test_sftlf_cube, areacella_var, input_format
     ):
         test_cube.areacella_var = areacella_var
 
-        expected = broadcast_to_shape(
-            test_sftlf_cube.cube.data,
-            test_cube.cube.shape,
-            [test_cube.lat_dim_number, test_cube.lon_dim_number],
-        )
+        expected = test_sftlf_cube.cube.data
 
-        # we can use test_sftlf_cube here as all we need is an array of the
-        # right shape
-        if transpose:
-            test_sftlf_cube.cube = iris.cube.Cube(
-                data=np.transpose(test_sftlf_cube.cube.data)
-            )
-        test_cube.get_metadata_cube = MagicMock(return_value=test_sftlf_cube)
+        test_cube._get_areacella_scmcube = MagicMock(return_value=test_sftlf_cube)
 
         test_areacella_input = test_sftlf_cube if input_format == "scmcube" else None
 
         result = test_cube._get_area_weights(areacella_scmcube=test_areacella_input)
-        test_cube.get_metadata_cube.assert_called_with(
-            areacella_var, cube=test_areacella_input
+        test_cube._get_areacella_scmcube.assert_called_with(
+            test_areacella_input
         )
 
         np.testing.assert_array_equal(result, expected)
@@ -296,7 +285,8 @@ class TestSCMCube(object):
         # can safely ignore these warnings here
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", ".*Using DEFAULT_SPHERICAL.*")
-            expected = iris.analysis.cartography.area_weights(test_cube.cube)
+            lat_lon_slice = next(test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name]))
+            expected = iris.analysis.cartography.area_weights(lat_lon_slice)
 
         # we can use test_sftlf_cube here as all we need is an array of the
         # right shape
@@ -337,7 +327,7 @@ class TestSCMCube(object):
             specific_warn = "Could not calculate areacella"
             exc_info = re.escape(iris_error_msg)
         elif areacella == "misshaped":
-            specific_warn = "Could not broadcast onto lat lon grid"
+            specific_warn = "Area weights incompatible with lat lon grid"
             exc_info = re.escape(
                 "the sftlf_cube data must be the same shape as the cube's "
                 "longitude-latitude grid"

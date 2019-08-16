@@ -9,7 +9,7 @@ from functools import lru_cache
 
 import numpy as np
 
-from ..utils import broadcast_onto_lat_lon_grid
+from ..utils import cube_lat_lon_grid_compatible_with_array
 
 try:
     import iris
@@ -200,10 +200,16 @@ def get_land_weights(  # pylint:disable=unused-argument
         )
         sftlf_data = sftlf_data * 100
 
+    if not cube_lat_lon_grid_compatible_with_array(cube, sftlf_data):
+        raise AssertionError(
+            "the sftlf_cube data must be the same shape as the cube's "
+            "longitude-latitude grid"
+        )
+
     weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
         "World|Land"
     ] = sftlf_data
-    return broadcast_onto_lat_lon_grid(cube, sftlf_data)
+    return sftlf_data
 
 
 def get_nh_weights(weight_calculator, cube, **kwargs):  # pylint:disable=unused-argument
@@ -233,7 +239,7 @@ def get_nh_weights(weight_calculator, cube, **kwargs):  # pylint:disable=unused-
     weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
         "World|Northern Hemisphere"
     ] = weights_nh
-    return broadcast_onto_lat_lon_grid(cube, weights_nh)
+    return weights_nh
 
 
 def get_weights_for_area(lower_lat, left_lon, upper_lat, right_lon):
@@ -328,7 +334,7 @@ def get_weights_for_area(lower_lat, left_lon, upper_lat, right_lon):
             )
 
         weights = weights_lon * weights_lat
-        return broadcast_onto_lat_lon_grid(cube, weights)
+        return weights
 
     return f
 
@@ -463,13 +469,6 @@ class CubeWeightCalculator:
             try:
                 weights_func = WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING[weights_name]
                 weights = weights_func(self, self.cube, **self.kwargs)
-                if len(weights.shape) == 2:
-                    # ensure weights can be used directly on cube
-                    weights = broadcast_to_shape(
-                        weights,
-                        self.cube.cube.shape,
-                        [self.cube.lat_dim_number, self.cube.lon_dim_number],
-                    )
 
                 self._weights_no_area_weighting[weights_name] = weights
             except KeyError:
