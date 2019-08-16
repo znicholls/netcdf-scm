@@ -24,6 +24,7 @@ from .utils import (
     _vector_cftime_conversion,
     assert_all_time_axes_same,
     broadcast_onto_lat_lon_grid,
+    cube_lat_lon_grid_compatible_with_array,
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
     take_lat_lon_mean,
@@ -685,7 +686,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             SCM relevant regions.
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
-        # TODO: fix weights so that we store single slices for as long as possible
+        # TODO: fix weights so that we store single slices for as long as possible,
+        # only broadcast at return time or at take_lat_lon_mean time
+        # TODO: make get_metadata_cube able to find areas better
         scm_timeseries_weights = self.get_scm_timeseries_weights(
             sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions
         )
@@ -838,22 +841,26 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
 
         if areacella_scmcube is not None:
-            try:
-                areacella_cube = areacella_scmcube.cube
-                return broadcast_onto_lat_lon_grid(self, areacella_cube.data)
-            except AssertionError:
-                logger.exception("Could not broadcast onto lat lon grid")
+            areacella_cube = areacella_scmcube.cube
+            area_weights = areacella_cube.data
+            if cube_lat_lon_grid_compatible_with_array(self, area_weights):
+                return area_weights
+            logger.exception("Area weights incompatible with lat lon grid")
 
         logger.warning(
             "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
         )
         try:
-            return iris.analysis.cartography.area_weights(self.cube)
+            lat_lon_slice = next(self.cube.slices([self.lat_name, self.lon_name]))
+            iris_weights = iris.analysis.cartography.area_weights(lat_lon_slice)
         except ValueError:
             logger.warning("Guessing latitude and longitude bounds")
             self.cube.coord("latitude").guess_bounds()
             self.cube.coord("longitude").guess_bounds()
-            return iris.analysis.cartography.area_weights(self.cube)
+            lat_lon_slice = next(self.cube.slices([self.lat_name, self.lon_name]))
+            iris_weights = iris.analysis.cartography.area_weights(lat_lon_slice)
+
+        return iris_weights
 
     def _get_areacella_scmcube(self, areacella_scmcube):
         try:

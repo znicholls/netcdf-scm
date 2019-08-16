@@ -209,6 +209,43 @@ def unify_lat_lon(cubes, rtol=10 ** -6):
         cube.add_dim_coord(cubes[0].coords("longitude")[0], lon_dim_no)
 
 
+# TODO: test this properly
+def cube_lat_lon_grid_compatible_with_array(cube, array_in):
+    """
+    Assert that an array can be broadcast onto the cube's lat-lon grid
+
+    Parameters
+    ----------
+    cube : :obj:`ScmCube`
+        :obj:`ScmCube` instance whose lat-lon grid we want to check agains
+
+    array_in : np.ndarray
+        The array we want to ensure is able to be broadcast
+
+    Returns
+    -------
+    bool
+        ``True`` if the cube's lat-lon grid is compatible with ``array_in``, otherwise
+        ``False``
+
+    Raises
+    ------
+    AssertionError
+        The array cannot be broadcast onto the cube's lat-lon grid
+    """
+    lat_length = len(cube.lat_dim.points)
+    lon_length = len(cube.lon_dim.points)
+
+    base_shape = (lat_length, lon_length)
+    if array_in.shape != base_shape:
+        array_in = np.transpose(array_in)
+
+    if array_in.shape != base_shape:
+        return False
+
+    return True
+
+
 def broadcast_onto_lat_lon_grid(cube, array_in):
     """
     Broadcast an array onto the latitude-longitude grid of ``cube``.
@@ -219,23 +256,27 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
     For example, given a cube with a time dimension of length 3, a latitude dimension of length 4
     and a longitude dimension of length 2 (shape 3x4x2) and ``array_in`` of shape 4x2, results in
     a 3x4x2 array where each slice in the broadcasted array's time dimension is identical to ``array_in``.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
     """
-    lat_length = len(cube.lat_dim.points)
-    lon_length = len(cube.lon_dim.points)
-
-    dim_order = [cube.lat_dim_number, cube.lon_dim_number]
-    base_shape = (lat_length, lon_length)
-    if array_in.shape != base_shape:
-        array_in = np.transpose(array_in)
-
-    shape_assert_msg = (
-        "the sftlf_cube data must be the same shape as the "
-        "cube's longitude-latitude grid"
-    )
-    if array_in.shape != base_shape:
+    if not cube_lat_lon_grid_compatible_with_array(cube, array_in):
+        shape_assert_msg = (
+            "the ``array_in`` must be the same shape as the "
+            "cube's longitude-latitude grid"
+        )
         raise AssertionError(shape_assert_msg)
 
-    return broadcast_to_shape(array_in, cube.cube.shape, dim_order)
+    dim_order = [cube.lat_dim_number, cube.lon_dim_number]
+    try:
+        import pdb
+        pdb.set_trace()
+        return broadcast_to_shape(array_in, cube.cube.shape, dim_order)
+    except:
+        return broadcast_to_shape(array_in.T, cube.cube.shape, dim_order)
 
 
 def _cftime_conversion(t):
