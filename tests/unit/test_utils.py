@@ -98,11 +98,19 @@ def test_take_lat_lon_mean(test_generic_tas_cube):
     assert result.cube.cell_methods[0].coord_names == ("time",)
 
 
-def test_apply_mask(test_generic_tas_cube):
+@pytest.mark.parametrize("lazy", [True, False])
+def test_apply_mask(test_generic_tas_cube, lazy):
     tmask = np.full(test_generic_tas_cube.cube.shape, True)
 
-    np.testing.assert_equal(test_generic_tas_cube.cube.data.mask, ~tmask)
+    assert test_generic_tas_cube.cube.has_lazy_data()
+    if not lazy:
+        np.testing.assert_equal(test_generic_tas_cube.cube.data.mask, ~tmask)
+
     result = apply_mask(test_generic_tas_cube, tmask)
+    if lazy:
+        assert result.cube.has_lazy_data()
+    else:
+        assert not result.cube.has_lazy_data()
     np.testing.assert_equal(result.cube.data.mask, tmask)
 
 

@@ -685,9 +685,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             SCM relevant regions.
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
-        # TODO: fix weights so that we store single slices for as long as possible,
-        # only broadcast at return time or at take_lat_lon_mean time
-        # TODO: make get_metadata_cube able to find areas better
+        # TODO: make _get_area_weights public
         scm_timeseries_weights = self.get_scm_timeseries_weights(
             sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions
         )
@@ -820,22 +818,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return scmcube
 
-    def _get_scm_regions(self, sftlf_cube=None, land_mask_threshold=50, regions=None):
-        """
-        Get the scm regions.
-
-        Returns
-        -------
-        dict
-            Dictionary of region name-mask key-value pairs
-        """
-        if self._weight_calculator is None:
-            self._weight_calculator = CubeWeightCalculator(
-                self, sftlf_cube=sftlf_cube, land_mask_threshold=land_mask_threshold
-            )
-        regions = regions if regions is not None else DEFAULT_REGIONS
-        return self._weight_calculator.get_regions(regions)
-
     def _get_area_weights(self, areacella_scmcube=None):
         areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
 
@@ -946,10 +928,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                     # have a stable solution for parameter handling in OpenSCMDataFrame yet so
                     # I've done the above instead
                     new_col = "{} ({})".format(coord.long_name, str(coord.units))
-                    new_val = coord.points.squeeze()
-
-                if not new_val.shape:
-                    new_val = float(new_val)
+                    new_val = float(coord.points.squeeze())
 
                 if not i:
                     scmdf.metadata[new_col] = new_val
@@ -1353,7 +1332,7 @@ class _CMIPCube(SCMCube, ABC):
 
     @abstractmethod
     def _get_data_directory(self):
-        pass
+        pass  # pragma: no cover
 
     def get_data_filename(self):
         """
@@ -1380,7 +1359,7 @@ class _CMIPCube(SCMCube, ABC):
 
     @abstractmethod
     def _get_data_filename(self):
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def _get_metadata_load_arguments(self, metadata_variable):
