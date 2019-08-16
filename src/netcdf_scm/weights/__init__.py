@@ -154,6 +154,11 @@ def get_land_weights(  # pylint:disable=unused-argument
     -------
     np.ndarray
         Land weights
+
+    Raises
+    ------
+    AssertionError
+        The land weights are incompatible with the cube's lat-lon grid
     """
     sftlf_data = None
     try:
