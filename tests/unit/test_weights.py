@@ -11,6 +11,7 @@ from netcdf_scm.weights import (
     get_nh_weights,
     get_weights_for_area,
     multiply_weights,
+    subtract_weights,
 )
 
 
@@ -41,12 +42,20 @@ def test_unknown_mask_error(test_all_cubes):
     {
         "Junk": multiply_weights(get_weights_for_area(0, 0, 30, 50), "World|Land"),
         "World|Land": get_land_weights,
+        "Inverse": subtract_weights("Junk", 1),
     },
 )
 def test_no_match_error(test_all_cubes):
     tmask_name = "Junk"
 
     error_msg = re.escape(r"All weights are zero for region: `{}`".format(tmask_name))
-    masker = CubeWeightCalculator(test_all_cubes)
-    with pytest.raises(ValueError, match=error_msg):
-        masker.get_weights_array("Junk")
+    weighter = CubeWeightCalculator(test_all_cubes)
+    for i in range(3):  # make sure multiple asks still raises
+        # should be accessible without issue
+        weighter.get_weights_array("World|Land")
+        with pytest.raises(ValueError, match=error_msg):
+            weighter.get_weights_array("Junk")
+        # should be able to get inverse without problem
+        res = weighter.get_weights_array("Inverse")
+        # inverse of Junk should all be non-zero
+        assert not np.isclose(res, 0).any()

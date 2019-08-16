@@ -162,7 +162,7 @@ def get_land_weights(  # pylint:disable=unused-argument
     """
     sftlf_data = None
     try:
-        sftlf_cube = cube.get_metadata_cube(cube.sftlf_var, cube=sftlf_cube)
+        sftlf_cube = cube.get_metadata_cube(cube.surface_fraction_var, cube=sftlf_cube)
         sftlf_data = sftlf_cube.cube.data
     except (
         OSError,
@@ -519,13 +519,13 @@ class CubeWeightCalculator:
             )
             area_weights = self._get_area_weights()
             weights = weights_without_area * area_weights
-            self._weights[weights_name] = weights
 
         if np.equal(np.sum(weights), 0):
             raise ValueError(
                 "All weights are zero for region: `{}`".format(weights_name)
             )
 
+        self._weights[weights_name] = weights
         return weights
 
     def get_weights(self, weights_names):
