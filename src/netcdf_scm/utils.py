@@ -233,8 +233,8 @@ def cube_lat_lon_grid_compatible_with_array(cube, array_in):
     AssertionError
         The array cannot be broadcast onto the cube's lat-lon grid
     """
-    lat_length = len(cube.lat_dim.points)
-    lon_length = len(cube.lon_dim.points)
+    lat_length = cube.cube.shape[cube.lat_dim_number]
+    lon_length = cube.cube.shape[cube.lon_dim_number]
 
     base_shape = (lat_length, lon_length)
     if array_in.shape != base_shape:

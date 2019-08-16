@@ -89,33 +89,11 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     :obj:`iris.cube.Cube`: The Iris cube which is wrapped by this :obj:`SCMCube` instance.
     """
 
-    areacella_var = "areacella"
-    """
-    str: The name of the variable associated with the area of each gridbox.
-
-    If required, this is used to determine the area of each cell in a data file. For
-    example, if our data file is ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then
-    ``areacella_var`` can be used to work  out the name of the associated cell area
-    file. In some cases, it might be as simple as replacing ``tas`` with the value of
-    ``areacella_var``.
-    """
-
     lat_name = "latitude"
     """str: The expected name of the latitude co-ordinate in data."""
 
     lon_name = "longitude"
     """str: The expected name of the longitude co-ordinate in data."""
-
-    sftlf_var = "sftlf"
-    """
-    str: The name of the variable associated with the land-surface fraction in each gridbox.
-
-    If required, this is used when looking for the land-surface fraction file which
-    belongs to a given data file. For example, if our data file is
-    ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then ``sftlf_var`` can be used to work
-    out the name of the associated land-surface fraction file. In some cases, it might
-    be as simple as replacing ``tas`` with the value of ``sftlf_var``.
-    """
 
     time_name = "time"
     """str: The expected name of the time co-ordinate in data."""
@@ -153,6 +131,35 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     def __init__(self):
         self._loaded_paths = []
         self._metadata_cubes = {}
+
+    @property
+    def areacell_var(self):
+        """
+        str: The name of the variable associated with the area of each gridbox.
+
+        If required, this is used to determine the area of each cell in a data file. For
+        example, if our data file is ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then
+        ``areacell_var`` can be used to work  out the name of the associated cell area
+        file. In some cases, it might be as simple as replacing ``tas`` with the value of
+        ``areacell_var``.
+        """
+        return "areacella"
+
+
+    @property
+    def surface_fraction_var(self):
+        """
+        str: The name of the variable associated with the surface fraction in each gridbox.
+
+        If required, this is used when looking for the surface fraction file which
+        belongs to a given data file. For example, if our data file is
+        ``tas_Amon_HadCM3_rcp45_r1i1p1_200601.nc`` then ``surface_fraction_var`` can
+        be used to work out the name of the associated surface fraction file. In some
+        cases, it might be as simple as replacing ``tas`` with the value of
+        ``surface_fraction_var``.
+        """
+        return "sftlf"
+
 
     @property
     def time_period_regex(self):
@@ -528,7 +535,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 logger.warning(warn.message)
 
     def _add_areacella_measure(self):
-        areacella_cube = self.get_metadata_cube(self.areacella_var).cube
+        areacella_cube = self.get_metadata_cube(self.areacell_var).cube
         areacella_measure = iris.coords.CellMeasure(
             areacella_cube.core_data(),
             standard_name=areacella_cube.standard_name,
@@ -632,11 +639,11 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         if areacella_scmcube is not None:
             # set area cube to appropriate variable
-            self.get_metadata_cube(self.areacella_var, cube=areacella_scmcube)
+            self.get_metadata_cube(self.areacell_var, cube=areacella_scmcube)
 
         if sftlf_cube is not None:
             # set area cube to appropriate variable
-            self.get_metadata_cube(self.sftlf_var, cube=sftlf_cube)
+            self.get_metadata_cube(self.surface_fraction_var, cube=sftlf_cube)
 
         if self._weight_calculator is None:
             self._weight_calculator = CubeWeightCalculator(self)
@@ -847,7 +854,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     def _get_areacella_scmcube(self, areacella_scmcube):
         try:
             areacella_scmcube = self.get_metadata_cube(
-                self.areacella_var, cube=areacella_scmcube
+                self.areacell_var, cube=areacella_scmcube
             )
             if not isinstance(areacella_scmcube.cube, iris.cube.Cube):
                 logger.warning(
@@ -1429,8 +1436,8 @@ class MarbleCMIP5Cube(_CMIPCube):
     experiment = None
     """str: The experiment for which we want to load data e.g. '1pctCO2'"""
 
-    modeling_realm = None
-    """str: The modeling_realm for which we want to load data e.g. 'Amon'"""
+    mip_table = None
+    """str: The mip_table for which we want to load data e.g. 'Amon'"""
 
     variable_name = None
     """str: The variable for which we want to load data e.g. 'tas'"""
@@ -1485,7 +1492,7 @@ class MarbleCMIP5Cube(_CMIPCube):
 
         return {
             "variable_name": filename_bits[0],
-            "modeling_realm": filename_bits[1],
+            "mip_table": filename_bits[1],
             "model": filename_bits[2],
             "experiment": filename_bits[3],
             "ensemble_member": ensemble_member,
@@ -1523,7 +1530,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             "root_dir": root_dir,
             "activity": dirpath_bits[-6],
             "variable_name": dirpath_bits[-3],
-            "modeling_realm": dirpath_bits[-4],
+            "mip_table": dirpath_bits[-4],
             "model": dirpath_bits[-2],
             "experiment": dirpath_bits[-5],
             "ensemble_member": dirpath_bits[-1],
@@ -1561,7 +1568,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             self.root_dir,
             self.activity,
             self.experiment,
-            self.modeling_realm,
+            self.mip_table,
             self.variable_name,
             self.model,
             self.ensemble_member,
@@ -1570,7 +1577,7 @@ class MarbleCMIP5Cube(_CMIPCube):
     def _get_data_filename(self):
         bits_to_join = [
             self.variable_name,
-            self.modeling_realm,
+            self.mip_table,
             self.model,
             self.experiment,
             self.ensemble_member,
@@ -1585,7 +1592,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             "root_dir": self.root_dir,
             "activity": self.activity,
             "experiment": self.experiment,
-            "modeling_realm": "fx",
+            "mip_table": "fx",
             "variable_name": metadata_variable,
             "model": self.model,
             "ensemble_member": "r0i0p0",
