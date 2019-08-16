@@ -33,7 +33,7 @@ def test_get_scm_masks(mock_nh_weights, mock_land_weights, test_all_cubes):
     # check our logic while we're here
     np.testing.assert_array_equal(nh_weights * land_weights, nh_land_weights)
 
-    area_weights = test_all_cubes._get_area_weights()
+    area_weights = test_all_cubes.get_area_weights()
     expected = {
         k: area_weights * v
         for k, v in {
@@ -80,7 +80,7 @@ def test_get_scm_masks_no_land_available(
     )
     expected_land_weights = default_sftlf_cube.data
 
-    area_weights = test_all_cubes._get_area_weights()
+    area_weights = test_all_cubes.get_area_weights()
     expected = {
         k: area_weights * v
         for k, v in {
@@ -278,7 +278,7 @@ def test_get_masks_unknown_weights_warning(test_all_cubes, caplog):
     masker = CubeWeightCalculator(test_all_cubes)
     res = masker.get_weights(["World", "junk"])
 
-    np.testing.assert_allclose(res["World"], test_all_cubes._get_area_weights())
+    np.testing.assert_allclose(res["World"], test_all_cubes.get_area_weights())
 
     assert len(caplog.messages) == 3
     assert (
