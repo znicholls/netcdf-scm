@@ -66,7 +66,9 @@ class _SCMCubeIntegrationTester(object):
         }
         mocked_weights = {k: v * mocked_area_weights for k, v in mocked_weights.items()}
         if regions_to_get != "all":
-            mocked_weights = {k: v for k, v in mocked_weights.items() if k in regions_to_get}
+            mocked_weights = {
+                k: v for k, v in mocked_weights.items() if k in regions_to_get
+            }
 
         test_cube.get_scm_timeseries_weights = MagicMock(return_value=mocked_weights)
 
@@ -105,12 +107,16 @@ class _SCMCubeIntegrationTester(object):
                 )
                 exp_cube.cube.add_aux_coord(
                     iris.coords.AuxCoord(
-                        land_frac_nh, long_name="land_fraction_northern_hemisphere", units=1
+                        land_frac_nh,
+                        long_name="land_fraction_northern_hemisphere",
+                        units=1,
                     )
                 )
                 exp_cube.cube.add_aux_coord(
                     iris.coords.AuxCoord(
-                        land_frac_sh, long_name="land_fraction_southern_hemisphere", units=1
+                        land_frac_sh,
+                        long_name="land_fraction_southern_hemisphere",
+                        units=1,
                     )
                 )
             exp_cube.cube.attributes[
