@@ -145,7 +145,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         return "areacella"
 
-
     @property
     def surface_fraction_var(self):
         """
@@ -159,7 +158,6 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         ``surface_fraction_var``.
         """
         return "sftlf"
-
 
     @property
     def time_period_regex(self):
