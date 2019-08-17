@@ -3,6 +3,7 @@ ROOT_DIR="/data/marble/cmip6/CMIP6/CMIP"
 
 declare -a search_vars=(
   "gpp"
+  "cSoilFast"
   "tas"
   "hfds"
   "thetao"
