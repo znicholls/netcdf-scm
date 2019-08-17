@@ -14,9 +14,17 @@ _SCM_TIMESERIES_META_COLUMNS = [
 _LAND_FRACTION_REGIONS = [
     "World",
     "World|Land",
+    "World|Ocean",
     "World|Northern Hemisphere",
     "World|Northern Hemisphere|Land",
+    "World|Northern Hemisphere|Ocean",
     "World|Southern Hemisphere",
     "World|Southern Hemisphere|Land",
+    "World|Southern Hemisphere|Ocean",
 ]
-"""Regions required to perform land fraction calculations"""
+"""
+list: Regions required to perform land fraction calculations
+
+We require all the ocean regions too as it only makes sense to return land fraction if
+we're actually looking at data which contains a split.
+"""

@@ -163,7 +163,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             logger.info(
                 "No `%s` attribute in `self.cube`, NetCDF-SCM will treat the data "
                 "as `atmosphere`",
-                self._realm_key
+                self._realm_key,
             )
             self._have_guessed_realm = True
         return "atmosphere"
@@ -181,8 +181,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         if self.netcdf_scm_realm in ("ocean",):
             return "areacello"
-        else:
-            return "areacella"
+
+        return "areacella"
 
     @property
     def surface_fraction_var(self):
@@ -198,8 +198,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         if self.netcdf_scm_realm in ("ocean",):
             return "sftof"
-        else:
-            return "sftlf"
+
+        return "sftlf"
 
     @property
     def table_name_for_metadata_vars(self):
@@ -211,10 +211,14 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         We wrap this as a property as table typically means ``table_id`` but is
         sometimes referred to in other ways e.g. as ``mip_table`` in CMIP5.
         """
+        return self._table_name_for_metadata_vars
+
+    @property
+    def _table_name_for_metadata_vars(self):
         if self.netcdf_scm_realm in ("ocean",):
             return "Ofx"
-        else:
-            return "fx"
+
+        return "fx"
 
     @property
     def time_period_regex(self):
@@ -269,6 +273,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     def dim_names(self):
         """
         list: Names of the dimensions in this cube
+
         Here the names are the ``standard_names`` which means there can be
         ``None`` in the output.
         """
@@ -587,7 +592,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         area_cella_warn = "Missing CF-netCDF measure variable 'areacella'"
         area_cello_warn = "Missing CF-netCDF measure variable 'areacello'"
         for warn in w:
-            if any([m in str(warn.message) for m in (area_cella_warn, area_cello_warn)]):
+            if any(
+                [m in str(warn.message) for m in (area_cella_warn, area_cello_warn)]
+            ):
                 self._add_areacell_measure(warn, self.areacell_var)
             else:
                 logger.warning(warn.message)
@@ -770,6 +777,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 area = np.sum(weights)
                 if "Land" in region:
                     area *= 1 / 100  # correct for sftlf weights being 0-100
+                if "Ocean" in region:
+                    area *= 1 / 100  # correct for sftlf weights being 0-100
             else:
                 area = None
             return region, scm_cube, area
@@ -821,6 +830,22 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                     "land_fraction_northern_hemisphere": "|Northern Hemisphere",
                     "land_fraction_southern_hemisphere": "|Southern Hemisphere",
                 }
+                fractions = {}
+                for k, ext in extensions.items():
+                    closed_sum = np.isclose(
+                        areas["World{}".format(ext)],
+                        areas["World{}|Land".format(ext)]
+                        + areas["World{}|Ocean".format(ext)],
+                        rtol=1e-3,
+                    )
+                    if not closed_sum:  # pragma: no cover
+                        raise AssertionError(
+                            "Ocean and land area sums don't equal total..."
+                        )
+
+                    fractions[k] = (
+                        areas["World{}|Land".format(ext)] / areas["World{}".format(ext)]
+                    )
                 fractions = {
                     k: areas["World{}|Land".format(ext)] / areas["World{}".format(ext)]
                     for k, ext in extensions.items()
@@ -1530,7 +1555,7 @@ class MarbleCMIP5Cube(_CMIPCube):
     _realm_key = "modeling_realm"
 
     @property
-    def table_name_for_metadata_vars(self):
+    def _table_name_for_metadata_vars(self):
         return "fx"
 
     def process_filename(self, filename):
