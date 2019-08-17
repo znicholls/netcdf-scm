@@ -60,11 +60,11 @@ class TestSCMCube(object):
         mock_iris_load_cube.assert_called_with(tfilepath, constraint=tconstraint)
         test_cube._check_cube.assert_called()
 
-    @patch.object(SCMCube, "_add_areacella_measure")
+    @patch.object(SCMCube, "get_metadata_cube")
     def test_process_load_data_from_identifiers_warnings(
-        self, mock_add_areacella_measure, test_cube, caplog
+        self, mock_get_metadata_cube, test_cube, caplog
     ):
-        mock_add_areacella_measure.side_effect = ValueError("mocked error")
+        mock_get_metadata_cube.side_effect = ValueError("mocked error")
 
         warn_1 = "warning 1"
         warn_2 = "warning 2"
@@ -93,18 +93,20 @@ class TestSCMCube(object):
         caplog.set_level(logging.DEBUG)
         test_cube._process_load_data_from_identifiers_warnings(mock_warn_area)
 
-        assert len(caplog.messages) == 3  # warnings plus extra one exception
+        # warnings plus extra exception and guess of realm
+        assert len(caplog.messages) == 4
         assert caplog.messages[0] == warn_1
         assert caplog.records[0].levelname == "WARNING"
         assert caplog.messages[1] == warn_2
         assert caplog.records[1].levelname == "WARNING"
-        assert caplog.records[2].levelname == "DEBUG"
-        assert "Missing CF-netCDF measure variable" in str(caplog.records[2].message)
-        assert "Tried to add areacella cube but another exception was raised:" in str(
-            caplog.records[2].message
+        assert caplog.records[2].levelname == "INFO"
+        assert "NetCDF-SCM will treat the data as `atmosphere`" in str(caplog.records[2].message)
+        assert caplog.records[3].levelname == "DEBUG"
+        assert warn_area in str(
+            caplog.records[3].message
         )
 
-    def test_add_areacella_measure(self, test_cube, test_areacella_file, test_tas_file):
+    def test_add_areacell_measure(self, test_cube, test_areacella_file, test_tas_file):
         # can safely ignore warnings here
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", ".*Missing CF-netCDF measure.*")
@@ -115,7 +117,7 @@ class TestSCMCube(object):
         tareacellacube.cube = iris.load_cube(test_areacella_file)
         test_cube.get_metadata_cube = MagicMock(return_value=tareacellacube)
 
-        test_cube._add_areacella_measure()
+        test_cube._add_areacell_measure("not used", test_cube.areacell_var)
 
         assert any(["area" in cm.measure for cm in test_cube.cube.cell_measures()])
         assert any(
@@ -491,8 +493,8 @@ class TestSCMCube(object):
         if realm is None:
             assert len(caplog.messages) == 1
             assert caplog.messages[0] == (
-                "No `{}` attribute in `self.cube`, guessing the data is in the "
-                "realm `atmos`".format(realm_key)
+                "No `{}` attribute in `self.cube`, NetCDF-SCM will treat the data as "
+                "`atmosphere`".format(realm_key)
             )
         else:
             assert len(caplog.messages) == 0
@@ -531,7 +533,23 @@ class TestSCMCube(object):
         assert test_cube.table_name_for_metadata_vars == expected
         self._check_metadata_var_test_messages(caplog, realm)
 
-    # table name for metadata vars  - in docstring, "table typically means table_id but is sometimes referred to differently e.g. as mip_table in CMIP5"
+
+    @pytest.mark.parametrize(
+        "realm,expected",
+        [
+            ("atmos", "atmosphere"),
+            ("ocean", "ocean"),
+            ("ocnBgchem", "ocean"),
+            ("land", "land"),
+            (None, "atmosphere"),
+        ],
+    )
+    def test_netcdf_scm_realm(self, test_cube, realm, expected, caplog):
+        test_cube = self._setup_test_metadata_var(test_cube, realm, caplog)
+        # do twice to check warning only thrown once
+        assert test_cube.netcdf_scm_realm == expected
+        assert test_cube.netcdf_scm_realm == expected
+        self._check_metadata_var_test_messages(caplog, realm)
 
 
 class _CMIPCubeTester(TestSCMCube):
@@ -1011,6 +1029,23 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         # do twice to check warning only thrown once
         assert test_cube.table_name_for_metadata_vars == expected
         assert test_cube.table_name_for_metadata_vars == expected
+
+
+    @pytest.mark.parametrize(
+        "realm,expected",
+        [
+            ("atmos", "atmosphere"),
+            ("ocean", "ocean"),
+            ("ocnBgchem", "ocean"),
+            ("land", "land"),
+            (None, "atmosphere"),
+        ],
+    )
+    def test_netcdf_scm_realm(self, test_cube, realm, expected, caplog):
+        test_cube = self._setup_test_metadata_var(test_cube, realm, caplog)
+        # do twice to check warning only thrown once
+        assert test_cube.netcdf_scm_realm == expected
+        assert test_cube.netcdf_scm_realm == expected
         self._check_metadata_var_test_messages(caplog, realm, realm_key="modeling_realm")
 
 
