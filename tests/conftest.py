@@ -202,6 +202,7 @@ def test_cmip6_output_file_1_unit(test_data_cmip6output_dir):
 #   - add_volcello test (from tos-hfds branch)
 # do timseries crunching tests first, then crunching from file tests
 
+
 @pytest.fixture
 def test_cmip6_crunch_output(test_data_root_dir):
     return join(test_data_root_dir, "expected-crunching-output", "cmip6output", "CMIP6")
@@ -387,7 +388,6 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
             for dirpath, _, filenames in walk(p):
                 if filenames:
                     if update:
-                        print("Updating {}".format(exp_f))
                         path_to_check = dirpath.replace(res, expected)
                         if not path.exists(path_to_check):
                             makedirs(path_to_check)
@@ -396,6 +396,7 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
                         res_f = join(dirpath, f)
                         exp_f = res_f.replace(res, expected)
                         if update:
+                            print("Updating {}".format(exp_f))
                             shutil.copy(res_f, exp_f)
                         else:
                             res_scmdf = load_scmdataframe(res_f)
@@ -416,7 +417,6 @@ def assert_scmdata_frames_allclose():
         assert (
             (res_df.values > -10 ** 5) & (res_df.values < 10 ** 5)
         ).all(), "Failed sanity check"
-
 
         exp_df = exp_scmdf.timeseries().sort_index()
         pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
