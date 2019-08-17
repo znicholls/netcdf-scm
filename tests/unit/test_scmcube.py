@@ -475,24 +475,24 @@ class TestSCMCube(object):
         ],
     )
     def test_areacell_var(self, test_cube, realm, expected):
-        test_cube.cube.attributes["realm"] = realm
+        test_cube.cube.attributes[test_cube._realm_key] = realm
         assert test_cube.areacell_var == expected
 
     def _setup_test_metadata_var(self, test_cube, realm, caplog):
         caplog.set_level(logging.INFO, logger="netcdf_scm.iris_cube_wrappers")
         if realm is None:
-            test_cube.cube.attributes.pop("realm", None)
+            test_cube.cube.attributes.pop(test_cube._realm_key, None)
         else:
-            test_cube.cube.attributes["realm"] = realm
+            test_cube.cube.attributes[test_cube._realm_key] = realm
 
         return test_cube
 
-    def _check_metadata_var_test_messages(self, caplog, realm):
+    def _check_metadata_var_test_messages(self, caplog, realm, realm_key="realm"):
         if realm is None:
             assert len(caplog.messages) == 1
             assert caplog.messages[0] == (
-                "No `realm` attribute in `self.cube`, guessing the data is in the "
-                "realm `atmos`"
+                "No `{}` attribute in `self.cube`, guessing the data is in the "
+                "realm `atmos`".format(realm_key)
             )
         else:
             assert len(caplog.messages) == 0
@@ -512,7 +512,7 @@ class TestSCMCube(object):
         # do twice to check warning only thrown once
         assert test_cube.surface_fraction_var == expected
         assert test_cube.surface_fraction_var == expected
-        self._check_metadata_var_test_messages(caplog, realm)
+        self._check_metadata_var_test_messages(caplog, realm, realm_key=test_cube._realm_key)
 
     @pytest.mark.parametrize(
         "realm,expected",
@@ -1011,7 +1011,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         # do twice to check warning only thrown once
         assert test_cube.table_name_for_metadata_vars == expected
         assert test_cube.table_name_for_metadata_vars == expected
-        self._check_metadata_var_test_messages(caplog, realm)
+        self._check_metadata_var_test_messages(caplog, realm, realm_key="modeling_realm")
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):

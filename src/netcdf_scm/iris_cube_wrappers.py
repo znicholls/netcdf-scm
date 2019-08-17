@@ -128,6 +128,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     _weight_calculator = None
     """:obj:`CubeWeightCalculator` to use to mask self"""
 
+    _realm_key = "realm"
+    """str: key which identifies the realm of the data"""
+
     _have_guessed_realm = False
     """bool: Have we already guessed our cube data's realm?"""
 
@@ -183,21 +186,22 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             "table_name_for_metadata_vars": "fx",
         }
         try:
-            if self.cube.attributes["realm"] in ("ocean", "ocnBgchem"):
+            if self.cube.attributes[self._realm_key] in ("ocean", "ocnBgchem"):
                 return {
                     "areacell_var": "areacello",
                     "surface_fraction_var": "sftof",
                     "table_name_for_metadata_vars": "Ofx",
                 }
-            if self.cube.attributes["realm"] in ("atmos", "land"):
+            if self.cube.attributes[self._realm_key] in ("atmos", "land"):
                 return atmos_ids
         except KeyError:
             pass
 
         if not self._have_guessed_realm:
             logger.info(
-                "No `realm` attribute in `self.cube`, guessing the data is in the "
-                "realm `atmos`"
+                "No `%s` attribute in `self.cube`, guessing the data is in the "
+                "realm `atmos`",
+                self._realm_key
             )
             self._have_guessed_realm = True
         return atmos_ids
@@ -1501,6 +1505,8 @@ class MarbleCMIP5Cube(_CMIPCube):
 
     mip_era = "CMIP5"
     """str: The MIP era to which this cube belongs"""
+
+    _realm_key = "modeling_realm"
 
     @property
     def _metadata_ids(self):
