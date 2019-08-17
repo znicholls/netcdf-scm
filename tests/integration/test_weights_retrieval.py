@@ -326,6 +326,4 @@ def test_get_scm_weights_land_bound_checks(exp_warn, cube_max, test_all_cubes, c
     else:
         assert len(caplog.messages) == 1
 
-    assert (
-        "NetCDF-SCM will treat the data as `atmosphere`" in caplog.messages[0]
-    )
+    assert "NetCDF-SCM will treat the data as `atmosphere`" in caplog.messages[0]
