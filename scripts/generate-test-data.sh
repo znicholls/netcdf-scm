@@ -3,6 +3,7 @@ ROOT_DIR="/data/marble/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r7i1p1f1/"
 
 declare -a arr=(
   "Lmon/gpp/gn/v20190311/gpp_Lmon_CESM2_historical_r7i1p1f1_gn_195001-199912.nc"
+  "Lmon/cSoilFast/gn/v20190311/cSoilFast_Lmon_CESM2_historical_r7i1p1f1_gn_195001-199912.nc"
   "Amon/tas/gn/v20190311/tas_Amon_CESM2_historical_r7i1p1f1_gn_195001-199912.nc"
   "Omon/hfds/gn/v20190311/hfds_Omon_CESM2_historical_r7i1p1f1_gn_195001-199912.nc"
   "Omon/thetao/gn/v20190311/thetao_Omon_CESM2_historical_r7i1p1f1_gn_195001-199912.nc"
