@@ -1,17 +1,16 @@
 #!/bin/bash
-ROOT_DIR="/data/marble/cmip5/historical/"
+TEST_DIR="./tests/test-data/cmip6output"
+ROOT_DIR="/data/marble/cmip6/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/piControl/r1i1p1f1"
+ROOT_DIR_TO_MAKE="CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/piControl/r1i1p1f1"
 
 declare -a arr=(
-  "Amon/tas/ACCESS1-0/r1i1p1/tas_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc "
-  "Omon/hfds/ACCESS1-0/r1i1p1/hfds_Omon_ACCESS1-0_historical_r1i1p1_185001-200512.nc"
-  "fx/areacella/ACCESS1-0/r0i0p0/areacella_fx_ACCESS1-0_historical_r0i0p0.nc"
-  "fx/areacello/ACCESS1-0/r0i0p0/areacello_fx_ACCESS1-0_historical_r0i0p0.nc"
-  "fx/sftlf/ACCESS1-0/r0i0p0/sftlf_fx_ACCESS1-0_historical_r0i0p0.nc"
-  "fx/sftof/ACCESS1-0/r0i0p0/sftof_fx_ACCESS1-0_historical_r0i0p0.nc"
+  "Omon/hfds/gr/v20180701/hfds_Omon_GFDL-CM4_piControl_r1i1p1f1_gr_015101-017012.nc"
+  "Ofx/areacello/gr/v20180701/areacello_Ofx_GFDL-CM4_piControl_r1i1p1f1_gr.nc"
+  "Ofx/sftof/gr/v20180701/sftof_Ofx_GFDL-CM4_piControl_r1i1p1f1_gr.nc"
 )
 
 ## now loop through the above array
-echo "mkdir -p ${ROOT_DIR}"
+echo "mkdir -p ${TEST_DIR}/${ROOT_DIR_TO_MAKE}"
 for i in "${arr[@]}"
 do
    file="${ROOT_DIR}/$i"
@@ -22,11 +21,11 @@ do
      cp $file ${outfile}
    else
       tmpfile=tmp.nc
-      outfile=${basename/185001-200512/187701-187703}
-      cdo -selyear,1877 $file $tmpfile > /dev/null 2>&1
+      outfile=${basename/015101-017012/015101-015103}
+      cdo -selyear,151 $file $tmpfile > /dev/null 2>&1
       cdo -selmonth,1/3 $tmpfile $outfile > /dev/null 2>&1
       rm $tmpfile > /dev/null 2>&1
    fi
-   echo "mkdir -p ${dir_to_make}"
-   echo "mv $outfile ${dir_to_make}/${outfile}"
+   echo "mkdir -p ${TEST_DIR}/${ROOT_DIR_TO_MAKE}/${dir_to_make}"
+   echo "mv $outfile ${TEST_DIR}/${ROOT_DIR_TO_MAKE}/${dir_to_make}/${outfile}"
 done

@@ -787,7 +787,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
 
         assert test_cube.model == "ACCESS1-0"
 
-    def test_load_data_auto_add_areacella(self, test_cube, test_marble_cmip5_output_tas_file):
+    def test_load_data_auto_add_areacella(
+        self, test_cube, test_marble_cmip5_output_tas_file
+    ):
         test_cube.load_data_from_path(test_marble_cmip5_output_tas_file)
 
         cell_measures = test_cube.cube.cell_measures()
@@ -795,7 +797,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
         assert cell_measures[0].standard_name == "cell_area"
         assert cell_measures[0].var_name == "areacella"
 
-    def test_load_data_auto_add_areacello(self, test_cube, test_marble_cmip5_output_hfds_file):
+    def test_load_data_auto_add_areacello(
+        self, test_cube, test_marble_cmip5_output_hfds_file
+    ):
         test_cube.load_data_from_path(test_marble_cmip5_output_hfds_file)
 
         cell_measures = test_cube.cube.cell_measures()
@@ -1192,24 +1196,20 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
         assert test_cube.cube.long_name == "Carbon Mass in Fast Soil Pool"
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
-        ts = test_cube.get_scm_timeseries()
+        regions_to_get = [
+            "World",
+            "World|Land",
+            "World|Northern Hemisphere",
+            "World|Northern Hemisphere|Land",
+            "World|Southern Hemisphere",
+            "World|Southern Hemisphere|Land",
+        ]
+        ts = test_cube.get_scm_timeseries(regions=regions_to_get)
         assert (ts["model"] == "unspecified").all()
         assert (ts["scenario"] == "ssp126").all()
         assert (ts["activity_id"] == "ScenarioMIP").all()
         assert (ts["member_id"] == "r1i1p1f1").all()
-        assert sorted(ts["region"].tolist()) == sorted(
-            [
-                "World",
-                "World|Land",
-                "World|Northern Hemisphere",
-                "World|Northern Hemisphere|Land",
-                "World|Northern Hemisphere|Ocean",
-                "World|Ocean",
-                "World|Southern Hemisphere",
-                "World|Southern Hemisphere|Land",
-                "World|Southern Hemisphere|Ocean",
-            ]
-        )
+        assert sorted(ts["region"].tolist()) == sorted(regions_to_get)
         assert (ts["variable"] == "cSoilFast").all()
         assert (
             ts["variable_standard_name"] == "fast_soil_pool_mass_content_of_carbon"
@@ -1220,7 +1220,15 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
     def test_load_data_1_unit(self, test_cube, test_cmip6_output_file_1_unit):
         test_cube.load_data_from_path(test_cmip6_output_file_1_unit)
 
-        ts = test_cube.get_scm_timeseries()
+        regions_to_get = [
+            "World",
+            "World|Land",
+            "World|Northern Hemisphere",
+            "World|Northern Hemisphere|Land",
+            "World|Southern Hemisphere",
+            "World|Southern Hemisphere|Land",
+        ]
+        ts = test_cube.get_scm_timeseries(regions=regions_to_get)
         assert (ts["unit"] == "dimensionless").all()
         assert (ts["climate_model"] == "CNRM-CM6-1").all()
 

@@ -253,8 +253,9 @@ def test_cmip6_output_hfds_file(test_data_cmip6output_dir):
         "hfds",
         "gn",
         "v20190311",
-        "hfds_Omon_CESM2_historical_r7i1p1f1_gn_195701-195703.nc"
+        "hfds_Omon_CESM2_historical_r7i1p1f1_gn_195701-195703.nc",
     )
+
 
 # land file (lai?)
 #   - requires areacella, sftlf

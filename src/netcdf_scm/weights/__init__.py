@@ -69,12 +69,15 @@ def subtract_weights(weights_to_subtract, subtract_from):
     """
 
     def f(weight_calculator, cube, **kwargs):  # pylint:disable=unused-argument
-        return (
-            subtract_from
-            - weight_calculator.get_weights_array_without_area_weighting(
+        base = (
+            weights_to_subtract(weight_calculator, cube, **kwargs)
+            if callable(weights_to_subtract)
+            else weight_calculator.get_weights_array_without_area_weighting(
                 weights_to_subtract
             )
         )
+
+        return subtract_from - base
 
     return f
 
@@ -160,14 +163,16 @@ def get_land_weights(  # pylint:disable=unused-argument
     AssertionError
         The land weights are incompatible with the cube's lat-lon grid
     """
+    if cube.netcdf_scm_realm == "ocean":
+        return np.zeros(
+            weight_calculator.get_weights_array_without_area_weighting("World").shape
+        )
+
     sftlf_data = None
     try:
         sftlf_cube = cube.get_metadata_cube(cube.surface_fraction_var, cube=sftlf_cube)
         sftlf_data = sftlf_cube.cube.data
-    except (
-        OSError,
-        KeyError,
-    ):  # TODO: fix reading so TypeError and KeyError not needed
+    except (OSError, KeyError):  # TODO: fix reading so KeyError not needed
         warn_msg = (
             "Land surface fraction (sftlf) data not available, using default instead"
         )
@@ -216,6 +221,107 @@ def get_land_weights(  # pylint:disable=unused-argument
     return sftlf_data
 
 
+def get_ocean_weights(  # pylint:disable=unused-argument
+    weight_calculator, cube, sftof_cube=None, **kwargs
+):
+    """
+    Get the ocean weights
+
+    The weights are always adjusted to have units of percentage.
+
+    Parameters
+    ----------
+    weight_calculator : :obj:`CubeWeightCalculator`
+        Cube weight calculator from which to retrieve the weights
+
+    cube : :obj:`SCMCube`
+        Cube to create weights for
+
+    sftof_cube : :obj:`SCMCube`
+        Cube containing the surface ocean-fraction data
+
+    kwargs : Any
+        Ignored (required for compatibility with ``CubeWeightCalculator``)
+
+    Returns
+    -------
+    np.ndarray
+        Ocean weights
+
+    Raises
+    ------
+    AssertionError
+        The ocean weights are incompatible with the cube's lat-lon grid
+    """
+    if cube.netcdf_scm_realm == "land":
+        return 0 * np.ones(
+            weight_calculator.get_weights_array_without_area_weighting("World").shape
+        )
+
+    if cube.netcdf_scm_realm == "ocean":
+        try:
+            sftof_cube = cube.get_metadata_cube(
+                cube.surface_fraction_var, cube=sftof_cube
+            )
+            sftof_data = sftof_cube.cube.data
+
+            sftof_data_max = sftof_data.max()
+            if np.isclose(sftof_data_max, 1, atol=0.3):
+                logger.warning(
+                    "sftof data max is %s, multiplying by 100 to convert units to percent",
+                    sftof_data_max,
+                )
+                sftof_data = sftof_data * 100
+
+            if not cube_lat_lon_grid_compatible_with_array(cube, sftof_data):
+                raise AssertionError(
+                    "the sftof_cube data must be the same shape as the cube's "
+                    "longitude-latitude grid"
+                )
+
+            weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
+                "World|Ocean"
+            ] = sftof_data
+            return sftof_data
+
+        except (OSError, KeyError):  # TODO: fix reading so KeyError not needed
+            pass
+
+    return 100 - weight_calculator.get_weights_array_without_area_weighting(
+        "World|Land"
+    )
+
+
+def get_binary_nh_weights(
+    weight_calculator, cube, **kwargs
+):  # pylint:disable=unused-argument
+    """
+    Get binary weights to only include the Northern Hemisphere
+
+    Parameters
+    ----------
+    weight_calculator : :obj:`CubeWeightCalculator`
+        Cube weight calculator from which to retrieve the weights
+
+    cube : :obj:`SCMCube`
+        Cube to create weights for
+
+    kwargs : Any
+        Ignored (required for compatibility with ``CubeWeightCalculator``)
+
+    Returns
+    -------
+    :obj:`np.ndarray`
+        Binary northern hemisphere weights
+    """
+    weights_nh_lat = np.array([c >= 0 for c in cube.lat_dim.points]).astype(int)
+    weights_all_lon = np.ones(cube.lon_dim.points.shape)
+
+    weights_nh = np.outer(weights_nh_lat, weights_all_lon)
+
+    return weights_nh
+
+
 def get_nh_weights(weight_calculator, cube, **kwargs):  # pylint:disable=unused-argument
     """
     Get weights to only include the Northern Hemisphere
@@ -236,14 +342,66 @@ def get_nh_weights(weight_calculator, cube, **kwargs):  # pylint:disable=unused-
     :obj:`np.ndarray`
         Northern hemisphere weights
     """
-    weights_nh_lat = np.array([c >= 0 for c in cube.lat_dim.points]).astype(int)
-    weights_all_lon = np.ones(cube.lon_dim.points.shape)
+    weights_nh = get_binary_nh_weights(weight_calculator, cube, **kwargs)
 
-    weights_nh = np.outer(weights_nh_lat, weights_all_lon)
+    if cube.netcdf_scm_realm == "land":
+        weights_nh *= (
+            weight_calculator.get_weights_array_without_area_weighting("World|Land")
+            / 100
+        )  # maintain normalisation to 1
+
+    elif cube.netcdf_scm_realm == "ocean":
+        weights_nh *= (
+            weight_calculator.get_weights_array_without_area_weighting("World|Ocean")
+            / 100
+        )  # maintain normalisation to 1
+
     weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
         "World|Northern Hemisphere"
     ] = weights_nh
+
     return weights_nh
+
+
+def get_sh_weights(weight_calculator, cube, **kwargs):  # pylint:disable=unused-argument
+    """
+    Get weights to only include the Southern Hemisphere
+
+    Parameters
+    ----------
+    weight_calculator : :obj:`CubeWeightCalculator`
+        Cube weight calculator from which to retrieve the weights
+
+    cube : :obj:`SCMCube`
+        Cube to create weights for
+
+    kwargs : Any
+        Ignored (required for compatibility with ``CubeWeightCalculator``)
+
+    Returns
+    -------
+    :obj:`np.ndarray`
+        Southern hemisphere weights
+    """
+    weights_sh = 1 - get_binary_nh_weights(weight_calculator, cube, **kwargs)
+
+    if cube.netcdf_scm_realm == "land":
+        weights_sh *= (
+            weight_calculator.get_weights_array_without_area_weighting("World|Land")
+            / 100
+        )  # maintain normalisation to 1
+
+    elif cube.netcdf_scm_realm == "ocean":
+        weights_sh *= (
+            weight_calculator.get_weights_array_without_area_weighting("World|Ocean")
+            / 100
+        )  # maintain normalisation to 1
+
+    weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
+        "World|Southern Hemisphere"
+    ] = weights_sh
+
+    return weights_sh
 
 
 def get_weights_for_area(lower_lat, left_lon, upper_lat, right_lon):
@@ -365,6 +523,12 @@ def get_world_weights(
     :obj:`np.ndarray`
         Weights which can be used for the world mean calculation
     """
+    if cube.netcdf_scm_realm == "land":
+        return weight_calculator.get_weights_array_without_area_weighting("World|Land")
+
+    if cube.netcdf_scm_realm == "ocean":
+        return weight_calculator.get_weights_array_without_area_weighting("World|Ocean")
+
     return np.ones(
         weight_calculator.get_weights_array_without_area_weighting(
             "World|Northern Hemisphere"
@@ -376,20 +540,20 @@ def get_world_weights(
 WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING = {
     "World": get_world_weights,
     "World|Northern Hemisphere": get_nh_weights,
-    "World|Southern Hemisphere": subtract_weights("World|Northern Hemisphere", 1),
+    "World|Southern Hemisphere": get_sh_weights,
     "World|Land": get_land_weights,
-    "World|Ocean": subtract_weights("World|Land", 100),
+    "World|Ocean": get_ocean_weights,
     "World|Northern Hemisphere|Land": multiply_weights(
-        "World|Northern Hemisphere", "World|Land"
+        get_binary_nh_weights, "World|Land"
     ),
     "World|Southern Hemisphere|Land": multiply_weights(
-        "World|Southern Hemisphere", "World|Land"
+        subtract_weights(get_binary_nh_weights, 1), "World|Land"
     ),
     "World|Northern Hemisphere|Ocean": multiply_weights(
-        "World|Northern Hemisphere", "World|Ocean"
+        get_binary_nh_weights, "World|Ocean"
     ),
     "World|Southern Hemisphere|Ocean": multiply_weights(
-        "World|Southern Hemisphere", "World|Ocean"
+        subtract_weights(get_binary_nh_weights, 1), "World|Ocean"
     ),
     "World|North Atlantic Ocean": multiply_weights(
         get_weights_for_area(0, -80, 65, 0), "World|Ocean"

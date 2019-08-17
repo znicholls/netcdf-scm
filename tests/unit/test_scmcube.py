@@ -100,11 +100,11 @@ class TestSCMCube(object):
         assert caplog.messages[1] == warn_2
         assert caplog.records[1].levelname == "WARNING"
         assert caplog.records[2].levelname == "INFO"
-        assert "NetCDF-SCM will treat the data as `atmosphere`" in str(caplog.records[2].message)
-        assert caplog.records[3].levelname == "DEBUG"
-        assert warn_area in str(
-            caplog.records[3].message
+        assert "NetCDF-SCM will treat the data as `atmosphere`" in str(
+            caplog.records[2].message
         )
+        assert caplog.records[3].levelname == "DEBUG"
+        assert warn_area in str(caplog.records[3].message)
 
     def test_add_areacell_measure(self, test_cube, test_areacella_file, test_tas_file):
         # can safely ignore warnings here
@@ -154,9 +154,7 @@ class TestSCMCube(object):
         )
 
         result = test_cube.get_scm_timeseries(
-            sftlf_cube=tsftlf_cube,
-            areacell_scmcube=tareacell_scmcube,
-            regions=regions,
+            sftlf_cube=tsftlf_cube, areacell_scmcube=tareacell_scmcube, regions=regions
         )
 
         test_cube.get_scm_timeseries_cubes.assert_called_with(
@@ -514,7 +512,9 @@ class TestSCMCube(object):
         # do twice to check warning only thrown once
         assert test_cube.surface_fraction_var == expected
         assert test_cube.surface_fraction_var == expected
-        self._check_metadata_var_test_messages(caplog, realm, realm_key=test_cube._realm_key)
+        self._check_metadata_var_test_messages(
+            caplog, realm, realm_key=test_cube._realm_key
+        )
 
     @pytest.mark.parametrize(
         "realm,expected",
@@ -532,7 +532,6 @@ class TestSCMCube(object):
         assert test_cube.table_name_for_metadata_vars == expected
         assert test_cube.table_name_for_metadata_vars == expected
         self._check_metadata_var_test_messages(caplog, realm)
-
 
     @pytest.mark.parametrize(
         "realm,expected",
@@ -1030,7 +1029,6 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         assert test_cube.table_name_for_metadata_vars == expected
         assert test_cube.table_name_for_metadata_vars == expected
 
-
     @pytest.mark.parametrize(
         "realm,expected",
         [
@@ -1046,7 +1044,9 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         # do twice to check warning only thrown once
         assert test_cube.netcdf_scm_realm == expected
         assert test_cube.netcdf_scm_realm == expected
-        self._check_metadata_var_test_messages(caplog, realm, realm_key="modeling_realm")
+        self._check_metadata_var_test_messages(
+            caplog, realm, realm_key="modeling_realm"
+        )
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
