@@ -41,7 +41,7 @@ def test_crunching(
             "--small-number-workers",
             1,
             "--regions",
-            ",".join(REGIONS_TO_GET)
+            ",".join(REGIONS_TO_GET),
         ],
     )
     assert result.exit_code == 0, result.output

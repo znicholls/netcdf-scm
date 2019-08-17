@@ -60,7 +60,12 @@ class TestSCMCube(object):
         mock_iris_load_cube.assert_called_with(tfilepath, constraint=tconstraint)
         test_cube._check_cube.assert_called()
 
-    def test_process_load_data_from_identifiers_warnings(self, test_cube, caplog):
+    @patch.object(SCMCube, "_add_areacella_measure")
+    def test_process_load_data_from_identifiers_warnings(
+        self, mock_add_areacella_measure, test_cube, caplog
+    ):
+        mock_add_areacella_measure.side_effect = ValueError("mocked error")
+
         warn_1 = "warning 1"
         warn_2 = "warning 2"
         warn_area = (
@@ -460,22 +465,72 @@ class TestSCMCube(object):
 
         assert res == exp
 
-    @pytest.mark.parametrize("realm,expected", [("atmos", "areacella"), ("ocean", "areacello"), ("ocnBgchem", "areacello"), ("land", "areacella")])
+    @pytest.mark.parametrize(
+        "realm,expected",
+        [
+            ("atmos", "areacella"),
+            ("ocean", "areacello"),
+            ("ocnBgchem", "areacello"),
+            ("land", "areacella"),
+        ],
+    )
     def test_areacell_var(self, test_cube, realm, expected):
         test_cube.cube.attributes["realm"] = realm
         assert test_cube.areacell_var == expected
 
+    def _setup_test_metadata_var(self, test_cube, realm, caplog):
+        caplog.set_level(logging.INFO, logger="netcdf_scm.iris_cube_wrappers")
+        if realm is None:
+            test_cube.cube.attributes.pop("realm", None)
+        else:
+            test_cube.cube.attributes["realm"] = realm
 
-    @pytest.mark.parametrize("realm,expected", [("atmos", "sftlf"), ("ocean", "sftof"), ("ocnBgchem", "sftof"), ("land", "sftlf")])
-    def test_surface_fraction_var(self, test_cube, realm, expected):
-        test_cube.cube.attributes["realm"] = realm
+        return test_cube
+
+    def _check_metadata_var_test_messages(self, caplog, realm):
+        if realm is None:
+            assert len(caplog.messages) == 1
+            assert caplog.messages[0] == (
+                "No `realm` attribute in `self.cube`, guessing the data is in the "
+                "realm `atmos`"
+            )
+        else:
+            assert len(caplog.messages) == 0
+
+    @pytest.mark.parametrize(
+        "realm,expected",
+        [
+            ("atmos", "sftlf"),
+            ("ocean", "sftof"),
+            ("ocnBgchem", "sftof"),
+            ("land", "sftlf"),
+            (None, "sftlf"),
+        ],
+    )
+    def test_surface_fraction_var(self, test_cube, realm, expected, caplog):
+        test_cube = self._setup_test_metadata_var(test_cube, realm, caplog)
+        # do twice to check warning only thrown once
         assert test_cube.surface_fraction_var == expected
+        assert test_cube.surface_fraction_var == expected
+        self._check_metadata_var_test_messages(caplog, realm)
 
-
-    @pytest.mark.parametrize("realm,expected", [("atmos", "fx"), ("ocean", "Ofx"), ("ocnBgchem", "Ofx"), ("land", "fx")])
-    def test_table_name_for_metadata_vars(self, test_cube, realm, expected):
-        test_cube.cube.attributes["realm"] = realm
+    @pytest.mark.parametrize(
+        "realm,expected",
+        [
+            ("atmos", "fx"),
+            ("ocean", "Ofx"),
+            ("ocnBgchem", "Ofx"),
+            ("land", "fx"),
+            (None, "fx"),
+        ],
+    )
+    def test_table_name_for_metadata_vars(self, test_cube, realm, expected, caplog):
+        test_cube = self._setup_test_metadata_var(test_cube, realm, caplog)
+        # do twice to check warning only thrown once
         assert test_cube.table_name_for_metadata_vars == expected
+        assert test_cube.table_name_for_metadata_vars == expected
+        self._check_metadata_var_test_messages(caplog, realm)
+
     # table name for metadata vars  - in docstring, "table typically means table_id but is sometimes referred to differently e.g. as mip_table in CMIP5"
 
 
@@ -941,11 +996,22 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
             test_cube, caplog, expected_mip_era="CMIP5", expected_warns=5
         )
 
-
-    @pytest.mark.parametrize("realm,expected", [("atmos", "fx"), ("ocean", "fx"), ("ocnBgchem", "fx"), ("land", "fx")])
-    def test_table_name_for_metadata_vars(self, test_cube, realm, expected):
-        test_cube.cube.attributes["realm"] = realm
+    @pytest.mark.parametrize(
+        "realm,expected",
+        [
+            ("atmos", "fx"),
+            ("ocean", "fx"),
+            ("ocnBgchem", "fx"),
+            ("land", "fx"),
+            (None, "fx"),
+        ],
+    )
+    def test_table_name_for_metadata_vars(self, test_cube, realm, expected, caplog):
+        test_cube = self._setup_test_metadata_var(test_cube, realm, caplog)
+        # do twice to check warning only thrown once
         assert test_cube.table_name_for_metadata_vars == expected
+        assert test_cube.table_name_for_metadata_vars == expected
+        self._check_metadata_var_test_messages(caplog, realm)
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):

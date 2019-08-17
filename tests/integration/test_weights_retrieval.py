@@ -321,7 +321,9 @@ def test_get_scm_weights_land_bound_checks(exp_warn, cube_max, test_all_cubes, c
         expected_warn = "sftlf data max is {}, multiplying by 100 to convert units to percent".format(
             tsftlf_cube.data.max()
         )
-        assert len(caplog.messages) == 1
-        assert expected_warn == caplog.messages[0]
+        assert len(caplog.messages) == 2
+        assert caplog.messages[1] == expected_warn
     else:
-        assert len(caplog.messages) == 0
+        assert len(caplog.messages) == 1
+
+    assert caplog.messages[0] == "No `realm` attribute in `self.cube`, guessing the data is in the realm `atmos`"

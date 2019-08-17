@@ -118,10 +118,12 @@ TEST_SFTOF_PATH = os.path.join(
 )
 
 SCMDF_TIME = [
-        dt.datetime(1850, 1, 16, 12),
-        dt.datetime(1850, 2, 15, 0),
-        dt.datetime(1850, 3, 16, 12),
-    ]
+    dt.datetime(1850, 1, 16, 12),
+    dt.datetime(1850, 2, 15, 0),
+    dt.datetime(1850, 3, 16, 12),
+]
+
+
 def get_rsdt_expected_results():
     world_values = np.sum(np.sum(RAW_DATA * AREA_WEIGHTS, axis=2), axis=1) / np.sum(
         AREA_WEIGHTS
@@ -248,6 +250,7 @@ def get_rsdt_expected_results():
 
     return exp
 
+
 def get_gpp_expected_results():
     land_weights = SURFACE_FRACS * AREA_WEIGHTS
     world_values = np.sum(np.sum(RAW_DATA * land_weights, axis=2), axis=1) / np.sum(
@@ -342,7 +345,7 @@ def get_gpp_expected_results():
                 "World|North Atlantic Ocean",
                 "World|El Nino N3.4",
             },
-            get_gpp_expected_results()
+            get_gpp_expected_results(),
         ),
     ],
 )
