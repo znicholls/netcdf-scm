@@ -94,6 +94,34 @@ def test_access_cmip5_file(test_data_marble_cmip5_dir):
 
 
 @pytest.fixture
+def test_marble_cmip5_output_tas_file(test_data_marble_cmip5_dir):
+    return join(
+        test_data_marble_cmip5_dir,
+        "cmip5",
+        "historical",
+        "Amon",
+        "tas",
+        "ACCESS1-0",
+        "r1i1p1",
+        "tas_Amon_ACCESS1-0_historical_r1i1p1_187701-187703.nc",
+    )
+
+
+@pytest.fixture
+def test_marble_cmip5_output_hfds_file(test_data_marble_cmip5_dir):
+    return join(
+        test_data_marble_cmip5_dir,
+        "cmip5",
+        "historical",
+        "Omon",
+        "hfds",
+        "ACCESS1-0",
+        "r1i1p1",
+        "hfds_Omon_ACCESS1-0_historical_r1i1p1_187701-187703.nc",
+    )
+
+
+@pytest.fixture
 def test_data_cmip6input4mips_dir(test_data_root_dir):
     return join(test_data_root_dir, "cmip6input4mips")
 
