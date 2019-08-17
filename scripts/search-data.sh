@@ -2,20 +2,20 @@
 ROOT_DIR="/data/marble/cmip6/CMIP6/CMIP"
 
 declare -a search_vars=(
-  "gpp"
-  "cSoilFast"
-  "tas"
+  # "gpp"
+  # "cSoilFast"
+  # "tas"
   "hfds"
-  "thetao"
-  "areacella"
+  # "thetao"
+  # "areacella"
   "areacello"
-  "volcello"
-  "sftlf"
+  # "volcello"
+  # "sftlf"
   "sftof"
 )
 
 ## now loop through the above array
 for i in "${search_vars[@]}"
 do
-   find ${ROOT_DIR} -name "*${i}*CESM2_*historical_r7i1p1f1*" -type f
+   find ${ROOT_DIR} -name "*${i}*GFDL-CM4_piControl_r1i1p1f1*gr*" -type f
 done

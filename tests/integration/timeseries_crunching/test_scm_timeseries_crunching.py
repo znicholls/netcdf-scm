@@ -13,6 +13,7 @@ qplt.plot(cube[:, 1, 3]); plt.show()  # timeseries
 """
 import datetime as dt
 import os.path
+import re
 
 import iris
 import numpy as np
@@ -243,7 +244,7 @@ def get_rsdt_expected_results():
         / (100 * np.sum(nh_area_weights)),
         "land_fraction_southern_hemisphere": np.sum(sh_area_weights * SURFACE_FRACS)
         / (100 * np.sum(sh_area_weights)),
-        "realm": "atmos",
+        "modeling_realm": "atmos",
         "Conventions": "CF-1.5",
         "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']",
     }
@@ -307,24 +308,18 @@ def get_gpp_expected_results():
                 "World|Northern Hemisphere|Land",
                 "World|Southern Hemisphere|Land",
             ],
-            "variable": "rsdt",
-            "unit": "W m^-2",
+            "variable": "gpp",
+            "unit": "kg m^-2 s^-1",
             "climate_model": "model",
             "activity_id": "cmip5",
             "member_id": "realisation",
-            "variable_standard_name": "toa_incoming_shortwave_flux",
+            "variable_standard_name": "gross_primary_productivity_of_carbon",
             "mip_era": "CMIP5",
         },
     )
     exp.metadata = {
         "calendar": "gregorian",
-        "land_fraction": np.sum(AREA_WEIGHTS * SURFACE_FRACS)
-        / (100 * np.sum(AREA_WEIGHTS)),
-        "land_fraction_northern_hemisphere": np.sum(nh_area_weights * SURFACE_FRACS)
-        / (100 * np.sum(nh_area_weights)),
-        "land_fraction_southern_hemisphere": np.sum(sh_area_weights * SURFACE_FRACS)
-        / (100 * np.sum(sh_area_weights)),
-        "realm": "atmos",
+        "modeling_realm": "atmos",
         "Conventions": "CF-1.5",
         "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']",
     }
@@ -353,7 +348,7 @@ def test_scm_timeseries_crunching(
     assert_scmdata_frames_allclose, test_data, invalid_regions, expected_results
 ):
     tcube = MarbleCMIP5Cube()
-    tcube.load_data_from_path(TEST_RSDT_PATH)
+    tcube.load_data_from_path(test_data)
     all_regions = {
         "World",
         "World|Land",
@@ -374,7 +369,8 @@ def test_scm_timeseries_crunching(
     )
     if invalid_regions is not None:
         for r in invalid_regions:
-            with pytest.raises(ValueError, match="to be written"):
+            error_msg = re.escape("All weights are zero for region: `{}`".format(r))
+            with pytest.raises(ValueError, match=error_msg):
                 tcube.get_scm_timeseries(regions=[r])
 
     res = tcube.get_scm_timeseries(regions=regions)
@@ -410,7 +406,7 @@ def write_test_files(write_path):
         "toa_incoming_shortwave_flux",
         "rsdt",
         "W m-2",
-        {"realm": "atmos"},
+        {"modeling_realm": "atmos"},
     )
     write_data_file(
         TEST_GPP_PATH,
@@ -419,7 +415,7 @@ def write_test_files(write_path):
         "gross_primary_productivity_of_carbon",
         "gpp",
         "kg m-2 s-1",
-        {"realm": "land"},
+        {"modeling_realm": "land"},
     )
     write_data_file(
         TEST_CSOILFAST_PATH,
@@ -428,7 +424,7 @@ def write_test_files(write_path):
         "fast_soil_pool_carbon_content",
         "cSoilFast",
         "kg m-2",
-        {"realm": "land"},
+        {"modeling_realm": "land"},
     )
     write_data_file(
         TEST_HFDS_PATH,
@@ -437,7 +433,7 @@ def write_test_files(write_path):
         "surface_downward_heat_flux_in_sea_water",
         "hfds",
         "W m-2",
-        {"realm": "ocean"},
+        {"modeling_realm": "ocean"},
     )
 
 
