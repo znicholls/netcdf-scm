@@ -128,6 +128,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     _weight_calculator = None
     """:obj:`CubeWeightCalculator` to use to mask self"""
 
+    _have_guessed_realm = False
+    """bool: Have we already guessed our cube data's realm?"""
+
     def __init__(self):
         self._loaded_paths = []
         self._metadata_cubes = {}
@@ -143,7 +146,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         file. In some cases, it might be as simple as replacing ``tas`` with the value of
         ``areacell_var``.
         """
-        return "areacella"
+
+        return self._metadata_ids["areacell_var"]
 
     @property
     def surface_fraction_var(self):
@@ -157,7 +161,46 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         cases, it might be as simple as replacing ``tas`` with the value of
         ``surface_fraction_var``.
         """
-        return "sftlf"
+        return self._metadata_ids["surface_fraction_var"]
+
+    @property
+    def table_name_for_metadata_vars(self):
+        """
+        str: The name of the 'table' in which metadata variables can be found.
+
+        For example, ``fx`` or ``Ofx``.
+
+        We wrap this as a property as table typically means ``table_id`` but is
+        sometimes referred to in other ways e.g. as ``mip_table`` in CMIP5.
+        """
+        return self._metadata_ids["table_name_for_metadata_vars"]
+
+    @property
+    def _metadata_ids(self):
+        atmos_ids = {
+            "areacell_var": "areacella",
+            "surface_fraction_var": "sftlf",
+            "table_name_for_metadata_vars": "fx",
+        }
+        try:
+            if self.cube.attributes["realm"] in ("ocean", "ocnBgchem"):
+                return {
+                    "areacell_var": "areacello",
+                    "surface_fraction_var": "sftof",
+                    "table_name_for_metadata_vars": "Ofx",
+                }
+            if self.cube.attributes["realm"] in ("atmos", "land"):
+                return atmos_ids
+        except KeyError:
+            pass
+
+        if not self._have_guessed_realm:
+            logger.info(
+                "No `realm` attribute in `self.cube`, guessing the data is in the "
+                "realm `atmos`"
+            )
+            self._have_guessed_realm = True
+        return atmos_ids
 
     @property
     def time_period_regex(self):
@@ -1459,6 +1502,12 @@ class MarbleCMIP5Cube(_CMIPCube):
 
     mip_era = "CMIP5"
     """str: The MIP era to which this cube belongs"""
+
+    @property
+    def _metadata_ids(self):
+        ids = super()._metadata_ids
+        ids["table_name_for_metadata_vars"] = "fx"
+        return ids
 
     def process_filename(self, filename):
         """
