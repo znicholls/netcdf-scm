@@ -139,6 +139,36 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         self._metadata_cubes = {}
 
     @property
+    def netcdf_scm_realm(self):
+        """
+        str: The realm in which NetCDF-SCM thinks the data belongs.
+
+        This is used to make decisions about how to take averages of the data and
+        where to find metadata variables.
+
+        If it is not sure, NetCDF-SCM will guess that the data belongs to the
+        'atmosphere' realm.
+        """
+        try:
+            if self.cube.attributes[self._realm_key] in ("ocean", "ocnBgchem"):
+                return "ocean"
+            if self.cube.attributes[self._realm_key] in ("land"):
+                return "land"
+            if self.cube.attributes[self._realm_key] in ("atmos"):
+                return "atmosphere"
+        except KeyError:
+            pass
+
+        if not self._have_guessed_realm:
+            logger.info(
+                "No `%s` attribute in `self.cube`, NetCDF-SCM will treat the data "
+                "as `atmosphere`",
+                self._realm_key
+            )
+            self._have_guessed_realm = True
+        return "atmosphere"
+
+    @property
     def areacell_var(self):
         """
         str: The name of the variable associated with the area of each gridbox.
@@ -149,8 +179,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         file. In some cases, it might be as simple as replacing ``tas`` with the value of
         ``areacell_var``.
         """
-
-        return self._metadata_ids["areacell_var"]
+        if self.netcdf_scm_realm in ("ocean",):
+            return "areacello"
+        else:
+            return "areacella"
 
     @property
     def surface_fraction_var(self):
@@ -164,7 +196,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         cases, it might be as simple as replacing ``tas`` with the value of
         ``surface_fraction_var``.
         """
-        return self._metadata_ids["surface_fraction_var"]
+        if self.netcdf_scm_realm in ("ocean",):
+            return "sftof"
+        else:
+            return "sftlf"
 
     @property
     def table_name_for_metadata_vars(self):
@@ -176,35 +211,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         We wrap this as a property as table typically means ``table_id`` but is
         sometimes referred to in other ways e.g. as ``mip_table`` in CMIP5.
         """
-        return self._metadata_ids["table_name_for_metadata_vars"]
-
-    @property
-    def _metadata_ids(self):
-        atmos_ids = {
-            "areacell_var": "areacella",
-            "surface_fraction_var": "sftlf",
-            "table_name_for_metadata_vars": "fx",
-        }
-        try:
-            if self.cube.attributes[self._realm_key] in ("ocean", "ocnBgchem"):
-                return {
-                    "areacell_var": "areacello",
-                    "surface_fraction_var": "sftof",
-                    "table_name_for_metadata_vars": "Ofx",
-                }
-            if self.cube.attributes[self._realm_key] in ("atmos", "land"):
-                return atmos_ids
-        except KeyError:
-            pass
-
-        if not self._have_guessed_realm:
-            logger.info(
-                "No `%s` attribute in `self.cube`, guessing the data is in the "
-                "realm `atmos`",
-                self._realm_key
-            )
-            self._have_guessed_realm = True
-        return atmos_ids
+        if self.netcdf_scm_realm in ("ocean",):
+            return "Ofx"
+        else:
+            return "fx"
 
     @property
     def time_period_regex(self):
@@ -574,17 +584,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         }
 
     def _process_load_data_from_identifiers_warnings(self, w):
-        area_cell_warn = "Missing CF-netCDF measure variable 'areacella'"
+        area_cella_warn = "Missing CF-netCDF measure variable 'areacella'"
         area_cello_warn = "Missing CF-netCDF measure variable 'areacello'"
         for warn in w:
-            if area_cell_warn in str(warn.message):
-                self._add_area_measure(warn, self.areacell_var)
-            elif area_cello_warn in str(warn.message):
-                self._add_area_measure(warn, self.areacell_var)
+            if any([m in str(warn.message) for m in (area_cella_warn, area_cello_warn)]):
+                self._add_areacell_measure(warn, self.areacell_var)
             else:
                 logger.warning(warn.message)
 
-    def _add_area_measure(self, original_warn, area_variable):
+    def _add_areacell_measure(self, original_warn, area_variable):
         try:
             area_cube = self.get_metadata_cube(area_variable).cube
             area_measure = iris.coords.CellMeasure(
@@ -1522,10 +1530,8 @@ class MarbleCMIP5Cube(_CMIPCube):
     _realm_key = "modeling_realm"
 
     @property
-    def _metadata_ids(self):
-        ids = super()._metadata_ids
-        ids["table_name_for_metadata_vars"] = "fx"
-        return ids
+    def table_name_for_metadata_vars(self):
+        return "fx"
 
     def process_filename(self, filename):
         """

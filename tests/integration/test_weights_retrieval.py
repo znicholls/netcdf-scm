@@ -327,6 +327,5 @@ def test_get_scm_weights_land_bound_checks(exp_warn, cube_max, test_all_cubes, c
         assert len(caplog.messages) == 1
 
     assert (
-        caplog.messages[0]
-        == "No `realm` attribute in `self.cube`, guessing the data is in the realm `atmos`"
+        "NetCDF-SCM will treat the data as `atmosphere`" in caplog.messages[0]
     )
