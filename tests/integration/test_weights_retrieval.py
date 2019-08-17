@@ -107,7 +107,7 @@ def test_get_scm_masks_no_land_available(
         assert len(caplog.messages) == 4
         assert (
             caplog.messages[0]
-            == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+            == "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
         )
         assert caplog.messages[0] == caplog.messages[1]
         assert caplog.messages[2] == "Guessing latitude and longitude bounds"
@@ -116,7 +116,7 @@ def test_get_scm_masks_no_land_available(
         assert len(caplog.messages) == 3
         assert (
             caplog.messages[0]
-            == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+            == "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
         )
         assert caplog.messages[0] == caplog.messages[1]
         assert caplog.messages[2] == expected_warn
@@ -289,7 +289,7 @@ def test_get_masks_unknown_weights_warning(test_all_cubes, caplog):
     assert len(caplog.messages) == 3
     assert (
         caplog.messages[0]
-        == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+        == "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
     )
     assert caplog.records[0].levelname == "WARNING"
     assert caplog.messages[1] == "Failed to create junk weights: Unknown weights: junk"
@@ -326,4 +326,7 @@ def test_get_scm_weights_land_bound_checks(exp_warn, cube_max, test_all_cubes, c
     else:
         assert len(caplog.messages) == 1
 
-    assert caplog.messages[0] == "No `realm` attribute in `self.cube`, guessing the data is in the realm `atmos`"
+    assert (
+        caplog.messages[0]
+        == "No `realm` attribute in `self.cube`, guessing the data is in the realm `atmos`"
+    )

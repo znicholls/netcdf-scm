@@ -140,7 +140,7 @@ class TestSCMCube(object):
     @pytest.mark.parametrize("regions", [None, ["World"]])
     def test_get_scm_timeseries(self, test_sftlf_cube, test_cube, regions):
         tsftlf_cube = "mocked 124"
-        tareacella_scmcube = "mocked 4389"
+        tareacell_scmcube = "mocked 4389"
 
         exp_regions = DEFAULT_REGIONS if regions is None else regions
         test_cubes_return = {m: 3 for m in exp_regions}
@@ -153,13 +153,13 @@ class TestSCMCube(object):
 
         result = test_cube.get_scm_timeseries(
             sftlf_cube=tsftlf_cube,
-            areacella_scmcube=tareacella_scmcube,
+            areacell_scmcube=tareacell_scmcube,
             regions=regions,
         )
 
         test_cube.get_scm_timeseries_cubes.assert_called_with(
             sftlf_cube=tsftlf_cube,
-            areacella_scmcube=tareacella_scmcube,
+            areacell_scmcube=tareacell_scmcube,
             regions=exp_regions,
         )
         test_cube.convert_scm_timeseries_cubes_to_openscmdata.assert_called_with(
@@ -207,7 +207,7 @@ class TestSCMCube(object):
         assert res["mip_era"] == tmip_era
 
     @pytest.mark.parametrize("tregions", (None, ["a", "b", "custom", "World|Land"]))
-    @pytest.mark.parametrize("tareacella_scmcube", (None, "mocked areacella cube"))
+    @pytest.mark.parametrize("tareacell_scmcube", (None, "mocked areacell cube"))
     @pytest.mark.parametrize("tsftlf_scmcube", (None, "mocked sftlf cube"))
     @patch.object(CubeWeightCalculator, "get_weights")
     @patch.object(CubeWeightCalculator, "__init__")
@@ -219,7 +219,7 @@ class TestSCMCube(object):
         mock_get_weights,
         test_cube,
         tsftlf_scmcube,
-        tareacella_scmcube,
+        tareacell_scmcube,
         tregions,
     ):
         tgetweights_return = "mock return"
@@ -228,15 +228,15 @@ class TestSCMCube(object):
 
         res = test_cube.get_scm_timeseries_weights(
             sftlf_cube=tsftlf_scmcube,
-            areacella_scmcube=tareacella_scmcube,
+            areacell_scmcube=tareacell_scmcube,
             regions=tregions,
         )
 
         assert res == tgetweights_return
 
-        if tareacella_scmcube is not None:
+        if tareacell_scmcube is not None:
             mock_get_metadata_cube.assert_has_calls(
-                [call(test_cube.areacell_var, cube=tareacella_scmcube)]
+                [call(test_cube.areacell_var, cube=tareacell_scmcube)]
             )
 
         if tsftlf_scmcube is not None:
@@ -251,7 +251,7 @@ class TestSCMCube(object):
         # test calling again does not call masker again
         test_cube.get_scm_timeseries_weights(
             sftlf_cube=tsftlf_scmcube,
-            areacella_scmcube=tareacella_scmcube,
+            areacell_scmcube=tareacell_scmcube,
             regions=tregions,
         )
         assert mock_weight_calculator_init.call_count == 1
@@ -268,20 +268,20 @@ class TestSCMCube(object):
 
         expected = test_sftlf_cube.cube.data
 
-        test_cube._get_areacella_scmcube = MagicMock(return_value=test_sftlf_cube)
+        test_cube._get_areacell_scmcube = MagicMock(return_value=test_sftlf_cube)
 
         test_areacella_input = test_sftlf_cube if input_format == "scmcube" else None
 
-        result = test_cube.get_area_weights(areacella_scmcube=test_areacella_input)
-        test_cube._get_areacella_scmcube.assert_called_with(test_areacella_input)
+        result = test_cube.get_area_weights(areacell_scmcube=test_areacella_input)
+        test_cube._get_areacell_scmcube.assert_called_with(test_areacella_input)
 
         np.testing.assert_array_equal(result, expected)
 
     @pytest.mark.parametrize(
-        "areacella",
+        "areacell",
         ["not a cube", "cube attr not a cube", "iris_error", "misshaped", "no file"],
     )
-    @pytest.mark.parametrize("areacell_var", ["areacella", "area_other"])
+    @pytest.mark.parametrize("areacell_var", ["areacella", "areacello", "area_other"])
     @patch(
         "netcdf_scm.iris_cube_wrappers.SCMCube.areacell_var", new_callable=PropertyMock
     )
@@ -291,7 +291,7 @@ class TestSCMCube(object):
         test_cube,
         test_sftlf_cube,
         areacell_var,
-        areacella,
+        areacell,
         caplog,
     ):
         mock_areacell_var.return_value = areacell_var
@@ -306,22 +306,22 @@ class TestSCMCube(object):
 
         # we can use test_sftlf_cube here as all we need is an array of the
         # right shape
-        if areacella == "iris_error":
+        if areacell == "iris_error":
             iris_error_msg = "no cube found"
             test_cube.get_metadata_cube = MagicMock(
                 side_effect=ConstraintMismatchError(iris_error_msg)
             )
-        elif areacella == "misshaped":
+        elif areacell == "misshaped":
             misshaped_cube = SCMCube
             misshaped_cube.cube = iris.cube.Cube(data=np.array([1, 2]))
             test_cube.get_metadata_cube = MagicMock(return_value=misshaped_cube)
-        elif areacella == "not a cube":
-            test_cube.get_metadata_cube = MagicMock(return_value=areacella)
-        elif areacella == "cube attr not a cube":
+        elif areacell == "not a cube":
+            test_cube.get_metadata_cube = MagicMock(return_value=areacell)
+        elif areacell == "cube attr not a cube":
             weird_ob = MagicMock()
             weird_ob.cube = 23
             test_cube.get_metadata_cube = MagicMock(return_value=weird_ob)
-        elif areacella == "no file":
+        elif areacell == "no file":
             no_file_msg = "No file message here"
             test_cube.get_metadata_cube = MagicMock(side_effect=OSError(no_file_msg))
 
@@ -335,30 +335,30 @@ class TestSCMCube(object):
         test_cube.get_metadata_cube.assert_called_with(areacell_var, cube=None)
 
         fallback_warn = re.escape(
-            "Couldn't find/use areacella_cube, falling back to "
+            "Couldn't find/use areacell_cube, falling back to "
             "iris.analysis.cartography.area_weights"
         )
         radius_warn = re.escape("Using DEFAULT_SPHERICAL_EARTH_RADIUS.")
-        if areacella == "iris_error":
-            specific_warn = "Could not calculate areacella"
+        if areacell == "iris_error":
+            specific_warn = "Could not calculate areacell"
             exc_info = re.escape(iris_error_msg)
-        elif areacella == "misshaped":
+        elif areacell == "misshaped":
             specific_warn = "Area weights incompatible with lat lon grid"
             exc_info = re.escape(
                 "the sftlf_cube data must be the same shape as the cube's "
                 "longitude-latitude grid"
             )
             exc_info = None
-        elif areacella == "not a cube":
-            specific_warn = "Could not calculate areacella"
+        elif areacell == "not a cube":
+            specific_warn = "Could not calculate areacell"
             exc_info = re.escape("'str' object has no attribute 'cube'")
-        elif areacella == "cube attr not a cube":
+        elif areacell == "cube attr not a cube":
             specific_warn = re.escape(
-                "areacella cube which was found has cube attribute which isn't an iris cube"
+                "areacell cube which was found has cube attribute which isn't an iris cube"
             )
             exc_info = None
-        elif areacella == "no file":
-            specific_warn = "Could not calculate areacella"
+        elif areacell == "no file":
+            specific_warn = "Could not calculate areacell"
             exc_info = re.escape(no_file_msg)
 
         assert len(caplog.messages) == 2
@@ -367,7 +367,7 @@ class TestSCMCube(object):
         assert re.match(specific_warn, caplog.messages[0])
         if exc_info is not None:
             assert re.match(
-                "Could not calculate areacella, error message: {}".format(exc_info),
+                "Could not calculate areacell, error message: {}".format(exc_info),
                 str(caplog.records[0].message),
             )  # the actual message is stored in the exception
 

@@ -41,7 +41,7 @@ class _SCMCubeIntegrationTester(object):
     @pytest.mark.parametrize("regions_to_get", ["all", ["World", "World|Ocean"]])
     def test_get_scm_timeseries_cubes(self, test_cube, regions_to_get):
         tsftlf_cube = "mocked 124"
-        tareacella_scmcube = "mocked 4389"
+        tareacell_scmcube = "mocked 4389"
 
         land_mask = np.array([[100, 0, 0, 100], [100, 0, 100, 0], [100, 100, 0, 100]])
         land_mask = broadcast_onto_lat_lon_grid(test_cube, land_mask)
@@ -129,7 +129,7 @@ class _SCMCubeIntegrationTester(object):
             exp_cube.cube.attributes.update(test_cube._get_scm_timeseries_ids())
             expected[label] = exp_cube
 
-        result = test_cube.get_scm_timeseries_cubes(tsftlf_cube, tareacella_scmcube)
+        result = test_cube.get_scm_timeseries_cubes(tsftlf_cube, tareacell_scmcube)
 
         for label, cube in expected.items():
             assert cube.cube.attributes == result[label].cube.attributes
@@ -147,7 +147,7 @@ class _SCMCubeIntegrationTester(object):
 
         test_cube.get_scm_timeseries_weights.assert_called_with(
             sftlf_cube=tsftlf_cube,
-            areacella_scmcube=tareacella_scmcube,
+            areacell_scmcube=tareacell_scmcube,
             regions=DEFAULT_REGIONS,
         )
 
@@ -336,48 +336,48 @@ class _SCMCubeIntegrationTester(object):
             test_cube._check_data_names_in_same_directory(tdir)
 
     @pytest.mark.parametrize("guess_bounds", [True, False])
-    @pytest.mark.parametrize("input_format", ["areacella_scmcube", None])
-    @patch.object(SCMCube, "_get_areacella_scmcube")
+    @pytest.mark.parametrize("input_format", ["areacell_scmcube", None])
+    @patch.object(SCMCube, "_get_areacell_scmcube")
     def test_get_area_weights(
-        self, mock_get_areacella_scmcube, test_cube, guess_bounds, input_format, caplog
+        self, mock_get_areacell_scmcube, test_cube, guess_bounds, input_format, caplog
     ):
         caplog.set_level(logging.WARNING, logger="netcdf_scm")
 
         lat_lon_slice = next(
             test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name])
         )
-        if input_format == "areacella_scmcube":
-            tareacella_scmcube = self.tclass()
-            tareacella_scmcube.cube = lat_lon_slice.copy()
-            tareacella_scmcube.cube.data = np.ones(tareacella_scmcube.cube.shape)
+        if input_format == "areacell_scmcube":
+            tareacell_scmcube = self.tclass()
+            tareacell_scmcube.cube = lat_lon_slice.copy()
+            tareacell_scmcube.cube.data = np.ones(tareacell_scmcube.cube.shape)
         else:
-            tareacella_scmcube = None
+            tareacell_scmcube = None
 
-        mock_get_areacella_scmcube.return_value = tareacella_scmcube
+        mock_get_areacell_scmcube.return_value = tareacell_scmcube
 
         if guess_bounds:
             test_cube.lat_dim.bounds = None
             test_cube.lon_dim.bounds = None
 
-        res = test_cube.get_area_weights(areacella_scmcube=tareacella_scmcube)
-        if tareacella_scmcube is not None:
-            expected = tareacella_scmcube.cube.data
+        res = test_cube.get_area_weights(areacell_scmcube=tareacell_scmcube)
+        if tareacell_scmcube is not None:
+            expected = tareacell_scmcube.cube.data
         else:
             expected = iris.analysis.cartography.area_weights(lat_lon_slice)
 
         np.testing.assert_allclose(res, expected)
-        mock_get_areacella_scmcube.assert_called_with(tareacella_scmcube)
-        if guess_bounds and tareacella_scmcube is None:
+        mock_get_areacell_scmcube.assert_called_with(tareacell_scmcube)
+        if guess_bounds and tareacell_scmcube is None:
             assert len(caplog.messages) == 2
             assert (
                 caplog.messages[0]
-                == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+                == "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
             )
             assert caplog.messages[1] == "Guessing latitude and longitude bounds"
 
-    @patch.object(SCMCube, "_get_areacella_scmcube")
+    @patch.object(SCMCube, "_get_areacell_scmcube")
     def test_get_area_weights_incompatible(
-        self, mock_get_areacella_scmcube, test_cube, caplog
+        self, mock_get_areacell_scmcube, test_cube, caplog
     ):
         caplog.set_level(logging.WARNING, logger="netcdf_scm")
 
@@ -385,23 +385,23 @@ class _SCMCubeIntegrationTester(object):
             test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name])
         )
 
-        tareacella_scmcube = self.tclass()
-        tareacella_scmcube.cube = lat_lon_slice[1:, 1:].copy()
-        tareacella_scmcube.cube.data = np.ones(tareacella_scmcube.cube.shape)
+        tareacell_scmcube = self.tclass()
+        tareacell_scmcube.cube = lat_lon_slice[1:, 1:].copy()
+        tareacell_scmcube.cube.data = np.ones(tareacell_scmcube.cube.shape)
 
-        mock_get_areacella_scmcube.return_value = tareacella_scmcube
+        mock_get_areacell_scmcube.return_value = tareacell_scmcube
 
-        res = test_cube.get_area_weights(areacella_scmcube=tareacella_scmcube)
+        res = test_cube.get_area_weights(areacell_scmcube=tareacell_scmcube)
         expected = iris.analysis.cartography.area_weights(lat_lon_slice)
 
         np.testing.assert_allclose(res, expected)
-        mock_get_areacella_scmcube.assert_called_with(tareacella_scmcube)
+        mock_get_areacell_scmcube.assert_called_with(tareacell_scmcube)
 
         assert len(caplog.messages) == 2
         assert caplog.messages[0] == "Area weights incompatible with lat lon grid"
         assert (
             caplog.messages[1]
-            == "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+            == "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
         )
 
 
@@ -520,7 +520,8 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
 class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
     tclass = _CMIPCube
 
-    def test_load_data_from_identifiers_and_areacella(
+    # make new method to test auto add of cell_measures to check loading areacella, areacello (and eventually volcello)
+    def test_load_data_from_identifiers_and_areacell(
         self, test_cube, test_areacella_file, test_tas_file
     ):
         tfile = test_tas_file
@@ -586,7 +587,7 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         sftlf = self.tclass()
         sftlf.cube = iris.load_cube(test_sftlf_file)
 
-        var.get_scm_timeseries(sftlf_cube=sftlf, areacella_scmcube=None)
+        var.get_scm_timeseries(sftlf_cube=sftlf, areacell_scmcube=None)
 
     def test_get_data_reference_syntax(self):
         """
