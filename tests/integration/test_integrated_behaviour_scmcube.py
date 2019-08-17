@@ -520,7 +520,6 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
 class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
     tclass = _CMIPCube
 
-    # make new method to test auto add of cell_measures to check loading areacella, areacello (and eventually volcello)
     def test_load_data_from_identifiers_and_areacell(
         self, test_cube, test_areacella_file, test_tas_file
     ):
@@ -787,6 +786,22 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
         assert obs_time_points[-1] == datetime.datetime(2049, 12, 16, 12, 0)
 
         assert test_cube.model == "ACCESS1-0"
+
+    def test_load_data_auto_add_areacella(self, test_cube, test_marble_cmip5_output_tas_file):
+        test_cube.load_data_from_path(test_marble_cmip5_output_tas_file)
+
+        cell_measures = test_cube.cube.cell_measures()
+        assert len(cell_measures) == 1
+        assert cell_measures[0].standard_name == "cell_area"
+        assert cell_measures[0].var_name == "areacella"
+
+    def test_load_data_auto_add_areacello(self, test_cube, test_marble_cmip5_output_hfds_file):
+        test_cube.load_data_from_path(test_marble_cmip5_output_hfds_file)
+
+        cell_measures = test_cube.cube.cell_measures()
+        assert len(cell_measures) == 1
+        assert cell_measures[0].standard_name == "cell_area"
+        assert cell_measures[0].var_name == "areacello"
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeIntegrationTester):
@@ -1208,3 +1223,19 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
         ts = test_cube.get_scm_timeseries()
         assert (ts["unit"] == "dimensionless").all()
         assert (ts["climate_model"] == "CNRM-CM6-1").all()
+
+    def test_load_data_auto_add_areacella(self, test_cube, test_cmip6_output_tas_file):
+        test_cube.load_data_from_path(test_cmip6_output_tas_file)
+
+        cell_measures = test_cube.cube.cell_measures()
+        assert len(cell_measures) == 1
+        assert cell_measures[0].standard_name == "cell_area"
+        assert cell_measures[0].var_name == "areacella"
+
+    def test_load_data_auto_add_areacello(self, test_cube, test_cmip6_output_hfds_file):
+        test_cube.load_data_from_path(test_cmip6_output_hfds_file)
+
+        cell_measures = test_cube.cube.cell_measures()
+        assert len(cell_measures) == 1
+        assert cell_measures[0].standard_name == "cell_area"
+        assert cell_measures[0].var_name == "areacello"

@@ -193,6 +193,41 @@ def test_cmip6_output_file_1_unit(test_data_cmip6output_dir):
     )
 
 
+@pytest.fixture
+def test_cmip6_output_tas_file(test_data_cmip6output_dir):
+    return join(
+        test_data_cmip6output_dir,
+        "CMIP6",
+        "CMIP",
+        "NCAR",
+        "CESM2",
+        "historical",
+        "r7i1p1f1",
+        "Amon",
+        "tas",
+        "gn",
+        "v20190311",
+        "tas_Amon_CESM2_historical_r7i1p1f1_gn_195701-195703.nc",
+    )
+
+
+@pytest.fixture
+def test_cmip6_output_hfds_file(test_data_cmip6output_dir):
+    return join(
+        test_data_cmip6output_dir,
+        "CMIP6",
+        "CMIP",
+        "NCAR",
+        "CESM2",
+        "historical",
+        "r7i1p1f1",
+        "Omon",
+        "hfds",
+        "gn",
+        "v20190311",
+        "hfds_Omon_CESM2_historical_r7i1p1f1_gn_195701-195703.nc"
+    )
+
 # land file (lai?)
 #   - requires areacella, sftlf
 # hfds file: gn and gr
