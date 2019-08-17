@@ -460,6 +460,24 @@ class TestSCMCube(object):
 
         assert res == exp
 
+    @pytest.mark.parametrize("realm,expected", [("atmos", "areacella"), ("ocean", "areacello"), ("ocnBgchem", "areacello"), ("land", "areacella")])
+    def test_areacell_var(self, test_cube, realm, expected):
+        test_cube.cube.attributes["realm"] = realm
+        assert test_cube.areacell_var == expected
+
+
+    @pytest.mark.parametrize("realm,expected", [("atmos", "sftlf"), ("ocean", "sftof"), ("ocnBgchem", "sftof"), ("land", "sftlf")])
+    def test_surface_fraction_var(self, test_cube, realm, expected):
+        test_cube.cube.attributes["realm"] = realm
+        assert test_cube.surface_fraction_var == expected
+
+
+    @pytest.mark.parametrize("realm,expected", [("atmos", "fx"), ("ocean", "Ofx"), ("ocnBgchem", "Ofx"), ("land", "fx")])
+    def test_table_name_for_metadata_vars(self, test_cube, realm, expected):
+        test_cube.cube.attributes["realm"] = realm
+        assert test_cube.table_name_for_metadata_vars == expected
+    # table name for metadata vars  - in docstring, "table typically means table_id but is sometimes referred to differently e.g. as mip_table in CMIP5"
+
 
 class _CMIPCubeTester(TestSCMCube):
     tclass = _CMIPCube
@@ -922,6 +940,12 @@ class TestMarbleCMIP5Cube(_CMIPCubeTester):
         super().test_get_scm_timeseries_ids_warnings(
             test_cube, caplog, expected_mip_era="CMIP5", expected_warns=5
         )
+
+
+    @pytest.mark.parametrize("realm,expected", [("atmos", "fx"), ("ocean", "fx"), ("ocnBgchem", "fx"), ("land", "fx")])
+    def test_table_name_for_metadata_vars(self, test_cube, realm, expected):
+        test_cube.cube.attributes["realm"] = realm
+        assert test_cube.table_name_for_metadata_vars == expected
 
 
 class TestCMIP6Input4MIPsCube(_CMIPCubeTester):
