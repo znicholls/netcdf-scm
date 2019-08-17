@@ -620,7 +620,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self._metadata_cubes[metadata_variable]
 
-    def get_scm_timeseries(self, sftlf_cube=None, areacella_scmcube=None, regions=None):
+    def get_scm_timeseries(self, sftlf_cube=None, areacell_scmcube=None, regions=None):
         """
         Get SCM relevant timeseries from ``self``.
 
@@ -630,7 +630,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             land surface fraction data which is used to determine whether a given
             gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
 
-        areacella_scmcube : :obj:`SCMCube`, optional
+        areacell_scmcube : :obj:`SCMCube`, optional
             cell area data which is used to take the latitude-longitude mean of the
             cube's data. If ``None``, we try to load this data automatically and if
             that fails we fall back onto ``iris.analysis.cartography.area_weights``.
@@ -647,13 +647,13 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
-            sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions
+            sftlf_cube=sftlf_cube, areacell_scmcube=areacell_scmcube, regions=regions
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
     def get_scm_timeseries_weights(
-        self, sftlf_cube=None, areacella_scmcube=None, regions=None
+        self, sftlf_cube=None, areacell_scmcube=None, regions=None
     ):
         """
         Get the scm timeseries weights
@@ -664,7 +664,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             land surface fraction data which is used to determine whether a given
             gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
 
-        areacella_scmcube : :obj:`SCMCube`, optional
+        areacell_scmcube : :obj:`SCMCube`, optional
             cell area data which is used to take the latitude-longitude mean of the
             cube's data. If ``None``, we try to load this data automatically and if
             that fails we fall back onto ``iris.analysis.cartography.area_weights``.
@@ -678,9 +678,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         dict
             Dictionary of region name-weights key-value pairs
         """
-        if areacella_scmcube is not None:
+        if areacell_scmcube is not None:
             # set area cube to appropriate variable
-            self.get_metadata_cube(self.areacell_var, cube=areacella_scmcube)
+            self.get_metadata_cube(self.areacell_var, cube=areacell_scmcube)
 
         if sftlf_cube is not None:
             # set area cube to appropriate variable
@@ -695,7 +695,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return scm_weights
 
     def get_scm_timeseries_cubes(
-        self, sftlf_cube=None, areacella_scmcube=None, regions=None
+        self, sftlf_cube=None, areacell_scmcube=None, regions=None
     ):
         """
         Get SCM relevant cubes
@@ -717,7 +717,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             land surface fraction data which is used to determine whether a given
             gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
 
-        areacella_scmcube : :obj:`SCMCube`, optional
+        areacell_scmcube : :obj:`SCMCube`, optional
             cell area data which is used to take the latitude-longitude mean of the
             cube's data. If ``None``, we try to load this data automatically and if
             that fails we fall back onto ``iris.analysis.cartography.area_weights``.
@@ -734,7 +734,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
         scm_timeseries_weights = self.get_scm_timeseries_weights(
-            sftlf_cube=sftlf_cube, areacella_scmcube=areacella_scmcube, regions=regions
+            sftlf_cube=sftlf_cube, areacell_scmcube=areacell_scmcube, regions=regions
         )
 
         def crunch_timeseries(region, weights):
@@ -854,31 +854,30 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return scmcube
 
-    def get_area_weights(self, areacella_scmcube=None):
+    def get_area_weights(self, areacell_scmcube=None):
         """
         Get area weights for this cube
 
         Parameters
         ----------
-        areacella_scmcube : :obj:`ScmCube`
-            :obj:`ScmCube` containing areacella data. If ``None``, we calculate the weights using iris.
+        areacell_scmcube : :obj:`ScmCube`
+            :obj:`ScmCube` containing areacell data. If ``None``, we calculate the weights using iris.
 
         Returns
         -------
         np.ndarray
             Weights on the cube's latitude-longitude grid.
         """
-        areacella_scmcube = self._get_areacella_scmcube(areacella_scmcube)
+        areacell_scmcube = self._get_areacell_scmcube(areacell_scmcube)
 
-        if areacella_scmcube is not None:
-            areacella_cube = areacella_scmcube.cube
-            area_weights = areacella_cube.data
+        if areacell_scmcube is not None:
+            area_weights = areacell_scmcube.cube.data
             if cube_lat_lon_grid_compatible_with_array(self, area_weights):
                 return area_weights
             logger.exception("Area weights incompatible with lat lon grid")
 
         logger.warning(
-            "Couldn't find/use areacella_cube, falling back to iris.analysis.cartography.area_weights"
+            "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
         )
         try:
             lat_lon_slice = next(self.cube.slices([self.lat_name, self.lon_name]))
@@ -892,17 +891,17 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return iris_weights
 
-    def _get_areacella_scmcube(self, areacella_scmcube):
+    def _get_areacell_scmcube(self, areacell_scmcube):
         try:
-            areacella_scmcube = self.get_metadata_cube(
-                self.areacell_var, cube=areacella_scmcube
+            areacell_scmcube = self.get_metadata_cube(
+                self.areacell_var, cube=areacell_scmcube
             )
-            if not isinstance(areacella_scmcube.cube, iris.cube.Cube):
+            if not isinstance(areacell_scmcube.cube, iris.cube.Cube):
                 logger.warning(
-                    "areacella cube which was found has cube attribute which isn't an iris cube"
+                    "areacell cube which was found has cube attribute which isn't an iris cube"
                 )
             else:
-                return areacella_scmcube
+                return areacell_scmcube
         except (
             iris.exceptions.ConstraintMismatchError,
             AttributeError,
@@ -911,7 +910,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             NotImplementedError,
             KeyError,
         ) as e:
-            logger.debug("Could not calculate areacella, error message: %s", e)
+            logger.debug("Could not calculate areacell, error message: %s", e)
 
         return None
 
