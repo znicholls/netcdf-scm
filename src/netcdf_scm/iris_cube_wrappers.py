@@ -256,6 +256,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self._timestamp_definitions
 
     @property
+    def dim_names(self):
+        """
+        list: Names of the dimensions in this cube
+        Here the names are the ``standard_names`` which means there can be
+        ``None`` in the output.
+        """
+        return [c.standard_name for c in self.cube.coords()]
+
+    @property
     def lon_dim(self):
         """:obj:`iris.coords.DimCoord` The longitude dimension of the data."""
         return self.cube.coord(self.lon_name)
@@ -268,7 +277,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         e.g. if longitude is the third dimension of the data, then
         ``self.lon_dim_number`` will be ``2`` (Python is zero-indexed).
         """
-        return self.cube.coord_dims(self.lon_name)[0]
+        return self.dim_names.index(self.lon_name)
 
     @property
     def lat_dim(self):
@@ -283,7 +292,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         e.g. if latitude is the first dimension of the data, then
         ``self.lat_dim_number`` will be ``0`` (Python is zero-indexed).
         """
-        return self.cube.coord_dims(self.lat_name)[0]
+        return self.dim_names.index(self.lat_name)
 
     @property
     def time_dim(self):
@@ -566,33 +575,37 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
     def _process_load_data_from_identifiers_warnings(self, w):
         area_cell_warn = "Missing CF-netCDF measure variable 'areacella'"
+        area_cello_warn = "Missing CF-netCDF measure variable 'areacello'"
         for warn in w:
             if area_cell_warn in str(warn.message):
-                try:
-                    self._add_areacella_measure()
-                except Exception:  # pylint:disable=broad-except
-                    error_msg = (
-                        str(warn.message)
-                        + ". Tried to add areacella cube but another exception was raised:"
-                    )
-                    logger.debug(error_msg)
+                self._add_area_measure(warn, self.areacell_var)
+            elif area_cello_warn in str(warn.message):
+                self._add_area_measure(warn, self.areacell_var)
             else:
                 logger.warning(warn.message)
 
-    def _add_areacella_measure(self):
-        areacella_cube = self.get_metadata_cube(self.areacell_var).cube
-        areacella_measure = iris.coords.CellMeasure(
-            areacella_cube.core_data(),
-            standard_name=areacella_cube.standard_name,
-            long_name=areacella_cube.long_name,
-            var_name=areacella_cube.var_name,
-            units=areacella_cube.units,
-            attributes=areacella_cube.attributes,
-            measure="area",
-        )
-        self.cube.add_cell_measure(
-            areacella_measure, data_dims=[self.lat_dim_number, self.lon_dim_number]
-        )
+    def _add_area_measure(self, original_warn, area_variable):
+        try:
+            area_cube = self.get_metadata_cube(area_variable).cube
+            area_measure = iris.coords.CellMeasure(
+                area_cube.core_data(),
+                standard_name=area_cube.standard_name,
+                long_name=area_cube.long_name,
+                var_name=area_cube.var_name,
+                units=area_cube.units,
+                attributes=area_cube.attributes,
+                measure="area",
+            )
+            self.cube.add_cell_measure(
+                area_measure, data_dims=[self.lat_dim_number, self.lon_dim_number]
+            )
+        except Exception as e:  # pylint:disable=broad-except
+            error_msg = str(
+                original_warn.message
+            ) + ". Tried to add {} cube but another exception was raised: {}".format(
+                area_variable, str(e)
+            )
+            logger.debug(error_msg)
 
     def get_metadata_cube(self, metadata_variable, cube=None):
         """
@@ -1644,7 +1657,7 @@ class MarbleCMIP5Cube(_CMIPCube):
             "root_dir": self.root_dir,
             "activity": self.activity,
             "experiment": self.experiment,
-            "mip_table": "fx",
+            "mip_table": self.table_name_for_metadata_vars,
             "variable_name": metadata_variable,
             "model": self.model,
             "ensemble_member": "r0i0p0",
@@ -2099,7 +2112,7 @@ class CMIP6OutputCube(_CMIPCube):
             "source_id": self.source_id,
             "experiment_id": self.experiment_id,
             "member_id": self.member_id,
-            "table_id": "fx",
+            "table_id": self.table_name_for_metadata_vars,
             "variable_id": metadata_variable,
             "grid_label": self.grid_label,
             "version": self.version,
