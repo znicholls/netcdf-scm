@@ -36,7 +36,7 @@ try:
     from iris.util import unify_time_units
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
-    from iris.exceptions import CoordinateNotFoundError, ConcatenateError
+    from iris.exceptions import CoordinateMultiDimError, CoordinateNotFoundError, ConcatenateError
     from iris.fileformats import netcdf
     import cftime
     import cf_units
@@ -652,15 +652,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self._metadata_cubes[metadata_variable]
 
-    def get_scm_timeseries(self, sftlf_cube=None, areacell_scmcube=None, regions=None):
+    def get_scm_timeseries(self, surface_fraction_cube=None, areacell_scmcube=None, regions=None):
         """
         Get SCM relevant timeseries from ``self``.
 
         Parameters
         ----------
-        sftlf_cube : :obj:`SCMCube`, optional
-            land surface fraction data which is used to determine whether a given
-            gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
+        surface_fraction_cube : :obj:`SCMCube`, optional
+            surface fraction data which is defines surface fraction weights. If
+            ``None``, we try to load the land surface fraction automatically.
 
         areacell_scmcube : :obj:`SCMCube`, optional
             cell area data which is used to take the latitude-longitude mean of the
@@ -679,20 +679,20 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
-            sftlf_cube=sftlf_cube, areacell_scmcube=areacell_scmcube, regions=regions
+            surface_fraction_cube=surface_fraction_cube, areacell_scmcube=areacell_scmcube, regions=regions
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
 
     def get_scm_timeseries_weights(
-        self, sftlf_cube=None, areacell_scmcube=None, regions=None
+        self, surface_fraction_cube=None, areacell_scmcube=None, regions=None
     ):
         """
         Get the scm timeseries weights
 
         Parameters
         ----------
-        sftlf_cube : :obj:`SCMCube`, optional
+        surface_fraction_cube : :obj:`SCMCube`, optional
             land surface fraction data which is used to determine whether a given
             gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
 
@@ -714,9 +714,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             # set area cube to appropriate variable
             self.get_metadata_cube(self.areacell_var, cube=areacell_scmcube)
 
-        if sftlf_cube is not None:
+        if surface_fraction_cube is not None:
             # set area cube to appropriate variable
-            self.get_metadata_cube(self.surface_fraction_var, cube=sftlf_cube)
+            self.get_metadata_cube(self.surface_fraction_var, cube=surface_fraction_cube)
 
         if self._weight_calculator is None:
             self._weight_calculator = CubeWeightCalculator(self)
@@ -727,7 +727,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return scm_weights
 
     def get_scm_timeseries_cubes(
-        self, sftlf_cube=None, areacell_scmcube=None, regions=None
+        self, surface_fraction_cube=None, areacell_scmcube=None, regions=None
     ):
         """
         Get SCM relevant cubes
@@ -745,7 +745,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         Parameters
         ----------
-        sftlf_cube : :obj:`SCMCube`, optional
+        surface_fraction_cube : :obj:`SCMCube`, optional
             land surface fraction data which is used to determine whether a given
             gridbox is land or ocean. If ``None``, we try to load the land surface fraction automatically.
 
@@ -766,7 +766,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
         scm_timeseries_weights = self.get_scm_timeseries_weights(
-            sftlf_cube=sftlf_cube, areacell_scmcube=areacell_scmcube, regions=regions
+            surface_fraction_cube=surface_fraction_cube, areacell_scmcube=areacell_scmcube, regions=regions
         )
 
         def crunch_timeseries(region, weights):
@@ -934,8 +934,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             iris_weights = iris.analysis.cartography.area_weights(lat_lon_slice)
         except ValueError:
             logger.warning("Guessing latitude and longitude bounds")
-            self.cube.coord("latitude").guess_bounds()
-            self.cube.coord("longitude").guess_bounds()
+            try:
+                self.cube.coord("latitude").guess_bounds()
+                self.cube.coord("longitude").guess_bounds()
+            except CoordinateMultiDimError:
+                error_msg = (
+                    "iris does not yet support multi-dimensional co-ordinates, you "
+                    "will need your data's cell area information before you can crunch"
+                )
+                raise CoordinateMultiDimError(error_msg)
             lat_lon_slice = next(self.cube.slices([self.lat_name, self.lon_name]))
             iris_weights = iris.analysis.cartography.area_weights(lat_lon_slice)
 

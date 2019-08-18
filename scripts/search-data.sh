@@ -17,5 +17,5 @@ declare -a search_vars=(
 ## now loop through the above array
 for i in "${search_vars[@]}"
 do
-   find ${ROOT_DIR} -name "*${i}*GFDL-CM4_piControl_r1i1p1f1*gr*" -type f
+   find ${ROOT_DIR} -name "*${i}*CESM2*historical*r7i1p1f1*" -type f
 done

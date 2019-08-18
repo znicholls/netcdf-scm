@@ -162,9 +162,12 @@ def test_cmip6input4mips_projection_concs_file(test_data_cmip6input4mips_dir):
     )
 
 
+TEST_DATA_CMIP6OUTPUT_DIR = join(TEST_DATA_ROOT_DIR, "cmip6output")
+
+
 @pytest.fixture
 def test_data_cmip6output_dir(test_data_root_dir):
-    return join(test_data_root_dir, "cmip6output")
+    return TEST_DATA_CMIP6OUTPUT_DIR
 
 
 @pytest.fixture
@@ -239,23 +242,37 @@ def test_cmip6_output_tas_file(test_data_cmip6output_dir):
     )
 
 
+TEST_CMIP6OUTPUT_HFDS_FILE = join(
+    TEST_DATA_CMIP6OUTPUT_DIR,
+    "CMIP6",
+    "CMIP",
+    "NCAR",
+    "CESM2",
+    "historical",
+    "r7i1p1f1",
+    "Omon",
+    "hfds",
+    "gn",
+    "v20190311",
+    "hfds_Omon_CESM2_historical_r7i1p1f1_gn_195701-195703.nc",
+)
 @pytest.fixture
-def test_cmip6_output_hfds_file(test_data_cmip6output_dir):
-    return join(
-        test_data_cmip6output_dir,
-        "CMIP6",
-        "CMIP",
-        "NCAR",
-        "CESM2",
-        "historical",
-        "r7i1p1f1",
-        "Omon",
-        "hfds",
-        "gn",
-        "v20190311",
-        "hfds_Omon_CESM2_historical_r7i1p1f1_gn_195701-195703.nc",
-    )
+def test_cmip6_output_hfds_file():
+    return TEST_CMIP6OUTPUT_HFDS_FILE
 
+
+TEST_CMIP6OUTPUT_HFDS_NATIVE_GRID_FILE = TEST_CMIP6OUTPUT_HFDS_FILE.replace("gr", "gn")
+@pytest.fixture
+def test_cmip6_output_hfds_native_grid_file():
+    return TEST_CMIP6OUTPUT_HFDS_NATIVE_GRID_FILE
+
+
+@pytest.fixture(
+    scope="function",
+    params=[TEST_CMIP6OUTPUT_HFDS_FILE, TEST_CMIP6OUTPUT_HFDS_NATIVE_GRID_FILE]
+)
+def test_cmip6_output_hfds_files(request):
+    return request.param
 
 # land file (lai?)
 #   - requires areacella, sftlf
