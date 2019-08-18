@@ -246,7 +246,7 @@ def get_rsdt_expected_results():
         / (100 * np.sum(sh_area_weights)),
         "modeling_realm": "atmos",
         "Conventions": "CF-1.5",
-        "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']",
+        "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']",
     }
 
     return exp
@@ -319,9 +319,107 @@ def get_gpp_expected_results():
     )
     exp.metadata = {
         "calendar": "gregorian",
-        "modeling_realm": "atmos",
+        "modeling_realm": "land",
         "Conventions": "CF-1.5",
-        "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']",
+        "crunch_source_files": "Files: ['/cmip5/experiment/Lmon/gpp/model/realisation/gpp_Lmon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']",
+    }
+
+    return exp
+
+
+def get_csoilfast_expected_results():
+    exp_scmdf = get_gpp_expected_results()
+    exp_scmdf.set_meta("cSoilFast", "variable")
+    exp_scmdf.set_meta("fast_soil_pool_carbon_content", "variable_standard_name")
+    exp_scmdf.set_meta("kg m^-2", "unit")
+
+    exp_scmdf.metadata["crunch_source_files"] = "Files: ['/cmip5/experiment/Lmon/cSoilFast/model/realisation/cSoilFast_Lmon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']"
+
+    return exp_scmdf
+
+
+def get_hfds_expected_results():
+    sftof_fracs = 100 - SURFACE_FRACS
+    ocean_weights = sftof_fracs * AREA_WEIGHTS
+    world_values = np.sum(np.sum(RAW_DATA * ocean_weights, axis=2), axis=1) / np.sum(
+        ocean_weights
+    )
+
+    world_ocean_values = world_values
+
+    nh_area_weights = np.copy(AREA_WEIGHTS)
+    nh_area_weights[2, :] = 0
+    # we do these by hand: yes they're very slow but that's the point
+    world_nh_ocean_values = np.array(
+        [
+            (30 * 100 + 40 * 70 + 50 * 100 + 60 * 90) * 1.2
+            + (110 * 20 + 190 * 100 + 260 * 50) * 2,
+            (0 * 100 + 15 * 70 + 45 * 100 + 90 * 90) * 1.2
+            + (300 * 20 + 450 * 100 + 270 * 50) * 2,
+            (60 * 100 + 120 * 70 + 60 * 100 + 60 * 90) * 1.2
+            + (510 * 20 + 220 * 100 + 280 * 50) * 2,
+        ]
+    ) / ((100 + 70 + 100 + 90) * 1.2 + (20 + 100 + 50) * 2)
+    world_nh_values = world_nh_ocean_values
+
+    sh_area_weights = np.copy(AREA_WEIGHTS)
+    sh_area_weights[:2, :] = 0
+    world_sh_ocean_values = np.array(
+        [
+            (3 * 80 + 60 * 90 + 20 * 49 + 40 * 85) * 1.1,
+            (10 * 80 + 70 * 90 + 90 * 49 + 130 * 85) * 1.1,
+            (50 * 80 + 60 * 90 + 55 * 49 + 60 * 85) * 1.1,
+        ]
+    ) / ((80 + 90 + 49 + 85) * 1.1)
+    world_sh_values = world_sh_ocean_values
+
+    world_north_atlantic_values = np.array([260, 270, 280])
+
+    world_elnino_values = np.array([190, 450, 220])
+
+    data = np.vstack(
+        [
+            world_values,
+            world_ocean_values,
+            world_nh_values,
+            world_sh_values,
+            world_nh_ocean_values,
+            world_sh_ocean_values,
+            world_north_atlantic_values,
+            world_elnino_values,
+        ]
+    ).T
+
+    exp = ScmDataFrame(
+        data=data,
+        index=SCMDF_TIME,
+        columns={
+            "model": "unspecified",
+            "scenario": "experiment",
+            "region": [
+                "World",
+                "World|Ocean",
+                "World|Northern Hemisphere",
+                "World|Southern Hemisphere",
+                "World|Northern Hemisphere|Ocean",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            ],
+            "variable": "hfds",
+            "unit": "W m^-2",
+            "climate_model": "model",
+            "activity_id": "cmip5",
+            "member_id": "realisation",
+            "variable_standard_name": "surface_downward_heat_flux_in_sea_water",
+            "mip_era": "CMIP5",
+        },
+    )
+    exp.metadata = {
+        "calendar": "gregorian",
+        "modeling_realm": "ocean",
+        "Conventions": "CF-1.5",
+        "crunch_source_files": "Files: ['/cmip5/experiment/Omon/hfds/model/realisation/hfds_Omon_model_experiment_realisation_185001-185003.nc']; sftof: ['/cmip5/experiment/fx/sftof/model/r0i0p0/sftof_fx_model_experiment_r0i0p0.nc']; areacello: ['/cmip5/experiment/fx/areacello/model/r0i0p0/areacello_fx_model_experiment_r0i0p0.nc']",
     }
 
     return exp
@@ -341,6 +439,26 @@ def get_gpp_expected_results():
                 "World|El Nino N3.4",
             },
             get_gpp_expected_results(),
+        ),
+        (
+            TEST_CSOILFAST_PATH,
+            {
+                "World|Ocean",
+                "World|Northern Hemisphere|Ocean",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            },
+            get_csoilfast_expected_results(),
+        ),
+        (
+            TEST_HFDS_PATH,
+            {
+                "World|Land",
+                "World|Northern Hemisphere|Land",
+                "World|Southern Hemisphere|Land",
+            },
+            get_hfds_expected_results(),
         ),
     ],
 )
@@ -395,7 +513,7 @@ def write_test_files(write_path):
         TEST_SFTLF_PATH, lat, lon, "land_area_fraction", "sftlf", "%"
     )
     write_surface_frac_file(
-        TEST_SFTOF_PATH, lat, lon, "sea_area_fraction", "sftof", "%"
+        TEST_SFTOF_PATH, lat, lon, "sea_area_fraction", "sftof", "%", inverse=True
     )
     write_area_file(TEST_AREACEALLA_PATH, lat, lon, "cell_area", "areacella", "m^2")
     write_area_file(TEST_AREACEALLO_PATH, lat, lon, "cell_area", "areacello", "m^2")
@@ -437,9 +555,10 @@ def write_test_files(write_path):
     )
 
 
-def write_surface_frac_file(write_path, lat, lon, standard_name, var_name, units):
+def write_surface_frac_file(write_path, lat, lon, standard_name, var_name, units, inverse=False):
+    data = SURFACE_FRACS if not inverse else 100 - SURFACE_FRACS
     cube = iris.cube.Cube(
-        SURFACE_FRACS,
+        data,
         standard_name=standard_name,
         var_name=var_name,
         units=units,
