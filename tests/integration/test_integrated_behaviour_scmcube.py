@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from dateutil import parser
+from iris.exceptions import CoordinateMultiDimError
 from iris.util import broadcast_to_shape
 from openscm.scmdataframe import ScmDataFrame
 from pandas.testing import assert_frame_equal
@@ -1247,3 +1248,79 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
         assert len(cell_measures) == 1
         assert cell_measures[0].standard_name == "cell_area"
         assert cell_measures[0].var_name == "areacello"
+
+    def test_load_hfds_data(self, test_cube, test_cmip6_output_hfds_files):
+        test_cube.load_data_from_path(test_cmip6_output_hfds_files)
+
+        obs_time = test_cube.cube.dim_coords[0]
+        assert obs_time.units.name == "day since 1-01-01 00:00:00.000000 UTC"
+        assert obs_time.units.calendar == "365_day"
+
+        obs_time_points = cf_units.num2date(
+            obs_time.points, obs_time.units.name, obs_time.units.calendar
+        )
+
+        assert obs_time_points[0] == cftime.DatetimeNoLeap(1957, 1, 15, 12, 0, 0, 0, 6, 15)
+        assert obs_time_points[-1] == cftime.DatetimeNoLeap(1957, 3, 15, 12, 0, 0, 0, 6, 15)
+
+        assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
+
+        error_msg = re.escape(
+            "All weights are zero for region: `World|Land`"
+        )
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.get_scm_timeseries(regions=["World|Land"])
+
+        ts = test_cube.get_scm_timeseries(
+            regions=[
+                "World",
+                "World|Northern Hemisphere",
+                "World|Northern Hemisphere|Ocean",
+                "World|Ocean",
+                "World|Southern Hemisphere",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            ]
+        )
+        assert sorted(ts["region"].tolist()) == sorted(
+            [
+                "World",
+                "World|Northern Hemisphere",
+                "World|Northern Hemisphere|Ocean",
+                "World|Ocean",
+                "World|Southern Hemisphere",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            ]
+        )
+        assert (ts["variable"] == "hfds").all()
+        assert (
+            ts["variable_standard_name"] == "surface_downward_heat_flux_in_sea_water"
+        ).all()
+        assert (ts["unit"] == "W m^-2").all()
+        assert (ts["climate_model"] == "CESM2").all()
+        np.testing.assert_allclose(
+            ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(),
+            135.081997,
+            rtol=0.01,
+        )
+
+    @patch.object(tclass, "_get_areacell_scmcube", return_value=None)
+    def test_load_hfds_data_native_grid_no_areacello_error(
+        self, mock_get_areacell_scmcube, test_cube, test_cmip6_output_hfds_native_grid_file
+    ):
+        test_cube.load_data_from_path(test_cmip6_output_hfds_native_grid_file)
+        error_msg = re.escape(
+            "iris does not yet support multi-dimensional co-ordinates, you will "
+            "need your data's cell area information before you can crunch"
+        )
+        with pytest.raises(CoordinateMultiDimError, match=error_msg):
+            test_cube.get_scm_timeseries(
+                regions=[
+                    "World",
+                    "World|Northern Hemisphere",
+                    "World|Northern Hemisphere|Ocean",
+                ]
+            )

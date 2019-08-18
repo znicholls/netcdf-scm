@@ -167,7 +167,7 @@ def test_crunching_join_files(tmpdir, caplog, test_data_cmip6output_dir):
                 "CMIP6Output",
                 "-f",
                 "--small-threshold",
-                1,
+                0,
                 "--medium-number-workers",
                 1,
             ],
@@ -221,7 +221,7 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
                 DATA_SUB_DIR,
                 "-f",
                 "--small-threshold",
-                1,
+                0,
                 "--medium-threshold",
                 2,
             ],
@@ -263,6 +263,17 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
     assert (loaded["member_id"] == "r1i1p1").all()
     assert (loaded["mip_era"] == "CMIP5").all()
     assert (loaded["activity_id"] == "cmip5").all()
+    assert sorted(loaded["region"].unique()) == sorted([
+            "World",
+            "World|Land",
+            "World|Ocean",
+            "World|Northern Hemisphere",
+            "World|Northern Hemisphere|Land",
+            "World|Northern Hemisphere|Ocean",
+            "World|Southern Hemisphere",
+            "World|Southern Hemisphere|Land",
+            "World|Northern Hemisphere|Ocean",
+    ])
     # file is entirely zeros...
     np.testing.assert_allclose(loaded.timeseries().values, 0)
 
@@ -334,3 +345,53 @@ def test_crunching_broken_dir(
 
     assert result.exit_code  # assert failure raised
     assert "Directory checking failed on" in result.output, result.output
+
+
+def test_auto_drop_land_regions(tmpdir, caplog, test_data_cmip6output_dir):
+    OUTPUT_DIR = str(tmpdir)
+    crunch_contact = "join-files-test"
+
+    runner = CliRunner(mix_stderr=False)
+    with caplog.at_level("DEBUG"):
+        result = runner.invoke(
+            crunch_data,
+            [
+                test_data_cmip6output_dir,
+                OUTPUT_DIR,
+                crunch_contact,
+                "--regexp",
+                ".*hfds.*",
+                "--drs",
+                "CMIP6Output",
+                "--small-number-workers",
+                1,
+            ],
+        )
+    assert result.exit_code == 0
+    assert "Detected ocean data, dropping land related regions so regions to crunch are now: {}".format(["a", "b"]) in result.output, result.output
+    assert False
+
+
+def test_auto_drop_ocean_regions(tmpdir, caplog, test_data_cmip6output_dir):
+    OUTPUT_DIR = str(tmpdir)
+    crunch_contact = "join-files-test"
+
+    runner = CliRunner(mix_stderr=False)
+    with caplog.at_level("DEBUG"):
+        result = runner.invoke(
+            crunch_data,
+            [
+                test_data_cmip6output_dir,
+                OUTPUT_DIR,
+                crunch_contact,
+                "--regexp",
+                ".*gpp.*",
+                "--drs",
+                "CMIP6Output",
+                "--small-number-workers",
+                1,
+            ],
+        )
+    assert result.exit_code == 0
+    assert "Detected land data, dropping ocean related regions so regions to crunch are now: {}".format(["a", "b"]) in result.output, result.output
+    assert False
