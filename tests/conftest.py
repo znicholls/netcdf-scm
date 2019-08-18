@@ -488,9 +488,11 @@ def assert_scmdata_frames_allclose():
             for k, v in base.metadata.items():
                 if k == "crunch_netcdf_scm_version":
                     continue  # will change with version
-                if isinstance(v, (np.ndarray, np.float, np.int)):
+                if k == "crunch_source_files":
+                    assert sorted([w.strip() for w in v.split(";")]) == sorted([w.strip() for w in check.metadata[k].split(";")])
+                elif isinstance(v, (np.ndarray, np.float, np.int)):
                     np.testing.assert_allclose(v, check.metadata[k])
                 else:
-                    v == check.metadata[k]
+                    assert v == check.metadata[k]
 
     return _do_assertion
