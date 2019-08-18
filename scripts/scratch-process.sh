@@ -7,7 +7,7 @@ DRS="CMIP6Output"
 REGEXP="^(?!.*fx).*IPSL.*$"
 # have to be super careful when crunching input files as the duplicate grids can cause
 # things to explode
-REGEXP_WRANGLE_IN_FILES=".*tas/.*gr/.*"
+REGEXP_WRANGLE_IN_FILES="^((?!historical).)*tas/.*gr/.*"
 
 netcdf-scm-crunch "${SRC_DIR}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp "${REGEXP}" -f
 netcdf-scm-crunch "${SRC_DIR}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp "${REGEXP}" -f --small-number-workers 1

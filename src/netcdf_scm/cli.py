@@ -620,7 +620,9 @@ def _get_blended_model_regexp(drs, dirpath):
     scmcube = _get_scmcube_helper(drs)
     ids = {
         k: v
-        if any([s in k for s in ["variable", "experiment", "activity", "mip"]])
+        if any(
+            [s in k for s in ["variable", "experiment", "activity", "mip", "member_id"]]
+        )
         else ".*"
         for k, v in scmcube.process_path(dirpath).items()
     }

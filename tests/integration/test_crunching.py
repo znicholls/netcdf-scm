@@ -61,7 +61,7 @@ def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_di
         join(OUTPUT_DIR, "netcdf-scm-crunched", "netcdf-scm_crunched.jsonl")
     ) as fh:
         lines = fh.readlines()
-        assert len(lines) == 5
+        assert len(lines) == 6
 
         # check that CanESM2 has areacella file
         for l in lines:
@@ -136,7 +136,7 @@ def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_di
                 )
             )
 
-    assert files_found == 5
+    assert files_found == 6
 
 
 def test_crunching_join_files(tmpdir, caplog, test_data_cmip6output_dir):
