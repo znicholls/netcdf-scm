@@ -104,6 +104,12 @@ def init_logging(params, out_filename=None):
     help="Regular expression to apply to file directory (only crunches matches).",
 )
 @click.option(
+    "--regions",
+    default="World,World|Northern Hemisphere,World|Southern Hemisphere,World|Land,World|Ocean,World|Northern Hemisphere|Land,World|Southern Hemisphere|Land,World|Northern Hemisphere|Ocean,World|Southern Hemisphere|Ocean",
+    show_default=True,
+    help="Comma-separated regions to crunch.",
+)
+@click.option(
     "--data-sub-dir",
     default="netcdf-scm-crunched",
     show_default=True,
@@ -146,6 +152,7 @@ def crunch_data(
     crunch_contact,
     drs,
     regexp,
+    regions,
     data_sub_dir,
     force,
     small_number_workers,
@@ -182,6 +189,7 @@ def crunch_data(
             ("destination", out_dir),
             ("drs", drs),
             ("regexp", regexp),
+            ("regions", regions),
             ("force", force),
             ("small_number_workers", small_number_workers),
             ("small_threshold", small_threshold),
@@ -228,6 +236,7 @@ def crunch_data(
         "separator": separator,
         "output_prefix": output_prefix,
         "out_dir": out_dir,
+        "regions": regions,
         "force": force,
         "existing_files": tracker._data,  # pylint:disable=protected-access
         "crunch_contact": crunch_contact,
@@ -308,6 +317,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments
     separator=None,
     output_prefix=None,
     out_dir=None,
+    regions=None,
     force=None,
     existing_files=None,
     crunch_contact=None,
@@ -326,7 +336,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments
         logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
         return None
 
-    results = scmcube.get_scm_timeseries_cubes()
+    results = scmcube.get_scm_timeseries_cubes(regions=regions.split(","))
     results = _set_crunch_contact_in_results(results, crunch_contact)
 
     return results, out_filepath, scmcube.info

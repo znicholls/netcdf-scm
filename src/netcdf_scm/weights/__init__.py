@@ -317,7 +317,10 @@ def get_binary_nh_weights(
     weights_nh_lat = np.array([c >= 0 for c in cube.lat_dim.points]).astype(int)
     weights_all_lon = np.ones(cube.lon_dim.points.shape)
 
-    weights_nh = np.outer(weights_nh_lat, weights_all_lon)
+    if len(weights_nh_lat.shape) > 1:
+        weights_nh = weights_nh_lat * weights_all_lon
+    else:
+        weights_nh = np.outer(weights_nh_lat, weights_all_lon)
 
     return weights_nh
 
