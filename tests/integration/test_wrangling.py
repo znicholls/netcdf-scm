@@ -102,7 +102,7 @@ def test_wrangling_magicc_input_files(tmpdir, caplog, test_marble_cmip5_crunch_o
                 "--out-format",
                 "magicc-input-files-point-end-of-year",
                 "--regexp",
-                ".*tas.*",
+                "^((?!historical).)*tas.*$",
                 "--drs",
                 "MarbleCMIP5",
                 "--number-workers",
@@ -196,7 +196,7 @@ def test_wrangling_blend_models(tmpdir, caplog, test_cmip6_crunch_output):
     assert ".*" in result.output
     assert ".mat" in result.output
 
-    assert len(glob(join(OUTPUT_DIR, "*.mat"))) == 45
+    assert len(glob(join(OUTPUT_DIR, "*.mat"))) == 107
 
 
 def test_wrangling_handles_integer_units(tmpdir, caplog, test_cmip6_crunch_output):
@@ -283,7 +283,7 @@ def test_wrangling_force(tmpdir, caplog, out_format, test_cmip6_crunch_output):
     else:
         expected_file = join(
             OUTPUT_DIR,
-            "test-prefix_LAI_HISTORICAL_R1I1P1F2_WORLD_SOUTHERN_HEMISPHERE_OCEAN.mat",
+            "test-prefix_LAI_HISTORICAL_R1I1P1F2_WORLD_SOUTHERN_HEMISPHERE_LAND.mat",
         )
     skip_str_file = "Skipped (already exists, not overwriting) {}".format(expected_file)
     assert skip_str_file in result_skip.output
