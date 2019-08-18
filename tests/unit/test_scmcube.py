@@ -154,11 +154,13 @@ class TestSCMCube(object):
         )
 
         result = test_cube.get_scm_timeseries(
-            sftlf_cube=tsftlf_cube, areacell_scmcube=tareacell_scmcube, regions=regions
+            surface_fraction_cube=tsftlf_cube,
+            areacell_scmcube=tareacell_scmcube,
+            regions=regions,
         )
 
         test_cube.get_scm_timeseries_cubes.assert_called_with(
-            sftlf_cube=tsftlf_cube,
+            surface_fraction_cube=tsftlf_cube,
             areacell_scmcube=tareacell_scmcube,
             regions=exp_regions,
         )
@@ -227,7 +229,7 @@ class TestSCMCube(object):
         mock_weight_calculator_init.return_value = None
 
         res = test_cube.get_scm_timeseries_weights(
-            sftlf_cube=tsftlf_scmcube,
+            surface_fraction_cube=tsftlf_scmcube,
             areacell_scmcube=tareacell_scmcube,
             regions=tregions,
         )
@@ -250,7 +252,7 @@ class TestSCMCube(object):
         mock_weight_calculator_init.assert_called_with(test_cube)
         # test calling again does not call masker again
         test_cube.get_scm_timeseries_weights(
-            sftlf_cube=tsftlf_scmcube,
+            surface_fraction_cube=tsftlf_scmcube,
             areacell_scmcube=tareacell_scmcube,
             regions=tregions,
         )

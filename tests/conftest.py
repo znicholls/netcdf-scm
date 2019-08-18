@@ -256,12 +256,16 @@ TEST_CMIP6OUTPUT_HFDS_FILE = join(
     "v20190311",
     "hfds_Omon_CESM2_historical_r7i1p1f1_gn_195701-195703.nc",
 )
+
+
 @pytest.fixture
 def test_cmip6_output_hfds_file():
     return TEST_CMIP6OUTPUT_HFDS_FILE
 
 
 TEST_CMIP6OUTPUT_HFDS_NATIVE_GRID_FILE = TEST_CMIP6OUTPUT_HFDS_FILE.replace("gr", "gn")
+
+
 @pytest.fixture
 def test_cmip6_output_hfds_native_grid_file():
     return TEST_CMIP6OUTPUT_HFDS_NATIVE_GRID_FILE
@@ -269,10 +273,11 @@ def test_cmip6_output_hfds_native_grid_file():
 
 @pytest.fixture(
     scope="function",
-    params=[TEST_CMIP6OUTPUT_HFDS_FILE, TEST_CMIP6OUTPUT_HFDS_NATIVE_GRID_FILE]
+    params=[TEST_CMIP6OUTPUT_HFDS_FILE, TEST_CMIP6OUTPUT_HFDS_NATIVE_GRID_FILE],
 )
 def test_cmip6_output_hfds_files(request):
     return request.param
+
 
 # land file (lai?)
 #   - requires areacella, sftlf
@@ -506,7 +511,9 @@ def assert_scmdata_frames_allclose():
                 if k == "crunch_netcdf_scm_version":
                     continue  # will change with version
                 if k == "crunch_source_files":
-                    assert sorted([w.strip() for w in v.split(";")]) == sorted([w.strip() for w in check.metadata[k].split(";")])
+                    assert sorted([w.strip() for w in v.split(";")]) == sorted(
+                        [w.strip() for w in check.metadata[k].split(";")]
+                    )
                 elif isinstance(v, (np.ndarray, np.float, np.int)):
                     np.testing.assert_allclose(v, check.metadata[k])
                 else:

@@ -36,7 +36,11 @@ try:
     from iris.util import unify_time_units
     import iris.analysis.cartography
     import iris.experimental.equalise_cubes
-    from iris.exceptions import CoordinateMultiDimError, CoordinateNotFoundError, ConcatenateError
+    from iris.exceptions import (
+        CoordinateMultiDimError,
+        CoordinateNotFoundError,
+        ConcatenateError,
+    )
     from iris.fileformats import netcdf
     import cftime
     import cf_units
@@ -137,6 +141,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     def __init__(self):
         self._loaded_paths = []
         self._metadata_cubes = {}
+        self._weight_calculator = None
 
     @property
     def netcdf_scm_realm(self):
@@ -652,7 +657,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         return self._metadata_cubes[metadata_variable]
 
-    def get_scm_timeseries(self, surface_fraction_cube=None, areacell_scmcube=None, regions=None):
+    def get_scm_timeseries(
+        self, surface_fraction_cube=None, areacell_scmcube=None, regions=None
+    ):
         """
         Get SCM relevant timeseries from ``self``.
 
@@ -679,7 +686,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
         scm_timeseries_cubes = self.get_scm_timeseries_cubes(
-            surface_fraction_cube=surface_fraction_cube, areacell_scmcube=areacell_scmcube, regions=regions
+            surface_fraction_cube=surface_fraction_cube,
+            areacell_scmcube=areacell_scmcube,
+            regions=regions,
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
@@ -716,7 +725,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         if surface_fraction_cube is not None:
             # set area cube to appropriate variable
-            self.get_metadata_cube(self.surface_fraction_var, cube=surface_fraction_cube)
+            self.get_metadata_cube(
+                self.surface_fraction_var, cube=surface_fraction_cube
+            )
 
         if self._weight_calculator is None:
             self._weight_calculator = CubeWeightCalculator(self)
@@ -766,7 +777,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         regions = regions if regions is not None else DEFAULT_REGIONS
         scm_timeseries_weights = self.get_scm_timeseries_weights(
-            surface_fraction_cube=surface_fraction_cube, areacell_scmcube=areacell_scmcube, regions=regions
+            surface_fraction_cube=surface_fraction_cube,
+            areacell_scmcube=areacell_scmcube,
+            regions=regions,
         )
 
         def crunch_timeseries(region, weights):
@@ -794,6 +807,11 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             data_dir = dirname(self.info["files"][0])
             self.__init__()
             self.load_data_in_directory(data_dir)
+            scm_timeseries_weights = self.get_scm_timeseries_weights(
+                surface_fraction_cube=surface_fraction_cube,
+                areacell_scmcube=areacell_scmcube,
+                regions=regions,
+            )
             crunch_list = self._crunch_serial(crunch_timeseries, scm_timeseries_weights)
 
         timeseries_cubes = {region: ts_cube for region, ts_cube, _ in crunch_list}
@@ -802,7 +820,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return timeseries_cubes
 
     def _crunch_in_memory(self, crunch_timeseries, scm_regions):
-        # crunching in parallel could go here
+        # calculating lat-lon mean in parallel could go here
         self._ensure_data_realised()
         logger.debug("Crunching SCM timeseries in memory")
         return self._crunch_serial(crunch_timeseries, scm_regions)
@@ -917,6 +935,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         -------
         np.ndarray
             Weights on the cube's latitude-longitude grid.
+
+        Raises
+        ------
+        iris.exceptions.CoordinateMultiDimError
+            The cube's co-ordinates are multi-dimensional and we don't have cell area
+            data.
         """
         areacell_scmcube = self._get_areacell_scmcube(areacell_scmcube)
 

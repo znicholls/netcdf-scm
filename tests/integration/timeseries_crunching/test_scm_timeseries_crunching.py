@@ -333,7 +333,9 @@ def get_csoilfast_expected_results():
     exp_scmdf.set_meta("fast_soil_pool_carbon_content", "variable_standard_name")
     exp_scmdf.set_meta("kg m^-2", "unit")
 
-    exp_scmdf.metadata["crunch_source_files"] = "Files: ['/cmip5/experiment/Lmon/cSoilFast/model/realisation/cSoilFast_Lmon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']"
+    exp_scmdf.metadata[
+        "crunch_source_files"
+    ] = "Files: ['/cmip5/experiment/Lmon/cSoilFast/model/realisation/cSoilFast_Lmon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']"
 
     return exp_scmdf
 
@@ -555,7 +557,9 @@ def write_test_files(write_path):
     )
 
 
-def write_surface_frac_file(write_path, lat, lon, standard_name, var_name, units, inverse=False):
+def write_surface_frac_file(
+    write_path, lat, lon, standard_name, var_name, units, inverse=False
+):
     data = SURFACE_FRACS if not inverse else 100 - SURFACE_FRACS
     cube = iris.cube.Cube(
         data,
