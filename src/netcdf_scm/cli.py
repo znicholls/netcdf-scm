@@ -136,8 +136,8 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--medium-number-workers",
-    default=3,
-    show_default=True,  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
+    default=3,  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
+    show_default=True,
     help="Maximum number of workers to use when crunching files.",
 )
 @click.option(
@@ -310,7 +310,7 @@ def crunch_data(
         )
 
 
-def _crunch_files(  # pylint:disable=too-many-arguments
+def _crunch_files(  # pylint:disable=too-many-arguments,too-many-locals
     fnames,
     dpath,
     drs=None,
@@ -336,7 +336,30 @@ def _crunch_files(  # pylint:disable=too-many-arguments
         logger.info("Skipped (already exists, not overwriting) %s", out_filepath)
         return None
 
-    results = scmcube.get_scm_timeseries_cubes(regions=regions.split(","))
+    regions = regions.split(",")
+    if scmcube.netcdf_scm_realm == "ocean":
+        ocean_regions = [r for r in regions if "Land" not in r]
+        if set(regions) - set(ocean_regions):
+            regions = ocean_regions
+            logger.warning(
+                "Detected ocean data, dropping land related regions so regions "
+                "to crunch are now: %s",
+                regions,
+            )
+
+    elif scmcube.netcdf_scm_realm == "land":
+        land_regions = [
+            r for r in regions if not any([ss in r for ss in ("Ocean", "El Nino")])
+        ]
+        if set(regions) - set(land_regions):
+            regions = land_regions
+            logger.warning(
+                "Detected land data, dropping ocean related regions so regions "
+                "to crunch are now: %s",
+                regions,
+            )
+
+    results = scmcube.get_scm_timeseries_cubes(regions=regions)
     results = _set_crunch_contact_in_results(results, crunch_contact)
 
     return results, out_filepath, scmcube.info
