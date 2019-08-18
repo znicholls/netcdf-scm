@@ -163,9 +163,16 @@ def get_land_weights(  # pylint:disable=unused-argument
     AssertionError
         The land weights are incompatible with the cube's lat-lon grid
     """
+
+    def _return_and_set_cache(vals):
+        weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
+            "World|Land"
+        ] = vals
+        return vals
+
     if cube.netcdf_scm_realm == "ocean":
-        return np.zeros(
-            weight_calculator.get_weights_array_without_area_weighting("World").shape
+        return _return_and_set_cache(
+            np.zeros(get_binary_nh_weights(weight_calculator, cube).shape)
         )
 
     sftlf_data = None
@@ -215,10 +222,7 @@ def get_land_weights(  # pylint:disable=unused-argument
             "longitude-latitude grid"
         )
 
-    weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
-        "World|Land"
-    ] = sftlf_data
-    return sftlf_data
+    return _return_and_set_cache(sftlf_data)
 
 
 def get_ocean_weights(  # pylint:disable=unused-argument
@@ -253,9 +257,16 @@ def get_ocean_weights(  # pylint:disable=unused-argument
     AssertionError
         The ocean weights are incompatible with the cube's lat-lon grid
     """
+
+    def _return_and_set_cache(vals):
+        weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
+            "World|Ocean"
+        ] = vals
+        return vals
+
     if cube.netcdf_scm_realm == "land":
-        return 0 * np.ones(
-            weight_calculator.get_weights_array_without_area_weighting("World").shape
+        return _return_and_set_cache(
+            0 * np.ones(get_binary_nh_weights(weight_calculator, cube).shape)
         )
 
     if cube.netcdf_scm_realm == "ocean":
@@ -279,16 +290,13 @@ def get_ocean_weights(  # pylint:disable=unused-argument
                     "longitude-latitude grid"
                 )
 
-            weight_calculator._weights_no_area_weighting[  # pylint:disable=protected-access
-                "World|Ocean"
-            ] = sftof_data
-            return sftof_data
+            return _return_and_set_cache(sftof_data)
 
         except (OSError, KeyError):  # TODO: fix reading so KeyError not needed
             pass
 
-    return 100 - weight_calculator.get_weights_array_without_area_weighting(
-        "World|Land"
+    return _return_and_set_cache(
+        100 - weight_calculator.get_weights_array_without_area_weighting("World|Land")
     )
 
 

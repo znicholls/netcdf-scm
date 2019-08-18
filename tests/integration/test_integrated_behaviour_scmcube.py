@@ -147,7 +147,7 @@ class _SCMCubeIntegrationTester(object):
                 )
 
         test_cube.get_scm_timeseries_weights.assert_called_with(
-            sftlf_cube=tsftlf_cube,
+            surface_fraction_cube=tsftlf_cube,
             areacell_scmcube=tareacell_scmcube,
             regions=DEFAULT_REGIONS,
         )
@@ -572,8 +572,8 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
 
         if force_lazy_load:
             var_lazy = self.tclass()
-            var_lazy._crunch_in_memory = MagicMock(side_effect=MemoryError)
             var_lazy.load_data_from_path(self._test_get_scm_timeseries_file)
+            var_lazy._crunch_in_memory = MagicMock(side_effect=MemoryError)
 
             res_lazy = var_lazy.get_scm_timeseries()
             assert_scmdata_frames_allclose(res, res_lazy)
@@ -587,7 +587,7 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         sftlf = self.tclass()
         sftlf.cube = iris.load_cube(test_sftlf_file)
 
-        var.get_scm_timeseries(sftlf_cube=sftlf, areacell_scmcube=None)
+        var.get_scm_timeseries(surface_fraction_cube=sftlf, areacell_scmcube=None)
 
     def test_get_data_reference_syntax(self):
         """
@@ -1260,14 +1260,16 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
 
-        assert obs_time_points[0] == cftime.DatetimeNoLeap(1957, 1, 15, 12, 0, 0, 0, 6, 15)
-        assert obs_time_points[-1] == cftime.DatetimeNoLeap(1957, 3, 15, 12, 0, 0, 0, 6, 15)
+        assert obs_time_points[0] == cftime.DatetimeNoLeap(
+            1957, 1, 15, 12, 0, 0, 0, 6, 15
+        )
+        assert obs_time_points[-1] == cftime.DatetimeNoLeap(
+            1957, 3, 15, 12, 0, 0, 0, 6, 15
+        )
 
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
-        error_msg = re.escape(
-            "All weights are zero for region: `World|Land`"
-        )
+        error_msg = re.escape("All weights are zero for region: `World|Land`")
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_scm_timeseries(regions=["World|Land"])
 
@@ -1309,7 +1311,10 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
 
     @patch.object(tclass, "_get_areacell_scmcube", return_value=None)
     def test_load_hfds_data_native_grid_no_areacello_error(
-        self, mock_get_areacell_scmcube, test_cube, test_cmip6_output_hfds_native_grid_file
+        self,
+        mock_get_areacell_scmcube,
+        test_cube,
+        test_cmip6_output_hfds_native_grid_file,
     ):
         test_cube.load_data_from_path(test_cmip6_output_hfds_native_grid_file)
         error_msg = re.escape(

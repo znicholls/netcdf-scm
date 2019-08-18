@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
+import pytest
 from click.testing import CliRunner
 
 import netcdf_scm
@@ -263,7 +264,8 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
     assert (loaded["member_id"] == "r1i1p1").all()
     assert (loaded["mip_era"] == "CMIP5").all()
     assert (loaded["activity_id"] == "cmip5").all()
-    assert sorted(loaded["region"].unique()) == sorted([
+    assert sorted(loaded["region"].unique()) == sorted(
+        [
             "World",
             "World|Land",
             "World|Ocean",
@@ -272,8 +274,9 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
             "World|Northern Hemisphere|Ocean",
             "World|Southern Hemisphere",
             "World|Southern Hemisphere|Land",
-            "World|Northern Hemisphere|Ocean",
-    ])
+            "World|Southern Hemisphere|Ocean",
+        ]
+    )
     # file is entirely zeros...
     np.testing.assert_allclose(loaded.timeseries().values, 0)
 
@@ -347,7 +350,16 @@ def test_crunching_broken_dir(
     assert "Directory checking failed on" in result.output, result.output
 
 
-def test_auto_drop_land_regions(tmpdir, caplog, test_data_cmip6output_dir):
+@pytest.mark.parametrize(
+    "in_regions,safe,out_regions",
+    [
+        (["World", "World|Land"], False, ["World"]),
+        (["World", "World|Ocean"], True, ["World", "World|Ocean"]),
+    ],
+)
+def test_auto_drop_land_regions(
+    in_regions, safe, out_regions, tmpdir, caplog, test_data_cmip6output_dir
+):
     OUTPUT_DIR = str(tmpdir)
     crunch_contact = "join-files-test"
 
@@ -365,14 +377,39 @@ def test_auto_drop_land_regions(tmpdir, caplog, test_data_cmip6output_dir):
                 "CMIP6Output",
                 "--small-number-workers",
                 1,
+                "--regions",
+                ",".join(in_regions),
             ],
         )
     assert result.exit_code == 0
-    assert "Detected ocean data, dropping land related regions so regions to crunch are now: {}".format(["a", "b"]) in result.output, result.output
-    assert False
+    key_phrase = "Detected ocean data, dropping land related regions so regions to crunch are now: {}".format(
+        out_regions
+    )
+    if not safe:
+        assert key_phrase in result.stderr, result.stderr
+    else:
+        assert key_phrase not in result.stderr, result.stderr
+
+    for out_file in glob(join(OUTPUT_DIR, "**", "*.nc"), recursive=True):
+        res = load_scmdataframe(out_file)
+        assert sorted(res["region"].unique()) == sorted(out_regions)
 
 
-def test_auto_drop_ocean_regions(tmpdir, caplog, test_data_cmip6output_dir):
+@pytest.mark.parametrize(
+    "in_regions,safe,out_regions",
+    [
+        (["World", "World|Land"], True, ["World", "World|Land"]),
+        (["World", "World|Ocean"], False, ["World"]),
+        (
+            ["World", "World|Northern Hemisphere", "World|El Nino N3.4"],
+            False,
+            ["World", "World|Northern Hemisphere"],
+        ),
+    ],
+)
+def test_auto_drop_ocean_regions(
+    in_regions, safe, out_regions, tmpdir, caplog, test_data_cmip6output_dir
+):
     OUTPUT_DIR = str(tmpdir)
     crunch_contact = "join-files-test"
 
@@ -390,8 +427,19 @@ def test_auto_drop_ocean_regions(tmpdir, caplog, test_data_cmip6output_dir):
                 "CMIP6Output",
                 "--small-number-workers",
                 1,
+                "--regions",
+                ",".join(in_regions),
             ],
         )
     assert result.exit_code == 0
-    assert "Detected land data, dropping ocean related regions so regions to crunch are now: {}".format(["a", "b"]) in result.output, result.output
-    assert False
+    key_phrase = "Detected land data, dropping ocean related regions so regions to crunch are now: {}".format(
+        out_regions
+    )
+    if not safe:
+        assert key_phrase in result.stderr, result.stderr
+    else:
+        assert key_phrase not in result.stderr, result.stderr
+
+    for out_file in glob(join(OUTPUT_DIR, "**", "*.nc"), recursive=True):
+        res = load_scmdataframe(out_file)
+        assert sorted(res["region"].unique()) == sorted(out_regions)
