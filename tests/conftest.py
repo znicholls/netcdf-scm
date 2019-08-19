@@ -493,9 +493,25 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
                             print("Updating {}".format(exp_f))
                             shutil.copy(res_f, exp_f)
                         else:
-                            res_scmdf = load_scmdataframe(res_f)
-                            exp_scmdf = load_scmdataframe(exp_f)
-                            assert_scmdata_frames_allclose(res_scmdf, exp_scmdf)
+                            try:
+                                res_scmdf = load_scmdataframe(res_f)
+                                exp_scmdf = load_scmdataframe(exp_f)
+                                assert_scmdata_frames_allclose(res_scmdf, exp_scmdf)
+                            except NotImplementedError:  # 3D data
+                                res_cubes = iris.load(res_f)
+                                exp_cubes = iris.load(exp_f)
+                                for exp_cube in exp_cubes:
+                                    region = exp_cube.attributes["region"]
+                                    for res_cube in res_cubes:
+                                        if res_cube.attributes["region"] == region:
+                                            break
+
+                                    np.testing.assert_allclose(
+                                        res_cube.data, exp_cube.data
+                                    )
+                                    res_cube.attributes.pop("crunch_netcdf_scm_version")
+                                    exp_cube.attributes.pop("crunch_netcdf_scm_version")
+                                    assert res_cube.attributes == exp_cube.attributes
 
         if update:
             pytest.skip("Updated {}".format(expected))
