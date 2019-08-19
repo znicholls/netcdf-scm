@@ -1329,3 +1329,53 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
                     "World|Northern Hemisphere|Ocean",
                 ]
             )
+
+    def test_get_thetao_data_scm_cubes(self, test_cube, test_cmip6_output_thetao_file):
+        test_cube.load_data_from_path(test_cmip6_output_thetao_file)
+        res = test_cube.get_scm_timeseries_cubes(
+            regions=[
+                "World",
+                "World|Ocean",
+                "World|Northern Hemisphere",
+                "World|Northern Hemisphere|Ocean",
+                "World|Southern Hemisphere",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            ]
+        )
+
+        for scm_cube in res.values():
+            assert scm_cube.cube.data.shape == (3, 60)
+
+        np.testing.assert_allclose(res["World"].cube.data[0, 0], 18.219498)
+        np.testing.assert_allclose(res["World|Ocean"].cube.data[0, -1], 1.3453288)
+        np.testing.assert_allclose(res["World|North Atlantic Ocean"].cube.data[-1, 0], 20.967687872009606)
+        np.testing.assert_allclose(res["World|El Nino N3.4"].cube.data[-1, -1], 0.8765749670041693)
+
+        assert False, "Add assertions about metadata here"
+
+
+    def test_get_thetao_data_scm_timeseries(self, test_cube, test_cmip6_output_thetao_file):
+        test_cube.load_data_from_path(test_cmip6_output_thetao_file)
+        error_msg = re.escape(
+            "Cannot yet get SCM timeseries for data with dimensions other than time, "
+            "latitude and longitude"
+        )
+        with pytest.raises(NotImplementedError, match=error_msg):
+            test_cube.get_scm_timeseries(regions=["World", "World|Ocean"])
+
+
+    # currently failing due to https://github.com/SciTools/iris/issues/3367
+    @pytest.mark.xfail(
+        reason="Implementation blocked by https://github.com/SciTools/iris/issues/3367"
+    )
+    def test_load_data_auto_add_areacello_volcello(self, test_cube, test_cmip6_output_thetao_file):
+        test_cube.load_data_from_path(test_cmip6_output_thetao_file)
+
+        cell_measures = test_cube.cube.cell_measures()
+        assert len(cell_measures) == 2
+        assert cell_measures[0].standard_name == "cell_area"
+        assert cell_measures[0].var_name == "areacello"
+        assert cell_measures[1].standard_name == "cell_volume"
+        assert cell_measures[1].var_name == "volcello"
