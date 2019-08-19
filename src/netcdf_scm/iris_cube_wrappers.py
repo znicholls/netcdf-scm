@@ -161,17 +161,24 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 return "land"
             if self.cube.attributes[self._realm_key] in ("atmos"):
                 return "atmosphere"
+            if not self._have_guessed_realm:
+                logger.info(
+                    "Unrecognised `%s` attribute value, `%s`, in `self.cube`, NetCDF-SCM will treat the data "
+                    "as `atmosphere`",
+                    self._realm_key,
+                    self.cube.attributes[self._realm_key],
+                )
+                self._have_guessed_realm = True
+            return "atmosphere"
         except KeyError:
-            pass
-
-        if not self._have_guessed_realm:
-            logger.info(
-                "No `%s` attribute in `self.cube`, NetCDF-SCM will treat the data "
-                "as `atmosphere`",
-                self._realm_key,
-            )
-            self._have_guessed_realm = True
-        return "atmosphere"
+            if not self._have_guessed_realm:
+                logger.info(
+                    "No `%s` attribute in `self.cube`, NetCDF-SCM will treat the data "
+                    "as `atmosphere`",
+                    self._realm_key,
+                )
+                self._have_guessed_realm = True
+            return "atmosphere"
 
     @property
     def areacell_var(self):

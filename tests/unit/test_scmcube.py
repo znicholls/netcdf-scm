@@ -496,6 +496,12 @@ class TestSCMCube(object):
                 "No `{}` attribute in `self.cube`, NetCDF-SCM will treat the data as "
                 "`atmosphere`".format(realm_key)
             )
+        elif realm == "junk":
+            assert len(caplog.messages) == 1
+            assert caplog.messages[0] == (
+                "Unrecognised `{}` attribute value, `junk`, in `self.cube`, NetCDF-SCM will treat the data as "
+                "`atmosphere`".format(realm_key)
+            )
         else:
             assert len(caplog.messages) == 0
 
@@ -543,6 +549,7 @@ class TestSCMCube(object):
             ("ocnBgchem", "ocean"),
             ("land", "land"),
             (None, "atmosphere"),
+            ("junk", "atmosphere"),
         ],
     )
     def test_netcdf_scm_realm(self, test_cube, realm, expected, caplog):
