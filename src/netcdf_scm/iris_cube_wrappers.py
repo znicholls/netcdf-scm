@@ -1020,6 +1020,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         -------
         :obj:`ScmDataFrame`
             :obj:`ScmDataFrame` containing the data from the SCM timeseries cubes
+
+        Raises
+        ------
+        NotImplementedError
+            The (original) input data has dimensions other than time, latitude and
+            longitude (so the data to convert has dimensions other than time).
         """
         data = []
         columns = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
