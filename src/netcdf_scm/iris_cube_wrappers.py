@@ -1024,7 +1024,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         data = []
         columns = {mc: [] for mc in _SCM_TIMESERIES_META_COLUMNS}
         for scm_cube in scm_timeseries_cubes.values():
-            data.append(get_cube_timeseries_data(scm_cube, realise_data=True))
+            try:
+                data.append(get_cube_timeseries_data(scm_cube, realise_data=True))
+            except AssertionError:
+                # blocked until we work out how to handle extra coord information in
+                # SCMDataFrame
+                raise NotImplementedError(
+                    "Cannot yet get SCM timeseries for data with dimensions other "
+                    "than time, latitude and longitude"
+                )
             for column_name, column_values in columns.items():
                 column_values.append(scm_cube.cube.attributes[column_name])
 
