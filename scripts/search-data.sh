@@ -5,11 +5,11 @@ declare -a search_vars=(
   # "gpp"
   # "cSoilFast"
   # "tas"
-  "hfds"
-  # "thetao"
+  # "hfds"
+  "thetao"
   # "areacella"
   "areacello"
-  # "volcello"
+  "volcello"
   # "sftlf"
   "sftof"
 )
@@ -17,5 +17,5 @@ declare -a search_vars=(
 ## now loop through the above array
 for i in "${search_vars[@]}"
 do
-   find ${ROOT_DIR} -name "*${i}*CESM2*historical*r7i1p1f1*" -type f
+   find ${ROOT_DIR} -name "*${i}*CESM2*historical_r10i1p1f1_gn*" -type f
 done
