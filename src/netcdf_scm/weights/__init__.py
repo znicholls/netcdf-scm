@@ -124,6 +124,25 @@ def get_default_sftlf_cube():
     return iris.load_cube(os.path.join(os.path.dirname(__file__), _DEFAULT_SFTLF_FILE))
 
 
+def _check_surface_fraction_bounds_and_shape(surface_frac_data, base_cube):
+    surface_frac_data_max = surface_frac_data.max()
+    if np.isclose(surface_frac_data_max, 1, atol=0.3):
+        logger.warning(
+            "%s data max is %s, multiplying by 100 to convert units to percent",
+            base_cube.surface_fraction_var,
+            surface_frac_data_max,
+        )
+        surface_frac_data = surface_frac_data * 100
+
+    if not cube_lat_lon_grid_compatible_with_array(base_cube, surface_frac_data):
+        raise AssertionError(
+            "the {} cube data must be the same shape as the cube's "
+            "longitude-latitude grid".format(base_cube.surface_fraction_var)
+        )
+
+    return surface_frac_data
+
+
 def get_land_weights(  # pylint:disable=unused-argument
     weight_calculator, cube, sftlf_cube=None, **kwargs
 ):
@@ -208,19 +227,7 @@ def get_land_weights(  # pylint:disable=unused-argument
 
         sftlf_data = def_cube_regridded.data
 
-    sftlf_data_max = sftlf_data.max()
-    if np.isclose(sftlf_data_max, 1, atol=0.3):
-        logger.warning(
-            "sftlf data max is %s, multiplying by 100 to convert units to percent",
-            sftlf_data_max,
-        )
-        sftlf_data = sftlf_data * 100
-
-    if not cube_lat_lon_grid_compatible_with_array(cube, sftlf_data):
-        raise AssertionError(
-            "the sftlf_cube data must be the same shape as the cube's "
-            "longitude-latitude grid"
-        )
+    sftlf_data = _check_surface_fraction_bounds_and_shape(sftlf_data, cube)
 
     return _return_and_set_cache(sftlf_data)
 
@@ -275,20 +282,7 @@ def get_ocean_weights(  # pylint:disable=unused-argument
                 cube.surface_fraction_var, cube=sftof_cube
             )
             sftof_data = sftof_cube.cube.data
-
-            sftof_data_max = sftof_data.max()
-            if np.isclose(sftof_data_max, 1, atol=0.3):
-                logger.warning(
-                    "sftof data max is %s, multiplying by 100 to convert units to percent",
-                    sftof_data_max,
-                )
-                sftof_data = sftof_data * 100
-
-            if not cube_lat_lon_grid_compatible_with_array(cube, sftof_data):
-                raise AssertionError(
-                    "the sftof_cube data must be the same shape as the cube's "
-                    "longitude-latitude grid"
-                )
+            sftof_data = _check_surface_fraction_bounds_and_shape(sftof_data, cube)
 
             return _return_and_set_cache(sftof_data)
 
