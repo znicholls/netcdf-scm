@@ -40,6 +40,9 @@ def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
                 "CMIP6Output",
                 "--number-workers",
                 1,
+                # avoid thetao which we can't wrangle yet
+                "--regexp",
+                "^((?!thetao).)*$",
             ],
         )
     assert result.exit_code == 0
@@ -186,6 +189,9 @@ def test_wrangling_blend_models(tmpdir, caplog, test_cmip6_crunch_output):
                 "CMIP6Output",
                 "--out-format",
                 "tuningstrucs-blend-model",
+                # avoid thetao which we can't wrangle yet
+                "--regexp",
+                "^((?!thetao).)*$",
             ],
         )
     assert result.exit_code == 0, result.output
