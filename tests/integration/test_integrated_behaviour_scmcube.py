@@ -1345,8 +1345,20 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
             ]
         )
 
-        for scm_cube in res.values():
-            assert scm_cube.cube.data.shape == (3, 60)
+        for region, scm_cube in res.items():
+            assert scm_cube.cube.shape == (3, 60)
+            assert scm_cube.cube.attributes["region"] == region
+            assert scm_cube.cube.attributes["variable"] == "thetao"
+            assert (
+                scm_cube.cube.attributes["variable_standard_name"]
+                == "sea_water_potential_temperature"
+            )
+            assert scm_cube.cube.attributes["climate_model"] == "CESM2"
+            assert scm_cube.cube.cell_methods[-1].method == "mean"
+            assert scm_cube.cube.cell_methods[-1].coord_names == (
+                "latitude",
+                "longitude",
+            )
 
         np.testing.assert_allclose(res["World"].cube.data[0, 0], 18.219498)
         np.testing.assert_allclose(res["World|Ocean"].cube.data[0, -1], 1.3453288)
@@ -1356,8 +1368,6 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
         np.testing.assert_allclose(
             res["World|El Nino N3.4"].cube.data[-1, -1], 0.8765749670041693
         )
-
-        assert False, "Add assertions about metadata here"
 
     def test_get_thetao_data_scm_timeseries(
         self, test_cube, test_cmip6_output_thetao_file
