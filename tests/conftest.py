@@ -279,14 +279,22 @@ def test_cmip6_output_hfds_files(request):
     return request.param
 
 
-# land file (lai?)
-#   - requires areacella, sftlf
-# hfds file: gn and gr
-#   - requires areacello, sftof
-# thetao file: gn and gr (eventually...)
-#   - requires volcello, areacello, sftof
-#   - add_volcello test (from tos-hfds branch)
-# do timseries crunching tests first, then crunching from file tests
+@pytest.fixture
+def test_cmip6_output_thetao_file(test_data_cmip6output_dir):
+    return join(
+        test_data_cmip6output_dir,
+        "CMIP6",
+        "CMIP",
+        "NCAR",
+        "CESM2",
+        "historical",
+        "r10i1p1f1",
+        "Omon",
+        "thetao",
+        "gn",
+        "v20190313",
+        "thetao_Omon_CESM2_historical_r10i1p1f1_gn_195310-195312.nc",
+    )
 
 
 @pytest.fixture
