@@ -1,6 +1,6 @@
 import logging
 import re
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, call, patch
 
 import iris
 import numpy as np
@@ -54,13 +54,15 @@ def test_get_scm_masks(mock_nh_weights, mock_land_weights, test_all_cubes):
         WEIGHTS_FUNCTIONS_WITHOUT_AREA_WEIGHTING,
         {"World|Northern Hemisphere": mock_nh_weights, "World|Land": mock_land_weights},
     ):
-        masker = CubeWeightCalculator(test_all_cubes, sftlf_cube=tsftlf_cube)
-        result = masker.get_weights(DEFAULT_REGIONS)
+        weighter = CubeWeightCalculator(test_all_cubes, sftlf_cube=tsftlf_cube)
+        result = weighter.get_weights(DEFAULT_REGIONS)
 
     for label, array in expected.items():
         np.testing.assert_array_equal(array, result[label])
-    mock_land_weights.assert_called_with(masker, test_all_cubes, sftlf_cube=tsftlf_cube)
-    mock_nh_weights.assert_called_with(masker, test_all_cubes, sftlf_cube=tsftlf_cube)
+    mock_land_weights.assert_called_with(
+        weighter, test_all_cubes, sftlf_cube=tsftlf_cube
+    )
+    mock_nh_weights.assert_called_with(weighter, test_all_cubes, sftlf_cube=tsftlf_cube)
 
 
 @pytest.mark.parametrize("with_bounds", [True, False])
@@ -101,8 +103,8 @@ def test_get_scm_masks_no_land_available(
         if not with_bounds:
             test_all_cubes.lat_dim.bounds = None
             test_all_cubes.lon_dim.bounds = None
-        masker = CubeWeightCalculator(test_all_cubes)
-        result = masker.get_weights(expected.keys())
+        weighter = CubeWeightCalculator(test_all_cubes)
+        result = weighter.get_weights(expected.keys())
 
     if not with_bounds:
         assert len(caplog.messages) == 4
@@ -124,7 +126,7 @@ def test_get_scm_masks_no_land_available(
 
     for label, array in expected.items():
         np.testing.assert_array_equal(array, result[label])
-    mock_nh_weights.assert_called_with(masker, test_all_cubes)
+    mock_nh_weights.assert_called_with(weighter, test_all_cubes)
 
 
 @pytest.mark.parametrize("input_format", ["scmcube", None])
@@ -144,9 +146,9 @@ def test_get_land_weights(
 
     test_land_fraction_input = sftlf_cube if input_format == "scmcube" else None
 
-    masker = CubeWeightCalculator(test_all_cubes)
+    weighter = CubeWeightCalculator(test_all_cubes)
     result = get_land_weights(
-        masker, test_all_cubes, sftlf_cube=test_land_fraction_input
+        weighter, test_all_cubes, sftlf_cube=test_land_fraction_input
     )
 
     expected = original_data
@@ -158,7 +160,12 @@ def test_get_land_weights(
 
 
 @pytest.mark.parametrize("surface_frac_var", ["sftlf", "sftof"])
-def test_get_land_weights_shape_errors(surface_frac_var, test_all_cubes):
+@patch(
+    "netcdf_scm.iris_cube_wrappers.SCMCube.netcdf_scm_realm", new_callable=PropertyMock
+)
+def test_get_land_weights_shape_errors(
+    mock_netcdf_scm_realm, surface_frac_var, test_all_cubes
+):
     surface_frac_cube = create_sftlf_cube(test_all_cubes.__class__)
     error_msg = re.escape(
         "the {} cube data must be the same shape as the "
@@ -167,19 +174,24 @@ def test_get_land_weights_shape_errors(surface_frac_var, test_all_cubes):
 
     wrong_shape_data = np.array([[1, 2], [3, 4]])
     surface_frac_cube.cube = iris.cube.Cube(data=wrong_shape_data)
-    masker = CubeWeightCalculator(test_all_cubes)
+
+    mock_netcdf_scm_realm.return_value = (
+        "land" if surface_frac_var == "sftlf" else "ocean"
+    )
+
+    weighter = CubeWeightCalculator(test_all_cubes)
     with pytest.raises(AssertionError, match=error_msg):
         if surface_frac_var == "sftlf":
-            get_land_weights(masker, test_all_cubes, sftlf_cube=surface_frac_cube)
+            get_land_weights(weighter, test_all_cubes, sftlf_cube=surface_frac_cube)
         else:
-            get_ocean_weights(masker, test_all_cubes, sftof_cube=surface_frac_cube)
+            get_ocean_weights(weighter, test_all_cubes, sftof_cube=surface_frac_cube)
 
     test_all_cubes.get_metadata_cube = MagicMock(return_value=surface_frac_cube)
     with pytest.raises(AssertionError, match=error_msg):
         if surface_frac_var == "sftlf":
-            get_land_weights(masker, test_all_cubes, sftlf_cube=None)
+            get_land_weights(weighter, test_all_cubes, sftlf_cube=None)
         else:
-            get_ocean_weights(masker, test_all_cubes, sftof_cube=None)
+            get_ocean_weights(weighter, test_all_cubes, sftof_cube=None)
 
 
 def create_dummy_cube_from_lat_lon_points(lat_pts, lon_pts):
@@ -198,8 +210,8 @@ def create_dummy_cube_from_lat_lon_points(lat_pts, lon_pts):
 
 def test_nao_weights(test_all_cubes):
     sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
-    masker = CubeWeightCalculator(test_all_cubes, sftlf_cube=sftlf_cube)
-    result = masker.get_weights_array_without_area_weighting(
+    weighter = CubeWeightCalculator(test_all_cubes, sftlf_cube=sftlf_cube)
+    result = weighter.get_weights_array_without_area_weighting(
         "World|North Atlantic Ocean"
     )
 
@@ -212,8 +224,8 @@ def test_nao_weights(test_all_cubes):
 
 def test_elnino_weights(test_all_cubes):
     sftlf_cube = create_sftlf_cube(test_all_cubes.__class__)
-    masker = CubeWeightCalculator(test_all_cubes, sftlf_cube=sftlf_cube)
-    result = masker.get_weights_array_without_area_weighting("World|El Nino N3.4")
+    weighter = CubeWeightCalculator(test_all_cubes, sftlf_cube=sftlf_cube)
+    result = weighter.get_weights_array_without_area_weighting("World|El Nino N3.4")
     # 5N-5S, 190E-240E
     expected = np.array([[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]]) * (
         100 - sftlf_cube.cube.data
@@ -289,8 +301,8 @@ def test_area_mask_wrapped_lons(test_all_cubes):
 
 def test_get_masks_unknown_weights_warning(test_all_cubes, caplog):
     caplog.set_level(logging.WARNING, logger="netcdf_scm.iris_cube_wrappers")
-    masker = CubeWeightCalculator(test_all_cubes)
-    res = masker.get_weights(["World", "junk"])
+    weighter = CubeWeightCalculator(test_all_cubes)
+    res = weighter.get_weights(["World", "junk"])
 
     np.testing.assert_allclose(res["World"], test_all_cubes.get_area_weights())
 
@@ -308,7 +320,18 @@ def test_get_masks_unknown_weights_warning(test_all_cubes, caplog):
 
 @pytest.mark.parametrize("exp_warn,cube_max", [(False, 100), (True, 1)])
 @pytest.mark.parametrize("surface_frac_var", ["sftlf", "sftof"])
-def test_get_scm_weights_surface_frac_bound_checks(exp_warn, cube_max, surface_frac_var, test_all_cubes, caplog):
+@patch(
+    "netcdf_scm.iris_cube_wrappers.SCMCube.surface_fraction_var",
+    new_callable=PropertyMock,
+)
+def test_get_scm_weights_surface_frac_bound_checks(
+    mock_surface_fraction_var,
+    exp_warn,
+    cube_max,
+    surface_frac_var,
+    test_all_cubes,
+    caplog,
+):
     tsurface_frac_cube = get_default_sftlf_cube().regrid(
         test_all_cubes.cube, iris.analysis.Linear()
     )
@@ -317,19 +340,25 @@ def test_get_scm_weights_surface_frac_bound_checks(exp_warn, cube_max, surface_f
     if cube_max == 1:
         tsurface_frac_cube.data = tsurface_frac_cube.data / 100
 
+    mock_surface_fraction_var.return_value = surface_frac_var
     test_all_cubes.get_metadata_cube = MagicMock()
     tsurface_frac_scmcube = SCMCube()
     tsurface_frac_scmcube.cube = tsurface_frac_cube
     test_all_cubes.get_metadata_cube.return_value = tsurface_frac_scmcube
 
     caplog.set_level(logging.INFO)
-    masker = CubeWeightCalculator(test_all_cubes)
-    masker.get_weights(["World|Land"] if surface_frac_var == "sftlf" else ["World|Ocean"])
+    weighter = CubeWeightCalculator(test_all_cubes)
+    weighter.get_weights(
+        ["World|Land"] if surface_frac_var == "sftlf" else ["World|Ocean"]
+    )
+
+    test_all_cubes.get_metadata_cube.assert_has_calls(
+        [call(test_all_cubes.surface_fraction_var, cube=None)]
+    )
 
     if exp_warn:
         expected_warn = "{} data max is {}, multiplying by 100 to convert units to percent".format(
-            surface_frac_var,
-            tsurface_frac_cube.data.max()
+            surface_frac_var, tsurface_frac_cube.data.max()
         )
         assert len(caplog.messages) == 2
         assert caplog.messages[1] == expected_warn
