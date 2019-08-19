@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#87 <https://github.com/znicholls/netcdf-scm/pull/87>`_) Add support for crunching data with a height co-ordinate
 - (`#84 <https://github.com/znicholls/netcdf-scm/pull/84>`_) Add ability to crunch land, ocean and atmosphere data separately (and sensibly)
 - (`#82 <https://github.com/znicholls/netcdf-scm/pull/82>`_) Prepare to add land data handling
 - (`#81 <https://github.com/znicholls/netcdf-scm/pull/81>`_) Refactor masks to use weighting instead of masking, doing all the renaming in the process
