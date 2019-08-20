@@ -1341,12 +1341,8 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
 
-        assert obs_time_points[0] == cftime.DatetimeNoLeap(
-            1957, 1, 15, 12, 0, 0, 0, 6, 15
-        )
-        assert obs_time_points[-1] == cftime.DatetimeNoLeap(
-            1957, 3, 15, 12, 0, 0, 0, 6, 15
-        )
+        assert obs_time_points[0] == cftime.DatetimeNoLeap(1998, 1, 15, 12, 0, 0, 0, 5, 15)
+        assert obs_time_points[-1] == cftime.DatetimeNoLeap(2001, 12, 15, 12, 0, 0, 0, 6, 349)
 
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
@@ -1378,17 +1374,18 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
                 "World|El Nino N3.4",
             ]
         )
-        assert (ts["variable"] == "hfds").all()
+        assert (ts["variable"] == "tos").all()
         assert (
-            ts["variable_standard_name"] == "surface_downward_heat_flux_in_sea_water"
+            ts["variable_standard_name"] == "sea_surface_temperature"
         ).all()
-        assert (ts["unit"] == "W m^-2").all()
+        assert (ts["unit"] == "degC").all()
         assert (ts["climate_model"] == "CESM2").all()
         np.testing.assert_allclose(
-            ts.filter(region="World|El Nino N3.4", month=3).values.squeeze(),
-            135.081997,
+            ts.filter(region="World|El Nino N3.4", year=2001, month=12).values.squeeze(),
+            28.620657,
             rtol=0.01,
         )
+
 
     def test_get_thetao_data_scm_cubes(self, test_cube, test_cmip6_output_thetao_file):
         test_cube.load_data_from_path(test_cmip6_output_thetao_file)
