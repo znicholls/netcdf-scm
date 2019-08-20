@@ -70,8 +70,7 @@ def get_scm_cube_time_axis_in_calendar(scm_cube, calendar):
     np.ndarray
         Array of datetimes, containing the cube's calendar.
     """
-    time_coord_number = scm_cube.cube.coord_dims("time")[0]
-    time = scm_cube.cube.dim_coords[time_coord_number]
+    time = scm_cube.cube.dim_coords[scm_cube.time_dim_number]
     return cf_units.num2date(time.points, time.units.name, calendar)
 
 
@@ -201,13 +200,19 @@ def unify_lat_lon(cubes, rtol=10 ** -6):
             )
             raise ValueError(error_msg)
 
-        lat_dim_no = cube.coord_dims("latitude")[0]
+        lat_dim_numbers = cube.coord_dims("latitude")
         cube.remove_coord("latitude")
-        cube.add_dim_coord(cubes[0].coords("latitude")[0], lat_dim_no)
+        if len(lat_dim_numbers) > 1:
+            cube.add_aux_coord(cubes[0].coords("latitude")[0], lat_dim_numbers)
+        else:
+            cube.add_dim_coord(cubes[0].coords("latitude")[0], lat_dim_numbers[0])
 
-        lon_dim_no = cube.coord_dims("longitude")[0]
+        lon_dim_numbers = cube.coord_dims("longitude")
         cube.remove_coord("longitude")
-        cube.add_dim_coord(cubes[0].coords("longitude")[0], lon_dim_no)
+        if len(lon_dim_numbers) > 1:
+            cube.add_aux_coord(cubes[0].coords("longitude")[0], lon_dim_numbers)
+        else:
+            cube.add_dim_coord(cubes[0].coords("longitude")[0], lon_dim_numbers[0])
 
 
 def cube_lat_lon_grid_compatible_with_array(cube, array_in):
