@@ -1330,7 +1330,9 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
                 ]
             )
 
-    def test_load_hfds_data_with_concatenation(self, test_cube, test_cmip6_output_hfds_concatenate_directory):
+    def test_load_hfds_data_with_concatenation(
+        self, test_cube, test_cmip6_output_hfds_concatenate_directory
+    ):
         test_cube.load_data_in_directory(test_cmip6_output_hfds_concatenate_directory)
 
         obs_time = test_cube.cube.dim_coords[0]
@@ -1341,8 +1343,12 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
 
-        assert obs_time_points[0] == cftime.DatetimeNoLeap(1998, 1, 15, 12, 0, 0, 0, 5, 15)
-        assert obs_time_points[-1] == cftime.DatetimeNoLeap(2001, 12, 15, 12, 0, 0, 0, 6, 349)
+        assert obs_time_points[0] == cftime.DatetimeNoLeap(
+            1998, 1, 15, 12, 0, 0, 0, 5, 15
+        )
+        assert obs_time_points[-1] == cftime.DatetimeNoLeap(
+            2001, 12, 15, 12, 0, 0, 0, 6, 349
+        )
 
         assert isinstance(test_cube.cube.metadata, iris.cube.CubeMetadata)
 
@@ -1375,17 +1381,16 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
             ]
         )
         assert (ts["variable"] == "tos").all()
-        assert (
-            ts["variable_standard_name"] == "sea_surface_temperature"
-        ).all()
+        assert (ts["variable_standard_name"] == "sea_surface_temperature").all()
         assert (ts["unit"] == "degC").all()
         assert (ts["climate_model"] == "CESM2").all()
         np.testing.assert_allclose(
-            ts.filter(region="World|El Nino N3.4", year=2001, month=12).values.squeeze(),
+            ts.filter(
+                region="World|El Nino N3.4", year=2001, month=12
+            ).values.squeeze(),
             28.620657,
             rtol=0.01,
         )
-
 
     def test_get_thetao_data_scm_cubes(self, test_cube, test_cmip6_output_thetao_file):
         test_cube.load_data_from_path(test_cmip6_output_thetao_file)

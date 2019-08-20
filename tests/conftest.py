@@ -310,8 +310,9 @@ def test_cmip6_output_hfds_concatenate_directory(test_data_cmip6output_dir):
         "Omon",
         "tos",
         "gn",
-        "v20190313"
+        "v20190313",
     )
+
 
 @pytest.fixture
 def test_cmip6_crunch_output(test_data_root_dir):
