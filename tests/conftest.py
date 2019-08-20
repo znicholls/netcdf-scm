@@ -298,6 +298,22 @@ def test_cmip6_output_thetao_file(test_data_cmip6output_dir):
 
 
 @pytest.fixture
+def test_cmip6_output_hfds_concatenate_directory(test_data_cmip6output_dir):
+    return join(
+        test_data_cmip6output_dir,
+        "CMIP6",
+        "CMIP",
+        "NCAR",
+        "CESM2",
+        "historical",
+        "r10i1p1f1",
+        "Omon",
+        "tos",
+        "gn",
+        "v20190313"
+    )
+
+@pytest.fixture
 def test_cmip6_crunch_output(test_data_root_dir):
     return join(test_data_root_dir, "expected-crunching-output", "cmip6output", "CMIP6")
 
