@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#88 <https://github.com/znicholls/netcdf-scm/pull/88>`_) Fix bug when reading more than one multi-dimensional file in a directory
 - (`#87 <https://github.com/znicholls/netcdf-scm/pull/87>`_) Add support for crunching data with a height co-ordinate
 - (`#84 <https://github.com/znicholls/netcdf-scm/pull/84>`_) Add ability to crunch land, ocean and atmosphere data separately (and sensibly)
 - (`#82 <https://github.com/znicholls/netcdf-scm/pull/82>`_) Prepare to add land data handling
