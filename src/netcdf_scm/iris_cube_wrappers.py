@@ -334,7 +334,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         e.g. if time is the first dimension of the data, then
         ``self.time_dim_number`` will be ``0`` (Python is zero-indexed).
         """
-        return self.cube.coord_dims(self.time_name)[0]
+        return self.dim_names.index(self.time_name)
 
     @property
     def info(self):
