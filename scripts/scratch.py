@@ -1,35 +1,8 @@
-import sys
-from datetime import datetime
+from netcdf_scm.iris_cube_wrappers import CMIP6OutputCube
 
-from click.testing import CliRunner
+test  = CMIP6OutputCube()
 
-from netcdf_scm.cli import crunch_data
-
-try:
-    INPUT_DIR = sys.argv[1]
-except IndexError:
-    INPUT_DIR = "tests/test-data/cmip6output"
-OUTPUT_DIR = "output-examples/scratch-script-output"
-
-start = datetime.now()
-runner = CliRunner()
-for _ in range(5):
-    result = runner.invoke(
-        crunch_data,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "cmip6output crunching scratch",
-            "--drs",
-            "CMIP6Output",
-            "-f",
-            "--small-number-workers",
-            1,
-            "--medium-number-workers",
-            1,
-        ],
-    )
-assert result.exit_code == 0, result.output
-end = datetime.now()
-total_time = (end - start).total_seconds()
-print(f"Start: {start}\nEnd: {end}\nDiff: {total_time}")
+import pdb
+pdb.set_trace()
+test.load_data_in_directory("/data/marble/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/tos/gn/v20190313/")
+test.load_data_in_directory("tests/test-data/cmip6output/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/tos/gn/v20190313")
