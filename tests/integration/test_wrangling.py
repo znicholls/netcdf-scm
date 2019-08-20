@@ -202,7 +202,7 @@ def test_wrangling_blend_models(tmpdir, caplog, test_cmip6_crunch_output):
     assert ".*" in result.output
     assert ".mat" in result.output
 
-    assert len(glob(join(OUTPUT_DIR, "*.mat"))) == 107
+    assert len(glob(join(OUTPUT_DIR, "*.mat"))) == 115
 
 
 def test_wrangling_handles_integer_units(tmpdir, caplog, test_cmip6_crunch_output):
