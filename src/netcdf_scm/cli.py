@@ -220,7 +220,7 @@ def crunch_data(
         helper.load_data_in_directory(
             dpath_h
         )
-        logger.info("data in %s has %s data points, dpath_h, np.prod(helper.cube.shape))
+        logger.info("data in %s has %s data points", dpath_h, np.prod(helper.cube.shape))
         return np.prod(helper.cube.shape)
 
     dirs_to_crunch = [(d, f, get_size(d)) for d, f in dirs_to_crunch]
