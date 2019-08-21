@@ -130,7 +130,7 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--small-threshold",
-    default=3*10**7,
+    default=3 * 10 ** 7,
     show_default=True,
     help="Maximum number of data points in a file for it to be processed in parallel with ``small-number-workers``",
 )
@@ -142,7 +142,7 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--medium-threshold",
-    default=9*10**7,
+    default=9 * 10 ** 7,
     show_default=True,
     help="Maximum number of data points in a file for it to be processed in parallel with ``medium-number-workers``",
 )
@@ -220,7 +220,8 @@ def crunch_data(
         helper.load_data_in_directory(
             dpath_h
         )
-        return np.sum(helper.cube.shape)
+        logger.info("data in %s has %s data points, dpath_h, np.prod(helper.cube.shape))
+        return np.prod(helper.cube.shape)
 
     dirs_to_crunch = [(d, f, get_size(d)) for d, f in dirs_to_crunch]
 
@@ -259,7 +260,7 @@ def crunch_data(
         {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n < small_threshold
     ]
     logger.info(
-        "Crunching %s directories with less than %s years of data",
+        "Crunching %s directories with less than %s data points",
         len(dirs_to_crunch_small),
         small_threshold,
     )
@@ -275,7 +276,7 @@ def crunch_data(
         if small_threshold <= n < medium_threshold
     ]
     logger.info(
-        "Crunching %s directories with greater than or equal to %s and less than %s years of data",
+        "Crunching %s directories with greater than or equal to %s and less than %s data points",
         len(dirs_to_crunch_medium),
         small_threshold,
         medium_threshold,
@@ -290,7 +291,7 @@ def crunch_data(
         {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n > medium_threshold
     ]
     logger.info(
-        "Crunching %s directories with greater than or equal to %s years of data",
+        "Crunching %s directories with greater than or equal to %s data points",
         len(dirs_to_crunch_large),
         medium_threshold,
     )
