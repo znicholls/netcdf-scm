@@ -130,9 +130,9 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--small-threshold",
-    default=300,
+    default=3*10**7,
     show_default=True,
-    help="Maximum number of years in a file for it to be processed in parallel with ``small-number-workers``",
+    help="Maximum number of data points in a file for it to be processed in parallel with ``small-number-workers``",
 )
 @click.option(
     "--medium-number-workers",
@@ -142,9 +142,9 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--medium-threshold",
-    default=900,
+    default=9*10**7,
     show_default=True,
-    help="Maximum number of years in a file for it to be processed in parallel with ``medium-number-workers``",
+    help="Maximum number of data points in a file for it to be processed in parallel with ``medium-number-workers``",
 )
 def crunch_data(
     src,
@@ -216,20 +216,13 @@ def crunch_data(
 
     dirs_to_crunch, failures_dir_finding = _find_dirs_meeting_func(src, keep_dir)
 
-    def get_nyears(dpath_h):
-        helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
+    def get_size(dpath_h):
+        helper.load_data_in_directory(
             dpath_h
         )
-        time_ids = helper._time_id.split(  # pylint:disable=protected-access
-            helper.time_period_separator
-        )
-        start_year = int(time_ids[0][:4].lstrip("0"))
-        end_year = int(time_ids[1][:4].lstrip("0"))
-        num_years = end_year - start_year
+        return np.sum(helper.cube.shape)
 
-        return num_years
-
-    dirs_to_crunch = [(d, f, get_nyears(d)) for d, f in dirs_to_crunch]
+    dirs_to_crunch = [(d, f, get_size(d)) for d, f in dirs_to_crunch]
 
     crunch_kwargs = {
         "drs": drs,
