@@ -220,8 +220,9 @@ def crunch_data(
         helper.load_data_in_directory(
             dpath_h
         )
-        logger.info("data in %s has %s data points", dpath_h, np.prod(helper.cube.shape))
-        return np.prod(helper.cube.shape)
+        data_points = np.prod(helper.cube.shape)
+        logger.info("data in %s has %s million data points", dpath_h, data_points / 10**6)
+        return data_points
 
     dirs_to_crunch = [(d, f, get_size(d)) for d, f in dirs_to_crunch]
 
@@ -260,9 +261,9 @@ def crunch_data(
         {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n < small_threshold
     ]
     logger.info(
-        "Crunching %s directories with less than %s data points",
+        "Crunching %s directories with less than %s million data points",
         len(dirs_to_crunch_small),
-        small_threshold,
+        small_threshold / 10**6,
     )
     if dirs_to_crunch_small:
         failures_small = crunch_from_list(
@@ -276,10 +277,10 @@ def crunch_data(
         if small_threshold <= n < medium_threshold
     ]
     logger.info(
-        "Crunching %s directories with greater than or equal to %s and less than %s data points",
+        "Crunching %s directories with greater than or equal to %s and less than %s million data points",
         len(dirs_to_crunch_medium),
-        small_threshold,
-        medium_threshold,
+        small_threshold / 10**6,
+        medium_threshold / 10**6,
     )
     if dirs_to_crunch_medium:
         failures_medium = crunch_from_list(
@@ -291,9 +292,9 @@ def crunch_data(
         {"fnames": f, "dpath": d} for d, f, n in dirs_to_crunch if n > medium_threshold
     ]
     logger.info(
-        "Crunching %s directories with greater than or equal to %s data points",
+        "Crunching %s directories with greater than or equal to %s million data points",
         len(dirs_to_crunch_large),
-        medium_threshold,
+        medium_threshold / 10**6,
     )
     if dirs_to_crunch_large:
         failures_large = crunch_from_list(dirs_to_crunch_large, n_workers=1)
