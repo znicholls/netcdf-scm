@@ -225,7 +225,7 @@ def crunch_data(
 
     def get_number_data_points_in_millions(dpath_h):
         try:
-            helper.load_data_in_directory(dpath_h)
+            helper.load_data_in_directory(dpath_h, process_warnings=False)
         except Exception as e:
             logger.info("Could not load data in %s, exception: %s", dpath_h, e)
             return None
