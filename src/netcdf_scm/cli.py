@@ -137,7 +137,7 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--small-threshold",
-    default=30,
+    default=50,
     show_default=True,
     help="Maximum number of data points (in millions) in a file for it to be processed in parallel with ``small-number-workers``",
 )
@@ -149,7 +149,7 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--medium-threshold",
-    default=90,
+    default=120,
     show_default=True,
     help="Maximum number of data points (in millions) in a file for it to be processed in parallel with ``medium-number-workers``",
 )
