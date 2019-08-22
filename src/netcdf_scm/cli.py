@@ -137,9 +137,9 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--small-threshold",
-    default=3 * 10 ** 7,
+    default=30,
     show_default=True,
-    help="Maximum number of data points in a file for it to be processed in parallel with ``small-number-workers``",
+    help="Maximum number of data points (in millions) in a file for it to be processed in parallel with ``small-number-workers``",
 )
 @click.option(
     "--medium-number-workers",
@@ -149,9 +149,9 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--medium-threshold",
-    default=9 * 10 ** 7,
+    default=90,
     show_default=True,
-    help="Maximum number of data points in a file for it to be processed in parallel with ``medium-number-workers``",
+    help="Maximum number of data points (in millions) in a file for it to be processed in parallel with ``medium-number-workers``",
 )
 def crunch_data(
     src,
@@ -223,15 +223,15 @@ def crunch_data(
 
     dirs_to_crunch, failures_dir_finding = _find_dirs_meeting_func(src, keep_dir)
 
-    def get_size(dpath_h):
+    def get_number_data_points_in_millions(dpath_h):
         helper.load_data_in_directory(
             dpath_h
         )
-        data_points = np.prod(helper.cube.shape)
-        logger.info("data in %s has %s million data points", dpath_h, data_points / 10**6)
+        data_points = np.prod(helper.cube.shape)  / 10**6
+        logger.info("data in %s has %s million data points", dpath_h, data_points)
         return data_points
 
-    dirs_to_crunch = [(d, f, get_size(d)) for d, f in dirs_to_crunch]
+    dirs_to_crunch = [(d, f, get_number_data_points_in_millions(d)) for d, f in dirs_to_crunch]
 
     crunch_kwargs = {
         "drs": drs,
@@ -270,7 +270,7 @@ def crunch_data(
     logger.info(
         "Crunching %s directories with less than %s million data points",
         len(dirs_to_crunch_small),
-        small_threshold / 10**6,
+        small_threshold,
     )
     if dirs_to_crunch_small:
         failures_small = crunch_from_list(
@@ -286,8 +286,8 @@ def crunch_data(
     logger.info(
         "Crunching %s directories with greater than or equal to %s and less than %s million data points",
         len(dirs_to_crunch_medium),
-        small_threshold / 10**6,
-        medium_threshold / 10**6,
+        small_threshold,
+        medium_threshold,
     )
     if dirs_to_crunch_medium:
         failures_medium = crunch_from_list(
@@ -301,7 +301,7 @@ def crunch_data(
     logger.info(
         "Crunching %s directories with greater than or equal to %s million data points",
         len(dirs_to_crunch_large),
-        medium_threshold / 10**6,
+        medium_threshold,
     )
     if dirs_to_crunch_large:
         failures_large = crunch_from_list(dirs_to_crunch_large, n_workers=1)
