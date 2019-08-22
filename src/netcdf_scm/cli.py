@@ -153,6 +153,12 @@ def init_logging(params, out_filename=None):
     show_default=True,
     help="Maximum number of data points (in millions) in a file for it to be processed in parallel with ``medium-number-workers``",
 )
+@click.option(
+    "--force-lazy-threshold",
+    default=1000,
+    show_default=True,
+    help="Maximum number of data points (in millions) in a file for it to be processed in memory",
+)
 def crunch_data(
     src,
     dst,
@@ -166,6 +172,7 @@ def crunch_data(
     small_threshold,
     medium_number_workers,
     medium_threshold,
+    force_lazy_threshold,
 ):
     r"""
     Crunch data in ``src`` to NetCDF-SCM ``.nc`` files in ``dst``.
@@ -248,6 +255,7 @@ def crunch_data(
         "force": force,
         "existing_files": tracker._data,  # pylint:disable=protected-access
         "crunch_contact": crunch_contact,
+        "force_lazy_threshold": force_lazy_threshold,
     }
 
     def process_results(res):
@@ -335,6 +343,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments,too-many-locals
     force=None,
     existing_files=None,
     crunch_contact=None,
+    force_lazy_threshold=None,
 ):
     logger.info("Attempting to process: %s", fnames)
     scmcube = _load_scm_cube(drs, dpath, fnames)
@@ -373,7 +382,17 @@ def _crunch_files(  # pylint:disable=too-many-arguments,too-many-locals
                 regions,
             )
 
-    results = scmcube.get_scm_timeseries_cubes(regions=regions)
+    ndata_points = np.prod(scmcube.cube.shape) / 10**6
+    lazy = ndata_points > force_lazy_threshold
+    if lazy:
+        logger.info(
+            "Data in %s has %s million data points which is above "
+            "force-lazy-threshold of %s million data points hence processing lazily",
+            dpath,
+            ndata_points,
+            force_lazy_threshold
+        )
+    results = scmcube.get_scm_timeseries_cubes(regions=regions, lazy=lazy)
     results = _set_crunch_contact_in_results(results, crunch_contact)
 
     return results, out_filepath, scmcube.info
