@@ -209,6 +209,7 @@ def crunch_data(
             ("small_threshold", small_threshold),
             ("medium_number_workers", medium_number_workers),
             ("medium_threshold", medium_threshold),
+            ("force_lazy_threshold", force_lazy_threshold),
         ],
         out_filename=log_file,
     )
