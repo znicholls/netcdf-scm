@@ -106,7 +106,7 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--regexp",
-    default="^((?!fx).)*$",
+    default="^(?!.*(fx)).*$",
     show_default=True,
     help="Regular expression to apply to file directory (only crunches matches).",
 )
@@ -214,9 +214,6 @@ def crunch_data(
         if not regexp_to_match.match(dpath):
             logger.debug("Skipping (did not match regexp) %s", dpath)
             return False
-        helper._add_time_period_from_files_in_directory(  # pylint:disable=protected-access
-            dpath
-        )
         logger.info("Adding directory to queue %s", dpath)
 
         return True
@@ -237,8 +234,7 @@ def crunch_data(
         return data_points
 
     dirs_to_crunch = [
-        (d, f, get_number_data_points_in_millions(d))
-        for d, f in dirs_to_crunch
+        (d, f, get_number_data_points_in_millions(d)) for d, f in dirs_to_crunch
     ]
     failures_calculating_data_points = any([p is None for _, _, p in dirs_to_crunch])
     dirs_to_crunch = [(d, f, p) for d, f, p in dirs_to_crunch if p is not None]
@@ -316,7 +312,13 @@ def crunch_data(
     if dirs_to_crunch_large:
         failures_large = crunch_from_list(dirs_to_crunch_large, n_workers=1)
 
-    if failures_calculating_data_points or failures_dir_finding or failures_small or failures_medium or failures_large:
+    if (
+        failures_calculating_data_points
+        or failures_dir_finding
+        or failures_small
+        or failures_medium
+        or failures_large
+    ):
         raise click.ClickException(
             "Some files failed to process. See {} for more details".format(log_file)
         )
@@ -530,7 +532,7 @@ def _set_crunch_contact_in_results(res, crunch_contact):
 @click.argument("wrangle_contact")
 @click.option(
     "--regexp",
-    default="^((?!fx).)*$",
+    default="^(?!.*(fx)).*$",
     show_default=True,
     help="Regular expression to apply to file directory (only wrangles matches).",
 )

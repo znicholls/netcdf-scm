@@ -363,7 +363,7 @@ def test_crunching_broken_dir(
     result = runner.invoke(crunch_data, [INPUT_DIR, OUTPUT_DIR, "test", "--drs", CUBE])
 
     assert result.exit_code  # assert failure raised
-    assert "Directory checking failed on" in result.output, result.output
+    assert "Could not calculate size of data in" in result.output, result.output
 
 
 @pytest.mark.parametrize(
