@@ -760,7 +760,11 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return scm_weights
 
     def get_scm_timeseries_cubes(
-        self, surface_fraction_cube=None, areacell_scmcube=None, regions=None, lazy=False
+        self,
+        surface_fraction_cube=None,
+        areacell_scmcube=None,
+        regions=None,
+        lazy=False,
     ):
         """
         Get SCM relevant cubes
@@ -865,7 +869,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 areacell_scmcube=areacell_scmcube,
                 regions=regions,
             )
-            crunch_list = self._crunch_serial(crunch_timeseries, scm_timeseries_weights, lazy=True)
+            crunch_list = self._crunch_serial(
+                crunch_timeseries, scm_timeseries_weights, lazy=True
+            )
 
         timeseries_cubes = {region: ts_cube for region, ts_cube, _ in crunch_list}
         areas = {region: area for region, _, area in crunch_list if area is not None}
