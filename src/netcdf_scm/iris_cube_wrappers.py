@@ -1264,7 +1264,7 @@ class _CMIPCube(SCMCube, ABC):
         self, directory, process_warnings=True
     ):
         super()._load_and_concatenate_files_in_directory(
-            directory, process_warnings=True
+            directory, process_warnings=process_warnings
         )
         self._add_time_period_from_files_in_directory(directory)
 

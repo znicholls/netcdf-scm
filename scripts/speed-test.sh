@@ -2,7 +2,7 @@
 CRUNCH_DIR="/data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test"
 CONTACT='Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>'
 DRS="CMIP6Output"
-REGEXP="^(?!.*(fx|/ta/|/co2/)).*Amon.*$"
+REGEXP='^(?!.*(fx|/co2/|/ta/)).*Amon.*$'
 
 
 SRC_DIR="/data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control"
@@ -32,7 +32,7 @@ echo "Multiple large files (300 million data points) crunch time: $SRC_DIR_BIG_T
 SRC_DIR_OCEAN_2D="/data/marble/sandbox/znicholls/test-cmip6output/CMIP6"
 
 exec 3>&1 4>&2
-SRC_DIR_OCEAN_2D_TIME=$( { time netcdf-scm-crunch "${SRC_DIR_OCEAN_2D}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp '.*zos.' --force --medium-number-workers 2 1>&3 2>&4; } 2>&1 )
+SRC_DIR_OCEAN_2D_TIME=$( { time netcdf-scm-crunch "${SRC_DIR_OCEAN_2D}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp '.*zos.*' --force --medium-number-workers 2 1>&3 2>&4; } 2>&1 )
 exec 3>&- 4>&-
 echo "Multiple ocean 2D files (240 million data points) crunch time: $SRC_DIR_OCEAN_2D"
 
