@@ -239,8 +239,9 @@ def crunch_data(
     dirs_to_crunch = [
         (d, f, get_number_data_points_in_millions(d))
         for d, f in dirs_to_crunch
-        if get_number_data_points_in_millions(d) is not None
     ]
+    failures_calculating_data_points = any([p is None for _, _, p in dirs_to_crunch])
+    dirs_to_crunch = [(d, f, p) for d, f, p in dirs_to_crunch if p is not None]
 
     crunch_kwargs = {
         "drs": drs,
@@ -315,7 +316,7 @@ def crunch_data(
     if dirs_to_crunch_large:
         failures_large = crunch_from_list(dirs_to_crunch_large, n_workers=1)
 
-    if failures_dir_finding or failures_small or failures_medium or failures_large:
+    if failures_calculating_data_points or failures_dir_finding or failures_small or failures_medium or failures_large:
         raise click.ClickException(
             "Some files failed to process. See {} for more details".format(log_file)
         )
