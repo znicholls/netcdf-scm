@@ -585,8 +585,9 @@ class _CMIPCubeTester(TestSCMCube):
             junk_args={"metadata_variable": "mdata_var"},
         )
 
+    @pytest.mark.parametrize("process_warnings", [True, False])
     @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
-    def test_load_data_from_identifiers(self, mock_iris_load_cube, test_cube):
+    def test_load_data_from_identifiers(self, mock_iris_load_cube, test_cube, process_warnings):
         tfile = "hello_world_test.nc"
         test_cube._check_cube = MagicMock()
 
@@ -598,7 +599,14 @@ class _CMIPCubeTester(TestSCMCube):
         test_cube.get_variable_constraint = MagicMock(return_value=vcons)
 
         lcube_return = 9848
-        mock_iris_load_cube.return_value = lcube_return
+
+
+        def raise_mock_warn_and_return_test_value(*args, **kwargs):
+            warnings.warn("mocked warning")
+
+            return lcube_return
+
+        mock_iris_load_cube.side_effect = raise_mock_warn_and_return_test_value
 
         test_cube._process_load_data_from_identifiers_warnings = MagicMock()
 
@@ -616,7 +624,11 @@ class _CMIPCubeTester(TestSCMCube):
         )
         test_cube.get_variable_constraint.assert_called()
         mock_iris_load_cube.assert_called_with(tfile, constraint=vcons)
-        test_cube._process_load_data_from_identifiers_warnings.assert_not_called()
+        if process_warnings:
+            test_cube._process_load_data_from_identifiers_warnings.assert_called()
+        else:
+            test_cube._process_load_data_from_identifiers_warnings.assert_not_called()
+
         test_cube._check_cube.assert_called()
 
         assert test_cube._loaded_paths == [tfile]
