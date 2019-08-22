@@ -226,8 +226,10 @@ def crunch_data(
     def get_number_data_points_in_millions(dpath_h):
         try:
             helper.load_data_in_directory(dpath_h, process_warnings=False)
-        except Exception as e:
-            logger.info("Could not load data in %s, exception: %s", dpath_h, e)
+        except Exception as e:  # pylint:disable=broad-except
+            logger.info(
+                "Could not calculate size of data in %s, exception: %s", dpath_h, e
+            )
             return None
 
         data_points = np.prod(helper.cube.shape) / 10 ** 6
@@ -235,7 +237,8 @@ def crunch_data(
         return data_points
 
     dirs_to_crunch = [
-        (d, f, get_number_data_points_in_millions(d)) for d, f in dirs_to_crunch
+        (d, f, get_number_data_points_in_millions(d))
+        for d, f in dirs_to_crunch
         if get_number_data_points_in_millions(d) is not None
     ]
 
