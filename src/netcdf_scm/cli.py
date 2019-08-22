@@ -143,12 +143,12 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--medium-number-workers",
-    default=3,  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
+    default=3,
     show_default=True,
     help="Maximum number of workers to use when crunching files.",
 )
 @click.option(
-    "--medium-threshold",
+    "--medium-threshold",  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
     default=120,
     show_default=True,
     help="Maximum number of data points (in millions) in a file for it to be processed in parallel with ``medium-number-workers``",
@@ -382,7 +382,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments,too-many-locals
                 regions,
             )
 
-    ndata_points = np.prod(scmcube.cube.shape) / 10**6
+    ndata_points = np.prod(scmcube.cube.shape) / 10 ** 6
     lazy = ndata_points > force_lazy_threshold
     if lazy:
         logger.info(
@@ -390,7 +390,7 @@ def _crunch_files(  # pylint:disable=too-many-arguments,too-many-locals
             "force-lazy-threshold of %s million data points hence processing lazily",
             dpath,
             ndata_points,
-            force_lazy_threshold
+            force_lazy_threshold,
         )
     results = scmcube.get_scm_timeseries_cubes(regions=regions, lazy=lazy)
     results = _set_crunch_contact_in_results(results, crunch_contact)
