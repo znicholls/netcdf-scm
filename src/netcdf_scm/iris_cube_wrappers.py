@@ -480,7 +480,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         self._load_cube(filepath)
 
-    def load_data_in_directory(self, directory=None):
+    def load_data_in_directory(self, directory=None, process_warnings=True):
         """
         Load data in a directory.
 
@@ -508,21 +508,24 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         directory : str
             Directory from which to load the data.
 
+        process_warnings : bool
+            Should I process warnings to add e.g. missing metadata information?
+
         Raises
         ------
         ValueError
             If the files in the directory are not from the same run (i.e. their filenames are not identical except for the timestamp) or if the files don't form a continuous timeseries.
         """
-        self._load_and_concatenate_files_in_directory(directory)
+        self._load_and_concatenate_files_in_directory(directory, process_warnings=process_warnings)
 
-    def _load_and_concatenate_files_in_directory(self, directory):
+    def _load_and_concatenate_files_in_directory(self, directory, process_warnings=True):
         self._check_data_names_in_same_directory(directory)
 
         # we use a loop here to make the most of finding missing data like
         # land-surface fraction and cellarea, something iris can't automatically do
         loaded_cubes = []
         for f in sorted(os.listdir(directory)):
-            self.load_data_from_path(join(directory, f))
+            self.load_data_from_path(join(directory, f), process_warnings=process_warnings)
             loaded_cubes.append(self.cube)
 
         loaded_cubes_iris = iris.cube.CubeList(loaded_cubes)
@@ -1227,7 +1230,7 @@ class _CMIPCube(SCMCube, ABC):
     file).
     """
 
-    def load_data_from_path(self, filepath):
+    def load_data_from_path(self, filepath, process_warnings=True):
         """
         Load data from a path.
 
@@ -1235,14 +1238,17 @@ class _CMIPCube(SCMCube, ABC):
         ----------
         filepath : str
             The filepath from which to load the data.
+
+        process_warnings : bool
+            Should I process warnings to add e.g. missing metadata information?
         """
         load_data_from_identifiers_args = self.get_load_data_from_identifiers_args_from_filepath(
             filepath
         )
-        self.load_data_from_identifiers(**load_data_from_identifiers_args)
+        self.load_data_from_identifiers(process_warnings=process_warnings, **load_data_from_identifiers_args)
 
-    def _load_and_concatenate_files_in_directory(self, directory):
-        super()._load_and_concatenate_files_in_directory(directory)
+    def _load_and_concatenate_files_in_directory(self, directory, process_warnings=True):
+        super()._load_and_concatenate_files_in_directory(directory, process_warnings=True)
         self._add_time_period_from_files_in_directory(directory)
 
     def _add_time_period_from_files_in_directory(self, directory):
@@ -1320,7 +1326,7 @@ class _CMIPCube(SCMCube, ABC):
             A dictionary where each key is the identifier name and each value is the value of that identifier for the input filename
         """
 
-    def load_data_from_identifiers(self, **kwargs):
+    def load_data_from_identifiers(self, process_warnings=True, **kwargs):
         """
         Load data using key identifiers.
 
@@ -1329,6 +1335,9 @@ class _CMIPCube(SCMCube, ABC):
 
         Parameters
         ----------
+        process_warnings : bool
+            Should I process warnings to add e.g. missing metadata information?
+
         **kwargs
             Arguments which can then be processed by
             ``self.get_filepath_from_load_data_from_identifiers_args`` and
@@ -1343,7 +1352,7 @@ class _CMIPCube(SCMCube, ABC):
             fpath = self.get_filepath_from_load_data_from_identifiers_args(**kwargs)
             self._load_cube(fpath, self.get_variable_constraint())
 
-        if w:
+        if w and process_warnings:
             self._process_load_data_from_identifiers_warnings(w)
 
     def get_metadata_cube(self, metadata_variable, cube=None):
