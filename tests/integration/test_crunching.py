@@ -229,7 +229,20 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
         )
     assert result.exit_code == 0
 
-    assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
+    assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.text
+    assert "crunch-contact: {}".format(CRUNCH_CONTACT) in caplog.text
+    assert "source: {}".format(INPUT_DIR) in caplog.text
+    assert "destination: {}".format(OUTPUT_DIR) in caplog.text
+    assert "drs: MarbleCMIP5" in caplog.text
+    assert "regexp: {}".format(VAR_TO_CRUNCH) in caplog.text
+    assert "regions: World,World|Northern Hemisphere" in caplog.text
+    assert "force: True" in caplog.text
+    assert "small_number_workers: 10" in caplog.text
+    assert "small_threshold: 0" in caplog.text
+    assert "medium_number_workers: 3" in caplog.text
+    assert "medium_threshold: 2" in caplog.text
+    assert "Crunching 1 directories with greater than or equal to 2 million data points" in caplog.text
+
     assert (
         "Making output directory: {}/custom-name".format(OUTPUT_DIR) in caplog.messages
     )
