@@ -759,7 +759,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return scm_weights
 
     def get_scm_timeseries_cubes(
-        self, surface_fraction_cube=None, areacell_scmcube=None, regions=None
+        self, surface_fraction_cube=None, areacell_scmcube=None, regions=None, lazy=False
     ):
         """
         Get SCM relevant cubes
@@ -790,6 +790,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             List of regions to use. If ``None`` then
             ``netcdf_scm.regions.DEFAULT_REGIONS`` is used.
 
+        lazy : bool
+            Should I process the data lazily? This can be slow as data has to be read
+            off disk multiple time.s
+
         Returns
         -------
         dict
@@ -817,14 +821,22 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 area = None
             return region, scm_cube, area
 
-        try:
-            crunch_list = self._crunch_in_memory(
-                crunch_timeseries, scm_timeseries_weights
-            )
-        except MemoryError:
-            logger.warning(
-                "Data won't fit in memory, will process lazily (hence slowly)"
-            )
+        memory_error = False
+        if not lazy:
+            try:
+                crunch_list = self._crunch_in_memory(
+                    crunch_timeseries, scm_timeseries_weights
+                )
+            except MemoryError:
+                logger.warning(
+                    "Data won't fit in memory, will process lazily (hence slowly)"
+                )
+                memory_error = True
+
+        if lazy or memory_error:
+            if lazy:
+                logger.info("Forcing lazy crunching")
+
             data_dir = dirname(self.info["files"][0])
             self.__init__()
             self.load_data_in_directory(data_dir)
