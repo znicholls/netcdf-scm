@@ -138,7 +138,9 @@ class TestSCMCube(object):
         tdir = "mocked/out"
         test_cube._load_and_concatenate_files_in_directory = MagicMock()
         test_cube.load_data_in_directory(tdir, process_warnings=process_warnings)
-        test_cube._load_and_concatenate_files_in_directory.assert_called_with(tdir, process_warnings=process_warnings)
+        test_cube._load_and_concatenate_files_in_directory.assert_called_with(
+            tdir, process_warnings=process_warnings
+        )
 
     @pytest.mark.parametrize("regions", [None, ["World"]])
     def test_get_scm_timeseries(self, test_sftlf_cube, test_cube, regions):
@@ -588,7 +590,9 @@ class _CMIPCubeTester(TestSCMCube):
 
     @pytest.mark.parametrize("process_warnings", [True, False])
     @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
-    def test_load_data_from_identifiers(self, mock_iris_load_cube, test_cube, process_warnings):
+    def test_load_data_from_identifiers(
+        self, mock_iris_load_cube, test_cube, process_warnings
+    ):
         tfile = "hello_world_test.nc"
         test_cube._check_cube = MagicMock()
 
@@ -600,7 +604,6 @@ class _CMIPCubeTester(TestSCMCube):
         test_cube.get_variable_constraint = MagicMock(return_value=vcons)
 
         lcube_return = 9848
-
 
         def raise_mock_warn_and_return_test_value(*args, **kwargs):
             warnings.warn("mocked warning")
@@ -682,7 +685,9 @@ class _CMIPCubeTester(TestSCMCube):
         test_cube.get_load_data_from_identifiers_args_from_filepath.assert_called_with(
             tpath
         )
-        test_cube.load_data_from_identifiers.assert_called_with(process_warnings=process_warnings, **tids)
+        test_cube.load_data_from_identifiers.assert_called_with(
+            process_warnings=process_warnings, **tids
+        )
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "/tpath/file.ext"
