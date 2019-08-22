@@ -27,6 +27,13 @@ from .iris_cube_wrappers import (
 from .output import OutputFileDatabase
 from .wranglers import convert_scmdf_to_tuningstruc
 
+try:
+    import dask
+except ModuleNotFoundError:  # pragma: no cover # emergency valve
+    from .errors import raise_no_iris_warning
+
+    raise_no_iris_warning()
+
 logger = logging.getLogger("netcdf_scm")
 
 _CUBES = {
@@ -455,27 +462,29 @@ def _apply_func_parallel(  # pylint:disable=too-many-arguments
 ):
     failures = False
     logger.info("Processing in parallel with %s workers", n_workers)
-    if style == "processes":
-        executor_cls = ProcessPoolExecutor
-    elif style == "threads":
-        executor_cls = ThreadPoolExecutor
-    else:
-        raise ValueError("Unrecognised executor: {}".format(style))
-    with executor_cls(max_workers=n_workers) as executor:
-        futures = [
-            executor.submit(apply_func, *common_arglist, **ikwargs, **common_kwarglist)
-            for ikwargs in loop_kwarglist
-        ]
-        failures = False
-        # Print out the progress as tasks complete
-        for future in tqdm.tqdm(as_completed(futures), **tqdm_kwargs):
-            try:
-                res = future.result()
-                if postprocess_func is not None:
-                    postprocess_func(res)
-            except Exception as e:  # pylint:disable=broad-except
-                logger.exception("Exception found %s", e)
-                failures = True
+    logger.info("Forcing dask to use a single thread when reading")
+    with dask.config.set(scheduler="single-threaded"):
+        if style == "processes":
+            executor_cls = ProcessPoolExecutor
+        elif style == "threads":
+            executor_cls = ThreadPoolExecutor
+        else:
+            raise ValueError("Unrecognised executor: {}".format(style))
+        with executor_cls(max_workers=n_workers) as executor:
+            futures = [
+                executor.submit(apply_func, *common_arglist, **ikwargs, **common_kwarglist)
+                for ikwargs in loop_kwarglist
+            ]
+            failures = False
+            # Print out the progress as tasks complete
+            for future in tqdm.tqdm(as_completed(futures), **tqdm_kwargs):
+                try:
+                    res = future.result()
+                    if postprocess_func is not None:
+                        postprocess_func(res)
+                except Exception as e:  # pylint:disable=broad-except
+                    logger.exception("Exception found %s", e)
+                    failures = True
 
     return failures
 
