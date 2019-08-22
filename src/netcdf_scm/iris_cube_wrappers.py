@@ -10,6 +10,7 @@ import os
 import re
 import warnings
 from abc import ABC, abstractmethod, abstractproperty
+from copy import deepcopy
 from datetime import datetime
 from os.path import basename, dirname, join, splitext
 
@@ -33,8 +34,8 @@ from .weights import DEFAULT_REGIONS, CubeWeightCalculator
 
 try:
     import iris
-    from iris.util import unify_time_units
     import iris.analysis.cartography
+    import iris.coord_categorisation
     import iris.experimental.equalise_cubes
     from iris.exceptions import (
         CoordinateMultiDimError,
@@ -42,6 +43,8 @@ try:
         ConcatenateError,
     )
     from iris.fileformats import netcdf
+    from iris.util import unify_time_units
+
     import cftime
     import cf_units
 
@@ -532,14 +535,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         # we use a loop here to make the most of finding missing data like
         # land-surface fraction and cellarea, something iris can't automatically do
-        loaded_cubes = []
+        loaded_cubes_iris = iris.cube.CubeList()
         for f in sorted(os.listdir(directory)):
             self.load_data_from_path(
                 join(directory, f), process_warnings=process_warnings
             )
-            loaded_cubes.append(self.cube)
-
-        loaded_cubes_iris = iris.cube.CubeList(loaded_cubes)
+            loaded_cubes_iris.append(self.cube)
 
         unify_time_units(loaded_cubes_iris)
         unify_lat_lon(loaded_cubes_iris)
@@ -807,8 +808,27 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             regions=regions,
         )
 
-        def crunch_timeseries(region, weights):
-            scm_cube = take_lat_lon_mean(self, weights)
+        def crunch_timeseries(region, weights, lazy=False):
+            if lazy:
+                time_slices = iris.cube.CubeList()
+                helper_cube = self.cube.copy()
+                iris.coord_categorisation.add_year(helper_cube, self.time_dim)
+                logger.debug("Crunching timeseries lazily year-by-year")
+                for year in set(helper_cube.coord("year").points):
+                    logger.debug("Year %s", year)
+                    constraint = iris.Constraint(year=year)
+                    time_slice = helper_cube.extract(constraint)
+                    time_slice.remove_coord("year")
+
+                    helper = deepcopy(self)
+                    helper.cube = time_slice
+                    cube_to_append = take_lat_lon_mean(helper, weights).cube
+                    time_slices.append(cube_to_append)
+
+                scm_cube = deepcopy(self)
+                scm_cube.cube = time_slices.concatenate_cube()
+            else:
+                scm_cube = take_lat_lon_mean(self, weights)
             scm_cube = self._add_metadata_to_region_timeseries_cube(scm_cube, region)
 
             if region in _LAND_FRACTION_REGIONS:
@@ -845,7 +865,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 areacell_scmcube=areacell_scmcube,
                 regions=regions,
             )
-            crunch_list = self._crunch_serial(crunch_timeseries, scm_timeseries_weights)
+            crunch_list = self._crunch_serial(crunch_timeseries, scm_timeseries_weights, lazy=True)
 
         timeseries_cubes = {region: ts_cube for region, ts_cube, _ in crunch_list}
         areas = {region: area for region, _, area in crunch_list if area is not None}
@@ -859,9 +879,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self._crunch_serial(crunch_timeseries, scm_regions)
 
     @staticmethod
-    def _crunch_serial(crunch_timeseries, scm_regions):
+    def _crunch_serial(crunch_timeseries, scm_regions, lazy=False):
         return [
-            crunch_timeseries(region, weights)
+            crunch_timeseries(region, weights, lazy=lazy)
             for region, weights in scm_regions.items()
         ]
 
