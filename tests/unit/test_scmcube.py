@@ -133,11 +133,12 @@ class TestSCMCube(object):
         else:
             self.raise_overload_message("test_load_data")
 
-    def test_load_data_in_directory(self, test_cube):
+    @pytest.mark.parametrize("process_warnings", [True, False])
+    def test_load_data_in_directory(self, test_cube, process_warnings):
         tdir = "mocked/out"
         test_cube._load_and_concatenate_files_in_directory = MagicMock()
-        test_cube.load_data_in_directory(tdir)
-        test_cube._load_and_concatenate_files_in_directory.assert_called_with(tdir)
+        test_cube.load_data_in_directory(tdir, process_warnings=process_warnings)
+        test_cube._load_and_concatenate_files_in_directory.assert_called_with(tdir, process_warnings=process_warnings)
 
     @pytest.mark.parametrize("regions", [None, ["World"]])
     def test_get_scm_timeseries(self, test_sftlf_cube, test_cube, regions):
@@ -616,7 +617,9 @@ class _CMIPCubeTester(TestSCMCube):
             "model": "CanESM2",
             "experiment": "1pctCO2",
         }
-        test_cube.load_data_from_identifiers(**tkwargs)
+        test_cube.load_data_from_identifiers(
+            process_warnings=process_warnings, **tkwargs
+        )
 
         assert test_cube.cube == lcube_return
         test_cube.get_filepath_from_load_data_from_identifiers_args.assert_called_with(
@@ -665,7 +668,8 @@ class _CMIPCubeTester(TestSCMCube):
     def test_get_data_filename(self, test_cube):
         self.run_test_of_method_to_overload(test_cube, "get_data_filename")
 
-    def test_load_data_from_path(self, test_cube):
+    @pytest.mark.parametrize("process_warnings", [True, False])
+    def test_load_data_from_path(self, test_cube, process_warnings):
         tpath = "./somewhere/over/the/rainbow/test.nc"
         tids = {"id1": "mocked", "id2": 123}
 
@@ -674,11 +678,11 @@ class _CMIPCubeTester(TestSCMCube):
         )
         test_cube.load_data_from_identifiers = MagicMock()
 
-        test_cube.load_data_from_path(tpath)
+        test_cube.load_data_from_path(tpath, process_warnings=process_warnings)
         test_cube.get_load_data_from_identifiers_args_from_filepath.assert_called_with(
             tpath
         )
-        test_cube.load_data_from_identifiers.assert_called_with(**tids)
+        test_cube.load_data_from_identifiers.assert_called_with(process_warnings=process_warnings, **tids)
 
     def test_get_load_data_from_identifiers_args_from_filepath(self, test_cube):
         tpath = "/tpath/file.ext"
