@@ -224,14 +224,14 @@ def crunch_data(
     dirs_to_crunch, failures_dir_finding = _find_dirs_meeting_func(src, keep_dir)
 
     def get_number_data_points_in_millions(dpath_h):
-        helper.load_data_in_directory(
-            dpath_h
-        )
-        data_points = np.prod(helper.cube.shape)  / 10**6
+        helper.load_data_in_directory(dpath_h)
+        data_points = np.prod(helper.cube.shape) / 10 ** 6
         logger.info("data in %s has %s million data points", dpath_h, data_points)
         return data_points
 
-    dirs_to_crunch = [(d, f, get_number_data_points_in_millions(d)) for d, f in dirs_to_crunch]
+    dirs_to_crunch = [
+        (d, f, get_number_data_points_in_millions(d)) for d, f in dirs_to_crunch
+    ]
 
     crunch_kwargs = {
         "drs": drs,
@@ -472,7 +472,9 @@ def _apply_func_parallel(  # pylint:disable=too-many-arguments
             raise ValueError("Unrecognised executor: {}".format(style))
         with executor_cls(max_workers=n_workers) as executor:
             futures = [
-                executor.submit(apply_func, *common_arglist, **ikwargs, **common_kwarglist)
+                executor.submit(
+                    apply_func, *common_arglist, **ikwargs, **common_kwarglist
+                )
                 for ikwargs in loop_kwarglist
             ]
             failures = False
