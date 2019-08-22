@@ -34,7 +34,7 @@ SRC_DIR_OCEAN_2D="/data/marble/sandbox/znicholls/test-cmip6output/CMIP6"
 exec 3>&1 4>&2
 SRC_DIR_OCEAN_2D_TIME=$( { time netcdf-scm-crunch "${SRC_DIR_OCEAN_2D}" "${CRUNCH_DIR}" "${CONTACT}"  --drs "${DRS}" --regexp '.*zos.*' --force --medium-number-workers 2 1>&3 2>&4; } 2>&1 )
 exec 3>&- 4>&-
-echo "Multiple ocean 2D files (240 million data points) crunch time: $SRC_DIR_OCEAN_2D"
+echo "Multiple ocean 2D files (240 million data points) crunch time: $SRC_DIR_OCEAN_2D_TIME"
 
 
 SRC_DIR_ENORMOUS="/data/marble/sandbox/znicholls/test-cmip6output/CMIP6"
