@@ -241,6 +241,7 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
     assert "small_threshold: 0" in caplog.text
     assert "medium_number_workers: 3" in caplog.text
     assert "medium_threshold: 2" in caplog.text
+    assert "force_lazy_threshold: 1000" in caplog.text
     assert (
         "Crunching 1 directories with greater than or equal to 2 million data points"
         in caplog.text
