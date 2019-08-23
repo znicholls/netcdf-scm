@@ -680,7 +680,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self._metadata_cubes[metadata_variable]
 
     def get_scm_timeseries(
-        self, surface_fraction_cube=None, areacell_scmcube=None, regions=None
+        self, surface_fraction_cube=None, areacell_scmcube=None, regions=None,
+        lazy=False,
     ):
         """
         Get SCM relevant timeseries from ``self``.
@@ -700,6 +701,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             List of regions to use. If ``None`` then
             ``netcdf_scm.regions.DEFAULT_REGIONS`` is used.
 
+        lazy : bool
+            Should I process the data lazily? This can be slow as data has to be read
+            off disk multiple time.
+
         Returns
         -------
         :obj:`openscm.io.ScmDataFrame`
@@ -711,6 +716,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             surface_fraction_cube=surface_fraction_cube,
             areacell_scmcube=areacell_scmcube,
             regions=regions,
+            lazy=lazy,
         )
 
         return self.convert_scm_timeseries_cubes_to_openscmdata(scm_timeseries_cubes)
@@ -797,7 +803,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         lazy : bool
             Should I process the data lazily? This can be slow as data has to be read
-            off disk multiple time.s
+            off disk multiple time.
 
         Returns
         -------

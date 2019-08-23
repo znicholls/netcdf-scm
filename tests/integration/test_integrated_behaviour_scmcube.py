@@ -560,10 +560,13 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         assert len(cell_measures) == 1
         assert cell_measures[0].standard_name == "cell_area"
 
-    @pytest.mark.parametrize("force_lazy_load", [True, False])
+    @pytest.mark.parametrize("force_lazy_load,", [True, False])
+    @pytest.mark.parametrize("memory_error", [True, False])
     def test_get_scm_timeseries(
-        self, test_cube, force_lazy_load, assert_scmdata_frames_allclose
+        self, test_cube, memory_error, force_lazy_load, assert_scmdata_frames_allclose, caplog
     ):
+        caplog.set_level(logging.INFO, logger="netcdf_scm")
+
         var = self.tclass()
         var.load_data_from_path(self._test_get_scm_timeseries_file)
 
@@ -573,10 +576,22 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         if force_lazy_load:
             var_lazy = self.tclass()
             var_lazy.load_data_from_path(self._test_get_scm_timeseries_file)
+            res_lazy = var_lazy.get_scm_timeseries(lazy=True)
+            assert_scmdata_frames_allclose(res, res_lazy)
+
+            force_lazy_load_idx = caplog.messages.index("Forcing lazy crunching")
+            assert caplog.records[force_lazy_load_idx].levelname == "INFO"
+
+        elif memory_error:
+            var_lazy = self.tclass()
+            var_lazy.load_data_from_path(self._test_get_scm_timeseries_file)
             var_lazy._crunch_in_memory = MagicMock(side_effect=MemoryError)
 
             res_lazy = var_lazy.get_scm_timeseries()
             assert_scmdata_frames_allclose(res, res_lazy)
+
+            assert caplog.messages[1] == "Data won't fit in memory, will process lazily (hence slowly)"
+            assert caplog.records[1].levelname == "WARNING"
 
     def test_get_scm_timeseries_no_areacealla(
         self, test_cube, test_sftlf_file, test_tas_file
