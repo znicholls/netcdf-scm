@@ -226,26 +226,29 @@ def crunch_data(
 
         return True
 
-    dirs_to_crunch, failures_dir_finding = _find_dirs_meeting_func(src, keep_dir)
+    found_dirs, failures_dir_finding = _find_dirs_meeting_func(src, keep_dir)
 
     def get_number_data_points_in_millions(dpath_h):
         try:
             helper.load_data_in_directory(dpath_h, process_warnings=False)
         except Exception as e:  # pylint:disable=broad-except
-            logger.info(
+            logger.exception(
                 "Could not calculate size of data in %s, exception: %s", dpath_h, e
             )
             return None
 
         data_points = np.prod(helper.cube.shape) / 10 ** 6
-        logger.info("data in %s has %s million data points", dpath_h, data_points)
+        logger.debug("data in %s has %s million data points", dpath_h, data_points)
         return data_points
 
-    dirs_to_crunch = [
-        (d, f, get_number_data_points_in_millions(d)) for d, f in dirs_to_crunch
-    ]
-    failures_calculating_data_points = any([p is None for _, _, p in dirs_to_crunch])
-    dirs_to_crunch = [(d, f, p) for d, f, p in dirs_to_crunch if p is not None]
+    failures_calculating_data_points = False
+    dirs_to_crunch = []
+    for d, f in tqdm.tqdm(found_dirs, desc="Sorting directories"):
+        p = get_number_data_points_in_millions(d)
+        if p is None:
+            failures_calculating_data_points = True
+        else:
+            dirs_to_crunch.append((d, f, p))
 
     crunch_kwargs = {
         "drs": drs,
