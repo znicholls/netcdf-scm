@@ -355,7 +355,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return r
 
     def _load_cube(self, filepath, constraint=None):
-        logger.info("loading cube %s", filepath)
+        logger.debug("loading cube %s", filepath)
         self._loaded_paths.append(filepath)
         # Raises Warning and Exceptions
         self.cube = iris.load_cube(filepath, constraint=constraint)
