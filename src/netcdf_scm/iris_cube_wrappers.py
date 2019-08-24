@@ -680,7 +680,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self._metadata_cubes[metadata_variable]
 
     def get_scm_timeseries(
-        self, surface_fraction_cube=None, areacell_scmcube=None, regions=None,
+        self,
+        surface_fraction_cube=None,
+        areacell_scmcube=None,
+        regions=None,
         lazy=False,
     ):
         """
