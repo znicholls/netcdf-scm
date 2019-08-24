@@ -142,8 +142,9 @@ class TestSCMCube(object):
             tdir, process_warnings=process_warnings
         )
 
+    @pytest.mark.parametrize("lazy", [True, False])
     @pytest.mark.parametrize("regions", [None, ["World"]])
-    def test_get_scm_timeseries(self, test_sftlf_cube, test_cube, regions):
+    def test_get_scm_timeseries(self, test_sftlf_cube, test_cube, regions, lazy):
         tsftlf_cube = "mocked 124"
         tareacell_scmcube = "mocked 4389"
 
@@ -160,12 +161,14 @@ class TestSCMCube(object):
             surface_fraction_cube=tsftlf_cube,
             areacell_scmcube=tareacell_scmcube,
             regions=regions,
+            lazy=lazy,
         )
 
         test_cube.get_scm_timeseries_cubes.assert_called_with(
             surface_fraction_cube=tsftlf_cube,
             areacell_scmcube=tareacell_scmcube,
             regions=exp_regions,
+            lazy=lazy,
         )
         test_cube.convert_scm_timeseries_cubes_to_openscmdata.assert_called_with(
             test_cubes_return
