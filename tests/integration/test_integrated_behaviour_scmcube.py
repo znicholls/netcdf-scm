@@ -563,7 +563,12 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
     @pytest.mark.parametrize("force_lazy_load,", [True, False])
     @pytest.mark.parametrize("memory_error", [True, False])
     def test_get_scm_timeseries(
-        self, test_cube, memory_error, force_lazy_load, assert_scmdata_frames_allclose, caplog
+        self,
+        test_cube,
+        memory_error,
+        force_lazy_load,
+        assert_scmdata_frames_allclose,
+        caplog,
     ):
         caplog.set_level(logging.INFO, logger="netcdf_scm")
 
@@ -590,8 +595,10 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
             res_lazy = var_lazy.get_scm_timeseries()
             assert_scmdata_frames_allclose(res, res_lazy)
 
-            assert caplog.messages[1] == "Data won't fit in memory, will process lazily (hence slowly)"
-            assert caplog.records[1].levelname == "WARNING"
+            memory_error_idx = caplog.messages.index(
+                "Data won't fit in memory, will process lazily (hence slowly)"
+            )
+            assert caplog.records[memory_error_idx].levelname == "WARNING"
 
     def test_get_scm_timeseries_no_areacealla(
         self, test_cube, test_sftlf_file, test_tas_file
