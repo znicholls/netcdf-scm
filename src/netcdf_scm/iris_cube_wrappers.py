@@ -10,7 +10,6 @@ import os
 import re
 import warnings
 from abc import ABC, abstractmethod, abstractproperty
-from copy import deepcopy
 from datetime import datetime
 from os.path import basename, dirname, join, splitext
 
@@ -825,7 +824,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         def crunch_timeseries(region, weights, lazy=False):
             if lazy:
-                logger.debug("Lazily crunching {}".format(region))
+                logger.debug("Lazily crunching %s", region)
                 broadcast_weights = da.broadcast_to(weights, self.cube.shape)
                 scm_cube = take_lat_lon_mean(self, broadcast_weights)
             else:

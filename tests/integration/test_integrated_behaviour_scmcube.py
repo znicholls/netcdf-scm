@@ -561,13 +561,17 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         assert cell_measures[0].standard_name == "cell_area"
 
     @patch("netcdf_scm.utils.broadcast_onto_lat_lon_grid")
-    @patch.object(iris.analysis.MEAN, "aggregate", side_effect=iris.analysis.MEAN.aggregate)
-    @patch.object(iris.analysis.MEAN, "lazy_aggregate", side_effect=iris.analysis.MEAN.lazy_aggregate)
-    @pytest.mark.parametrize("force_lazy_load,memory_error", (
-        [True, False],
-        [True, True],
-        [False, True],
-    ))
+    @patch.object(
+        iris.analysis.MEAN, "aggregate", side_effect=iris.analysis.MEAN.aggregate
+    )
+    @patch.object(
+        iris.analysis.MEAN,
+        "lazy_aggregate",
+        side_effect=iris.analysis.MEAN.lazy_aggregate,
+    )
+    @pytest.mark.parametrize(
+        "force_lazy_load,memory_error", ([True, False], [True, True], [False, True])
+    )
     def test_get_scm_timeseries(
         self,
         mock_lazy_aggregate,
