@@ -51,6 +51,7 @@ install:
 
 
 script:
+  - ncdump -h tests/test-data/marble-cmip5/cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1/tas_Amon_bcc-csm1-1_rcp26_r1i1p1_210001-230012.nc
   - pytest --cov -r a --cov-report term-missing
   - bash scripts/scratch-process.sh
   # Only test notebooks closely on Python 3.7 otherwise there's too many html errors etc.
