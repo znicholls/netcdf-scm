@@ -33,6 +33,11 @@ from .utils import (
 from .weights import DEFAULT_REGIONS, CubeWeightCalculator
 
 try:
+    import cftime
+    import cf_units
+
+    import dask.array as da
+
     import iris
     import iris.analysis.cartography
     import iris.coord_categorisation
@@ -44,9 +49,6 @@ try:
     )
     from iris.fileformats import netcdf
     from iris.util import unify_time_units
-
-    import cftime
-    import cf_units
 
     # monkey patch netCDF4 loading to avoid very small chunks
     # required until there is a resolution to
@@ -823,23 +825,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         def crunch_timeseries(region, weights, lazy=False):
             if lazy:
-                time_slices = iris.cube.CubeList()
-                helper_cube = self.cube.copy()
-                iris.coord_categorisation.add_year(helper_cube, self.time_dim)
-                logger.debug("Crunching timeseries lazily year-by-year")
-                for year in set(helper_cube.coord("year").points):
-                    logger.debug("Year %s", year)
-                    constraint = iris.Constraint(year=year)
-                    time_slice = helper_cube.extract(constraint)
-                    time_slice.remove_coord("year")
-
-                    helper = deepcopy(self)
-                    helper.cube = time_slice
-                    cube_to_append = take_lat_lon_mean(helper, weights).cube
-                    time_slices.append(cube_to_append)
-
                 scm_cube = deepcopy(self)
-                scm_cube.cube = time_slices.concatenate_cube()
+                helper_cube = self.cube.copy()
+                helper_cube.has_lazy_data()
+                broadcast_weights = da.broadcast_to(weights, scm_cube.cube.shape)
+                helper_cube.data = helper_cube.core_data() * broadcast_weights
+                scm_cube.cube = helper_cube.collapsed(
+                    [self.lat_name, self.lon_name], iris.analysis.SUM
+                )
+                scm_cube.cube.data = scm_cube.cube.data / weights.sum()
             else:
                 scm_cube = take_lat_lon_mean(self, weights)
             scm_cube = self._add_metadata_to_region_timeseries_cube(scm_cube, region)
