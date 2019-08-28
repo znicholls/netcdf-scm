@@ -825,15 +825,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         def crunch_timeseries(region, weights, lazy=False):
             if lazy:
-                scm_cube = deepcopy(self)
-                helper_cube = self.cube.copy()
-                helper_cube.has_lazy_data()
-                broadcast_weights = da.broadcast_to(weights, scm_cube.cube.shape)
-                helper_cube.data = helper_cube.core_data() * broadcast_weights
-                scm_cube.cube = helper_cube.collapsed(
-                    [self.lat_name, self.lon_name], iris.analysis.SUM
-                )
-                scm_cube.cube.data = scm_cube.cube.data / weights.sum()
+                logger.debug("Lazily crunching {}".format(region))
+                broadcast_weights = da.broadcast_to(weights, self.cube.shape)
+                scm_cube = take_lat_lon_mean(self, broadcast_weights)
             else:
                 scm_cube = take_lat_lon_mean(self, weights)
             scm_cube = self._add_metadata_to_region_timeseries_cube(scm_cube, region)

@@ -560,45 +560,58 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         assert len(cell_measures) == 1
         assert cell_measures[0].standard_name == "cell_area"
 
-    @pytest.mark.parametrize("force_lazy_load,", [True, False])
-    @pytest.mark.parametrize("memory_error", [True, False])
+    @patch("netcdf_scm.utils.broadcast_onto_lat_lon_grid")
+    @patch.object(iris.analysis.MEAN, "aggregate", side_effect=iris.analysis.MEAN.aggregate)
+    @patch.object(iris.analysis.MEAN, "lazy_aggregate", side_effect=iris.analysis.MEAN.lazy_aggregate)
+    @pytest.mark.parametrize("force_lazy_load,memory_error", (
+        [True, False],
+        [True, True],
+        [False, True],
+    ))
     def test_get_scm_timeseries(
         self,
+        mock_lazy_aggregate,
+        mock_aggregate,
+        mock_broadcast_onto_lat_lon_grid,
         test_cube,
         memory_error,
         force_lazy_load,
         assert_scmdata_frames_allclose,
         caplog,
     ):
+        mock_broadcast_onto_lat_lon_grid.side_effect = broadcast_onto_lat_lon_grid
+
         caplog.set_level(logging.INFO, logger="netcdf_scm")
 
         var = self.tclass()
         var.load_data_from_path(self._test_get_scm_timeseries_file)
 
         res = var.get_scm_timeseries()
+        non_lazy_broadcast_calls = mock_broadcast_onto_lat_lon_grid.call_count
+        non_lazy_aggregate_calls = mock_aggregate.call_count
+        assert mock_lazy_aggregate.call_count == 0
         assert isinstance(res, ScmDataFrame)
 
-        if force_lazy_load:
-            var_lazy = self.tclass()
-            var_lazy.load_data_from_path(self._test_get_scm_timeseries_file)
-            res_lazy = var_lazy.get_scm_timeseries(lazy=True)
-            assert_scmdata_frames_allclose(res, res_lazy)
-
-            force_lazy_load_idx = caplog.messages.index("Forcing lazy crunching")
-            assert caplog.records[force_lazy_load_idx].levelname == "INFO"
-
-        elif memory_error:
-            var_lazy = self.tclass()
-            var_lazy.load_data_from_path(self._test_get_scm_timeseries_file)
+        var_lazy = self.tclass()
+        var_lazy.load_data_from_path(self._test_get_scm_timeseries_file)
+        if memory_error:
             var_lazy._crunch_in_memory = MagicMock(side_effect=MemoryError)
 
-            res_lazy = var_lazy.get_scm_timeseries()
-            assert_scmdata_frames_allclose(res, res_lazy)
+        res_lazy = var_lazy.get_scm_timeseries(lazy=force_lazy_load)
+        assert_scmdata_frames_allclose(res, res_lazy)
 
+        if memory_error and not force_lazy_load:
             memory_error_idx = caplog.messages.index(
                 "Data won't fit in memory, will process lazily (hence slowly)"
             )
             assert caplog.records[memory_error_idx].levelname == "WARNING"
+        else:
+            force_lazy_load_idx = caplog.messages.index("Forcing lazy crunching")
+            assert caplog.records[force_lazy_load_idx].levelname == "INFO"
+
+        assert mock_broadcast_onto_lat_lon_grid.call_count == non_lazy_broadcast_calls
+        assert mock_lazy_aggregate.call_count == non_lazy_aggregate_calls
+        assert mock_aggregate.call_count == non_lazy_aggregate_calls
 
     def test_get_scm_timeseries_no_areacealla(
         self, test_cube, test_sftlf_file, test_tas_file
