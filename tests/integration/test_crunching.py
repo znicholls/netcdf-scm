@@ -318,9 +318,7 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
         )
     assert result_skip.exit_code == 0
 
-    skip_str = "Skipped (already exists, not overwriting) {}".format(
-        out_file
-    )
+    skip_str = "Skipped (already exists, not overwriting) {}".format(out_file)
     assert skip_str in caplog.text
 
 
