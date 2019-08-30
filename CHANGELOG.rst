@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#92 <https://github.com/znicholls/netcdf-scm/pull/92>`_) Shrink test files (having moved entire repository to use git lfs properly)
 - (`#90 <https://github.com/znicholls/netcdf-scm/pull/90>`_) Rely on iris for lazy crunching
 - (`#89 <https://github.com/znicholls/netcdf-scm/pull/89>`_) Change crunching thresholds to be based on data size rather than number of years
 - (`#88 <https://github.com/znicholls/netcdf-scm/pull/88>`_) Fix bug when reading more than one multi-dimensional file in a directory
