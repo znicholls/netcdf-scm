@@ -694,7 +694,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
         assert obs_time[0] == cftime.DatetimeNoLeap(2040, 1, 16, 12, 0, 0, 0, 6, 16)
         assert obs_time[-1] == cftime.DatetimeNoLeap(2050, 12, 16, 12, 0, 0, 0, 0, 350)
 
-        assert test_cube.time_period == "200601-210012"
+        assert test_cube.time_period == "204001-205012"
 
         removed_attributes = ["creation_date", "tracking_id", "history"]
         for removed_attribute in removed_attributes:
