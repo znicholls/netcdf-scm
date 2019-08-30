@@ -66,7 +66,7 @@ def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_di
         # check that CanESM2 has areacella file
         for l in lines:
             d = json.loads(l)
-            if "tas_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc" in d["files"][0]:
+            if "tas_Amon_CanESM2_1pctCO2_r1i1p1_189201-190312.nc" in d["files"][0]:
                 checked_metadata = True
                 assert len(d["metadata"]["areacella"]["files"]) == 1
                 assert len(d["metadata"]["sftlf"]["files"]) == 1
