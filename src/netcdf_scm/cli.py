@@ -137,7 +137,7 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--small-threshold",
-    default=50,
+    default=50.0,
     show_default=True,
     help="Maximum number of data points (in millions) in a file for it to be processed in parallel with ``small-number-workers``",
 )
@@ -149,13 +149,13 @@ def init_logging(params, out_filename=None):
 )
 @click.option(
     "--medium-threshold",  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
-    default=120,
+    default=120.0,
     show_default=True,
     help="Maximum number of data points (in millions) in a file for it to be processed in parallel with ``medium-number-workers``",
 )
 @click.option(
     "--force-lazy-threshold",
-    default=1000,
+    default=1000.0,
     show_default=True,
     help="Maximum number of data points (in millions) in a file for it to be processed in memory",
 )
