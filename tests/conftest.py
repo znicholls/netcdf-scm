@@ -47,7 +47,7 @@ def test_tas_file(test_data_marble_cmip5_dir):
         "tas",
         "CanESM2",
         "r1i1p1",
-        "tas_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
+        "tas_Amon_CanESM2_1pctCO2_r1i1p1_189201-190312.nc",
     )
 
 
@@ -89,7 +89,7 @@ def test_access_cmip5_file(test_data_marble_cmip5_dir):
         "tas",
         "ACCESS1-0",
         "r1i1p1",
-        "tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-204912.nc",
+        "tas_Amon_ACCESS1-0_rcp45_r1i1p1_200601-201012.nc",
     )
 
 
@@ -202,7 +202,7 @@ def test_cmip6_output_file_missing_bounds(test_data_cmip6output_dir):
         "cSoilFast",
         "gr",
         "v20190121",
-        "cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_201501-210012.nc",
+        "cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_202501-204012.nc",
     )
 
 
@@ -220,7 +220,7 @@ def test_cmip6_output_file_1_unit(test_data_cmip6output_dir):
         "lai",
         "gr",
         "v20180917",
-        "lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.nc",
+        "lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200201-200512.nc",
     )
 
 

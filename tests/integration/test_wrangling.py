@@ -71,7 +71,7 @@ def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
     with open(
         join(
             OUTPUT_DIR,
-            "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.MAG",
+            "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200201-200512.MAG",
         )
     ) as f:
         content = f.read()
@@ -81,7 +81,7 @@ def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
     with open(
         join(
             OUTPUT_DIR,
-            "flat/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.MAG",
+            "flat/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200201-200512.MAG",
         )
     ) as f:
         content = f.read()
@@ -284,7 +284,7 @@ def test_wrangling_force(tmpdir, caplog, out_format, test_cmip6_crunch_output):
     if out_format == "mag-files":
         expected_file = join(
             OUTPUT_DIR,
-            "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200001-201412.MAG",
+            "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200201-200512.MAG",
         )
     else:
         expected_file = join(

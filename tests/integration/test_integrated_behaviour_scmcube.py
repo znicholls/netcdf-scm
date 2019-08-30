@@ -458,8 +458,8 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
         obs_time = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
-        assert obs_time[0] == cftime.DatetimeNoLeap(2006, 1, 16, 12, 0, 0, 0, 0, 16)
-        assert obs_time[-1] == cftime.DatetimeNoLeap(2100, 12, 16, 12, 0, 0, 0, 1, 350)
+        assert obs_time[0] == cftime.DatetimeNoLeap(2040, 1, 16, 12, 0, 0, 0, 6, 16)
+        assert obs_time[-1] == cftime.DatetimeNoLeap(2050, 12, 16, 12, 0, 0, 0, 0, 350)
 
         removed_attributes = ["creation_date", "tracking_id", "history"]
         for removed_attribute in removed_attributes:
@@ -515,7 +515,7 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
         assert obs_time_points[0] == datetime.datetime(2006, 1, 16, 12, 0)
-        assert obs_time_points[-1] == datetime.datetime(2049, 12, 16, 12, 0)
+        assert obs_time_points[-1] == datetime.datetime(2010, 12, 16, 12, 0)
 
 
 class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
@@ -691,8 +691,8 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
         obs_time = cf_units.num2date(
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
-        assert obs_time[0] == cftime.DatetimeNoLeap(2006, 1, 16, 12, 0, 0, 0, 0, 16)
-        assert obs_time[-1] == cftime.DatetimeNoLeap(2100, 12, 16, 12, 0, 0, 0, 1, 350)
+        assert obs_time[0] == cftime.DatetimeNoLeap(2040, 1, 16, 12, 0, 0, 0, 6, 16)
+        assert obs_time[-1] == cftime.DatetimeNoLeap(2050, 12, 16, 12, 0, 0, 0, 0, 350)
 
         assert test_cube.time_period == "200601-210012"
 
@@ -823,7 +823,7 @@ class TestMarbleCMIP5Cube(_CMIPCubeIntegrationTester):
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
         assert obs_time_points[0] == datetime.datetime(2006, 1, 16, 12, 0)
-        assert obs_time_points[-1] == datetime.datetime(2049, 12, 16, 12, 0)
+        assert obs_time_points[-1] == datetime.datetime(2010, 12, 16, 12, 0)
 
         assert test_cube.model == "ACCESS1-0"
 
@@ -1223,8 +1223,8 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
             obs_time.points, obs_time.units.name, obs_time.units.calendar
         )
 
-        assert obs_time_points[0] == datetime.datetime(2015, 1, 16, 12, 0)
-        assert obs_time_points[-1] == datetime.datetime(2100, 12, 16, 12, 0)
+        assert obs_time_points[0] == datetime.datetime(2025, 1, 16, 12, 0)
+        assert obs_time_points[-1] == datetime.datetime(2040, 12, 16, 12, 0)
 
         assert test_cube.cube.attributes["institution_id"] == "IPSL"
         assert test_cube.cube.attributes["Conventions"] == "CF-1.7 CMIP-6.2"

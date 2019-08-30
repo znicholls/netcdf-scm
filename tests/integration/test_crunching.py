@@ -224,7 +224,7 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
                 "--small-threshold",
                 0,
                 "--medium-threshold",
-                2,
+                0.5,
             ],
         )
     assert result.exit_code == 0
@@ -240,10 +240,10 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
     assert "small_number_workers: 10" in caplog.text
     assert "small_threshold: 0" in caplog.text
     assert "medium_number_workers: 3" in caplog.text
-    assert "medium_threshold: 2" in caplog.text
+    assert "medium_threshold: 0.5" in caplog.text
     assert "force_lazy_threshold: 1000" in caplog.text
     assert (
-        "Crunching 1 directories with greater than or equal to 2 million data points"
+        "Crunching 1 directories with greater than or equal to 0.5 million data points"
         in caplog.text
     )
 
@@ -265,7 +265,7 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
         "fco2antt",
         "CanESM2",
         "r1i1p1",
-        "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
+        "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_198001-198912.nc",
     )
     assert isfile(out_file)
 
@@ -319,17 +319,7 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
     assert result_skip.exit_code == 0
 
     skip_str = "Skipped (already exists, not overwriting) {}".format(
-        join(
-            OUTPUT_DIR,
-            DATA_SUB_DIR,
-            "cmip5",
-            "1pctCO2",
-            "Amon",
-            "fco2antt",
-            "CanESM2",
-            "r1i1p1",
-            "netcdf-scm_fco2antt_Amon_CanESM2_1pctCO2_r1i1p1_185001-198912.nc",
-        )
+        out_file
     )
     assert skip_str in caplog.text
 
