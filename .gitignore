@@ -5,7 +5,7 @@ output-examples
 venv
 
 # paper pdf
-paper/paper.pdf
+joss/**/*.pdf
 
 # profile outputs
 *.lprof
