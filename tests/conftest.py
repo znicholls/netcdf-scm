@@ -515,7 +515,9 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
                             try:
                                 base_scmdf = load_scmdataframe(base_f)
                                 comparison_scmdf = load_scmdataframe(comparison_f)
-                                assert_scmdata_frames_allclose(base_scmdf, comparison_scmdf)
+                                assert_scmdata_frames_allclose(
+                                    base_scmdf, comparison_scmdf
+                                )
                             except NotImplementedError:  # 3D data
                                 base_cubes = iris.load(base_f)
                                 comparison_cubes = iris.load(comparison_f)
@@ -528,9 +530,16 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
                                     np.testing.assert_allclose(
                                         base_cube.data, comparison_cube.data
                                     )
-                                    base_cube.attributes.pop("crunch_netcdf_scm_version")
-                                    comparison_cube.attributes.pop("crunch_netcdf_scm_version")
-                                    assert base_cube.attributes == comparison_cube.attributes
+                                    base_cube.attributes.pop(
+                                        "crunch_netcdf_scm_version"
+                                    )
+                                    comparison_cube.attributes.pop(
+                                        "crunch_netcdf_scm_version"
+                                    )
+                                    assert (
+                                        base_cube.attributes
+                                        == comparison_cube.attributes
+                                    )
 
         if update:
             pytest.skip("Updated {}".format(expected))
