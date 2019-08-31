@@ -504,32 +504,33 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
                             makedirs(path_to_check)
 
                     for f in filenames:
-                        res_f = join(dirpath, f)
-                        exp_f = res_f.replace(res, expected)
-                        assert res_f != exp_f
+                        base_f = join(dirpath, f)
+                        comparison_p = expected if p == res else res
+                        comparison_f = base_f.replace(p, comparison_p)
+                        assert base_f != comparison_f
                         if update:
-                            print("Updating {}".format(exp_f))
-                            shutil.copy(res_f, exp_f)
+                            print("Updating {}".format(comparison_f))
+                            shutil.copy(base_f, comparison_f)
                         else:
                             try:
-                                res_scmdf = load_scmdataframe(res_f)
-                                exp_scmdf = load_scmdataframe(exp_f)
-                                assert_scmdata_frames_allclose(res_scmdf, exp_scmdf)
+                                base_scmdf = load_scmdataframe(base_f)
+                                comparison_scmdf = load_scmdataframe(comparison_f)
+                                assert_scmdata_frames_allclose(base_scmdf, comparison_scmdf)
                             except NotImplementedError:  # 3D data
-                                res_cubes = iris.load(res_f)
-                                exp_cubes = iris.load(exp_f)
-                                for exp_cube in exp_cubes:
-                                    region = exp_cube.attributes["region"]
-                                    for res_cube in res_cubes:
-                                        if res_cube.attributes["region"] == region:
+                                base_cubes = iris.load(base_f)
+                                comparison_cubes = iris.load(comparison_f)
+                                for comparison_cube in comparison_cubes:
+                                    region = comparison_cube.attributes["region"]
+                                    for base_cube in base_cubes:
+                                        if base_cube.attributes["region"] == region:
                                             break
 
                                     np.testing.assert_allclose(
-                                        res_cube.data, exp_cube.data
+                                        base_cube.data, comparison_cube.data
                                     )
-                                    res_cube.attributes.pop("crunch_netcdf_scm_version")
-                                    exp_cube.attributes.pop("crunch_netcdf_scm_version")
-                                    assert res_cube.attributes == exp_cube.attributes
+                                    base_cube.attributes.pop("crunch_netcdf_scm_version")
+                                    comparison_cube.attributes.pop("crunch_netcdf_scm_version")
+                                    assert base_cube.attributes == comparison_cube.attributes
 
         if update:
             pytest.skip("Updated {}".format(expected))
