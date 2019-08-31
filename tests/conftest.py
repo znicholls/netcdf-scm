@@ -506,6 +506,7 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
                     for f in filenames:
                         res_f = join(dirpath, f)
                         exp_f = res_f.replace(res, expected)
+                        assert res_f != exp_f
                         if update:
                             print("Updating {}".format(exp_f))
                             shutil.copy(res_f, exp_f)
