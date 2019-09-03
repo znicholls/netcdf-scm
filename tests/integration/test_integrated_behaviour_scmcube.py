@@ -405,15 +405,6 @@ class _SCMCubeIntegrationTester(object):
             == "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
         )
 
-    def test_no_fill_true_error(self, test_cube, test_no_fill_file):
-        error_msg = re.escape(
-            "NetCDF-SCM does not yet support data with `_NoFill = 'true'`. We "
-            "will add this once https://github.com/SciTools/iris/issues/3385 is "
-            "addressed."
-        )
-        with pytest.raises(NotImplementedError, match=error_msg):
-            test_cube.load_data_from_path(test_no_fill_file)
-
 
 class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
     tclass = SCMCube
@@ -525,6 +516,15 @@ class TestSCMCubeIntegration(_SCMCubeIntegrationTester):
         )
         assert obs_time_points[0] == datetime.datetime(2006, 1, 16, 12, 0)
         assert obs_time_points[-1] == datetime.datetime(2010, 12, 16, 12, 0)
+
+    def test_no_fill_true_error(self, test_cube, test_no_fill_file):
+        error_msg = re.escape(
+            "NetCDF-SCM does not yet support data with `_NoFill = 'true'`. We "
+            "will add this once https://github.com/SciTools/iris/issues/3385 is "
+            "addressed."
+        )
+        with pytest.raises(NotImplementedError, match=error_msg):
+            test_cube.load_data_from_path(test_no_fill_file)
 
 
 class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):

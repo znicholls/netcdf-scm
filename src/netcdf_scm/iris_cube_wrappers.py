@@ -34,8 +34,8 @@ from .weights import DEFAULT_REGIONS, CubeWeightCalculator
 try:
     import cftime
     import cf_units
-
     import dask.array as da
+    import netCDF4
 
     import iris
     import iris.analysis.cartography
@@ -358,8 +358,17 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     def _load_cube(self, filepath, constraint=None):
         logger.debug("loading cube %s", filepath)
         self._loaded_paths.append(filepath)
-        # Raises Warning and Exceptions
         self.cube = iris.load_cube(filepath, constraint=constraint)
+
+        quick_look = netCDF4.Dataset(filepath)
+        has_missing_value = hasattr(quick_look.variables[self.cube.var_name], "missing_value")
+        if not has_missing_value and isinstance(self.cube.data.mask, np.bool_):
+            raise NotImplementedError(
+                "NetCDF-SCM does not yet support data with `_NoFill = 'true'`. We "
+                "will add this once https://github.com/SciTools/iris/issues/3385 is "
+                "addressed."
+            )
+
         self._check_cube()
 
     def _check_cube(self):
