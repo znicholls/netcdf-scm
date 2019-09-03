@@ -28,6 +28,11 @@ def test_data_root_dir():
 
 
 @pytest.fixture
+def test_no_fill_file(test_data_root_dir):
+    return join(test_data_root_dir, "data_with_no_fill_true.nc")
+
+
+@pytest.fixture
 def test_data_knmi_dir(test_data_root_dir):
     return join(test_data_root_dir, "knmi-climate-explorer")
 
