@@ -139,6 +139,9 @@ Releasing
 The steps to release a new version of NetCDF-SCM are shown below.
 Please do all the steps below and all the steps for both release platforms.
 
+First step
+~~~~~~~~~~
+
 #. Test installation with dependencies ``make test-install``
 #. Update ``CHANGELOG.rst``:
 
@@ -147,20 +150,31 @@ Please do all the steps below and all the steps for both release platforms.
 
 #. ``git add .``
 #. ``git commit -m "Prepare for release of vX.Y.Z"``
-#. ``git push``
-#. ``git tag vX.Y.Z``
-#. ``git push --tags``
+#. Test version updated as intended with ``make test-install``
 
 PyPI
 ~~~~
 
+If uploading to PyPI, do the following (otherwise skip these steps)
+
 #. ``make publish-on-testpypi``
 #. Go to `test PyPI <https://test.pypi.org/project/netcdf-scm/>`_ and check that the new release is as intended. If it isn't, stop and debug.
 #. Test the install with ``make test-testpypi-install`` (this doesn't test all the imports as most required packages are not on test PyPI).
+
+Assuming test PyPI worked, now upload to the main repository
+
 #. ``make publish-on-pypi``
 #. Go to `NetCDF-SCM's PyPI`_ and check that the new release is as intended.
 #. Test the install with ``make test-pypi-install`` (a pip only install will throw warnings about Iris not being installed, that's fine).
 
+Push to repository
+~~~~~~~~~~~~~~~~~~
+
+Finally, push the tags and commit to the repository
+
+#. ``git push``
+#. ``git tag vX.Y.Z``
+#. ``git push --tags``
 
 Conda
 ~~~~~
