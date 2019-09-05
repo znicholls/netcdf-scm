@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#95 <https://github.com/znicholls/netcdf-scm/pull/95>`_) Add support for CO2 flux data (fgco2) reading, in the process simplifying crunching and improving lazy weights
 - (`#92 <https://github.com/znicholls/netcdf-scm/pull/92>`_) Shrink test files (having moved entire repository to use git lfs properly)
 - (`#90 <https://github.com/znicholls/netcdf-scm/pull/90>`_) Rely on iris for lazy crunching
 - (`#89 <https://github.com/znicholls/netcdf-scm/pull/89>`_) Change crunching thresholds to be based on data size rather than number of years
