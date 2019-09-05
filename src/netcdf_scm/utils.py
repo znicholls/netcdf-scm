@@ -13,7 +13,6 @@ try:
     import dask.array as da
     import iris
     from iris.analysis import WeightedAggregator, _build_dask_mdtol_function
-    from iris.util import broadcast_to_shape
     import cf_units
 
     # monkey patch iris MEAN until https://github.com/SciTools/iris/pull/3299 is merged
@@ -224,6 +223,7 @@ def cube_lat_lon_grid_compatible_with_array(cube, array_in):
     cube : :obj:`ScmCube`
         :obj:`ScmCube` instance whose lat-lon grid we want to check agains
 
+
     array_in : np.ndarray
         The array we want to ensure is able to be broadcast
 
@@ -238,10 +238,8 @@ def cube_lat_lon_grid_compatible_with_array(cube, array_in):
     AssertionError
         The array cannot be broadcast onto the cube's lat-lon grid
     """
-    lat_length = cube.cube.shape[cube.lat_dim_number]
-    lon_length = cube.cube.shape[cube.lon_dim_number]
+    base_shape = cube.lat_lon_shape
 
-    base_shape = (lat_length, lon_length)
     if array_in.shape != base_shape:
         array_in = np.transpose(array_in)
 
@@ -293,13 +291,14 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
         )
         raise AssertionError(shape_assert_msg)
 
-    dim_order = [cube.lat_dim_number, cube.lon_dim_number]
     try:
-        return broadcast_to_shape(array_in, cube.cube.shape, dim_order)
+        return np.broadcast_to(array_in, cube.cube.shape)
     except ValueError as e:
-        if str(e) != "shape and array are not compatible":  # pragma: no cover
+        if not str(e).startswith(
+            "operands could not be broadcast together with remapped shapes"
+        ):  # pragma: no cover
             raise
-        return broadcast_to_shape(array_in.T, cube.cube.shape, dim_order)
+        return np.broadcast_to(array_in.T, cube.cube.shape)
 
 
 def _cftime_conversion(t):

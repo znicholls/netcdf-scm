@@ -327,9 +327,20 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
     @property
     def lat_lon_shape(self):
-        lat_lon_slice = next(self.cube.slices_over([c for c in self.dim_names if c not in [self.lat_name, self.lon_name]]))
-        return lat_lon_slice.shape
+        """
+        tuple: 2D Tuple of ``int`` which gives shape of a lat-lon slice of the data
 
+        e.g. if the cube's shape is (4, 3, 5, 4) and its dimensions are (time, lat,
+        depth, lon) then ``cube.lat_lon_shape`` will be ``(3, 4)``
+        """
+        non_lat_lon_dims = [
+            c.standard_name if c.standard_name is not None else c.long_name
+            for c in self.cube.coords()
+            if c.standard_name not in [self.lat_name, self.lon_name]
+        ]
+
+        lat_lon_slice = next(self.cube.slices_over(non_lat_lon_dims))
+        return lat_lon_slice.shape
 
     @property
     def time_dim(self):
