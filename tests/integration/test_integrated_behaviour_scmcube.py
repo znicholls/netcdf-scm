@@ -613,7 +613,9 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
             force_lazy_load_idx = caplog.messages.index("Forcing lazy crunching")
             assert caplog.records[force_lazy_load_idx].levelname == "INFO"
 
-        assert mock_ensure_data_realised.call_count == non_lazy_ensure_data_realised_calls
+        assert (
+            mock_ensure_data_realised.call_count == non_lazy_ensure_data_realised_calls
+        )
         assert mock_lazy_aggregate.call_count == non_lazy_aggregate_calls
         assert mock_aggregate.call_count == non_lazy_aggregate_calls
 
