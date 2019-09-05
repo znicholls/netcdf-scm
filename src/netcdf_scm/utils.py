@@ -270,9 +270,11 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
 
     Returns
     -------
-    np.ndarray
+    array_out
         The original array, broadcast onto the cube's lat-lon grid (i.e. duplicated
-        along all dimensions except for latitude and longitude)
+        along all dimensions except for latitude and longitude). Note: If the cube has
+        lazy data, we return a :obj:`da.Array`, otherwise we return an
+        :obj:`np.ndarray`.
 
     Raises
     ------
