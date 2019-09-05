@@ -291,14 +291,17 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
         )
         raise AssertionError(shape_assert_msg)
 
+    broadcaster = np.broadcast_to if not cube.cube.has_lazy_data() else da.broadcast_to
     try:
-        return np.broadcast_to(array_in, cube.cube.shape)
+        return broadcaster(array_in, cube.cube.shape)
     except ValueError as e:
-        if not str(e).startswith(
-            "operands could not be broadcast together with remapped shapes"
-        ):  # pragma: no cover
+        try_transpose = (
+            str(e).startswith("operands could not be broadcast together with remapped shapes")
+            or str(e).startswith("cannot broadcast shape")
+        )
+        if not try_transpose:  # pragma: no cover
             raise
-        return np.broadcast_to(array_in.T, cube.cube.shape)
+        return broadcaster(array_in.T, cube.cube.shape)
 
 
 def _cftime_conversion(t):
