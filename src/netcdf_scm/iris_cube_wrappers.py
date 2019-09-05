@@ -326,6 +326,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self.dim_names.index(self.lat_name)
 
     @property
+    def lat_lon_shape(self):
+        lat_lon_slice = next(self.cube.slices_over([c for c in self.dim_names if c not in [self.lat_name, self.lon_name]]))
+        return lat_lon_slice.shape
+
+
+    @property
     def time_dim(self):
         """:obj:`iris.coords.DimCoord` The time dimension of the data."""
         return self.cube.coord(self.time_name)
