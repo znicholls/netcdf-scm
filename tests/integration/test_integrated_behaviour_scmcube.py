@@ -1497,27 +1497,29 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
         )
 
         for region, scm_cube in res.items():
-            assert scm_cube.cube.shape == (3, 60)
+            assert scm_cube.cube.shape == (3,)
             assert scm_cube.cube.attributes["region"] == region
-            assert scm_cube.cube.attributes["variable"] == "thetao"
+            assert scm_cube.cube.attributes["variable"] == "fgco2"
             assert (
                 scm_cube.cube.attributes["variable_standard_name"]
-                == "sea_water_potential_temperature"
+                == "surface_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon"
             )
-            assert scm_cube.cube.attributes["climate_model"] == "CESM2"
+            assert scm_cube.cube.attributes["climate_model"] == "CanESM5"
             assert scm_cube.cube.cell_methods[-1].method == "mean"
             assert scm_cube.cube.cell_methods[-1].coord_names == (
                 "latitude",
                 "longitude",
             )
 
-        np.testing.assert_allclose(res["World"].cube.data[0, 0], 18.219498)
-        np.testing.assert_allclose(res["World|Ocean"].cube.data[0, -1], 1.3453288)
+        np.testing.assert_allclose(res["World"].cube.data[0], -4.94375991793255e-12)
         np.testing.assert_allclose(
-            res["World|North Atlantic Ocean"].cube.data[-1, 0], 20.967687872009606
+            res["World|Ocean"].cube.data[-1], -6.167003231604481e-11
         )
         np.testing.assert_allclose(
-            res["World|El Nino N3.4"].cube.data[-1, -1], 0.8765749670041693
+            res["World|North Atlantic Ocean"].cube.data[1], 5.3833128633137e-10
+        )
+        np.testing.assert_allclose(
+            res["World|El Nino N3.4"].cube.data[2], -6.285239834834555e-10
         )
 
     # currently failing due to https://github.com/SciTools/iris/issues/3367

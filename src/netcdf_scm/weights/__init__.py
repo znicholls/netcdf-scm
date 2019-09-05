@@ -454,10 +454,7 @@ def get_weights_for_area(lower_lat, left_lon, upper_lat, right_lon):
         lon_dim_pts = cube.lon_dim.points
         lat_dim_pts = cube.lat_dim.points
 
-        lat_lon_size = (
-            cube.cube.shape[cube.lat_dim_number],
-            cube.cube.shape[cube.lon_dim_number],
-        )
+        lat_lon_size = cube.lat_lon_shape
 
         if len(lat_dim_pts.shape) == 1:
             lat_dim_pts = np.broadcast_to(lat_dim_pts, lat_lon_size[::-1]).T
