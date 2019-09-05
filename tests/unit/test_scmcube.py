@@ -565,6 +565,9 @@ class TestSCMCube(object):
         assert test_cube.netcdf_scm_realm == expected
         self._check_metadata_var_test_messages(caplog, realm)
 
+    def test_lat_lon_shape(self, test_cube):
+        assert test_cube.lat_lon_shape == (3, 4)
+
 
 class _CMIPCubeTester(TestSCMCube):
     tclass = _CMIPCube
