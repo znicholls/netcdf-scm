@@ -35,8 +35,6 @@ try:
     import cftime
     import cf_units
 
-    import dask.array as da
-
     import iris
     import iris.analysis.cartography
     import iris.coord_categorisation
@@ -839,13 +837,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             regions=regions,
         )
 
-        def crunch_timeseries(region, weights, lazy=False):
-            if lazy:
-                logger.debug("Lazily crunching %s", region)
-                broadcast_weights = da.broadcast_to(weights, self.cube.shape)
-                scm_cube = take_lat_lon_mean(self, broadcast_weights)
-            else:
-                scm_cube = take_lat_lon_mean(self, weights)
+        def crunch_timeseries(region, weights):
+            scm_cube = take_lat_lon_mean(self, weights)
             scm_cube = self._add_metadata_to_region_timeseries_cube(scm_cube, region)
 
             if region in _LAND_FRACTION_REGIONS:
@@ -882,9 +875,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 areacell_scmcube=areacell_scmcube,
                 regions=regions,
             )
-            crunch_list = self._crunch_serial(
-                crunch_timeseries, scm_timeseries_weights, lazy=True
-            )
+            crunch_list = self._crunch_serial(crunch_timeseries, scm_timeseries_weights)
 
         timeseries_cubes = {region: ts_cube for region, ts_cube, _ in crunch_list}
         areas = {region: area for region, _, area in crunch_list if area is not None}
@@ -898,9 +889,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         return self._crunch_serial(crunch_timeseries, scm_regions)
 
     @staticmethod
-    def _crunch_serial(crunch_timeseries, scm_regions, lazy=False):
+    def _crunch_serial(crunch_timeseries, scm_regions):
         return [
-            crunch_timeseries(region, weights, lazy=lazy)
+            crunch_timeseries(region, weights)
             for region, weights in scm_regions.items()
         ]
 

@@ -295,10 +295,9 @@ def broadcast_onto_lat_lon_grid(cube, array_in):
     try:
         return broadcaster(array_in, cube.cube.shape)
     except ValueError as e:
-        try_transpose = (
-            str(e).startswith("operands could not be broadcast together with remapped shapes")
-            or str(e).startswith("cannot broadcast shape")
-        )
+        try_transpose = str(e).startswith(
+            "operands could not be broadcast together with remapped shapes"
+        ) or str(e).startswith("cannot broadcast shape")
         if not try_transpose:  # pragma: no cover
             raise
         return broadcaster(array_in.T, cube.cube.shape)

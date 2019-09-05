@@ -560,7 +560,7 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         assert len(cell_measures) == 1
         assert cell_measures[0].standard_name == "cell_area"
 
-    @patch("netcdf_scm.utils.broadcast_onto_lat_lon_grid")
+    @patch.object(SCMCube, "_ensure_data_realised")
     @patch.object(
         iris.analysis.MEAN, "aggregate", side_effect=iris.analysis.MEAN.aggregate
     )
@@ -576,23 +576,23 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
         self,
         mock_lazy_aggregate,
         mock_aggregate,
-        mock_broadcast_onto_lat_lon_grid,
+        mock_ensure_data_realised,
         test_cube,
         memory_error,
         force_lazy_load,
         assert_scmdata_frames_allclose,
         caplog,
     ):
-        mock_broadcast_onto_lat_lon_grid.side_effect = broadcast_onto_lat_lon_grid
-
         caplog.set_level(logging.INFO, logger="netcdf_scm")
 
         var = self.tclass()
         var.load_data_from_path(self._test_get_scm_timeseries_file)
+        mock_ensure_data_realised.side_effect = var.cube.data
 
         res = var.get_scm_timeseries()
-        non_lazy_broadcast_calls = mock_broadcast_onto_lat_lon_grid.call_count
+        non_lazy_ensure_data_realised_calls = mock_ensure_data_realised.call_count
         non_lazy_aggregate_calls = mock_aggregate.call_count
+        assert non_lazy_aggregate_calls
         assert mock_lazy_aggregate.call_count == 0
         assert isinstance(res, ScmDataFrame)
 
@@ -613,7 +613,7 @@ class _CMIPCubeIntegrationTester(_SCMCubeIntegrationTester):
             force_lazy_load_idx = caplog.messages.index("Forcing lazy crunching")
             assert caplog.records[force_lazy_load_idx].levelname == "INFO"
 
-        assert mock_broadcast_onto_lat_lon_grid.call_count == non_lazy_broadcast_calls
+        assert mock_ensure_data_realised.call_count == non_lazy_ensure_data_realised_calls
         assert mock_lazy_aggregate.call_count == non_lazy_aggregate_calls
         assert mock_aggregate.call_count == non_lazy_aggregate_calls
 
