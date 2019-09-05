@@ -241,6 +241,23 @@ def test_cmip6_output_tas_file(test_data_cmip6output_dir):
         "tas_Amon_CESM2_historical_r7i1p1f1_gn_195701-195703.nc",
     )
 
+@pytest.fixture
+def test_cmip6_output_fgco2_file(test_data_cmip6output_dir):
+    return join(
+        test_data_cmip6output_dir,
+        "CMIP6",
+        "CMIP",
+        "CCCma",
+        "CanESM5",
+        "piControl",
+        "r1i1p1f1",
+        "Omon",
+        "fgco2",
+        "gn",
+        "v20190429",
+        "fgco2_Omon_CanESM5_piControl_r1i1p1f1_gn_600101-600103.nc",
+    )
+
 
 TEST_CMIP6OUTPUT_HFDS_FILE = join(
     TEST_DATA_CMIP6OUTPUT_DIR,

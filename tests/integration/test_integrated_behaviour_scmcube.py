@@ -1481,6 +1481,45 @@ class TestCMIP6OutputCube(_CMIPCubeIntegrationTester):
         with pytest.raises(NotImplementedError, match=error_msg):
             test_cube.get_scm_timeseries(regions=["World", "World|Ocean"])
 
+    def test_get_fgco2_data_scm_cubes(self, test_cube, test_cmip6_output_fgco2_file):
+        test_cube.load_data_from_path(test_cmip6_output_fgco2_file)
+        res = test_cube.get_scm_timeseries_cubes(
+            regions=[
+                "World",
+                "World|Ocean",
+                "World|Northern Hemisphere",
+                "World|Northern Hemisphere|Ocean",
+                "World|Southern Hemisphere",
+                "World|Southern Hemisphere|Ocean",
+                "World|North Atlantic Ocean",
+                "World|El Nino N3.4",
+            ]
+        )
+
+        for region, scm_cube in res.items():
+            assert scm_cube.cube.shape == (3, 60)
+            assert scm_cube.cube.attributes["region"] == region
+            assert scm_cube.cube.attributes["variable"] == "thetao"
+            assert (
+                scm_cube.cube.attributes["variable_standard_name"]
+                == "sea_water_potential_temperature"
+            )
+            assert scm_cube.cube.attributes["climate_model"] == "CESM2"
+            assert scm_cube.cube.cell_methods[-1].method == "mean"
+            assert scm_cube.cube.cell_methods[-1].coord_names == (
+                "latitude",
+                "longitude",
+            )
+
+        np.testing.assert_allclose(res["World"].cube.data[0, 0], 18.219498)
+        np.testing.assert_allclose(res["World|Ocean"].cube.data[0, -1], 1.3453288)
+        np.testing.assert_allclose(
+            res["World|North Atlantic Ocean"].cube.data[-1, 0], 20.967687872009606
+        )
+        np.testing.assert_allclose(
+            res["World|El Nino N3.4"].cube.data[-1, -1], 0.8765749670041693
+        )
+
     # currently failing due to https://github.com/SciTools/iris/issues/3367
     @pytest.mark.xfail(
         reason="Implementation blocked by https://github.com/SciTools/iris/issues/3367"
