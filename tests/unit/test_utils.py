@@ -175,7 +175,9 @@ def test_unify_lat_lon(test_generic_tas_cube, ttol):
 @pytest.mark.parametrize("lazy", [True, False])
 @pytest.mark.parametrize("transpose", [True, False])
 @patch.object(iris.cube.Cube, "has_lazy_data")
-def test_broadcast_onto_lat_lon_grid(mock_has_lazy_data, test_generic_tas_cube, test_sftlf_file, lazy, transpose):
+def test_broadcast_onto_lat_lon_grid(
+    mock_has_lazy_data, test_generic_tas_cube, test_sftlf_file, lazy, transpose
+):
     original = iris.load_cube(test_sftlf_file).data
     if transpose:
         ar_to_broadcast = np.transpose(original)
