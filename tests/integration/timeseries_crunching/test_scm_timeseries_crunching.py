@@ -75,6 +75,16 @@ TEST_HFDS_PATH = os.path.join(
     "realisation",
     "hfds_Omon_model_experiment_realisation_185001-185003.nc",
 )
+TEST_HFDS_PATH = os.path.join(
+    ROOT_DIR,
+    "cmip5",
+    "experiment",
+    "Omon",
+    "hfds",
+    "model",
+    "realisation",
+    "hfds_Omon_model_experiment_realisation_185001-185003.nc",
+)
 
 TEST_AREACEALLA_PATH = os.path.join(
     ROOT_DIR,
@@ -123,6 +133,27 @@ SCMDF_TIME = [
     dt.datetime(1850, 2, 15, 0),
     dt.datetime(1850, 3, 16, 12),
 ]
+
+
+TEST_APRP_RSDT_PATH = os.path.join(
+    ROOT_DIR,
+    "CMIP6",
+    "MIP",
+    "institute",
+    "model",
+    "experiment",
+    "realisation",
+    "Amon",
+    "rsdt",
+    "grid",
+    "version",
+    "rsdt_Amon_model_experiment_realisation_grid_191001-191003.nc",
+)
+TEST_APRP_RSDT_DATA = np.array([
+    [[100, 120], [80, 110]],
+    [[103, 125], [83, 114]],
+    [[100, 123], [82, 118]],
+])
 
 
 def get_rsdt_expected_results():
@@ -497,7 +528,49 @@ def test_scm_timeseries_crunching(
     assert_scmdata_frames_allclose(res, expected_results)
 
 
+# reproducing efforts of Chris, https://github.com/chrisroadmap/climateforcing
+# mock files to write ['rsdt', 'rsus', 'rsds', 'clt', 'rsdscs', 'rsuscs',
+                      # 'rsut', 'rsutcs', 'rlut', 'rlutcs']
+# write all mock files on a 2x2 grid so it's easy (ish) to see what's going on
+# checks to do:
+#   - can handle cloud fraction being 0-1 or 0-100
+#   - can handle zeros in input clt
+#   - sensible errors if not all variables are available
+
+
 def write_test_files(write_path):
+    write_timeseries_crunching_test_files(write_path)
+    write_aprp_calculation_test_tiles(write_path)
+
+
+def write_aprp_calculation_test_tiles(write_path):
+    lat = iris.coords.DimCoord(
+        np.array([-45, 45]),
+        bounds=np.array([[-90, 0], [0, 90]]),
+        standard_name="latitude",
+        units="degrees",
+    )
+    lon = iris.coords.DimCoord(
+        np.array([90, 270]),
+        bounds=np.array([[0, 180], [180, 360]]),
+        standard_name="longitude",
+        units="degrees",
+        circular=True,
+    )
+
+    write_data_file(
+        TEST_APRP_RSDT_PATH,
+        lat,
+        lon,
+        "toa_incoming_shortwave_flux",
+        "rsdt",
+        "W m-2",
+        {"modeling_realm": "atmos"},
+        data=TEST_APRP_RSDT_DATA
+    )
+
+
+def write_timeseries_crunching_test_files(write_path):
     lat = iris.coords.DimCoord(
         np.array([70, 5, -45]),
         bounds=np.array([[30, 90], [0, 30], [-90, 0]]),
@@ -582,7 +655,7 @@ def write_area_file(write_path, lat, lon, standard_name, var_name, units):
     save_cube_in_path(cube, write_path)
 
 
-def write_data_file(write_path, lat, lon, standard_name, var_name, units, attributes):
+def write_data_file(write_path, lat, lon, standard_name, var_name, units, attributes, data=RAW_DATA):
     time = iris.coords.DimCoord(
         np.array([15.5, 45, 74.5]),
         standard_name="time",
@@ -591,7 +664,7 @@ def write_data_file(write_path, lat, lon, standard_name, var_name, units, attrib
     time.guess_bounds()
 
     cube = iris.cube.Cube(
-        RAW_DATA,
+        data,
         standard_name=standard_name,
         var_name=var_name,
         units=units,
