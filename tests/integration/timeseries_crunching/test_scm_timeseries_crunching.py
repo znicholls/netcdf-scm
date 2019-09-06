@@ -135,25 +135,71 @@ SCMDF_TIME = [
 ]
 
 
-TEST_APRP_RSDT_PATH = os.path.join(
-    ROOT_DIR,
-    "CMIP6",
-    "MIP",
-    "institute",
-    "model",
-    "experiment",
-    "realisation",
-    "Amon",
-    "rsdt",
-    "grid",
-    "version",
-    "rsdt_Amon_model_experiment_realisation_grid_191001-191003.nc",
+def get_test_aprp_path(var_name, experiment):
+    return os.path.join(
+        ROOT_DIR,
+        "CMIP6",
+        "MIP",
+        "institute",
+        "model",
+        experiment,
+        "realisation",
+        "Amon",
+        var_name,
+        "grid",
+        "version",
+        f"{var_name}_Amon_model_{experiment}_realisation_grid_191001-191003.nc",
+    )
+
+
+test_aprp_base_data = {
+    "rsdt": np.array(
+        [[[100, 120], [80, 110]], [[103, 125], [83, 114]], [[100, 123], [82, 118]]]
+    ),
+    "rsus": np.array([[[1, 2], [3, 2.2]], [[0.4, 5], [1, 2]], [[3, 4], [2, 5]]]),
+    "rsuscs": np.array(
+        [[[1.8, 2.8], [3.8, 2.4]], [[0.6, 5.8], [1.8, 2.8]], [[3.8, 4.8], [2.8, 5.8]]]
+    ),
+    "rsds": np.array(
+        [[[10, 20], [30, 20.2]], [[42, 50], [10, 20]], [[30, 40], [20, 50]]]
+    ),
+    "rsdscs": np.array(
+        [[[17, 27], [37, 33.4]], [[47, 57], [17, 27]], [[37, 47], [27, 57]]]
+    ),
+    "rsut": np.array(
+        [[[240, 231], [230, 220.2]], [[242, 250], [210, 220]], [[230, 240], [220, 250]]]
+    ),
+    "rsutcs": np.array(
+        [[[260, 271], [240, 290.2]], [[262, 270], [240, 290]], [[260, 270], [240, 290]]]
+    ),
+    "rlut": np.array(
+        [[[240, 231], [230, 220.2]], [[242, 250], [210, 220]], [[230, 240], [220, 250]]]
+    ),
+    "rlutcs": np.array(
+        [[[260, 271], [240, 290.2]], [[262, 270], [240, 290]], [[260, 270], [240, 290]]]
+    ),
+    "clt": np.array(
+        [[[100, 20], [30, 20.2]], [[42, 50], [0, 20]], [[30, 40], [20, 50]]]
+    ),
+}
+
+test_aprp_info = {}
+test_aprp_info["base"] = {
+    k: {"filepath": get_test_aprp_path(k, "piControl"), "data": v}
+    for k, v in test_aprp_base_data.items()
+}
+test_aprp_info["perturbation"] = {
+    k: {"filepath": get_test_aprp_path(k, "piClim-aer"), "data": v * 2}
+    for k, v in test_aprp_base_data.items()
+}
+
+# put a zero in a weird spot to test handling of zeros in annoying places
+for v in test_aprp_info["perturbation"].values():
+    v["data"][0, 0, 0] = 0
+
+test_aprp_info["perturbation"]["clt"]["data"] = np.minimum(
+    test_aprp_info["perturbation"]["clt"]["data"], 100
 )
-TEST_APRP_RSDT_DATA = np.array([
-    [[100, 120], [80, 110]],
-    [[103, 125], [83, 114]],
-    [[100, 123], [82, 118]],
-])
 
 
 def get_rsdt_expected_results():
@@ -528,13 +574,12 @@ def test_scm_timeseries_crunching(
     assert_scmdata_frames_allclose(res, expected_results)
 
 
-# reproducing efforts of Chris, https://github.com/chrisroadmap/climateforcing
-# mock files to write ['rsdt', 'rsus', 'rsds', 'clt', 'rsdscs', 'rsuscs',
-                      # 'rsut', 'rsutcs', 'rlut', 'rlutcs']
-# write all mock files on a 2x2 grid so it's easy (ish) to see what's going on
-# checks to do:
-#   - can handle cloud fraction being 0-1 or 0-100
-#   - can handle zeros in input clt
+# tests to write:
+#   - given two experiments, (base and perturbation), we can calculate the radiative #     forcing timeseries cubes, in this also test:
+#      - resulting cubes have a useful, clear naming scheme and indication of how they
+#        were calculated (maybe that goes in integration test)
+#      - can handle cloud fraction being 0-1 or 0-100
+#      - zeros in input clt handled as intended
 #   - sensible errors if not all variables are available
 
 
@@ -558,16 +603,18 @@ def write_aprp_calculation_test_tiles(write_path):
         circular=True,
     )
 
-    write_data_file(
-        TEST_APRP_RSDT_PATH,
-        lat,
-        lon,
-        "toa_incoming_shortwave_flux",
-        "rsdt",
-        "W m-2",
-        {"modeling_realm": "atmos"},
-        data=TEST_APRP_RSDT_DATA
-    )
+    for k, v in test_aprp_info.items():
+        for info in v.values():
+            write_data_file(
+                info["filepath"],
+                lat,
+                lon,
+                "toa_incoming_shortwave_flux",
+                "rsdt",
+                "W m-2",
+                {"modeling_realm": "atmos"},
+                data=info["data"],
+            )
 
 
 def write_timeseries_crunching_test_files(write_path):
@@ -655,7 +702,9 @@ def write_area_file(write_path, lat, lon, standard_name, var_name, units):
     save_cube_in_path(cube, write_path)
 
 
-def write_data_file(write_path, lat, lon, standard_name, var_name, units, attributes, data=RAW_DATA):
+def write_data_file(
+    write_path, lat, lon, standard_name, var_name, units, attributes, data=RAW_DATA
+):
     time = iris.coords.DimCoord(
         np.array([15.5, 45, 74.5]),
         standard_name="time",
