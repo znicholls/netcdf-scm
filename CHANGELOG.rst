@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#97 <https://github.com/znicholls/netcdf-scm/pull/97>`_) Add support for tuningstruc data which has been transposed
 - (`#95 <https://github.com/znicholls/netcdf-scm/pull/95>`_) Add support for CO2 flux data (fgco2) reading, in the process simplifying crunching and improving lazy weights
 - (`#92 <https://github.com/znicholls/netcdf-scm/pull/92>`_) Shrink test files (having moved entire repository to use git lfs properly)
 - (`#90 <https://github.com/znicholls/netcdf-scm/pull/90>`_) Rely on iris for lazy crunching
