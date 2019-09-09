@@ -44,6 +44,14 @@ TEST_DATA_TUNINGSTRUCS_DIR = join(TEST_DATA_ROOT_DIR, "tuningstrucs")
             "scenario": "RCP26",
             "climate_model_2100_values": {"BNUESM": 0.30397183},
         },
+        {
+            "location": join(TEST_DATA_TUNINGSTRUCS_DIR, "CABLE_rcp85_C0_npp.mat"),
+            "var": "npp",
+            "region": "World",
+            "unit": "PgC/yr",
+            "scenario": "RCP85",
+            "climate_model_2100_values": {"CABLE": 30.967642},
+        },
     ],
 )
 def test_file_info(request):
