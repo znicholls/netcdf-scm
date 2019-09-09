@@ -83,9 +83,12 @@ def convert_tuningstruc_to_scmdf(  # pylint:disable=too-many-arguments
                     )
                     raise KeyError(error_msg)
 
+        data = np.asarray(dataset["tuningdata"]["model"][m]["data"])
+        if len(data) != 2:
+            data = data.T
         scmdf = ScmDataFrame(
-            data=np.asarray(dataset["tuningdata"]["model"][m]["data"][1]),
-            index=dataset["tuningdata"]["model"][m]["data"][0],
+            data=data[1],
+            index=data[0],
             columns=metadata,
         )
 
