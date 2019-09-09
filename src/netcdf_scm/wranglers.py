@@ -10,7 +10,7 @@ from . import mat4py
 logger = logging.getLogger(__name__)
 
 
-def convert_tuningstruc_to_scmdf(  # pylint:disable=too-many-arguments
+def convert_tuningstruc_to_scmdf(  # pylint:disable=too-many-arguments,too-many-locals
     filepath, variable=None, region=None, unit=None, scenario=None, model=None
 ):
     """
@@ -86,11 +86,7 @@ def convert_tuningstruc_to_scmdf(  # pylint:disable=too-many-arguments
         data = np.asarray(dataset["tuningdata"]["model"][m]["data"])
         if len(data) != 2:
             data = data.T
-        scmdf = ScmDataFrame(
-            data=data[1],
-            index=data[0],
-            columns=metadata,
-        )
+        scmdf = ScmDataFrame(data=data[1], index=data[0], columns=metadata)
 
         try:
             ref_df.append(scmdf, inplace=True)
