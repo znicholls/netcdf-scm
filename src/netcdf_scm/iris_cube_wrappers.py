@@ -39,10 +39,7 @@ try:
     import iris.analysis.cartography
     import iris.coord_categorisation
     import iris.experimental.equalise_cubes
-    from iris.exceptions import (
-        CoordinateMultiDimError,
-        ConcatenateError,
-    )
+    from iris.exceptions import CoordinateMultiDimError, ConcatenateError
     from iris.fileformats import netcdf
     from iris.util import unify_time_units
 
