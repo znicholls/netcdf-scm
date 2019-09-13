@@ -10,7 +10,6 @@ import logging
 import numpy as np
 import numpy.ma as ma
 from dateutil.relativedelta import relativedelta
-from openscm.scmdataframe import ScmDataFrame
 
 try:
     import cftime
@@ -31,6 +30,7 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
     raise_no_iris_warning()
 
 logger = logging.getLogger(__name__)
+
 
 def get_cube_timeseries_data(scm_cube, realise_data=False):
     """
@@ -356,6 +356,7 @@ def _check_cube_and_adjust_if_needed(cube, time_name="time"):
         return _adjust_gregorian_year_zero_units(cube, time_name)
 
     return cube
+
 
 def _adjust_gregorian_year_zero_units(cube, time_name):
     """
