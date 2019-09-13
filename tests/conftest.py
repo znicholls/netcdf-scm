@@ -362,7 +362,12 @@ TEST_DATA_HISTORICAL_CONC_GMNHSH_FILE = join(
     "mole-fraction-of-carbon-dioxide-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_000001-201412.nc",
 )
 
-TEST_DATA_PROJECTION_CONC_GMNHSH_FILE = join(
+TEST_DATA_PROJECTION_CONC_CO2_GMNHSH_FILE = join(
+    TEST_DATA_ROOT_DIR,
+    "mole-fraction-of-carbon-dioxide-in-air_input4MIPs_GHGConcentrations_ScenarioMIP_UoM-MESSAGE-GLOBIOM-ssp245-1-2-1_gr1-GMNHSH_201501-250012.nc",
+)
+
+TEST_DATA_PROJECTION_CONC_C4F10_GMNHSH_FILE = join(
     TEST_DATA_ROOT_DIR,
     "mole-fraction-of-c4f10-in-air_input4MIPs_GHGConcentrations_AerChemMIP_UoM-AIM-ssp370-lowNTCF-1-2-1_gr1-GMNHSH_201501-250012.nc",
 )
@@ -372,7 +377,8 @@ TEST_DATA_PROJECTION_CONC_GMNHSH_FILE = join(
     scope="function",
     params=[
         TEST_DATA_HISTORICAL_CONC_GMNHSH_FILE,
-        TEST_DATA_PROJECTION_CONC_GMNHSH_FILE,
+        TEST_DATA_PROJECTION_CONC_CO2_GMNHSH_FILE,
+        TEST_DATA_PROJECTION_CONC_C4F10_GMNHSH_FILE,
     ],
 )
 def test_data_conc_gmnhsh_file(request):
