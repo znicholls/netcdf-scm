@@ -357,6 +357,14 @@ def test_data_netcdfscm_nc_file(test_data_root_dir):
     )
 
 
+@pytest.fixture
+def test_data_conc_gmnhsh_file(test_data_root_dir):
+    return join(
+        test_data_root_dir,
+        "mole-fraction-of-carbon-dioxide-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_000001-201412.nc",
+    )
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--update-expected-files",
