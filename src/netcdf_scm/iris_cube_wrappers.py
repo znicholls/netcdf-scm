@@ -21,9 +21,9 @@ from openscm.scmdataframe import ScmDataFrame
 from . import __version__
 from .definitions import _LAND_FRACTION_REGIONS, _SCM_TIMESERIES_META_COLUMNS
 from .utils import (
+    _check_cube_and_adjust_if_needed,
     _vector_cftime_conversion,
     assert_all_time_axes_same,
-    _check_cube_and_adjust_if_needed,
     cube_lat_lon_grid_compatible_with_array,
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
@@ -34,7 +34,6 @@ from .weights import DEFAULT_REGIONS, CubeWeightCalculator
 
 try:
     import cftime
-    import cf_units
 
     import iris
     import iris.analysis.cartography
@@ -42,7 +41,6 @@ try:
     import iris.experimental.equalise_cubes
     from iris.exceptions import (
         CoordinateMultiDimError,
-        CoordinateNotFoundError,
         ConcatenateError,
     )
     from iris.fileformats import netcdf

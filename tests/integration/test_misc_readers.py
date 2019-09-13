@@ -1,12 +1,10 @@
 import datetime as dt
 
-import pytest
-
 from netcdf_scm.misc_readers import read_cmip6_concs_gmnhsh
 
 
 def test_conc_gmnhsh_reading(test_data_conc_gmnhsh_file):
-    res =read_cmip6_concs_gmnhsh(test_data_conc_gmnhsh_file)
+    res = read_cmip6_concs_gmnhsh(test_data_conc_gmnhsh_file)
 
     expected_columns = {
         "climate_model": "MAGICC7",
@@ -39,4 +37,8 @@ def test_conc_gmnhsh_reading(test_data_conc_gmnhsh_file):
         assert (res[k] == v).all()
 
     assert res["variable_standard_name"].isnull().all()
-    assert sorted(res["region"]) == ["World", "World|Northern Hemisphere", "World|Southern Hemisphere"]
+    assert sorted(res["region"]) == [
+        "World",
+        "World|Northern Hemisphere",
+        "World|Southern Hemisphere",
+    ]
