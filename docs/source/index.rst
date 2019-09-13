@@ -27,10 +27,11 @@ NetCDF-SCM
     :maxdepth: 2
     :caption: API reference
 
-    utils
     iris-cube-wrappers
     weights
     cli
+    utils
+    misc-readers
 
 .. toctree::
     :maxdepth: 2

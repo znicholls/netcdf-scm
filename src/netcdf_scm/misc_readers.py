@@ -13,7 +13,9 @@ except ModuleNotFoundError:  # pragma: no cover # emergency valve
     raise_no_iris_warning()
 
 
-def read_cmip6_concs_gmnhsh(filepath, region_coord="sector"):
+def read_cmip6_concs_gmnhsh(  # pylint:disable=too-many-locals
+    filepath, region_coord_name="sector"
+):
     """
     Read CMIP6 concentrations global and hemispheric mean data
 
@@ -22,13 +24,18 @@ def read_cmip6_concs_gmnhsh(filepath, region_coord="sector"):
     filepath : str
         Filepath from which to read the data
 
-    region_coord : str
+    region_coord_name : str
         The name of the co-ordinate which represents the region in the datafile.
 
     Returns
     -------
     :obj:`ScmDataFrame`
         :obj:`ScmDataFrame` containing the global and hemispheric mean data
+
+    Raises
+    ------
+    AssertionError
+        Defensive assertion: the code is being used in an unexpected way
     """
     loaded_cube = iris.load_cube(filepath)
     checked_cube = _check_cube_and_adjust_if_needed(loaded_cube)
@@ -41,7 +48,7 @@ def read_cmip6_concs_gmnhsh(filepath, region_coord="sector"):
     unit_map = {"1.e^-6": "ppm", "1.e^-9": "ppb", "1.e^-12": "ppt"}
 
     timeseries_cubes = {}
-    for region_coord in checked_cube.coord(region_coord):
+    for region_coord in checked_cube.coord(region_coord_name):
         if len([v for v in region_coord.cells()]) != 1:  # pragma: no cover
             raise AssertionError("Should only have one point now")
 
@@ -79,7 +86,7 @@ def read_cmip6_concs_gmnhsh(filepath, region_coord="sector"):
 
         helper_region = SCMCube()
         helper_region.cube = checked_cube[:, region_coord_point]
-        helper_region.cube.remove_coord(region_coord)
+        helper_region.cube.remove_coord(region_coord_name)
         timeseries_cubes[region] = helper_region
 
     output = (

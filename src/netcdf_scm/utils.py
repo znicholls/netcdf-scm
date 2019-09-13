@@ -377,6 +377,11 @@ def _adjust_gregorian_year_zero_units(cube, time_name):
     -------
     :obj:`iris.cube.Cube`
         Adjusted cube
+
+    Raises
+    ------
+    AssertionError
+        Defensive assertion: the code is being used in an unexpected way
     """
     # pylint:disable=too-many-locals
     # hack function to work around very specific use case
