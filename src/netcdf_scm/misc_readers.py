@@ -72,7 +72,7 @@ def read_cmip6_concs_gmnhsh(  # pylint:disable=too-many-locals
             scenario = "-".join(
                 "ssp{}".format(
                     checked_cube.attributes["source_id"].split("ssp")[1]
-                ).split("-")[:2]
+                ).split("-")[:-3]
             )
             model = (
                 checked_cube.attributes["source_id"]
@@ -95,6 +95,7 @@ def read_cmip6_concs_gmnhsh(  # pylint:disable=too-many-locals
         .reset_index()
     )
     output["unit"] = output["unit"].map(unit_map)
+    output["model"] = model
     output = ScmDataFrame(output)
 
     return output
