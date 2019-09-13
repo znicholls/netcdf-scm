@@ -47,18 +47,26 @@ class TestSCMCube(object):
         assert False, "Overload {} in your subclass".format(method_to_overload)
 
     @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
+    @patch("netcdf_scm.iris_cube_wrappers._check_cube_and_adjust_if_needed")
     @pytest.mark.parametrize(
         "tfilepath,tconstraint",
         [("here/there/now.nc", "mocked"), ("here/there/now.nc", None)],
     )
-    def test_load_cube(self, mock_iris_load_cube, test_cube, tfilepath, tconstraint):
+    def test_load_cube(
+        self,
+        mock_check_cube_and_adjust_if_needed,
+        mock_iris_load_cube,
+        test_cube,
+        tfilepath,
+        tconstraint,
+    ):
         test_cube._check_cube = MagicMock()
         if tconstraint is not None:
             test_cube._load_cube(tfilepath, constraint=tconstraint)
         else:
             test_cube._load_cube(tfilepath)
         mock_iris_load_cube.assert_called_with(tfilepath, constraint=tconstraint)
-        test_cube._check_cube.assert_called()
+        mock_check_cube_and_adjust_if_needed.assert_called()
 
     @patch.object(SCMCube, "get_metadata_cube")
     def test_process_load_data_from_identifiers_warnings(
@@ -596,11 +604,15 @@ class _CMIPCubeTester(TestSCMCube):
 
     @pytest.mark.parametrize("process_warnings", [True, False])
     @patch("netcdf_scm.iris_cube_wrappers.iris.load_cube")
+    @patch("netcdf_scm.iris_cube_wrappers._check_cube_and_adjust_if_needed")
     def test_load_data_from_identifiers(
-        self, mock_iris_load_cube, test_cube, process_warnings
+        self,
+        mock_check_cube_and_adjust_if_needed,
+        mock_iris_load_cube,
+        test_cube,
+        process_warnings,
     ):
         tfile = "hello_world_test.nc"
-        test_cube._check_cube = MagicMock()
 
         test_cube.get_filepath_from_load_data_from_identifiers_args = MagicMock(
             return_value=tfile
@@ -617,6 +629,7 @@ class _CMIPCubeTester(TestSCMCube):
             return lcube_return
 
         mock_iris_load_cube.side_effect = raise_mock_warn_and_return_test_value
+        mock_check_cube_and_adjust_if_needed.return_value = lcube_return
 
         test_cube._process_load_data_from_identifiers_warnings = MagicMock()
 
@@ -641,7 +654,7 @@ class _CMIPCubeTester(TestSCMCube):
         else:
             test_cube._process_load_data_from_identifiers_warnings.assert_not_called()
 
-        test_cube._check_cube.assert_called()
+        mock_check_cube_and_adjust_if_needed.assert_called()
 
         assert test_cube._loaded_paths == [tfile]
 
