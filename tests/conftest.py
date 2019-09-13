@@ -357,12 +357,25 @@ def test_data_netcdfscm_nc_file(test_data_root_dir):
     )
 
 
-@pytest.fixture
-def test_data_conc_gmnhsh_file(test_data_root_dir):
-    return join(
-        test_data_root_dir,
+TEST_DATA_HISTORICAL_CONC_GMNHSH_FILE = join(
+        TEST_DATA_ROOT_DIR,
         "mole-fraction-of-carbon-dioxide-in-air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_000001-201412.nc",
     )
+
+TEST_DATA_PROJECTION_CONC_GMNHSH_FILE = join(
+        TEST_DATA_ROOT_DIR,
+        "mole-fraction-of-c4f10-in-air_input4MIPs_GHGConcentrations_AerChemMIP_UoM-AIM-ssp370-lowNTCF-1-2-1_gr1-GMNHSH_201501-250012.nc",
+    )
+
+@pytest.fixture(
+    scope="function",
+    params=[
+        TEST_DATA_HISTORICAL_CONC_GMNHSH_FILE,
+        TEST_DATA_PROJECTION_CONC_GMNHSH_FILE,
+    ],
+)
+def test_data_conc_gmnhsh_file(request):
+    return request.param
 
 
 def pytest_addoption(parser):

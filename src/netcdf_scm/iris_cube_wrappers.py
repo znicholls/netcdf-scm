@@ -23,6 +23,7 @@ from .definitions import _LAND_FRACTION_REGIONS, _SCM_TIMESERIES_META_COLUMNS
 from .utils import (
     _vector_cftime_conversion,
     assert_all_time_axes_same,
+    _check_cube_and_adjust_if_needed,
     cube_lat_lon_grid_compatible_with_array,
     get_cube_timeseries_data,
     get_scm_cube_time_axis_in_calendar,
@@ -374,111 +375,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         logger.debug("loading cube %s", filepath)
         self._loaded_paths.append(filepath)
         # Raises Warning and Exceptions
-        self.cube = iris.load_cube(filepath, constraint=constraint)
-        self._check_cube()
-
-    def _check_cube(self):
-        try:
-            time_dim = self.time_dim
-            gregorian = time_dim.units.calendar == "gregorian"
-            year_zero = str(time_dim.units).startswith("days since 0-1-1")
-        except CoordinateNotFoundError:
-            gregorian = False
-            year_zero = False
-
-        if gregorian and year_zero:
-            warn_msg = (
-                "Your calendar is gregorian yet has units of 'days since 0-1-1'. "
-                "We rectify this by removing all data before year 1 and changing the "
-                "units to 'days since 1-1-1'. If you want other behaviour, you will "
-                "need to use another package."
-            )
-            logger.warning(warn_msg)
-            self._adjust_gregorian_year_zero_units()
-
-    def _adjust_gregorian_year_zero_units(self):  # pylint:disable=too-many-locals
-        # hack function to work around very specific use case
-        year_zero_cube = self.cube.copy()
-        year_zero_cube_time_dim = self.time_dim
-
-        gregorian_year_zero_cube = (
-            year_zero_cube_time_dim.units.calendar == "gregorian"
-        ) and str(year_zero_cube_time_dim.units).startswith("days since 0-1-1")
-        if not gregorian_year_zero_cube:  # pragma: no cover # emergency valve
-            raise AssertionError("This function is not setup for other cases")
-
-        new_unit_str = "days since 1-1-1"
-        # converting with the new units means we're actually converting with the wrong
-        # units, we use this variable to track how many years to shift back to get the
-        # right time axis again
-        new_units_shift = 1
-        new_time_dim_unit = cf_units.Unit(
-            new_unit_str, calendar=year_zero_cube_time_dim.units.calendar
+        self.cube = _check_cube_and_adjust_if_needed(
+            iris.load_cube(filepath, constraint=constraint)
         )
-
-        tmp_time_dim = year_zero_cube_time_dim.copy()
-        tmp_time_dim.units = new_time_dim_unit
-        tmp_cube = iris.cube.Cube(year_zero_cube.data)
-        for i, coord in enumerate(year_zero_cube.dim_coords):
-            if coord.standard_name == "time":
-                tmp_cube.add_dim_coord(tmp_time_dim, i)
-            else:
-                tmp_cube.add_dim_coord(coord, i)
-
-        years_to_bin = 1
-        first_valid_year = years_to_bin + new_units_shift
-
-        def check_usable_data(cell):
-            return first_valid_year <= cell.point.year
-
-        usable_cube = tmp_cube.extract(iris.Constraint(time=check_usable_data))
-        usable_data = usable_cube.data
-
-        tmp_time_dim = usable_cube.coord(self.time_name)
-        tmp_time = cftime.num2date(
-            tmp_time_dim.points, new_unit_str, tmp_time_dim.units.calendar
-        )
-        # TODO: move to utils
-        tmp_time = np.array([datetime(*v.timetuple()[:6]) for v in tmp_time])
-        # undo the shift to new units
-        usable_time = cf_units.date2num(
-            tmp_time - relativedelta(years=new_units_shift),
-            year_zero_cube_time_dim.units.name,
-            year_zero_cube_time_dim.units.calendar,
-        )
-        usable_time_unit = cf_units.Unit(
-            year_zero_cube_time_dim.units.name,
-            calendar=year_zero_cube_time_dim.units.calendar,
-        )
-        usable_time_dim = iris.coords.DimCoord(
-            usable_time,
-            standard_name=year_zero_cube_time_dim.standard_name,
-            long_name=year_zero_cube_time_dim.long_name,
-            var_name=year_zero_cube_time_dim.var_name,
-            units=usable_time_unit,
-        )
-
-        self.cube = iris.cube.Cube(usable_data)
-        for i, coord in enumerate(usable_cube.dim_coords):
-            if coord.standard_name == "time":
-                self.cube.add_dim_coord(usable_time_dim, i)
-            else:
-                self.cube.add_dim_coord(coord, i)
-
-        # hard coding as making this list dynamically is super hard as there's so many
-        # edge cases to cover
-        attributes_to_copy = [
-            "attributes",
-            "cell_methods",
-            "units",
-            "var_name",
-            "standard_name",
-            "name",
-            "metadata",
-            "long_name",
-        ]
-        for att in attributes_to_copy:
-            setattr(self.cube, att, getattr(year_zero_cube, att))
 
     def load_data_from_path(
         self, filepath, process_warnings=True  # pylint:disable=unused-argument
