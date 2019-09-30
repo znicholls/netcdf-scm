@@ -1988,7 +1988,7 @@ class CMIP6OutputCube(_CMIPCube):
     """
     str: The activity_id for which we want to load data.
 
-    For these cubes, this will almost always be ``DCPP``.
+    In CMIP6, this denotes the responsible MIP e.g. ``DCPP``.
     """
 
     mip_era = None
