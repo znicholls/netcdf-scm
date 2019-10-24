@@ -42,7 +42,7 @@ License
 
 .. sec-begin-license
 
-NetCDF-SCM is free software under a BSD 2-Clause License, see `LICENSE <https://github.com/znicholls/netcdf-scm/blob/master/LICENSE>`_.
+NetCDF-SCM is free software under a BSD 3-Clause License, see `LICENSE <https://github.com/znicholls/netcdf-scm/blob/master/LICENSE>`_.
 If you make any use of NetCDF-SCM, please cite `The Journal of Open Source Software (JOSS) <http://joss.theoj.org/>`_ paper [insert reference here when written...] as well as the relevant `Zenodo release <https://zenodo.org/search?page=1&size=20&q=netcdf-scm>`_.
 
 .. sec-end-license
