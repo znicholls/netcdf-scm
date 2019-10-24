@@ -23,7 +23,7 @@ PROJECT_URLS = {
     "Documentation": "https://openscm.readthedocs.io/en/latest",
     "Source": "https://github.com/znicholls/netcdf-scm",
 }
-LICENSE = "2-Clause BSD License"
+LICENSE = "3-Clause BSD License"
 CLASSIFIERS = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: BSD License",
