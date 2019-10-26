@@ -44,10 +44,12 @@ class _SCMCubeIntegrationTester(object):
         tsftlf_cube = "mocked 124"
         tareacell_scmcube = "mocked 4389"
 
-        land_mask = np.array([[100, 0, 0, 100], [100, 0, 100, 0], [100, 100, 0, 100]])
-        land_mask = broadcast_onto_lat_lon_grid(test_cube, land_mask)
-        nh_mask = np.array([[1, 1, 1, 1], [1, 1, 1, 1], [0, 0, 0, 0]])
-        nh_mask = broadcast_onto_lat_lon_grid(test_cube, nh_mask)
+        land_mask_2d = np.array(
+            [[100, 0, 0, 100], [100, 0, 100, 0], [100, 100, 0, 100]]
+        )
+        land_mask = broadcast_onto_lat_lon_grid(test_cube, land_mask_2d)
+        nh_mask_2d = np.array([[1, 1, 1, 1], [1, 1, 1, 1], [0, 0, 0, 0]])
+        nh_mask = broadcast_onto_lat_lon_grid(test_cube, nh_mask_2d)
 
         mocked_area_weights = broadcast_to_shape(
             np.array([[1, 2, 3, 4], [1, 4, 8, 9], [0, 4, 1, 9]]),
@@ -79,7 +81,7 @@ class _SCMCubeIntegrationTester(object):
         total_area = areas_2d.sum()
         # do this calculation by hand to be doubly sure, can automate in future if it
         # becomes too annoyting
-        ocean_area = ((100 - land_mask[0, :, :]) * areas_2d).sum() / 100
+        ocean_area = ((100 - land_mask_2d) * areas_2d).sum() / 100
         land_area = total_area - ocean_area
         land_frac = (land_area / (total_area)).squeeze()
         land_frac = float(land_frac)
@@ -107,19 +109,19 @@ class _SCMCubeIntegrationTester(object):
                 "World": total_area,
                 "World|Land": land_area,
                 "World|Ocean": ocean_area,
-                "World|Northern Hemisphere": np.sum(areas_2d * nh_mask[0, :, :]),
-                "World|Southern Hemisphere": np.sum(areas_2d * (1 - nh_mask[0, :, :])),
+                "World|Northern Hemisphere": np.sum(areas_2d * nh_mask_2d),
+                "World|Southern Hemisphere": np.sum(areas_2d * (1 - nh_mask_2d)),
                 "World|Northern Hemisphere|Land": np.sum(
-                    areas_2d * nh_mask[0, :, :] * land_mask[0, :, :] / 100
+                    areas_2d * nh_mask_2d * land_mask_2d / 100
                 ),
                 "World|Southern Hemisphere|Land": np.sum(
-                    areas_2d * (1 - nh_mask[0, :, :]) * land_mask[0, :, :] / 100
+                    areas_2d * (1 - nh_mask_2d) * land_mask_2d / 100
                 ),
                 "World|Northern Hemisphere|Ocean": np.sum(
-                    areas_2d * nh_mask[0, :, :] * (100 - land_mask[0, :, :]) / 100
+                    areas_2d * nh_mask_2d * (100 - land_mask_2d) / 100
                 ),
                 "World|Southern Hemisphere|Ocean": np.sum(
-                    areas_2d * (1 - nh_mask[0, :, :]) * (100 - land_mask[0, :, :]) / 100
+                    areas_2d * (1 - nh_mask_2d) * (100 - land_mask_2d) / 100
                 ),
             }
             for r in regions_to_get:
