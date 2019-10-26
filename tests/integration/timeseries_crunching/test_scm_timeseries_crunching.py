@@ -237,6 +237,23 @@ def get_rsdt_expected_results():
         },
     )
     exp.metadata = {
+        "area_world": np.sum(AREA_WEIGHTS),
+        "area_world_northern_hemisphere": np.sum(nh_area_weights),
+        "area_world_southern_hemisphere": np.sum(sh_area_weights),
+        "area_world_land": np.sum(AREA_WEIGHTS * SURFACE_FRACS) / 100,
+        "area_world_ocean": np.sum(AREA_WEIGHTS * (100 - SURFACE_FRACS) / 100),
+        "area_world_northern_hemisphere_land": np.sum(nh_area_weights * SURFACE_FRACS)
+        / 100,
+        "area_world_southern_hemisphere_land": np.sum(sh_area_weights * SURFACE_FRACS)
+        / 100,
+        "area_world_northern_hemisphere_ocean": np.sum(
+            nh_area_weights * (100 - SURFACE_FRACS)
+        )
+        / 100,
+        "area_world_southern_hemisphere_ocean": np.sum(
+            sh_area_weights * (100 - SURFACE_FRACS)
+        )
+        / 100,
         "calendar": "gregorian",
         "land_fraction": np.sum(AREA_WEIGHTS * SURFACE_FRACS)
         / (100 * np.sum(AREA_WEIGHTS)),

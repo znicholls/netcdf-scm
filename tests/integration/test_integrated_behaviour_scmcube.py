@@ -70,27 +70,28 @@ class _SCMCubeIntegrationTester(object):
             mocked_weights = {
                 k: v for k, v in mocked_weights.items() if k in regions_to_get
             }
+        else:
+            regions_to_get = list(mocked_weights.keys())
 
         test_cube.get_scm_timeseries_weights = MagicMock(return_value=mocked_weights)
 
-        total_area = mocked_area_weights[0, :, :].sum()
+        areas_2d = mocked_area_weights[0, :, :]
+        total_area = areas_2d.sum()
         # do this calculation by hand to be doubly sure, can automate in future if it
         # becomes too annoyting
-        ocean_area = (
-            (100 - land_mask[0, :, :]) * mocked_area_weights[0, :, :]
-        ).sum() / 100
-        land_frac = ((total_area - ocean_area) / (total_area)).squeeze()
+        ocean_area = ((100 - land_mask[0, :, :]) * areas_2d).sum() / 100
+        land_area = total_area - ocean_area
+        land_frac = (land_area / (total_area)).squeeze()
         land_frac = float(land_frac)
 
         land_frac_nh = (
-            ((land_mask * nh_mask) * mocked_area_weights[0, :, :]).sum()
-            / (100 * nh_mask * mocked_area_weights[0, :, :]).sum()
+            ((land_mask * nh_mask) * areas_2d).sum() / (100 * nh_mask * areas_2d).sum()
         ).squeeze()
         land_frac_nh = float(land_frac_nh)
 
         land_frac_sh = (
-            (land_mask * (1 - nh_mask) * mocked_area_weights[0, :, :]).sum()
-            / (100 * (1 - nh_mask) * mocked_area_weights[0, :, :]).sum()
+            (land_mask * (1 - nh_mask) * areas_2d).sum()
+            / (100 * (1 - nh_mask) * areas_2d).sum()
         ).squeeze()
         land_frac_sh = float(land_frac_sh)
 
@@ -102,6 +103,36 @@ class _SCMCubeIntegrationTester(object):
             exp_cube.cube = rcube.collapsed(
                 ["latitude", "longitude"], iris.analysis.MEAN, weights=weights
             )
+            region_areas = {
+                "World": total_area,
+                "World|Land": land_area,
+                "World|Ocean": ocean_area,
+                "World|Northern Hemisphere": np.sum(areas_2d * nh_mask[0, :, :]),
+                "World|Southern Hemisphere": np.sum(areas_2d * (1 - nh_mask[0, :, :])),
+                "World|Northern Hemisphere|Land": np.sum(
+                    areas_2d * nh_mask[0, :, :] * land_mask[0, :, :] / 100
+                ),
+                "World|Southern Hemisphere|Land": np.sum(
+                    areas_2d * (1 - nh_mask[0, :, :]) * land_mask[0, :, :] / 100
+                ),
+                "World|Northern Hemisphere|Ocean": np.sum(
+                    areas_2d * nh_mask[0, :, :] * (100 - land_mask[0, :, :]) / 100
+                ),
+                "World|Southern Hemisphere|Ocean": np.sum(
+                    areas_2d * (1 - nh_mask[0, :, :]) * (100 - land_mask[0, :, :]) / 100
+                ),
+            }
+            for r in regions_to_get:
+                exp_cube.cube.add_aux_coord(
+                    iris.coords.AuxCoord(
+                        region_areas[r],
+                        long_name="area_{}".format(
+                            r.lower().replace("|", "_").replace(" ", "_")
+                        ),
+                        units="m",
+                    )
+                )
+
             if all([r in regions_to_get for r in _LAND_FRACTION_REGIONS]):
                 exp_cube.cube.add_aux_coord(
                     iris.coords.AuxCoord(land_frac, long_name="land_fraction", units=1)
@@ -145,6 +176,11 @@ class _SCMCubeIntegrationTester(object):
                     result[label].cube.coord("land_fraction_southern_hemisphere").points
                     == land_frac_sh
                 )
+                for ra, value in region_areas.items():
+                    ra_key = "area_{}".format(
+                        ra.lower().replace("|", "_").replace(" ", "_")
+                    )
+                    assert result[label].cube.coord(ra_key).points == value
 
         test_cube.get_scm_timeseries_weights.assert_called_with(
             surface_fraction_cube=tsftlf_cube,
