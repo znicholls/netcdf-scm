@@ -757,7 +757,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                     raise AssertionError("Can't work out area shapes")
 
             area = np.sum(weights_area_slice)
-            if region =="World" and self.netcdf_scm_realm in ("land", "ocean"):
+            if region == "World" and self.netcdf_scm_realm in ("land", "ocean"):
                 # yuck hard-coding to be removed when addressing
                 # https://github.com/znicholls/netcdf-scm/issues/103
                 area *= 1 / 100  # correct for sftlf weights being 0-100
@@ -938,6 +938,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         iris.exceptions.CoordinateMultiDimError
             The cube's co-ordinates are multi-dimensional and we don't have cell area
             data.
+
+        ValueError
+            Area weights units are not as expected (contradict with
+            ``self._area_weights_units``).
         """
         areacell_scmcube = self._get_areacell_scmcube(areacell_scmcube)
 
@@ -1385,6 +1389,7 @@ class _CMIPCube(SCMCube, ABC):
         """
         if cube is not None:
             return super().get_metadata_cube(metadata_variable, cube=cube)
+
         if metadata_variable not in self._metadata_cubes:
             load_args = self._get_metadata_load_arguments(metadata_variable)
 

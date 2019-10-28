@@ -141,18 +141,28 @@ AREAS = {
     "World|El Nino N3.4": 2,
 }
 
+
 def _add_land_area_metadata(in_scmdf, realm):
 
     for region in in_scmdf["region"].unique():
-        r_key = "area_{} (m**2)".format(region.lower().replace("|","_").replace(" ", "_"))
-        if region in ("World", "World|Northern Hemisphere", "World|Southern Hemisphere"):
+        r_key = "area_{} (m**2)".format(
+            region.lower().replace("|", "_").replace(" ", "_")
+        )
+        if region in (
+            "World",
+            "World|Northern Hemisphere",
+            "World|Southern Hemisphere",
+        ):
             if realm in ("land", "ocean"):
-                in_scmdf.metadata[r_key] = AREAS["{}|{}".format(region, realm.capitalize())]
+                in_scmdf.metadata[r_key] = AREAS[
+                    "{}|{}".format(region, realm.capitalize())
+                ]
                 continue
 
         in_scmdf.metadata[r_key] = AREAS[region]
 
     return in_scmdf
+
 
 def get_rsdt_expected_results():
     world_values = np.sum(np.sum(RAW_DATA * AREA_WEIGHTS, axis=2), axis=1) / np.sum(

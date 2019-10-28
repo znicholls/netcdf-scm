@@ -282,6 +282,8 @@ class TestSCMCube(object):
     ):
         mock_areacell_var.return_value = areacell_var
 
+        test_sftlf_cube.cube.units = "m**2"
+
         expected = test_sftlf_cube.cube.data
 
         test_cube._get_areacell_scmcube = MagicMock(return_value=test_sftlf_cube)
@@ -330,6 +332,7 @@ class TestSCMCube(object):
         elif areacell == "misshaped":
             misshaped_cube = SCMCube
             misshaped_cube.cube = iris.cube.Cube(data=np.array([1, 2]))
+            misshaped_cube.cube.units = "m**2"
             test_cube.get_metadata_cube = MagicMock(return_value=misshaped_cube)
         elif areacell == "not a cube":
             test_cube.get_metadata_cube = MagicMock(return_value=areacell)

@@ -344,7 +344,18 @@ def test_get_scm_weights_surface_frac_bound_checks(
     test_all_cubes.get_metadata_cube = MagicMock()
     tsurface_frac_scmcube = SCMCube()
     tsurface_frac_scmcube.cube = tsurface_frac_cube
-    test_all_cubes.get_metadata_cube.return_value = tsurface_frac_scmcube
+
+    tothermdata_scmcube = SCMCube()
+    tothermdata_scmcube.cube = tsurface_frac_cube.copy()
+    tothermdata_scmcube.cube.units = "m**2"
+
+    def mock_meta_getter(metadata_variable, cube):
+        if metadata_variable == test_all_cubes.surface_fraction_var:
+            return tsurface_frac_scmcube
+
+        return tothermdata_scmcube
+
+    test_all_cubes.get_metadata_cube.side_effect = mock_meta_getter
 
     caplog.set_level(logging.INFO)
     weighter = CubeWeightCalculator(test_all_cubes)
