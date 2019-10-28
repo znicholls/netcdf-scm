@@ -49,7 +49,7 @@ def read_cmip6_concs_gmnhsh(  # pylint:disable=too-many-locals
 
     timeseries_cubes = {}
     for region_coord in checked_cube.coord(region_coord_name):
-        if len([v for v in region_coord.cells()]) != 1:  # pragma: no cover
+        if len(list(region_coord.cells())) != 1:  # pragma: no cover
             raise AssertionError("Should only have one point now")
 
         original_names = {

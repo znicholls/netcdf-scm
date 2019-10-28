@@ -63,7 +63,7 @@ requirements_dev = [
         "bandit",
         "mypy",
         "pydocstyle",
-        "pylint @ git+https://github.com/PyCQA/pylint.git@e6cd6e35bae7d19d1264c398dafe21c758fe4747",  # TODO: change when new release comes out
+        "pylint>=2.4.0",
         "nbdime",
     ],
     *REQUIREMENTS_TESTS,
