@@ -48,7 +48,7 @@ _CUBES = {
 _MAGICC_VARIABLE_MAP = {"tas": ("Surface Temperature", "SURFACE_TEMP")}
 """Mapping from CMOR variable names to MAGICC variables"""
 
-_ureg = openscm.units._unit_registry
+_ureg = openscm.units._unit_registry  # pylint:disable=protected-access
 """
 unit registry for misc unit checking
 
@@ -979,27 +979,32 @@ def _convert_units(openscmdf, target_units_specs):
             current_length = _ureg(current_unit).dimensionality["[length]"]
 
             if np.equal(current_length, -2) and np.equal(target_length, 0):
-                openscmdf = _take_area_sum(openscmdf, variable, current_unit)
+                openscmdf = _take_area_sum(openscmdf, current_unit)
 
             openscmdf = openscmdf.convert_unit(target_unit, variable=variable)
 
     return openscmdf
 
 
-def _take_area_sum(openscmdf, variable, current_unit):
+def _take_area_sum(openscmdf, current_unit):
     converted_ts = []
 
     for region, df in openscmdf.timeseries().groupby("region"):
+        rkey = SCMCube._convert_region_to_area_key(  # pylint:disable=protected-access
+            region
+        )
         for k, v in openscmdf.metadata.items():
-            if "{} (".format(SCMCube._convert_region_to_area_key(region)) in k:
+            if "{} (".format(rkey) in k:
                 unit = k.split("(")[-1].split(")")[0]
                 conv_factor = v * _ureg(unit)
-                break
 
-        converted_region = df * v
-        converted_region = converted_region.reset_index()
-        converted_region["unit"] = str((1 * _ureg(current_unit) * conv_factor).units)
-        converted_ts.append(converted_region)
+                converted_region = df * v
+                converted_region = converted_region.reset_index()
+                converted_region["unit"] = str(
+                    (1 * _ureg(current_unit) * conv_factor).units
+                )
+                converted_ts.append(converted_region)
+                break
 
     converted_ts = df_append(converted_ts)
     converted_ts.metadata = openscmdf.metadata
