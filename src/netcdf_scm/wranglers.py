@@ -134,7 +134,8 @@ def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
 
     group_cols = ["model", "scenario", "variable", "region", "unit"]
     for label, df in scmdf.timeseries().groupby(group_cols):
-        ids = {name: value for name, value in zip(group_cols, label)}
+        ids = dict(zip(group_cols, label))
+
         dataset = {}
         dataset["tuningdata"] = {}
         dataset["tuningdata"]["modelcodes"] = []

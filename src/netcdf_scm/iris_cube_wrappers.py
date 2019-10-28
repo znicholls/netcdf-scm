@@ -49,7 +49,7 @@ try:
     # and
     # https://github.com/SciTools/iris/issues/3357
     def _get_cf_var_data(cf_var, filename):
-        import netCDF4
+        import netCDF4  # pylint:disable=import-outside-toplevel
 
         # Get lazy chunked data out of a cf variable.
         dtype = netcdf._get_actual_dtype(cf_var)  # pylint:disable=protected-access
@@ -1468,7 +1468,7 @@ class _CMIPCube(SCMCube, ABC):
             try:
                 if callable(a) or callable(getattr(helper, a)):
                     continue
-                elif a == "filename_bits_separator" or a.startswith("_"):
+                if a == "filename_bits_separator" or a.startswith("_"):
                     continue
                 new_separator = "-" if cls.filename_bits_separator == "_" else "_"
                 setattr(
