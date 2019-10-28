@@ -1,8 +1,11 @@
 from glob import glob
 from os.path import isdir, join
 
+import numpy as np
+import pandas as pd
 import pytest
 from click.testing import CliRunner
+from pymagicc.io import MAGICCData
 
 import netcdf_scm
 from netcdf_scm.cli import wrangle_netcdf_scm_ncs
@@ -379,3 +382,63 @@ def test_wrangling_annual_mean_file(tmpdir, test_data_root_dir):
         "github.com/znicholls/netcdf-scm/issues to discuss how to handle "
         "non-monthly data wrangling"
     ) in result.output
+
+
+@pytest.mark.parametrize("target_unit,conv_factor", (
+    ["kg / m**2 / yr", 365*24*60*60],
+    ["Gt / yr", 365*24*60*60 * 510 * 10**12],
+))
+def test_wrangling_units_specs(tmpdir, test_cmip6_crunch_output, target_unit, conv_factor):
+    target_units = pd.DataFrame(
+        [["fgco2", "tos"], [target_unit, "K"]],
+        columns=["variable", "unit"]
+    )
+    target_units_csv = join(tmpdir, "target_units.csv")
+    target_units.to_csv(target_units_csv, index=False)
+
+    runner = CliRunner()
+
+    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/CCCma")
+    OUTPUT_DIR = str(tmpdir)
+
+    result_raw = runner.invoke(
+        wrangle_netcdf_scm_ncs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "test",
+            "--drs",
+            "CMIP6Output",
+            "--number-workers",
+            1,
+        ],
+    )
+
+    expected_file = join(
+        OUTPUT_DIR,
+        "CMIP6/CMIP/CCCma/CanESM5/piControl/r1i1p1f1/Omon/fgco2/gn/v20190429/netcdf-scm_fgco2_Omon_CanESM5_piControl_r1i1p1f1_gn_600101-600103.MAG",
+    )
+    # res_raw = MAGICCData(expected_file)
+    res_raw = pd.read_csv(expected_file, skiprows=103, header=None, delim_whitespace=True, index_col=0)
+
+    result = runner.invoke(
+        wrangle_netcdf_scm_ncs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "test",
+            "--regexp",
+            ".*lai.*",
+            "--drs",
+            "CMIP6Output",
+            "--number-workers",
+            1,
+            "--target-units-specs",
+            target_units_csv
+        ],
+    )
+    assert result.exit_code == 0
+    # res = MAGICCData(expected_file)
+    res = pd.read_csv(expected_file, skiprows=103, header=None, delim_whitespace=True, index_col=0)
+    np.testing.assert_allclose(res_raw, res*conv_factor)
+    assert False, "test values with MAGICCData"
