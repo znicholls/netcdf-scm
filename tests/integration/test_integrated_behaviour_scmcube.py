@@ -80,7 +80,7 @@ class _SCMCubeIntegrationTester(object):
         areas_2d = mocked_area_weights[0, :, :]
         total_area = areas_2d.sum()
         # do this calculation by hand to be doubly sure, can automate in future if it
-        # becomes too annoyting
+        # becomes too annoying
         ocean_area = ((100 - land_mask_2d) * areas_2d).sum() / 100
         land_area = total_area - ocean_area
         land_frac = (land_area / (total_area)).squeeze()
