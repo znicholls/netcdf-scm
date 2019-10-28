@@ -47,7 +47,7 @@ REQUIREMENTS_INSTALL = [
     "python-dateutil",
     "progressbar2",
     "openscm>=0.1.0a",
-    "pymagicc @ git+https://github.com/openclimatedata/pymagicc.git@elnino-amv-regions",
+    "pymagicc>=2.0.0b6",
     "click",
     "tqdm",
 ]
