@@ -580,15 +580,11 @@ class CubeWeightCalculator:
 
     Additional weights can be added to ``netcdf_scm.weights.weights``. The values in
     ``weights`` should be WeightFunc's. A WeightFunc is a function which takes a
-    ScmCube, CubeWeightCalculator and any additional keyword arguments. The function should
-    return a numpy array of boolean's with the same dimensionality as the ScmCube.
-    Where True values are returned, data will be weightsed out (excluded) from any
-    calculations. For example, the "World|Northern Hemisphere|Land" weights should be
-    True everywhere except for land cells in the Northern Hemisphere.
+    ScmCube, CubeWeightCalculator and any additional keyword arguments. The function
+    should return a numpy array with the same dimensionality as the ScmCube.
 
-    These WeightFunc's can be composed together to create more complex functionality.
-    For example `multiply_weights(get_weights_for_area(0, -80, 65, 0), "World|Ocean")` will
-    return the result of an 'or' operation between the given area and an ocean weights.
+    These WeightFunc's can be composed together to create more complex functionality
+    using e.g. ``multiply_weights``.
     """
 
     def __init__(self, cube, **kwargs):
@@ -605,8 +601,6 @@ class CubeWeightCalculator:
             Possible parameters include:
 
                 sftlf_cube : ScmCube
-
-                land_weights_threshold : float default: 50.
         """
         self.cube = cube
         self._weights_no_area_weighting = {}
@@ -649,7 +643,7 @@ class CubeWeightCalculator:
     def _get_area_weights(self):
         if self._area_weights is None:
             self._area_weights = (
-                self.cube.get_area_weights()  # pylint:disable=protected-access
+                self.cube.get_area_weights()
             )
 
         return self._area_weights
@@ -658,9 +652,9 @@ class CubeWeightCalculator:
         """
         Get a single weights array
 
-        If the weights has previously been calculated the precalculated result is
-        returned from the cache. Otherwise the appropriate WeightFunc is called with any
-        kwargs specified in the constructor.
+        If the weights have previously been calculated the precalculated result is
+        returned from the cache. Otherwise the appropriate WeightFunc is called with
+        any kwargs specified in the constructor.
 
         Parameters
         ----------
@@ -670,7 +664,7 @@ class CubeWeightCalculator:
         Returns
         -------
         ndarray[bool]
-            Any True values should be weightsed out and excluded from any further calculation.
+            Weights for the region specified by ``weights_name``
 
         Raises
         ------
