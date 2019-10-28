@@ -136,7 +136,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     _have_guessed_realm = False
     """bool: Have we already guessed our cube data's realm?"""
 
-    _area_weights = "m**2"
+    _area_weights_units = "m**2"
     """str: assumed units for area weights (checked when data is read)"""
 
     def __init__(self):
@@ -738,11 +738,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             scm_cube = take_lat_lon_mean(self, weights)
             scm_cube = self._add_metadata_to_region_timeseries_cube(scm_cube, region)
 
-            area_slicer = [slice(None) if i in [self.lat_dim_number, self.lon_dim_number] else 0 for i in range(len(weights.shape))]
-            weights_area_slice = weights[tuple(area_slicer)]
-            wass = weights_area_slice.shape
-            if wass != self.lat_lon_shape and wass[::-1] != self.lat_lon_shape:
-                raise AssertionError("Can't work out area shapes")  # pragma: no cover
+            ws = weights.shape
+            if ws == self.lat_lon_shape or ws[::-1] == self.lat_lon_shape:
+                weights_area_slice = weights
+            else:
+                area_slicer = [slice(None) if i in [self.lat_dim_number, self.lon_dim_number] else 0 for i in range(len(weights.shape))]
+                weights_area_slice = weights[tuple(area_slicer)]
+                wass = weights_area_slice.shape
+                if wass != self.lat_lon_shape and wass[::-1] != self.lat_lon_shape:
+                    raise AssertionError("Can't work out area shapes")  # pragma: no cover
 
             area = np.sum(weights_area_slice)
             if "Land" in region:
@@ -809,7 +813,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                             area_name.lower().replace("|", "_").replace(" ", "_")
                         )
                 cube.cube.add_aux_coord(
-                    iris.coords.AuxCoord(area, long_name=area_key, units=self._area_weights)
+                    iris.coords.AuxCoord(area, long_name=area_key, units=self._area_weights_units)
                 )
 
         return timeseries_cubes
@@ -922,10 +926,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         areacell_scmcube = self._get_areacell_scmcube(areacell_scmcube)
 
         if areacell_scmcube is not None:
-            import pdb
-            pdb.set_trace()
-            if self._area_weights != areacell_scmcube.units:
-                raise ValueError("Your weights need to be in {} but your areacell cube has units of ".format(self._area_weights, areacell_scmcube.units))
+            areacell_units = areacell_scmcube.cube.units
+            if self._area_weights_units != areacell_units:
+                raise ValueError("Your weights need to be in {} but your areacell cube has units of {}".format(self._area_weights_units, areacell_units))
             area_weights = areacell_scmcube.cube.data
             if cube_lat_lon_grid_compatible_with_array(self, area_weights):
                 return area_weights
@@ -934,8 +937,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         logger.warning(
             "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
         )
-        if self._area_weights != "m**2":
-            raise ValueError("Iris cartography only returns weights in m**2 but your weights need to be {}".format(self._area_weights))
+        if self._area_weights_units != "m**2":
+            raise ValueError("iris.analysis.cartography only returns weights in m**2 but your weights need to be {}".format(self._area_weights_units))
         try:
             lat_lon_slice = next(self.cube.slices([self.lat_name, self.lon_name]))
             iris_weights = iris.analysis.cartography.area_weights(lat_lon_slice)

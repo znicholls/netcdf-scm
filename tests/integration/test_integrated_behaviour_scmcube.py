@@ -131,7 +131,7 @@ class _SCMCubeIntegrationTester(object):
                         long_name="area_{}".format(
                             r.lower().replace("|", "_").replace(" ", "_")
                         ),
-                        units=exp_cube._area_weights,
+                        units=exp_cube._area_weights_units,
                     )
                 )
 
@@ -375,22 +375,20 @@ class _SCMCubeIntegrationTester(object):
             test_cube._check_data_names_in_same_directory(tdir)
 
     @pytest.mark.parametrize("guess_bounds", [True, False])
-    @pytest.mark.parametrize("input_format", ["areacell_scmcube", None])
     @patch.object(SCMCube, "_get_areacell_scmcube")
-    def test_get_area_weights(
-        self, mock_get_areacell_scmcube, test_cube, guess_bounds, input_format, caplog
+    def test_get_area_weights_from_scmcube(
+        self, mock_get_areacell_scmcube, test_cube, guess_bounds, caplog
     ):
         caplog.set_level(logging.WARNING, logger="netcdf_scm")
 
         lat_lon_slice = next(
             test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name])
         )
-        if input_format == "areacell_scmcube":
-            tareacell_scmcube = self.tclass()
-            tareacell_scmcube.cube = lat_lon_slice.copy()
-            tareacell_scmcube.cube.data = np.ones(tareacell_scmcube.cube.shape)
-        else:
-            tareacell_scmcube = None
+
+        tareacell_scmcube = self.tclass()
+        tareacell_scmcube.cube = lat_lon_slice.copy()
+        tareacell_scmcube.cube.data = np.ones(tareacell_scmcube.cube.shape)
+        tareacell_scmcube.cube.units = "m**2"
 
         mock_get_areacell_scmcube.return_value = tareacell_scmcube
 
@@ -399,20 +397,77 @@ class _SCMCubeIntegrationTester(object):
             test_cube.lon_dim.bounds = None
 
         res = test_cube.get_area_weights(areacell_scmcube=tareacell_scmcube)
-        if tareacell_scmcube is not None:
-            expected = tareacell_scmcube.cube.data
-        else:
-            expected = iris.analysis.cartography.area_weights(lat_lon_slice)
+
+        expected = tareacell_scmcube.cube.data
 
         np.testing.assert_allclose(res, expected)
         mock_get_areacell_scmcube.assert_called_with(tareacell_scmcube)
-        if guess_bounds and tareacell_scmcube is None:
+
+    @patch.object(SCMCube, "_get_areacell_scmcube")
+    def test_get_area_weights_from_scmcube_bad_units(
+        self, mock_get_areacell_scmcube, test_cube
+    ):
+        lat_lon_slice = next(
+            test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name])
+        )
+
+        tareacell_scmcube = self.tclass()
+        tareacell_scmcube.cube = lat_lon_slice.copy()
+        tareacell_scmcube.cube.data = np.ones(tareacell_scmcube.cube.shape)
+        tareacell_scmcube.cube.units = "km**2"
+
+        mock_get_areacell_scmcube.return_value = tareacell_scmcube
+
+        error_msg = re.escape("Your weights need to be in m**2 but your areacell cube has units of km**2")
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.get_area_weights(areacell_scmcube=tareacell_scmcube)
+
+    @pytest.mark.parametrize("guess_bounds", [True, False])
+    @patch.object(SCMCube, "_get_areacell_scmcube")
+    def test_get_area_weights_from_iris(
+        self, mock_get_areacell_scmcube, test_cube, guess_bounds, caplog
+    ):
+        caplog.set_level(logging.WARNING, logger="netcdf_scm")
+
+        lat_lon_slice = next(
+            test_cube.cube.slices([test_cube.lat_name, test_cube.lon_name])
+        )
+
+        tareacell_scmcube = None
+
+        mock_get_areacell_scmcube.return_value = tareacell_scmcube
+
+        if guess_bounds:
+            test_cube.lat_dim.bounds = None
+            test_cube.lon_dim.bounds = None
+
+        res = test_cube.get_area_weights(areacell_scmcube=tareacell_scmcube)
+
+        expected = iris.analysis.cartography.area_weights(lat_lon_slice)
+
+        np.testing.assert_allclose(res, expected)
+        mock_get_areacell_scmcube.assert_called_with(tareacell_scmcube)
+        if guess_bounds:
             assert len(caplog.messages) == 2
             assert (
                 caplog.messages[0]
                 == "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
             )
             assert caplog.messages[1] == "Guessing latitude and longitude bounds"
+
+    @patch.object(SCMCube, "_get_areacell_scmcube")
+    def test_get_area_weights_from_iris_bad_units(
+        self, mock_get_areacell_scmcube, test_cube
+    ):
+        test_cube._area_weights_units = "km**2"
+
+        tareacell_scmcube = None
+
+        mock_get_areacell_scmcube.return_value = tareacell_scmcube
+
+        error_msg = re.escape("iris.analysis.cartography only returns weights in m**2 but your weights need to be km**2")
+        with pytest.raises(ValueError, match=error_msg):
+            test_cube.get_area_weights(areacell_scmcube=tareacell_scmcube)
 
     @patch.object(SCMCube, "_get_areacell_scmcube")
     def test_get_area_weights_incompatible(
@@ -427,6 +482,7 @@ class _SCMCubeIntegrationTester(object):
         tareacell_scmcube = self.tclass()
         tareacell_scmcube.cube = lat_lon_slice[1:, 1:].copy()
         tareacell_scmcube.cube.data = np.ones(tareacell_scmcube.cube.shape)
+        tareacell_scmcube.cube.units = "m**2"
 
         mock_get_areacell_scmcube.return_value = tareacell_scmcube
 
