@@ -125,6 +125,35 @@ SCMDF_TIME = [
 ]
 
 
+LAND_EFFECTIVE_AREAS = (SURFACE_FRACS * AREA_WEIGHTS) / 100
+OCEAN_EFFECTIVE_AREAS = ((100 - SURFACE_FRACS) * AREA_WEIGHTS) / 100
+AREAS = {
+    "World": np.sum(AREA_WEIGHTS),
+    "World|Land": np.sum(LAND_EFFECTIVE_AREAS),
+    "World|Ocean": np.sum(OCEAN_EFFECTIVE_AREAS),
+    "World|Northern Hemisphere": np.sum(AREA_WEIGHTS[:2, :]),
+    "World|Southern Hemisphere": np.sum(AREA_WEIGHTS[2, :]),
+    "World|Northern Hemisphere|Land": np.sum(LAND_EFFECTIVE_AREAS[:2, :]),
+    "World|Southern Hemisphere|Land": np.sum(LAND_EFFECTIVE_AREAS[2, :]),
+    "World|Northern Hemisphere|Ocean": np.sum(OCEAN_EFFECTIVE_AREAS[:2, :]),
+    "World|Southern Hemisphere|Ocean": np.sum(OCEAN_EFFECTIVE_AREAS[2, :]),
+    "World|North Atlantic Ocean": 1,
+    "World|El Nino N3.4": 2,
+}
+
+def _add_land_area_metadata(in_scmdf, realm):
+
+    for region in in_scmdf["region"].unique():
+        r_key = "area_{} (m**2)".format(region.lower().replace("|","_").replace(" ", "_"))
+        if region in ("World", "World|Northern Hemisphere", "World|Southern Hemisphere"):
+            if realm in ("land", "ocean"):
+                in_scmdf.metadata[r_key] = AREAS["{}|{}".format(region, realm.capitalize())]
+                continue
+
+        in_scmdf.metadata[r_key] = AREAS[region]
+
+    return in_scmdf
+
 def get_rsdt_expected_results():
     world_values = np.sum(np.sum(RAW_DATA * AREA_WEIGHTS, axis=2), axis=1) / np.sum(
         AREA_WEIGHTS
@@ -236,24 +265,8 @@ def get_rsdt_expected_results():
             "mip_era": "CMIP5",
         },
     )
+
     exp.metadata = {
-        "area_world": np.sum(AREA_WEIGHTS),
-        "area_world_northern_hemisphere": np.sum(nh_area_weights),
-        "area_world_southern_hemisphere": np.sum(sh_area_weights),
-        "area_world_land": np.sum(AREA_WEIGHTS * SURFACE_FRACS) / 100,
-        "area_world_ocean": np.sum(AREA_WEIGHTS * (100 - SURFACE_FRACS) / 100),
-        "area_world_northern_hemisphere_land": np.sum(nh_area_weights * SURFACE_FRACS)
-        / 100,
-        "area_world_southern_hemisphere_land": np.sum(sh_area_weights * SURFACE_FRACS)
-        / 100,
-        "area_world_northern_hemisphere_ocean": np.sum(
-            nh_area_weights * (100 - SURFACE_FRACS)
-        )
-        / 100,
-        "area_world_southern_hemisphere_ocean": np.sum(
-            sh_area_weights * (100 - SURFACE_FRACS)
-        )
-        / 100,
         "calendar": "gregorian",
         "land_fraction": np.sum(AREA_WEIGHTS * SURFACE_FRACS)
         / (100 * np.sum(AREA_WEIGHTS)),
@@ -265,6 +278,7 @@ def get_rsdt_expected_results():
         "Conventions": "CF-1.5",
         "crunch_source_files": "Files: ['/cmip5/experiment/Amon/rsdt/model/realisation/rsdt_Amon_model_experiment_realisation_185001-185003.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']",
     }
+    exp = _add_land_area_metadata(exp, realm="atmos")
 
     return exp
 
@@ -340,6 +354,7 @@ def get_gpp_expected_results():
         "Conventions": "CF-1.5",
         "crunch_source_files": "Files: ['/cmip5/experiment/Lmon/gpp/model/realisation/gpp_Lmon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']",
     }
+    exp = _add_land_area_metadata(exp, realm="land")
 
     return exp
 
@@ -353,6 +368,7 @@ def get_csoilfast_expected_results():
     exp_scmdf.metadata[
         "crunch_source_files"
     ] = "Files: ['/cmip5/experiment/Lmon/cSoilFast/model/realisation/cSoilFast_Lmon_model_experiment_realisation_185001-185003.nc']; sftlf: ['/cmip5/experiment/fx/sftlf/model/r0i0p0/sftlf_fx_model_experiment_r0i0p0.nc']; areacella: ['/cmip5/experiment/fx/areacella/model/r0i0p0/areacella_fx_model_experiment_r0i0p0.nc']"
+    exp_scmdf = _add_land_area_metadata(exp_scmdf, realm="land")
 
     return exp_scmdf
 
@@ -440,6 +456,7 @@ def get_hfds_expected_results():
         "Conventions": "CF-1.5",
         "crunch_source_files": "Files: ['/cmip5/experiment/Omon/hfds/model/realisation/hfds_Omon_model_experiment_realisation_185001-185003.nc']; sftof: ['/cmip5/experiment/fx/sftof/model/r0i0p0/sftof_fx_model_experiment_r0i0p0.nc']; areacello: ['/cmip5/experiment/fx/areacello/model/r0i0p0/areacello_fx_model_experiment_r0i0p0.nc']",
     }
+    exp = _add_land_area_metadata(exp, realm="ocean")
 
     return exp
 
