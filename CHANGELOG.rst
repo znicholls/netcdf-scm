@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#105 <https://github.com/znicholls/netcdf-scm/pull/105>`_) Upgrade to new Pylint release
 - (`#104 <https://github.com/znicholls/netcdf-scm/pull/104>`_) Allow wranglers to also handle unit conversions (see `#101 <https://github.com/znicholls/netcdf-scm/pull/101>`_)
 - (`#102 <https://github.com/znicholls/netcdf-scm/pull/102>`_) Keep effective area as metadata when calculating SCM timeseries (see `#100 <https://github.com/znicholls/netcdf-scm/pull/100>`_)
 - (`#99 <https://github.com/znicholls/netcdf-scm/pull/99>`_) Switch to BSD-3-Clause license
