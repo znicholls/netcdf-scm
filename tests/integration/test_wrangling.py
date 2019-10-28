@@ -385,12 +385,12 @@ def test_wrangling_annual_mean_file(tmpdir, test_data_root_dir):
 
 
 @pytest.mark.parametrize("target_unit,conv_factor", (
-    ["kg / m**2 / yr", 365*24*60*60],
-    ["Gt / yr", 365*24*60*60 * 510 * 10**12],
+    ["kg / m**2 / yr", 3.155695e+07],
+    ["Gt / yr", 3.155695e+07 * 510 * 10**12],
 ))
 def test_wrangling_units_specs(tmpdir, test_cmip6_crunch_output, target_unit, conv_factor):
     target_units = pd.DataFrame(
-        [["fgco2", "tos"], [target_unit, "K"]],
+        [["fgco2", target_unit], ["tos", "K"]],
         columns=["variable", "unit"]
     )
     target_units_csv = join(tmpdir, "target_units.csv")
@@ -427,18 +427,17 @@ def test_wrangling_units_specs(tmpdir, test_cmip6_crunch_output, target_unit, co
             INPUT_DIR,
             OUTPUT_DIR,
             "test",
-            "--regexp",
-            ".*lai.*",
             "--drs",
             "CMIP6Output",
             "--number-workers",
             1,
             "--target-units-specs",
-            target_units_csv
+            target_units_csv,
+            "--force"
         ],
     )
     assert result.exit_code == 0
     # res = MAGICCData(expected_file)
     res = pd.read_csv(expected_file, skiprows=103, header=None, delim_whitespace=True, index_col=0)
-    np.testing.assert_allclose(res_raw, res*conv_factor)
+    np.testing.assert_allclose(res_raw*conv_factor, res, rtol=1e-5)
     assert False, "test values with MAGICCData"
