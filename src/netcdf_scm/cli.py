@@ -11,6 +11,7 @@ from time import gmtime, strftime
 
 import click
 import numpy as np
+import pandas as pd
 import pymagicc
 import tqdm
 from openscm.scmdataframe import ScmDataFrame, df_append
@@ -595,8 +596,15 @@ def _set_crunch_contact_in_results(res, crunch_contact):
     default=4,
     show_default=True,
 )
+@click.option(
+    "--target-units-specs",  # pylint:disable=too-many-arguments
+    help="csv containing target units for wrangled variables.",
+    default=None,
+    show_default=False,
+    type=click.Path(exists=True, readable=True, resolve_path=True)
+)
 def wrangle_netcdf_scm_ncs(
-    src, dst, wrangle_contact, regexp, prefix, out_format, drs, force, number_workers
+    src, dst, wrangle_contact, regexp, prefix, out_format, drs, force, number_workers, target_units_specs
 ):
     """
     Wrangle NetCDF-SCM ``.nc`` files into other formats and directory structures.
@@ -630,7 +638,7 @@ def wrangle_netcdf_scm_ncs(
         _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
     else:
         _do_wrangling(
-            src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers
+            src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers, target_units_specs
         )
 
 
@@ -698,9 +706,11 @@ def _tuningstrucs_blended_model_wrangling_inner_loop(
 
 
 def _do_wrangling(  # pylint:disable=too-many-arguments
-    src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers
+    src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers, target_units_specs
 ):
     regexp_compiled = re.compile(regexp)
+    if target_units_specs is not None:
+        target_units_specs = pd.read_csv(target_units_specs)
 
     if out_format in ("mag-files", "magicc-input-files-point-end-of-year"):
         _do_magicc_wrangling(
@@ -712,13 +722,14 @@ def _do_wrangling(  # pylint:disable=too-many-arguments
             wrangle_contact,
             drs,
             number_workers,
+            target_units_specs,
         )
     else:  # pragma: no cover # emergency valve (should be caught by click on call)
         raise ValueError("Unsupported format: {}".format(out_format))
 
 
 def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
-    src, dst, regexp_compiled, out_format, force, wrangle_contact, drs, number_workers
+    src, dst, regexp_compiled, out_format, force, wrangle_contact, drs, number_workers, target_units_specs
 ):
     scmcube = _get_scmcube_helper(drs)
     crunch_list, failures_dir_finding = _find_dirs_meeting_func(
@@ -729,6 +740,14 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
         openscmdf = df_append(
             [load_scmdataframe(os.path.join(dpath, f)) for f in fnames]
         )
+        if target_units_specs is not None:
+            for variable in openscmdf["variable"].unique():
+                if variable in target_units_specs["variable"].tolist():
+                    target_unit = target_units_specs[
+                        target_units_specs["variable"] == variable
+                    ]["unit"].values[0]
+                    openscmdf = openscmdf.convert_unit(target_unit, variable=variable)
+
         metadata = openscmdf.metadata
         header = (
             "Date: {}\n"

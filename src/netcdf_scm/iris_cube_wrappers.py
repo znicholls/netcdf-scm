@@ -825,10 +825,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
     def _add_areas(self, timeseries_cubes, areas):
         for cube in timeseries_cubes.values():
-            for area_name, area in areas.items():
-                area_key = "area_{}".format(
-                    area_name.lower().replace("|", "_").replace(" ", "_")
-                )
+            for region, area in areas.items():
+                area_key = self._convert_region_to_area_key(region)
                 cube.cube.add_aux_coord(
                     iris.coords.AuxCoord(
                         area, long_name=area_key, units=self._area_weights_units
@@ -836,6 +834,12 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                 )
 
         return timeseries_cubes
+
+    @staticmethod
+    def _convert_region_to_area_key(region):
+        return "area_{}".format(
+                    region.lower().replace("|", "_").replace(" ", "_")
+                )
 
     @staticmethod
     def _add_land_fraction(timeseries_cubes, areas):
