@@ -642,9 +642,7 @@ class CubeWeightCalculator:
 
     def _get_area_weights(self):
         if self._area_weights is None:
-            self._area_weights = (
-                self.cube.get_area_weights()
-            )
+            self._area_weights = self.cube.get_area_weights()
 
         return self._area_weights
 
