@@ -389,7 +389,7 @@ def test_wrangling_annual_mean_file(tmpdir, test_data_root_dir):
     "target_unit,conv_factor", (["kg / m**2 / yr", 3.155695e07], ["g / m**2 / s", 1e03])
 )
 def test_wrangling_units_specs(
-    tmpdir, test_cmip6_crunch_output, target_unit, conv_factor
+    tmpdir, test_cmip6_crunch_output, target_unit, conv_factor, caplog
 ):
     target_units = pd.DataFrame(
         [["fgco2", target_unit], ["tos", "K"]], columns=["variable", "unit"]
@@ -402,11 +402,17 @@ def test_wrangling_units_specs(
     INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/CCCma")
     OUTPUT_DIR = str(tmpdir)
 
-    result_raw = runner.invoke(
-        wrangle_netcdf_scm_ncs,
-        [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "CMIP6Output", "--number-workers", 1],
-    )
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result_raw = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "CMIP6Output", "--number-workers", 1],
+        )
     assert result_raw.exit_code == 0
+    assert (
+        "Converting units" not
+        in caplog.messages
+    )
 
     expected_file = join(
         OUTPUT_DIR,
@@ -414,23 +420,26 @@ def test_wrangling_units_specs(
     )
 
     res_raw = MAGICCData(expected_file)
-
-    result = runner.invoke(
-        wrangle_netcdf_scm_ncs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "test",
-            "--drs",
-            "CMIP6Output",
-            "--number-workers",
-            1,
-            "--target-units-specs",
-            target_units_csv,
-            "--force",
-        ],
-    )
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test",
+                "--drs",
+                "CMIP6Output",
+                "--number-workers",
+                1,
+                "--target-units-specs",
+                target_units_csv,
+                "--force",
+            ],
+        )
     assert result.exit_code == 0
+    assert "Converting units of fgco2 from kg m^-2 s^-1 to {}".format(target_unit) in caplog.messages
+
     res = MAGICCData(expected_file)
 
     np.testing.assert_allclose(
@@ -438,7 +447,7 @@ def test_wrangling_units_specs(
     )
 
 
-def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output):
+def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output, caplog):
     target_unit = "Gt / yr"
     target_units = pd.DataFrame(
         [["fgco2", target_unit], ["tos", "K"]], columns=["variable", "unit"]
@@ -463,22 +472,26 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output):
     assert result_raw.exit_code == 0
     res_raw = MAGICCData(expected_file)
 
-    result = runner.invoke(
-        wrangle_netcdf_scm_ncs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "test",
-            "--drs",
-            "CMIP6Output",
-            "--number-workers",
-            1,
-            "--target-units-specs",
-            target_units_csv,
-            "--force",
-        ],
-    )
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test",
+                "--drs",
+                "CMIP6Output",
+                "--number-workers",
+                1,
+                "--target-units-specs",
+                target_units_csv,
+                "--force",
+            ],
+        )
+
     assert result.exit_code == 0
+    assert "Converting units of fgco2 from kg m^-2 s^-1 to {}".format(target_unit) in caplog.messages
     res = MAGICCData(expected_file)
 
     assert sorted(res["region"].tolist()) == sorted(res_raw["region"].tolist())
