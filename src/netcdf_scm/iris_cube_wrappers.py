@@ -837,9 +837,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
     @staticmethod
     def _convert_region_to_area_key(region):
-        return "area_{}".format(
-                    region.lower().replace("|", "_").replace(" ", "_")
-                )
+        return "area_{}".format(region.lower().replace("|", "_").replace(" ", "_"))
 
     @staticmethod
     def _add_land_fraction(timeseries_cubes, areas):
