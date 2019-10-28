@@ -418,7 +418,9 @@ class _SCMCubeIntegrationTester(object):
 
         mock_get_areacell_scmcube.return_value = tareacell_scmcube
 
-        error_msg = re.escape("Your weights need to be in m**2 but your areacell cube has units of km**2")
+        error_msg = re.escape(
+            "Your weights need to be in m**2 but your areacell cube has units of km**2"
+        )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_area_weights(areacell_scmcube=tareacell_scmcube)
 
@@ -465,7 +467,9 @@ class _SCMCubeIntegrationTester(object):
 
         mock_get_areacell_scmcube.return_value = tareacell_scmcube
 
-        error_msg = re.escape("iris.analysis.cartography only returns weights in m**2 but your weights need to be km**2")
+        error_msg = re.escape(
+            "iris.analysis.cartography only returns weights in m**2 but your weights need to be km**2"
+        )
         with pytest.raises(ValueError, match=error_msg):
             test_cube.get_area_weights(areacell_scmcube=tareacell_scmcube)
 
