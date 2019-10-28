@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#102 <https://github.com/znicholls/netcdf-scm/pull/102>`_) Keep effective area as metadata when calculating SCM timeseries (see `#100 <https://github.com/znicholls/netcdf-scm/pull/100>`_)
 - (`#99 <https://github.com/znicholls/netcdf-scm/pull/99>`_) Switch to BSD-3-Clause license
 - (`#98 <https://github.com/znicholls/netcdf-scm/pull/98>`_) Add support for reading CMIP6 concentration GMNHSH data
 - (`#97 <https://github.com/znicholls/netcdf-scm/pull/97>`_) Add support for tuningstruc data which has been transposed
