@@ -136,6 +136,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
     _have_guessed_realm = False
     """bool: Have we already guessed our cube data's realm?"""
 
+    _area_weights = "m**2"
+    """str: assumed units for area weights (checked when data is read)"""
+
     def __init__(self):
         self._loaded_paths = []
         self._metadata_cubes = {}
@@ -735,14 +738,18 @@ class SCMCube:  # pylint:disable=too-many-public-methods
             scm_cube = take_lat_lon_mean(self, weights)
             scm_cube = self._add_metadata_to_region_timeseries_cube(scm_cube, region)
 
-            if region in _LAND_FRACTION_REGIONS:
-                area = np.sum(weights)
-                if "Land" in region:
-                    area *= 1 / 100  # correct for sftlf weights being 0-100
-                if "Ocean" in region:
-                    area *= 1 / 100  # correct for sftlf weights being 0-100
-            else:
-                area = None
+            area_slicer = [slice(None) if i in [self.lat_dim_number, self.lon_dim_number] else 0 for i in range(len(weights.shape))]
+            weights_area_slice = weights[tuple(area_slicer)]
+            wass = weights_area_slice.shape
+            if wass != self.lat_lon_shape and wass[::-1] != self.lat_lon_shape:
+                raise AssertionError("Can't work out area shapes")  # pragma: no cover
+
+            area = np.sum(weights_area_slice)
+            if "Land" in region:
+                area *= 1 / 100  # correct for sftlf weights being 0-100
+            if "Ocean" in region:
+                area *= 1 / 100  # correct for sftlf weights being 0-100
+
             return region, scm_cube, area
 
         memory_error = False
@@ -773,6 +780,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
 
         timeseries_cubes = {region: ts_cube for region, ts_cube, _ in crunch_list}
         areas = {region: area for region, _, area in crunch_list if area is not None}
+        timeseries_cubes = self._add_areas(timeseries_cubes, areas)
         timeseries_cubes = self._add_land_fraction(timeseries_cubes, areas)
         return timeseries_cubes
 
@@ -793,6 +801,18 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         # force the data to realise
         if self.cube.has_lazy_data():
             self.cube.data  # pylint:disable=pointless-statement
+
+    def _add_areas(self, timeseries_cubes, areas):
+        for cube in timeseries_cubes.values():
+            for area_name, area in areas.items():
+                area_key = "area_{}".format(
+                            area_name.lower().replace("|", "_").replace(" ", "_")
+                        )
+                cube.cube.add_aux_coord(
+                    iris.coords.AuxCoord(area, long_name=area_key, units=self._area_weights)
+                )
+
+        return timeseries_cubes
 
     @staticmethod
     def _add_land_fraction(timeseries_cubes, areas):
@@ -902,6 +922,10 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         areacell_scmcube = self._get_areacell_scmcube(areacell_scmcube)
 
         if areacell_scmcube is not None:
+            import pdb
+            pdb.set_trace()
+            if self._area_weights != areacell_scmcube.units:
+                raise ValueError("Your weights need to be in {} but your areacell cube has units of ".format(self._area_weights, areacell_scmcube.units))
             area_weights = areacell_scmcube.cube.data
             if cube_lat_lon_grid_compatible_with_array(self, area_weights):
                 return area_weights
@@ -910,6 +934,8 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         logger.warning(
             "Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights"
         )
+        if self._area_weights != "m**2":
+            raise ValueError("Iris cartography only returns weights in m**2 but your weights need to be {}".format(self._area_weights))
         try:
             lat_lon_slice = next(self.cube.slices([self.lat_name, self.lon_name]))
             iris_weights = iris.analysis.cartography.area_weights(lat_lon_slice)

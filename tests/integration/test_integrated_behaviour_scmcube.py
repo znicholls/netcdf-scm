@@ -131,7 +131,7 @@ class _SCMCubeIntegrationTester(object):
                         long_name="area_{}".format(
                             r.lower().replace("|", "_").replace(" ", "_")
                         ),
-                        units="m",
+                        units=exp_cube._area_weights,
                     )
                 )
 
