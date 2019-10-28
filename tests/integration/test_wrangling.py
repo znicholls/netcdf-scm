@@ -406,6 +406,7 @@ def test_wrangling_units_specs(
         wrangle_netcdf_scm_ncs,
         [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "CMIP6Output", "--number-workers", 1],
     )
+    assert result_raw.exit_code == 0
 
     expected_file = join(
         OUTPUT_DIR,
@@ -459,7 +460,7 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output):
         OUTPUT_DIR,
         "CMIP6/CMIP/CCCma/CanESM5/piControl/r1i1p1f1/Omon/fgco2/gn/v20190429/netcdf-scm_fgco2_Omon_CanESM5_piControl_r1i1p1f1_gn_600101-600103.MAG",
     )
-
+    assert result_raw.exit_code == 0
     res_raw = MAGICCData(expected_file)
 
     result = runner.invoke(
