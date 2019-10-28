@@ -691,6 +691,9 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         """
         Get SCM relevant cubes
 
+        The effective areas used for each of the regions are added as auxillary
+        co-ordinates of each timeseries cube.
+
         If global, Northern Hemisphere and Southern Hemisphere land cubes are
         calculated, then three auxillary co-ordinates are also added to each cube:
         ``land_fraction``, ``land_fraction_northern_hemisphere`` and
