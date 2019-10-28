@@ -385,14 +385,14 @@ def test_wrangling_annual_mean_file(tmpdir, test_data_root_dir):
     ) in result.output
 
 
-@pytest.mark.parametrize("target_unit,conv_factor", (
-    ["kg / m**2 / yr", 3.155695e+07],
-    ["g / m**2 / s", 1e+03],
-))
-def test_wrangling_units_specs(tmpdir, test_cmip6_crunch_output, target_unit, conv_factor):
+@pytest.mark.parametrize(
+    "target_unit,conv_factor", (["kg / m**2 / yr", 3.155695e07], ["g / m**2 / s", 1e03])
+)
+def test_wrangling_units_specs(
+    tmpdir, test_cmip6_crunch_output, target_unit, conv_factor
+):
     target_units = pd.DataFrame(
-        [["fgco2", target_unit], ["tos", "K"]],
-        columns=["variable", "unit"]
+        [["fgco2", target_unit], ["tos", "K"]], columns=["variable", "unit"]
     )
     target_units_csv = join(tmpdir, "target_units.csv")
     target_units.to_csv(target_units_csv, index=False)
@@ -404,15 +404,7 @@ def test_wrangling_units_specs(tmpdir, test_cmip6_crunch_output, target_unit, co
 
     result_raw = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "test",
-            "--drs",
-            "CMIP6Output",
-            "--number-workers",
-            1,
-        ],
+        [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "CMIP6Output", "--number-workers", 1],
     )
 
     expected_file = join(
@@ -434,22 +426,21 @@ def test_wrangling_units_specs(tmpdir, test_cmip6_crunch_output, target_unit, co
             1,
             "--target-units-specs",
             target_units_csv,
-            "--force"
+            "--force",
         ],
     )
     assert result.exit_code == 0
     res = MAGICCData(expected_file)
 
     np.testing.assert_allclose(
-        res_raw.timeseries()*conv_factor, res.timeseries(), rtol=1e-5
+        res_raw.timeseries() * conv_factor, res.timeseries(), rtol=1e-5
     )
 
 
 def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output):
     target_unit = "Gt / yr"
     target_units = pd.DataFrame(
-        [["fgco2", target_unit], ["tos", "K"]],
-        columns=["variable", "unit"]
+        [["fgco2", target_unit], ["tos", "K"]], columns=["variable", "unit"]
     )
     target_units_csv = join(tmpdir, "target_units.csv")
     target_units.to_csv(target_units_csv, index=False)
@@ -461,15 +452,7 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output):
 
     result_raw = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [
-            INPUT_DIR,
-            OUTPUT_DIR,
-            "test",
-            "--drs",
-            "CMIP6Output",
-            "--number-workers",
-            1,
-        ],
+        [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "CMIP6Output", "--number-workers", 1],
     )
 
     expected_file = join(
@@ -491,7 +474,7 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output):
             1,
             "--target-units-specs",
             target_units_csv,
-            "--force"
+            "--force",
         ],
     )
     assert result.exit_code == 0
@@ -503,11 +486,11 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output):
             if "{} (".format(SCMCube._convert_region_to_area_key(region)) in k:
                 unit = k.split("(")[-1].split(")")[0]
                 assert unit == "m**2", "assumed unit for test has changed..."
-                conv_factor = float(v) * 10**-12 * 3.155695e+07 # area x mass conv x time conv
+                conv_factor = (
+                    float(v) * 10 ** -12 * 3.155695e07
+                )  # area x mass conv x time conv
                 break
 
         np.testing.assert_allclose(
-            df.values,
-            res_raw.filter(region=region).values * conv_factor,
-            rtol=1e-5
+            df.values, res_raw.filter(region=region).values * conv_factor, rtol=1e-5
         )

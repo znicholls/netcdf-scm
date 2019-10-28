@@ -55,6 +55,7 @@ unit registry for misc unit checking
 (todo, switch to using public API of SCMData: ``unit_registry``
 """
 
+
 def init_logging(params, out_filename=None):
     """
     Set up the root logger
@@ -608,10 +609,19 @@ def _set_crunch_contact_in_results(res, crunch_contact):
     help="csv containing target units for wrangled variables.",
     default=None,
     show_default=False,
-    type=click.Path(exists=True, readable=True, resolve_path=True)
+    type=click.Path(exists=True, readable=True, resolve_path=True),
 )
 def wrangle_netcdf_scm_ncs(
-    src, dst, wrangle_contact, regexp, prefix, out_format, drs, force, number_workers, target_units_specs
+    src,
+    dst,
+    wrangle_contact,
+    regexp,
+    prefix,
+    out_format,
+    drs,
+    force,
+    number_workers,
+    target_units_specs,
 ):
     """
     Wrangle NetCDF-SCM ``.nc`` files into other formats and directory structures.
@@ -645,7 +655,15 @@ def wrangle_netcdf_scm_ncs(
         _tuningstrucs_blended_model_wrangling(src, dst, regexp, force, drs, prefix)
     else:
         _do_wrangling(
-            src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers, target_units_specs
+            src,
+            dst,
+            regexp,
+            out_format,
+            force,
+            wrangle_contact,
+            drs,
+            number_workers,
+            target_units_specs,
         )
 
 
@@ -713,7 +731,15 @@ def _tuningstrucs_blended_model_wrangling_inner_loop(
 
 
 def _do_wrangling(  # pylint:disable=too-many-arguments
-    src, dst, regexp, out_format, force, wrangle_contact, drs, number_workers, target_units_specs
+    src,
+    dst,
+    regexp,
+    out_format,
+    force,
+    wrangle_contact,
+    drs,
+    number_workers,
+    target_units_specs,
 ):
     regexp_compiled = re.compile(regexp)
     if target_units_specs is not None:
@@ -736,7 +762,15 @@ def _do_wrangling(  # pylint:disable=too-many-arguments
 
 
 def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
-    src, dst, regexp_compiled, out_format, force, wrangle_contact, drs, number_workers, target_units_specs
+    src,
+    dst,
+    regexp_compiled,
+    out_format,
+    force,
+    wrangle_contact,
+    drs,
+    number_workers,
+    target_units_specs,
 ):
     scmcube = _get_scmcube_helper(drs)
     crunch_list, failures_dir_finding = _find_dirs_meeting_func(
@@ -940,9 +974,7 @@ def _convert_units(openscmdf, target_units_specs):
             target_unit = target_units_specs[
                 target_units_specs["variable"] == variable
             ]["unit"].values[0]
-            current_unit = openscmdf.filter(
-                variable=variable
-            )["unit"].values[0]
+            current_unit = openscmdf.filter(variable=variable)["unit"].values[0]
             target_length = _ureg(target_unit).dimensionality["[length]"]
             current_length = _ureg(current_unit).dimensionality["[length]"]
 
@@ -964,7 +996,7 @@ def _take_area_sum(openscmdf, variable, current_unit):
                 conv_factor = v * _ureg(unit)
                 break
 
-        converted_region = df*v
+        converted_region = df * v
         converted_region = converted_region.reset_index()
         converted_region["unit"] = str((1 * _ureg(current_unit) * conv_factor).units)
         converted_ts.append(converted_region)
