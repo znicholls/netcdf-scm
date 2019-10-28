@@ -975,7 +975,12 @@ def _convert_units(openscmdf, target_units_specs):
             ]["unit"].values[0]
             current_unit = openscmdf.filter(variable=variable)["unit"].values[0]
 
-            logger.info("Converting units of {} from {} to {}".format(variable, current_unit, target_unit))
+            logger.info(
+                "Converting units of %s from %s to %s",
+                variable,
+                current_unit,
+                target_unit,
+            )
 
             target_length = _ureg(target_unit).dimensionality["[length]"]
             current_length = _ureg(current_unit).dimensionality["[length]"]
