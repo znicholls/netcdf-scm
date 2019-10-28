@@ -9,6 +9,7 @@ from pymagicc.io import MAGICCData
 
 import netcdf_scm
 from netcdf_scm.cli import wrangle_netcdf_scm_ncs
+from netcdf_scm.iris_cube_wrappers import SCMCube
 
 
 def test_wrangling_unsupported_format(tmpdir, caplog, test_cmip6_crunch_output):
@@ -386,7 +387,7 @@ def test_wrangling_annual_mean_file(tmpdir, test_data_root_dir):
 
 @pytest.mark.parametrize("target_unit,conv_factor", (
     ["kg / m**2 / yr", 3.155695e+07],
-    ["Gt / yr", 3.155695e+07 * 510 * 10**12],
+    ["g / m**2 / s", 1e+03],
 ))
 def test_wrangling_units_specs(tmpdir, test_cmip6_crunch_output, target_unit, conv_factor):
     target_units = pd.DataFrame(
@@ -418,8 +419,8 @@ def test_wrangling_units_specs(tmpdir, test_cmip6_crunch_output, target_unit, co
         OUTPUT_DIR,
         "CMIP6/CMIP/CCCma/CanESM5/piControl/r1i1p1f1/Omon/fgco2/gn/v20190429/netcdf-scm_fgco2_Omon_CanESM5_piControl_r1i1p1f1_gn_600101-600103.MAG",
     )
-    # res_raw = MAGICCData(expected_file)
-    res_raw = pd.read_csv(expected_file, skiprows=103, header=None, delim_whitespace=True, index_col=0)
+
+    res_raw = MAGICCData(expected_file)
 
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
@@ -437,7 +438,76 @@ def test_wrangling_units_specs(tmpdir, test_cmip6_crunch_output, target_unit, co
         ],
     )
     assert result.exit_code == 0
-    # res = MAGICCData(expected_file)
-    res = pd.read_csv(expected_file, skiprows=103, header=None, delim_whitespace=True, index_col=0)
-    np.testing.assert_allclose(res_raw*conv_factor, res, rtol=1e-5)
-    assert False, "test values with MAGICCData"
+    res = MAGICCData(expected_file)
+
+    np.testing.assert_allclose(
+        res_raw.timeseries()*conv_factor, res.timeseries(), rtol=1e-5
+    )
+
+
+def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output):
+    target_unit = "Gt / yr"
+    target_units = pd.DataFrame(
+        [["fgco2", target_unit], ["tos", "K"]],
+        columns=["variable", "unit"]
+    )
+    target_units_csv = join(tmpdir, "target_units.csv")
+    target_units.to_csv(target_units_csv, index=False)
+
+    runner = CliRunner()
+
+    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/CCCma")
+    OUTPUT_DIR = str(tmpdir)
+
+    result_raw = runner.invoke(
+        wrangle_netcdf_scm_ncs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "test",
+            "--drs",
+            "CMIP6Output",
+            "--number-workers",
+            1,
+        ],
+    )
+
+    expected_file = join(
+        OUTPUT_DIR,
+        "CMIP6/CMIP/CCCma/CanESM5/piControl/r1i1p1f1/Omon/fgco2/gn/v20190429/netcdf-scm_fgco2_Omon_CanESM5_piControl_r1i1p1f1_gn_600101-600103.MAG",
+    )
+
+    res_raw = MAGICCData(expected_file)
+
+    result = runner.invoke(
+        wrangle_netcdf_scm_ncs,
+        [
+            INPUT_DIR,
+            OUTPUT_DIR,
+            "test",
+            "--drs",
+            "CMIP6Output",
+            "--number-workers",
+            1,
+            "--target-units-specs",
+            target_units_csv,
+            "--force"
+        ],
+    )
+    assert result.exit_code == 0
+    res = MAGICCData(expected_file)
+
+    assert sorted(res["region"].tolist()) == sorted(res_raw["region"].tolist())
+    for region, df in res.timeseries().groupby("region"):
+        for k, v in res.metadata.items():
+            if "{} (".format(SCMCube._convert_region_to_area_key(region)) in k:
+                unit = k.split("(")[-1].split(")")[0]
+                assert unit == "m**2", "assumed unit for test has changed..."
+                conv_factor = float(v) * 10**-12 * 3.155695e+07 # area x mass conv x time conv
+                break
+
+        np.testing.assert_allclose(
+            df.values,
+            res_raw.filter(region=region).values * conv_factor,
+            rtol=1e-5
+        )

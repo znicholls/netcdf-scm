@@ -11,6 +11,7 @@ from time import gmtime, strftime
 
 import click
 import numpy as np
+import openscm.units
 import pandas as pd
 import pymagicc
 import tqdm
@@ -47,6 +48,12 @@ _CUBES = {
 _MAGICC_VARIABLE_MAP = {"tas": ("Surface Temperature", "SURFACE_TEMP")}
 """Mapping from CMOR variable names to MAGICC variables"""
 
+_ureg = openscm.units._unit_registry
+"""
+unit registry for misc unit checking
+
+(todo, switch to using public API of SCMData: ``unit_registry``
+"""
 
 def init_logging(params, out_filename=None):
     """
@@ -741,12 +748,7 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
             [load_scmdataframe(os.path.join(dpath, f)) for f in fnames]
         )
         if target_units_specs is not None:
-            for variable in openscmdf["variable"].unique():
-                if variable in target_units_specs["variable"].tolist():
-                    target_unit = target_units_specs[
-                        target_units_specs["variable"] == variable
-                    ]["unit"].values[0]
-                    openscmdf = openscmdf.convert_unit(target_unit, variable=variable)
+            openscmdf = _convert_units(openscmdf, target_units_specs)
 
         metadata = openscmdf.metadata
         header = (
@@ -929,6 +931,47 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments
             os.symlink(out_file, symlink_file)
         except (ValueError, AttributeError):
             logger.exception("Not happy %s", out_file)
+
+
+def _convert_units(openscmdf, target_units_specs):
+    for variable in openscmdf["variable"].unique():
+        if variable in target_units_specs["variable"].tolist():
+
+            target_unit = target_units_specs[
+                target_units_specs["variable"] == variable
+            ]["unit"].values[0]
+            current_unit = openscmdf.filter(
+                variable=variable
+            )["unit"].values[0]
+            target_length = _ureg(target_unit).dimensionality["[length]"]
+            current_length = _ureg(current_unit).dimensionality["[length]"]
+
+            if np.equal(current_length, -2) and np.equal(target_length, 0):
+                openscmdf = _take_area_sum(openscmdf, variable, current_unit)
+
+            openscmdf = openscmdf.convert_unit(target_unit, variable=variable)
+
+    return openscmdf
+
+
+def _take_area_sum(openscmdf, variable, current_unit):
+    converted_ts = []
+
+    for region, df in openscmdf.timeseries().groupby("region"):
+        for k, v in openscmdf.metadata.items():
+            if "{} (".format(SCMCube._convert_region_to_area_key(region)) in k:
+                unit = k.split("(")[-1].split(")")[0]
+                conv_factor = v * _ureg(unit)
+                break
+
+        converted_region = df*v
+        converted_region = converted_region.reset_index()
+        converted_region["unit"] = str((1 * _ureg(current_unit) * conv_factor).units)
+        converted_ts.append(converted_region)
+
+    converted_ts = df_append(converted_ts)
+    converted_ts.metadata = openscmdf.metadata
+    return converted_ts
 
 
 def _skip_file(out_file, force, symlink_dir):
