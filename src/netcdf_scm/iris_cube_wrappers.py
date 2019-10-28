@@ -757,9 +757,15 @@ class SCMCube:  # pylint:disable=too-many-public-methods
                     raise AssertionError("Can't work out area shapes")
 
             area = np.sum(weights_area_slice)
-            if "Land" in region:
+            if region =="World" and self.netcdf_scm_realm in ("land", "ocean"):
+                # yuck hard-coding to be removed when addressing
+                # https://github.com/znicholls/netcdf-scm/issues/103
                 area *= 1 / 100  # correct for sftlf weights being 0-100
-            if "Ocean" in region:
+            elif "Land" in region:
+                area *= 1 / 100  # correct for sftlf weights being 0-100
+            elif "Ocean" in region or "El Nino N3.4" in region:
+                # El Nino N3.4 hard-coding to be removed when addressing
+                # https://github.com/znicholls/netcdf-scm/issues/103
                 area *= 1 / 100  # correct for sftlf weights being 0-100
 
             return region, scm_cube, area
