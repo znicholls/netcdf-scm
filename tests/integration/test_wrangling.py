@@ -1,3 +1,4 @@
+import datetime as dt
 from glob import glob
 from os.path import isdir, join
 
@@ -519,3 +520,69 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output, caplog
         np.testing.assert_allclose(
             df.values, res_raw.filter(region=region).values * conv_factor, rtol=1e-5
         )
+
+
+def test_wrangling_annual_mean_mag_file(
+    tmpdir, test_cmip6_crunch_output, caplog
+):
+    runner = CliRunner()
+
+    INPUT_DIR = join(test_cmip6_crunch_output, "ScenarioMIP/IPSL/IPSL-CM6A-LR")
+    OUTPUT_DIR = str(tmpdir)
+
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result_raw = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test",
+                "--drs",
+                "CMIP6Output",
+                "--number-workers",
+                1,
+            ],
+        )
+    assert result_raw.exit_code == 0
+    assert "Converting units" not in caplog.messages
+
+    expected_file = join(
+        OUTPUT_DIR,
+        "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121/netcdf-scm_cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_202501-204012.MAG",
+    )
+
+    res_raw = MAGICCData(expected_file)
+
+    def group_annual_mean_beginning_of_year(x):
+        if x.month <= 6:
+            return x.year
+        return x.year + 1
+
+    res_raw_resampled = res_raw.timeseries().T.groupby(group_annual_mean_beginning_of_year).mean().T
+    res_raw_resampled.columns = res_raw_resampled.columns.map(lambda x: dt.datetime(x, 1, 1))
+
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test",
+                "--drs",
+                "CMIP6Output",
+                "--out-format",
+                "mag-files-average-beginning-of-year",
+                "--number-workers",
+                1,
+                "--force",
+            ],
+        )
+    assert result.exit_code == 0
+
+    res = MAGICCData(expected_file)
+
+    np.testing.assert_allclose(
+        res_raw_resampled, res.timeseries(), rtol=1e-5
+    )
