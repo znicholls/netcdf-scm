@@ -14,8 +14,8 @@ import pytest
 from dateutil import parser
 from iris.exceptions import CoordinateMultiDimError
 from iris.util import broadcast_to_shape
-from scmdata import ScmDataFrame
 from pandas.testing import assert_frame_equal
+from scmdata import ScmDataFrame
 
 import netcdf_scm
 from netcdf_scm.definitions import _LAND_FRACTION_REGIONS
