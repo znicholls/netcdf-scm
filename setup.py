@@ -49,7 +49,7 @@ REQUIREMENTS_INSTALL = [
     "tqdm",
 ]
 REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0,<5.0"]
-REQUIREMENTS_NOTEBOOKS = ["notebook", "nbval", "expectexception"]
+REQUIREMENTS_NOTEBOOKS = ["notebook", "nbval", "expectexception", "pyam-iamc>=0.2.0", "pandas==0.24.2"]
 REQUIREMENTS_DOCS = ["sphinx>=1.4,<2.1", "sphinx_rtd_theme", "sphinx-click"]
 REQUIREMENTS_DEPLOY = ["twine>=1.11.0", "setuptools>=38.6.0", "wheel>=0.31.0"]
 requirements_dev = [
