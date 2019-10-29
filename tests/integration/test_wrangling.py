@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 from glob import glob
 from os.path import isdir, join
 
@@ -547,12 +548,12 @@ def test_wrangling_annual_mean_mag_file(
     assert result_raw.exit_code == 0
     assert "Converting units" not in caplog.messages
 
-    expected_file = join(
+    expected_file_raw = join(
         OUTPUT_DIR,
         "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121/netcdf-scm_cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_202501-204012.MAG",
     )
 
-    res_raw = MAGICCData(expected_file)
+    res_raw = MAGICCData(expected_file_raw)
 
     def group_annual_mean_beginning_of_year(x):
         if x.month <= 6:
@@ -560,6 +561,8 @@ def test_wrangling_annual_mean_mag_file(
         return x.year + 1
 
     res_raw_resampled = res_raw.timeseries().T.groupby(group_annual_mean_beginning_of_year).mean().T
+    # drop out last year as we don't want to have the 'extra' year
+    res_raw_resampled = res_raw_resampled.iloc[:, :-1]
     res_raw_resampled.columns = res_raw_resampled.columns.map(lambda x: dt.datetime(x, 1, 1))
 
     caplog.clear()
@@ -581,8 +584,15 @@ def test_wrangling_annual_mean_mag_file(
         )
     assert result.exit_code == 0
 
+    expected_file = join(
+        OUTPUT_DIR,
+        "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121/netcdf-scm_cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_2025-2040.MAG",
+    )
+
     res = MAGICCData(expected_file)
 
     np.testing.assert_allclose(
         res_raw_resampled, res.timeseries(), rtol=1e-5
     )
+    import pdb
+    pdb.set_trace()
