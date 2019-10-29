@@ -3,7 +3,7 @@ import logging
 from os.path import isfile, join
 
 import numpy as np
-from openscm.scmdataframe import ScmDataFrame
+from scmdata import ScmDataFrame
 
 from . import mat4py
 

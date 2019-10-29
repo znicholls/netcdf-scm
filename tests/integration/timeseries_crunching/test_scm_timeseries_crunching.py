@@ -18,7 +18,7 @@ import re
 import iris
 import numpy as np
 import pytest
-from openscm.scmdataframe import ScmDataFrame
+from scmdata import ScmDataFrame
 
 from netcdf_scm.iris_cube_wrappers import MarbleCMIP5Cube
 

@@ -1,5 +1,5 @@
 """Miscellaneous readers for files which can't otherwise be read"""
-from openscm.scmdataframe import ScmDataFrame
+from scmdata import ScmDataFrame
 
 from .iris_cube_wrappers import SCMCube
 from .utils import _check_cube_and_adjust_if_needed
