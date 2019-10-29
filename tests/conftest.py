@@ -599,7 +599,7 @@ def assert_scmdata_frames_allclose():
         res_df = res_scmdf.timeseries().sort_index()
         assert not res_df.isnull().any().any(), "Failed sanity check"
         assert (
-            (res_df.values > -10 ** 5) & (res_df.values < 10 ** 5)
+            (res_df.values > -(10 ** 5)) & (res_df.values < 10 ** 5)
         ).all(), "Failed sanity check"
 
         exp_df = exp_scmdf.timeseries().sort_index()
