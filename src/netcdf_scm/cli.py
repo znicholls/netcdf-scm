@@ -11,12 +11,12 @@ from time import gmtime, strftime
 
 import click
 import numpy as np
-import scmdata.units
 import pandas as pd
 import pymagicc
+import scmdata.units
 import tqdm
-from scmdata import ScmDataFrame, df_append
 from pymagicc.io import MAGICCData
+from scmdata import ScmDataFrame, df_append
 
 from . import __version__
 from .io import load_scmdataframe, save_netcdf_scm_nc
@@ -52,6 +52,7 @@ _ureg = scmdata.units.ScmUnitRegistry()
 """
 Unit registry for miscellaneous unit checking
 """
+_ureg.add_standards()
 
 
 def init_logging(params, out_filename=None):
