@@ -150,6 +150,7 @@ First step
 
 #. ``git add .``
 #. ``git commit -m "Prepare for release of vX.Y.Z"``
+#. ``git tag vX.Y.Z``
 #. Test version updated as intended with ``make test-install``
 
 PyPI
@@ -170,10 +171,9 @@ Assuming test PyPI worked, now upload to the main repository
 Push to repository
 ~~~~~~~~~~~~~~~~~~
 
-Finally, push the tags and commit to the repository
+Finally, push the tags and the repository
 
 #. ``git push``
-#. ``git tag vX.Y.Z``
 #. ``git push --tags``
 
 Conda
