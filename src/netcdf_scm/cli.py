@@ -11,11 +11,11 @@ from time import gmtime, strftime
 
 import click
 import numpy as np
-import openscm.units
+import scmdata.units
 import pandas as pd
 import pymagicc
 import tqdm
-from openscm.scmdataframe import ScmDataFrame, df_append
+from scmdata import ScmDataFrame, df_append
 from pymagicc.io import MAGICCData
 
 from . import __version__
@@ -48,11 +48,9 @@ _CUBES = {
 _MAGICC_VARIABLE_MAP = {"tas": ("Surface Temperature", "SURFACE_TEMP")}
 """Mapping from CMOR variable names to MAGICC variables"""
 
-_ureg = openscm.units._unit_registry  # pylint:disable=protected-access
+_ureg = scmdata.units.ScmUnitRegistry()
 """
-unit registry for misc unit checking
-
-(todo, switch to using public API of SCMData: ``unit_registry``
+Unit registry for miscellaneous unit checking
 """
 
 

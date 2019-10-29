@@ -16,7 +16,7 @@ from os.path import basename, dirname, join, splitext
 import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-from openscm.scmdataframe import ScmDataFrame
+from scmdata import ScmDataFrame
 
 from . import __version__
 from .definitions import _LAND_FRACTION_REGIONS, _SCM_TIMESERIES_META_COLUMNS

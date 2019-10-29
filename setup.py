@@ -42,12 +42,10 @@ ENTRY_POINTS = {
 
 REQUIREMENTS_INSTALL = [
     "numpy",
-    "pyam-iamc>=0.2.0",
-    "pandas==0.24.2",  # pyam issue, see https://github.com/IAMconsortium/pyam/issues/245
     "python-dateutil",
     "progressbar2",
-    "openscm>=0.1.0a",
-    "pymagicc>=2.0.0b6",
+    # "pymagicc>=2.0.0b7",
+    "pymagicc @ git+https://github.com/openclimatedata/pymagicc@switch-to-scmdata",
     "click",
     "tqdm",
 ]

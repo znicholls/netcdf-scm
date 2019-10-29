@@ -14,7 +14,7 @@ import pytest
 from dateutil import parser
 from iris.exceptions import CoordinateMultiDimError
 from iris.util import broadcast_to_shape
-from openscm.scmdataframe import ScmDataFrame
+from scmdata import ScmDataFrame
 from pandas.testing import assert_frame_equal
 
 import netcdf_scm
