@@ -943,6 +943,15 @@ def _get_wrangle_to_mag_files_average_beginning_of_year_func(
         logger.info("Writing file to %s", out_file)
         writer.write(out_file, magicc_version=7)
 
+        # hack!
+        with open(out_file, "r") as f:
+            content = f.read()
+
+        content = content.replace("AVERAGE_YEAR_END_OF_YEAR", "AVERAGE_YEAR_BEGINNING_OF_YEAR")
+
+        with open(out_file, "w") as f:
+            f.write(content)
+
         symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
         logger.info("Making symlink to %s", symlink_file)
         os.symlink(out_file, symlink_file)

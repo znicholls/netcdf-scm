@@ -594,5 +594,7 @@ def test_wrangling_annual_mean_mag_file(
     np.testing.assert_allclose(
         res_raw_resampled, res.timeseries(), rtol=1e-5
     )
-    import pdb
-    pdb.set_trace()
+    with open(expected_file) as f:
+        content = f.read()
+
+    assert "THISFILE_TIMESERIESTYPE = 'AVERAGE_YEAR_BEGINNING_OF_YEAR'" in content
