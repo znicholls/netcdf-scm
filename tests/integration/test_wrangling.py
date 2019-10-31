@@ -523,9 +523,7 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output, caplog
         )
 
 
-def test_wrangling_mag_file(
-    tmpdir, test_cmip6_crunch_output, caplog
-):
+def test_wrangling_mag_file(tmpdir, test_cmip6_crunch_output, caplog):
     runner = CliRunner()
 
     INPUT_DIR = join(test_cmip6_crunch_output, "ScenarioMIP/IPSL/IPSL-CM6A-LR")
@@ -583,10 +581,8 @@ def _get_expected_wrangled_ts(res_raw, out_format_mag):
         # drop out last year as we don't want the wrangler to add an extra year to the
         # data
         out_time_points = [
-            dt.datetime(y, 7, 1) for y in range(
-                res_raw["time"].min().year,
-                res_raw["time"].max().year + 1,
-            )
+            dt.datetime(y, 7, 1)
+            for y in range(res_raw["time"].min().year, res_raw["time"].max().year + 1,)
         ]
         return res_raw.interpolate(target_times=out_time_points).timeseries()
 
@@ -597,14 +593,18 @@ def _get_expected_wrangled_ts(res_raw, out_format_mag):
 
     raise AssertionError("shouldn't get here")
 
-@pytest.mark.parametrize("out_format_mag", (
-    "mag-files-average-year-start-year",
-    "mag-files-average-year-mid-year",
-    "mag-files-average-year-end-year",
-    "mag-files-point-start-year",
-    "mag-files-point-mid-year",
-    "mag-files-point-end-year",
-))
+
+@pytest.mark.parametrize(
+    "out_format_mag",
+    (
+        "mag-files-average-year-start-year",
+        "mag-files-average-year-mid-year",
+        "mag-files-average-year-end-year",
+        "mag-files-point-start-year",
+        "mag-files-point-mid-year",
+        "mag-files-point-end-year",
+    ),
+)
 def test_wrangling_mag_file_operations(
     tmpdir, test_cmip6_crunch_output, caplog, out_format_mag
 ):
@@ -662,18 +662,19 @@ def test_wrangling_mag_file_operations(
 
     res = MAGICCData(expected_file)
 
-    np.testing.assert_allclose(
-        res_raw_resampled, res.timeseries(), rtol=2*1e-3
-    )
+    np.testing.assert_allclose(res_raw_resampled, res.timeseries(), rtol=2 * 1e-3)
     with open(expected_file) as f:
         content = f.read()
 
-    assert "THISFILE_TIMESERIESTYPE = '{}'".format(out_format_mag.replace("mag-files-", "").replace("-", "_").upper()) in content
+    assert (
+        "THISFILE_TIMESERIESTYPE = '{}'".format(
+            out_format_mag.replace("mag-files-", "").replace("-", "_").upper()
+        )
+        in content
+    )
 
 
-def test_wrangling_in_file(
-    tmpdir, test_cmip6_crunch_output, caplog
-):
+def test_wrangling_in_file(tmpdir, test_cmip6_crunch_output, caplog):
     runner = CliRunner()
 
     INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/IPSL/IPSL-CM6A-LR/historical")
@@ -694,7 +695,7 @@ def test_wrangling_in_file(
                 "--out-format",
                 "magicc-input-files",
                 "--regexp",
-                ".*tas.*"
+                ".*tas.*",
             ],
         )
     assert result_raw.exit_code == 0, result_raw.stdout
@@ -711,14 +712,17 @@ def test_wrangling_in_file(
     assert "timeseriestype: MONTHLY" in content
 
 
-@pytest.mark.parametrize("out_format_in_file", (
-    "magicc-input-files-average-year-start-year",
-    "magicc-input-files-average-year-mid-year",
-    "magicc-input-files-average-year-end-year",
-    "magicc-input-files-point-start-year",
-    "magicc-input-files-point-mid-year",
-    "magicc-input-files-point-end-year",
-))
+@pytest.mark.parametrize(
+    "out_format_in_file",
+    (
+        "magicc-input-files-average-year-start-year",
+        "magicc-input-files-average-year-mid-year",
+        "magicc-input-files-average-year-end-year",
+        "magicc-input-files-point-start-year",
+        "magicc-input-files-point-mid-year",
+        "magicc-input-files-point-end-year",
+    ),
+)
 def test_wrangling_in_file_operations(
     tmpdir, test_cmip6_crunch_output, caplog, out_format_in_file
 ):
@@ -742,7 +746,7 @@ def test_wrangling_in_file_operations(
                 "--out-format",
                 "magicc-input-files",
                 "--regexp",
-                ".*tas.*"
+                ".*tas.*",
             ],
         )
     assert result_raw.exit_code == 0, result_raw.stdout
@@ -776,7 +780,12 @@ def test_wrangling_in_file_operations(
         )
     assert result.exit_code == 0, result.stdout
 
-    os.listdir(join(OUTPUT_DIR, "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/"))
+    os.listdir(
+        join(
+            OUTPUT_DIR,
+            "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/",
+        )
+    )
     expected_file = join(
         OUTPUT_DIR,
         "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/TAS_PICONTROL_IPSL-CM6A-LR_R1I1P1F1_2840-2859_FOURBOX_SURFACE_TEMP.IN",
@@ -784,10 +793,15 @@ def test_wrangling_in_file_operations(
 
     res = MAGICCData(expected_file)
 
-    np.testing.assert_allclose(
-        res_raw_resampled, res.timeseries(), rtol=2*1e-3
-    )
+    np.testing.assert_allclose(res_raw_resampled, res.timeseries(), rtol=2 * 1e-3)
     with open(expected_file) as f:
         content = f.read()
 
-    assert "timeseriestype: {}".format(out_format_in_file.replace("magicc-input-files-", "").replace("-", "_").upper()) in content
+    assert (
+        "timeseriestype: {}".format(
+            out_format_in_file.replace("magicc-input-files-", "")
+            .replace("-", "_")
+            .upper()
+        )
+        in content
+    )
