@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#107 <https://github.com/znicholls/netcdf-scm/pull/107>`_) Add wrangling options for average/point start/mid/end year time manipulations for ``.MAG`` and ``.IN`` files
 - (`#106 <https://github.com/znicholls/netcdf-scm/pull/106>`_) Upgrade to new Pymagicc release
 - (`#105 <https://github.com/znicholls/netcdf-scm/pull/105>`_) Upgrade to new Pylint release
 - (`#104 <https://github.com/znicholls/netcdf-scm/pull/104>`_) Allow wranglers to also handle unit conversions (see `#101 <https://github.com/znicholls/netcdf-scm/pull/101>`_)
