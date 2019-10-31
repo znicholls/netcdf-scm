@@ -109,7 +109,7 @@ def test_wrangling_magicc_input_files(tmpdir, caplog, test_marble_cmip5_crunch_o
                 OUTPUT_DIR,
                 test_wrangler,
                 "--out-format",
-                "magicc-input-files-point-end-of-year",
+                "magicc-input-files-point-end-year",
                 "--regexp",
                 "^((?!historical).)*tas.*$",
                 "--drs",
@@ -162,7 +162,7 @@ def test_wrangling_magicc_input_files_error(tmpdir, caplog, test_cmip6_crunch_ou
                 OUTPUT_DIR,
                 "test-defaults",
                 "--out-format",
-                "magicc-input-files-point-end-of-year",
+                "magicc-input-files-point-end-year",
                 "--regexp",
                 ".*lai.*",
                 "--drs",
@@ -523,9 +523,7 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output, caplog
         )
 
 
-def test_wrangling_mag_file(
-    tmpdir, test_cmip6_crunch_output, caplog
-):
+def test_wrangling_mag_file(tmpdir, test_cmip6_crunch_output, caplog):
     runner = CliRunner()
 
     INPUT_DIR = join(test_cmip6_crunch_output, "ScenarioMIP/IPSL/IPSL-CM6A-LR")
@@ -559,52 +557,54 @@ def test_wrangling_mag_file(
 
 
 def _get_expected_wrangled_ts(res_raw, out_format_mag):
-    if out_format_mag == "mag-files-average-year-start-year":
+    if out_format_mag.endswith("average-year-start-year"):
         # drop out last year as we don't want the wrangler to add an extra year to the
         # data
         return res_raw.time_mean("AS").timeseries().iloc[:, :-1]
 
-    if out_format_mag == "mag-files-average-year-mid-year":
+    if out_format_mag.endswith("average-year-mid-year"):
         # drop out last year as we don't want the wrangler to add an extra year to the
         # data
         return res_raw.time_mean("AC").timeseries()
 
-    if out_format_mag == "mag-files-average-year-end-year":
+    if out_format_mag.endswith("average-year-end-year"):
         # drop out first year as we don't want the wrangler to add an extra year to the
         # data
         return res_raw.time_mean("A").timeseries().iloc[:, 1:]
 
-    if out_format_mag == "mag-files-point-start-year":
+    if out_format_mag.endswith("point-start-year"):
         # drop out last year as we don't want the wrangler to add an extra year to the
         # data
         return res_raw.resample("AS").timeseries().iloc[:, :-1]
 
-    if out_format_mag == "mag-files-point-mid-year":
+    if out_format_mag.endswith("point-mid-year"):
         # drop out last year as we don't want the wrangler to add an extra year to the
         # data
         out_time_points = [
-            dt.datetime(y, 7, 1) for y in range(
-                res_raw["time"].min().year,
-                res_raw["time"].max().year + 1,
-            )
+            dt.datetime(y, 7, 1)
+            for y in range(res_raw["time"].min().year, res_raw["time"].max().year + 1,)
         ]
         return res_raw.interpolate(target_times=out_time_points).timeseries()
 
-    if out_format_mag == "mag-files-point-end-year":
+    if out_format_mag.endswith("point-end-year"):
         # drop out first year as we don't want the wrangler to add an extra year to the
         # data
         return res_raw.resample("A").timeseries().iloc[:, 1:]
 
     raise AssertionError("shouldn't get here")
 
-@pytest.mark.parametrize("out_format_mag", (
-    "mag-files-average-year-start-year",
-    "mag-files-average-year-mid-year",
-    "mag-files-average-year-end-year",
-    "mag-files-point-start-year",
-    "mag-files-point-mid-year",
-    "mag-files-point-end-year",
-))
+
+@pytest.mark.parametrize(
+    "out_format_mag",
+    (
+        "mag-files-average-year-start-year",
+        "mag-files-average-year-mid-year",
+        "mag-files-average-year-end-year",
+        "mag-files-point-start-year",
+        "mag-files-point-mid-year",
+        "mag-files-point-end-year",
+    ),
+)
 def test_wrangling_mag_file_operations(
     tmpdir, test_cmip6_crunch_output, caplog, out_format_mag
 ):
@@ -651,7 +651,6 @@ def test_wrangling_mag_file_operations(
                 out_format_mag,
                 "--number-workers",
                 1,
-                "--force",
             ],
         )
     assert result.exit_code == 0
@@ -663,10 +662,146 @@ def test_wrangling_mag_file_operations(
 
     res = MAGICCData(expected_file)
 
-    np.testing.assert_allclose(
-        res_raw_resampled, res.timeseries(), rtol=2*1e-3
-    )
+    np.testing.assert_allclose(res_raw_resampled, res.timeseries(), rtol=2 * 1e-3)
     with open(expected_file) as f:
         content = f.read()
 
-    assert "THISFILE_TIMESERIESTYPE = '{}'".format(out_format_mag.replace("mag-files-", "").replace("-", "_").upper()) in content
+    assert (
+        "THISFILE_TIMESERIESTYPE = '{}'".format(
+            out_format_mag.replace("mag-files-", "").replace("-", "_").upper()
+        )
+        in content
+    )
+
+
+def test_wrangling_in_file(tmpdir, test_cmip6_crunch_output, caplog):
+    runner = CliRunner()
+
+    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/IPSL/IPSL-CM6A-LR/historical")
+    OUTPUT_DIR = str(tmpdir)
+
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result_raw = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test",
+                "--drs",
+                "CMIP6Output",
+                "--number-workers",
+                1,
+                "--out-format",
+                "magicc-input-files",
+                "--regexp",
+                ".*tas.*",
+            ],
+        )
+    assert result_raw.exit_code == 0, result_raw.stdout
+
+    # also a global file but don't worry about that
+    expected_file = join(
+        OUTPUT_DIR,
+        "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20180803/TAS_HISTORICAL_IPSL-CM6A-LR_R1I1P1F1_191001-191003_FOURBOX_SURFACE_TEMP.IN",
+    )
+
+    with open(expected_file) as f:
+        content = f.read()
+
+    assert "timeseriestype: MONTHLY" in content
+
+
+@pytest.mark.parametrize(
+    "out_format_in_file",
+    (
+        "magicc-input-files-average-year-start-year",
+        "magicc-input-files-average-year-mid-year",
+        "magicc-input-files-average-year-end-year",
+        "magicc-input-files-point-start-year",
+        "magicc-input-files-point-mid-year",
+        "magicc-input-files-point-end-year",
+    ),
+)
+def test_wrangling_in_file_operations(
+    tmpdir, test_cmip6_crunch_output, caplog, out_format_in_file
+):
+    runner = CliRunner()
+
+    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/IPSL/IPSL-CM6A-LR/piControl")
+    OUTPUT_DIR = str(tmpdir)
+
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result_raw = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test",
+                "--drs",
+                "CMIP6Output",
+                "--number-workers",
+                1,
+                "--out-format",
+                "magicc-input-files",
+                "--regexp",
+                ".*tas.*",
+            ],
+        )
+    assert result_raw.exit_code == 0, result_raw.stdout
+
+    # also a global file but don't worry about that
+    expected_file_raw = join(
+        OUTPUT_DIR,
+        "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/TAS_PICONTROL_IPSL-CM6A-LR_R1I1P1F1_284001-285912_FOURBOX_SURFACE_TEMP.IN",
+    )
+
+    res_raw = MAGICCData(expected_file_raw)
+    res_raw_resampled = _get_expected_wrangled_ts(res_raw, out_format_in_file)
+
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test",
+                "--drs",
+                "CMIP6Output",
+                "--out-format",
+                out_format_in_file,
+                "--regexp",
+                ".*tas.*",
+                "--number-workers",
+                1,
+            ],
+        )
+    assert result.exit_code == 0, result.stdout
+
+    os.listdir(
+        join(
+            OUTPUT_DIR,
+            "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/",
+        )
+    )
+    expected_file = join(
+        OUTPUT_DIR,
+        "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/TAS_PICONTROL_IPSL-CM6A-LR_R1I1P1F1_2840-2859_FOURBOX_SURFACE_TEMP.IN",
+    )
+
+    res = MAGICCData(expected_file)
+
+    np.testing.assert_allclose(res_raw_resampled, res.timeseries(), rtol=2 * 1e-3)
+    with open(expected_file) as f:
+        content = f.read()
+
+    assert (
+        "timeseriestype: {}".format(
+            out_format_in_file.replace("magicc-input-files-", "")
+            .replace("-", "_")
+            .upper()
+        )
+        in content
+    )
