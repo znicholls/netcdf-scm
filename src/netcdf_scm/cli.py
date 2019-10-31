@@ -576,7 +576,12 @@ def _set_crunch_contact_in_results(res, crunch_contact):
     type=click.Choice(
         [
             "mag-files",
-            "mag-files-average-beginning-of-year",
+            "mag-files-average-year-start-year",
+            "mag-files-average-year-mid-year",
+            "mag-files-average-year-end-year",
+            "mag-files-point-start-year",
+            "mag-files-point-mid-year",
+            "mag-files-point-end-year",
             "magicc-input-files-point-end-of-year",
             "tuningstrucs-blend-model",
         ]
@@ -745,7 +750,13 @@ def _do_wrangling(  # pylint:disable=too-many-arguments
     if target_units_specs is not None:
         target_units_specs = pd.read_csv(target_units_specs)
 
-    if out_format in ("mag-files", "magicc-input-files-point-end-of-year", "mag-files-average-beginning-of-year"):
+    if out_format in ("mag-files",
+    "mag-files-average-year-start-year",
+    "mag-files-average-year-mid-year",
+    "mag-files-average-year-end-year",
+    "mag-files-point-start-year",
+    "mag-files-point-mid-year",
+    "mag-files-point-end-year", "magicc-input-files-point-end-of-year"):
         _do_magicc_wrangling(
             src,
             dst,
@@ -819,9 +830,19 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
             style="threads",
         )
 
-    elif out_format == "mag-files-average-beginning-of-year":
-        wrangle_to_mag_files_average_beginning_of_year = _get_wrangle_to_mag_files_average_beginning_of_year_func(
-            force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
+    elif out_format in (
+    "mag-files-average-year-start-year",
+    "mag-files-average-year-mid-year",
+    "mag-files-average-year-end-year",
+    "mag-files-point-start-year",
+    "mag-files-point-mid-year",
+    "mag-files-point-end-year",
+):
+        wrangle_to_mag_files_average_beginning_of_year = _get_wrangle_to_mag_files_with_operation_func(
+            force,
+            get_openscmdf_metadata_header,
+            get_outfile_dir_symlink_dir,
+            out_format,
         )
         failures_wrangling = _apply_func(
             wrangle_to_mag_files_average_beginning_of_year,
@@ -830,15 +851,10 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
             style="threads",
         )
 
-    else:  # out_format == "magicc-input-files-point-end-of-year":
-        wrangle_to_magicc_input_files_point_end_of_year = _get_wrangle_to_magicc_input_files_point_end_of_year_func(
-            force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
-        )
-        failures_wrangling = _apply_func(
-            wrangle_to_magicc_input_files_point_end_of_year,
-            [{"fnames": f, "dpath": d} for d, f in crunch_list],
-            n_workers=number_workers,
-            style="threads",
+    else:  # pragma: no cover # emergency valve
+        raise AssertionError(
+            "how did we get here, click should have prevented the --out-format "
+            "option..."
         )
 
     if failures_dir_finding or failures_wrangling:
@@ -891,8 +907,8 @@ def _get_wrangle_to_mag_files_func(
     return wrangle_func
 
 
-def _get_wrangle_to_mag_files_average_beginning_of_year_func(
-    force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
+def _get_wrangle_to_mag_files_with_operation_func(
+    force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir, out_format
 ):
     def wrangle_func(fnames, dpath):
         openscmdf, metadata, header = get_openscmdf_metadata_header(fnames, dpath)
@@ -918,39 +934,22 @@ def _get_wrangle_to_mag_files_average_beginning_of_year_func(
         if _skip_file(out_file, force, symlink_dir):
             return
 
-        def group_annual_mean_beginning_of_year(x):
-            if x.month <= 6:
-                return x.year
-            return x.year + 1
-
         try:
-            ts_resampled = ts.T.groupby(group_annual_mean_beginning_of_year).mean().T
-            # only keep original years
-            ts_resampled = ts_resampled[original_years]
-            ts_resampled.columns = ts_resampled.columns.map(lambda x: dt.datetime(x, 1, 1))
+            writer = MAGICCData(
+                _do_mag_operation(openscmdf, out_format)
+            ).filter(year=original_years)
         except Exception:  # pragma: no cover # emergency valve
             logger.exception("Not happy %s", fnames)
             return
 
-        writer = MAGICCData(ts_resampled)
         writer["todo"] = "SET"
         writer.metadata = metadata
-        # writer.metadata["timeseriestype"] = "AVERAGE_YEAR_BEGINNING_OF_YEAR"
-        writer.metadata["timeseriestype"] = "AVERAGE_YEAR_END_OF_YEAR"
+        writer.metadata["timeseriestype"] = out_format.replace("mag-files-", "").replace("-", "_").upper()
 
         writer.metadata["header"] = header
 
         logger.info("Writing file to %s", out_file)
         writer.write(out_file, magicc_version=7)
-
-        # hack!
-        with open(out_file, "r") as f:
-            content = f.read()
-
-        content = content.replace("AVERAGE_YEAR_END_OF_YEAR", "AVERAGE_YEAR_BEGINNING_OF_YEAR")
-
-        with open(out_file, "w") as f:
-            f.write(content)
 
         symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
         logger.info("Making symlink to %s", symlink_file)
@@ -959,30 +958,32 @@ def _get_wrangle_to_mag_files_average_beginning_of_year_func(
     return wrangle_func
 
 
-def _get_wrangle_to_magicc_input_files_point_end_of_year_func(
-    force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
-):
-    def wrangle_func(fnames, dpath):
-        openscmdf, metadata, header = get_openscmdf_metadata_header(fnames, dpath)
-        outfile_dir, symlink_dir = get_outfile_dir_symlink_dir(dpath)
+def _do_mag_operation(openscmdf, out_format):
+    if out_format == "mag-files-average-year-start-year":
+        return openscmdf.time_mean("AS")
 
-        src_time_points = openscmdf.timeseries().columns
+    if out_format == "mag-files-average-year-mid-year":
+        return openscmdf.time_mean("AC")
+
+    if out_format == "mag-files-average-year-end-year":
+        return openscmdf.time_mean("A")
+
+    if out_format == "mag-files-point-start-year":
+        return openscmdf.resample("AS")
+
+    if out_format == "mag-files-point-mid-year":
         out_time_points = [
-            dt.datetime(y, 12, 31)
-            for y in range(src_time_points[0].year, src_time_points[-1].year + 1)
+            dt.datetime(y, 7, 1)
+            for y in range(
+                openscmdf["time"].min().year, openscmdf["time"].max().year + 1
+            )
         ]
-        time_id = "{}-{}".format(src_time_points[0].year, src_time_points[-1].year)
-        try:
-            openscmdf = openscmdf.interpolate(out_time_points)
-        except (ValueError, AttributeError):
-            logger.exception("Not happy %s", fnames)
-            return
+        return openscmdf.interpolate(target_times=out_time_points)
 
-        _write_magicc_input_files(
-            openscmdf, time_id, outfile_dir, symlink_dir, force, metadata, header, timeseriestype="POINT_END_OF_YEAR"
-        )
+    if out_format == "mag-files-point-end-year":
+        return openscmdf.resample("A")
 
-    return wrangle_func
+    raise AssertionError("shouldn't get here")  # pragma: no cover # emergency valve
 
 
 def _write_magicc_input_files(  # pylint:disable=too-many-arguments
