@@ -957,7 +957,7 @@ def _get_wrangle_to_mag_files_func(
 def _get_wrangle_to_mag_files_with_operation_func(
     force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir, out_format
 ):
-    def wrangle_func(fnames, dpath):
+    def wrangle_func(fnames, dpath):  # pylint:disable=too-many-locals
         openscmdf, metadata, header = get_openscmdf_metadata_header(fnames, dpath)
         outfile_dir, symlink_dir = get_outfile_dir_symlink_dir(dpath)
 
@@ -987,8 +987,9 @@ def _get_wrangle_to_mag_files_with_operation_func(
             writer = MAGICCData(
                 _do_timeseriestype_operation(openscmdf, out_format)
             ).filter(year=original_years)
-        except Exception:  # pragma: no cover # emergency valve
-            logger.exception("Not happy %s", fnames)
+        # emergency valve
+        except Exception as e:  # pylint:disable=broad-except # pragma: no cover
+            logger.exception("Not happy %s, exception %s", fnames, e)
             return
 
         writer["todo"] = "SET"
@@ -1076,14 +1077,14 @@ def _get_wrangle_to_magicc_input_files_with_operation_func(
         ts = openscmdf.timeseries()
 
         original_years = ts.columns.map(lambda x: x.year).unique()
-        src_time_points = ts.columns
 
         try:
             openscmdf = _do_timeseriestype_operation(openscmdf, out_format).filter(
                 year=original_years
             )
-        except Exception:  # pragma: no cover # emergency valve
-            logger.exception("Not happy %s", fnames)
+        # emergency valve
+        except Exception as e:  # pylint:disable=broad-except # pragma: no cover
+            logger.exception("Not happy %s, exception %s", fnames, e)
             return
 
         time_id = "{}-{}".format(
@@ -1103,7 +1104,7 @@ def _get_wrangle_to_magicc_input_files_with_operation_func(
     return wrangle_func
 
 
-def _write_magicc_input_files(  # pylint:disable=too-many-arguments
+def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-locals
     openscmdf,
     time_id,
     outfile_dir,
