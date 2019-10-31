@@ -523,7 +523,7 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output, caplog
         )
 
 
-def test_wrangling_annual_mean_mag_file(
+def test_wrangling_mag_file(
     tmpdir, test_cmip6_crunch_output, caplog
 ):
     runner = CliRunner()
@@ -546,7 +546,88 @@ def test_wrangling_annual_mean_mag_file(
             ],
         )
     assert result_raw.exit_code == 0
-    assert "Converting units" not in caplog.messages
+
+    expected_file = join(
+        OUTPUT_DIR,
+        "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121/netcdf-scm_cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_202501-204012.MAG",
+    )
+
+    with open(expected_file) as f:
+        content = f.read()
+
+    assert "THISFILE_TIMESERIESTYPE = 'MONTHLY'" in content
+
+
+def _get_expected_wrangled_ts(res_raw, out_format_mag):
+    if out_format_mag == "mag-files-average-year-start-year":
+        # drop out last year as we don't want the wrangler to add an extra year to the
+        # data
+        return res_raw.time_mean("AS").timeseries().iloc[:, :-1]
+
+    if out_format_mag == "mag-files-average-year-mid-year":
+        # drop out last year as we don't want the wrangler to add an extra year to the
+        # data
+        return res_raw.time_mean("AC").timeseries()
+
+    if out_format_mag == "mag-files-average-year-end-year":
+        # drop out first year as we don't want the wrangler to add an extra year to the
+        # data
+        return res_raw.time_mean("A").timeseries().iloc[:, 1:]
+
+    if out_format_mag == "mag-files-point-start-year":
+        # drop out last year as we don't want the wrangler to add an extra year to the
+        # data
+        return res_raw.resample("AS").timeseries().iloc[:, :-1]
+
+    if out_format_mag == "mag-files-point-mid-year":
+        # drop out last year as we don't want the wrangler to add an extra year to the
+        # data
+        out_time_points = [
+            dt.datetime(y, 7, 1) for y in range(
+                res_raw["time"].min().year,
+                res_raw["time"].max().year + 1,
+            )
+        ]
+        return res_raw.interpolate(target_times=out_time_points).timeseries()
+
+    if out_format_mag == "mag-files-point-end-year":
+        # drop out first year as we don't want the wrangler to add an extra year to the
+        # data
+        return res_raw.resample("A").timeseries().iloc[:, 1:]
+
+    raise AssertionError("shouldn't get here")
+
+@pytest.mark.parametrize("out_format_mag", (
+    "mag-files-average-year-start-year",
+    "mag-files-average-year-mid-year",
+    "mag-files-average-year-end-year",
+    "mag-files-point-start-year",
+    "mag-files-point-mid-year",
+    "mag-files-point-end-year",
+))
+def test_wrangling_mag_file_operations(
+    tmpdir, test_cmip6_crunch_output, caplog, out_format_mag
+):
+    runner = CliRunner()
+
+    INPUT_DIR = join(test_cmip6_crunch_output, "ScenarioMIP/IPSL/IPSL-CM6A-LR")
+    OUTPUT_DIR = str(tmpdir)
+
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result_raw = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                INPUT_DIR,
+                OUTPUT_DIR,
+                "test",
+                "--drs",
+                "CMIP6Output",
+                "--number-workers",
+                1,
+            ],
+        )
+    assert result_raw.exit_code == 0
 
     expected_file_raw = join(
         OUTPUT_DIR,
@@ -554,16 +635,7 @@ def test_wrangling_annual_mean_mag_file(
     )
 
     res_raw = MAGICCData(expected_file_raw)
-
-    def group_annual_mean_beginning_of_year(x):
-        if x.month <= 6:
-            return x.year
-        return x.year + 1
-
-    res_raw_resampled = res_raw.timeseries().T.groupby(group_annual_mean_beginning_of_year).mean().T
-    # drop out last year as we don't want to have the 'extra' year
-    res_raw_resampled = res_raw_resampled.iloc[:, :-1]
-    res_raw_resampled.columns = res_raw_resampled.columns.map(lambda x: dt.datetime(x, 1, 1))
+    res_raw_resampled = _get_expected_wrangled_ts(res_raw, out_format_mag)
 
     caplog.clear()
     with caplog.at_level("INFO"):
@@ -576,7 +648,7 @@ def test_wrangling_annual_mean_mag_file(
                 "--drs",
                 "CMIP6Output",
                 "--out-format",
-                "mag-files-average-beginning-of-year",
+                out_format_mag,
                 "--number-workers",
                 1,
                 "--force",
@@ -592,9 +664,9 @@ def test_wrangling_annual_mean_mag_file(
     res = MAGICCData(expected_file)
 
     np.testing.assert_allclose(
-        res_raw_resampled, res.timeseries(), rtol=1e-5
+        res_raw_resampled, res.timeseries(), rtol=2*1e-3
     )
     with open(expected_file) as f:
         content = f.read()
 
-    assert "THISFILE_TIMESERIESTYPE = 'AVERAGE_YEAR_BEGINNING_OF_YEAR'" in content
+    assert "THISFILE_TIMESERIESTYPE = '{}'".format(out_format_mag.replace("mag-files-", "").replace("-", "_").upper()) in content
