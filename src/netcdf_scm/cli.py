@@ -595,7 +595,7 @@ def _set_crunch_contact_in_results(res, crunch_contact):
     show_default=True,
     help=(
         "Format to re-write crunched data into. The time operation conventions follow "
-        "those in Pymagicc (https://github.com/openclimatedata/pymagicc/pull/272) "
+        "those in `Pymagicc <https://github.com/openclimatedata/pymagicc/pull/272>`_ "
         "(link to be updated when PR is merged)"
     ),
 )
