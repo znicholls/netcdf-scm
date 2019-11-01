@@ -156,7 +156,7 @@ def init_logging(params, out_filename=None):
     help="Maximum number of workers to use when crunching files.",
 )
 @click.option(
-    "--medium-threshold",  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
+    "--medium-threshold",  # pylint:disable=too-many-arguments,too-many-locals
     default=120.0,
     show_default=True,
     help="Maximum number of data points (in millions) in a file for it to be processed in parallel with ``medium-number-workers``",
@@ -211,7 +211,8 @@ def crunch_data(
         force_lazy_threshold,
     )
 
-def _crunch_data(
+
+def _crunch_data(  # pylint:disable=too-many-arguments,too-many-locals,too-many-statements
     src,
     dst,
     crunch_contact,
@@ -226,6 +227,7 @@ def _crunch_data(
     medium_threshold,
     force_lazy_threshold,
 ):
+    # TODO: clean this function up
     output_prefix = "netcdf-scm"
     separator = "_"
     out_dir = os.path.join(dst, data_sub_dir)
@@ -880,7 +882,9 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
         )
 
 
-def _write_mag_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force):
+def _write_mag_file(  # pylint:disable=too-many-arguments
+    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
+):
     out_file = os.path.join(outfile_dir, fnames[0])
     out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
 
@@ -911,7 +915,9 @@ def _write_mag_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fname
     os.symlink(out_file, symlink_file)
 
 
-def _write_mag_file_with_operation(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format):  # pylint:disable=too-many-locals
+def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
+    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format
+):  # pylint:disable=too-many-locals
     if len(fnames) > 1:
         raise AssertionError(
             "more than one file to wrangle?"
@@ -935,9 +941,9 @@ def _write_mag_file_with_operation(openscmdf, metadata, header, outfile_dir, sym
         return
 
     try:
-        writer = MAGICCData(
-            _do_timeseriestype_operation(openscmdf, out_format)
-        ).filter(year=original_years)
+        writer = MAGICCData(_do_timeseriestype_operation(openscmdf, out_format)).filter(
+            year=original_years
+        )
     # emergency valve
     except Exception as e:  # pylint:disable=broad-except # pragma: no cover
         logger.exception("Not happy %s, exception %s", fnames, e)
@@ -987,7 +993,14 @@ def _do_timeseriestype_operation(openscmdf, out_format):
     raise AssertionError("shouldn't get here")  # pragma: no cover # emergency valve
 
 
-def _write_magicc_input_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force):
+def _write_magicc_input_file(  # pylint:disable=too-many-arguments
+    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
+):
+    if len(fnames) > 1:
+        raise AssertionError(
+            "more than one file to wrangle?"
+        )  # pragma: no cover # emergency valve
+
     src_time_points = openscmdf.timeseries().columns
     time_id = "{:d}{:02d}-{:d}{:02d}".format(
         src_time_points[0].year,
@@ -1008,7 +1021,14 @@ def _write_magicc_input_file(openscmdf, metadata, header, outfile_dir, symlink_d
     )
 
 
-def _write_magicc_input_file_with_operation(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format):
+def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-arguments
+    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format
+):
+    if len(fnames) > 1:
+        raise AssertionError(
+            "more than one file to wrangle?"
+        )  # pragma: no cover # emergency valve
+
     ts = openscmdf.timeseries()
 
     original_years = ts.columns.map(lambda x: x.year).unique()
@@ -1022,9 +1042,7 @@ def _write_magicc_input_file_with_operation(openscmdf, metadata, header, outfile
         logger.exception("Not happy %s, exception %s", fnames, e)
         return
 
-    time_id = "{}-{}".format(
-        openscmdf["time"].min().year, openscmdf["time"].max().year
-    )
+    time_id = "{}-{}".format(openscmdf["time"].min().year, openscmdf["time"].max().year)
     _write_magicc_input_files(
         openscmdf,
         time_id,
@@ -1106,27 +1124,19 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
             logger.exception("Not happy %s", out_file)
 
 
-def _wrangle_magicc_files(
-    fnames,
-    dpath,
-    dst,
-    force,
-    out_format,
-    target_units_specs,
-    wrangle_contact,
-    drs,
+def _wrangle_magicc_files(  # pylint:disable=too-many-arguments
+    fnames, dpath, dst, force, out_format, target_units_specs, wrangle_contact, drs,
 ):
-    openscmdf, metadata, header = get_openscmdf_metadata_header(
-        fnames,
-        dpath,
-        target_units_specs,
-        wrangle_contact,
+    openscmdf, metadata, header = _get_openscmdf_metadata_header(
+        fnames, dpath, target_units_specs, wrangle_contact,
     )
 
-    outfile_dir, symlink_dir = get_outfile_dir_symlink_dir(dpath, drs, dst)
+    outfile_dir, symlink_dir = _get_outfile_dir_symlink_dir(dpath, drs, dst)
 
     if out_format in ("mag-files",):
-        _write_mag_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force)
+        _write_mag_file(
+            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
+        )
     elif out_format in (
         "mag-files-average-year-start-year",
         "mag-files-average-year-mid-year",
@@ -1135,9 +1145,20 @@ def _wrangle_magicc_files(
         "mag-files-point-mid-year",
         "mag-files-point-end-year",
     ):
-        _write_mag_file_with_operation(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format)
+        _write_mag_file_with_operation(
+            openscmdf,
+            metadata,
+            header,
+            outfile_dir,
+            symlink_dir,
+            fnames,
+            force,
+            out_format,
+        )
     elif out_format in ("magicc-input-files",):
-        _write_magicc_input_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force)
+        _write_magicc_input_file(
+            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
+        )
     elif out_format in (
         "magicc-input-files-average-year-start-year",
         "magicc-input-files-average-year-mid-year",
@@ -1146,25 +1167,29 @@ def _wrangle_magicc_files(
         "magicc-input-files-point-mid-year",
         "magicc-input-files-point-end-year",
     ):
-        _write_magicc_input_file_with_operation(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format)
+        _write_magicc_input_file_with_operation(
+            openscmdf,
+            metadata,
+            header,
+            outfile_dir,
+            symlink_dir,
+            fnames,
+            force,
+            out_format,
+        )
     else:
         raise AssertionError("how did we get here?")  # pragma: no cover
 
 
-def get_openscmdf_metadata_header(
-    fnames,
-    dpath,
-    target_units_specs,
-    wrangle_contact,
+def _get_openscmdf_metadata_header(
+    fnames, dpath, target_units_specs, wrangle_contact,
 ):
     if len(fnames) > 1:
         raise AssertionError(
             "more than one file to wrangle?"
         )  # pragma: no cover # emergency valve
 
-    openscmdf = df_append(
-        [load_scmdataframe(os.path.join(dpath, f)) for f in fnames]
-    )
+    openscmdf = df_append([load_scmdataframe(os.path.join(dpath, f)) for f in fnames])
     if target_units_specs is not None:
         openscmdf = _convert_units(openscmdf, target_units_specs)
 
@@ -1185,7 +1210,7 @@ def get_openscmdf_metadata_header(
     return openscmdf, metadata, header
 
 
-def get_outfile_dir_symlink_dir(dpath, drs, dst):
+def _get_outfile_dir_symlink_dir(dpath, drs, dst):
     scmcube = _get_scmcube_helper(drs)
     outfile_dir = dpath.replace(scmcube.process_path(dpath)["root_dir"], dst)
     _make_path_if_not_exists(outfile_dir)
