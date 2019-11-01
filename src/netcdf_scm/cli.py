@@ -833,12 +833,26 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
     number_workers,
     target_units_specs,
 ):
-    scmcube = _get_scmcube_helper(drs)
     crunch_list, failures_dir_finding = _find_dirs_meeting_func(
         src, regexp_compiled.match
     )
 
-    if out_format in ("mag-files",):
+    if out_format in (
+        "mag-files",
+        "mag-files-average-year-start-year",
+        "mag-files-average-year-mid-year",
+        "mag-files-average-year-end-year",
+        "mag-files-point-start-year",
+        "mag-files-point-mid-year",
+        "mag-files-point-end-year",
+        "magicc-input-files",
+        "magicc-input-files-average-year-start-year",
+        "magicc-input-files-average-year-mid-year",
+        "magicc-input-files-average-year-end-year",
+        "magicc-input-files-point-start-year",
+        "magicc-input-files-point-mid-year",
+        "magicc-input-files-point-end-year",
+    ):
         failures_wrangling = _apply_func(
             _wrangle_magicc_files,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
@@ -854,59 +868,6 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
             style="processes",
         )
 
-    elif out_format in (
-        "mag-files-average-year-start-year",
-        "mag-files-average-year-mid-year",
-        "mag-files-average-year-end-year",
-        "mag-files-point-start-year",
-        "mag-files-point-mid-year",
-        "mag-files-point-end-year",
-    ):
-        wrangle_to_mag_files = _get_wrangle_to_mag_files_with_operation_func(
-            force,
-            get_openscmdf_metadata_header,
-            get_outfile_dir_symlink_dir,
-            out_format,
-        )
-        failures_wrangling = _apply_func(
-            wrangle_to_mag_files,
-            [{"fnames": f, "dpath": d} for d, f in crunch_list],
-            n_workers=number_workers,
-            style="processes",
-        )
-
-    elif out_format in ("magicc-input-files",):
-        wrangle_to_magicc_input_files = _get_wrangle_to_magicc_input_files_func(
-            force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
-        )
-        failures_wrangling = _apply_func(
-            wrangle_to_magicc_input_files,
-            [{"fnames": f, "dpath": d} for d, f in crunch_list],
-            n_workers=number_workers,
-            style="processes",
-        )
-
-    elif out_format in (
-        "magicc-input-files-average-year-start-year",
-        "magicc-input-files-average-year-mid-year",
-        "magicc-input-files-average-year-end-year",
-        "magicc-input-files-point-start-year",
-        "magicc-input-files-point-mid-year",
-        "magicc-input-files-point-end-year",
-    ):
-        wrangle_to_magicc_input_files = _get_wrangle_to_magicc_input_files_with_operation_func(
-            force,
-            get_openscmdf_metadata_header,
-            get_outfile_dir_symlink_dir,
-            out_format,
-        )
-        failures_wrangling = _apply_func(
-            wrangle_to_magicc_input_files,
-            [{"fnames": f, "dpath": d} for d, f in crunch_list],
-            n_workers=number_workers,
-            style="processes",
-        )
-
     else:  # pragma: no cover # emergency valve
         raise AssertionError(
             "how did we get here, click should have prevented the --out-format "
@@ -917,50 +878,6 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
         raise click.ClickException(
             "Some files failed to process. See the logs for more details"
         )
-
-
-def _get_wrangle_to_mag_files_func(
-    force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
-):
-    def wrangle_func(fnames, dpath):
-        openscmdf, metadata, header = get_openscmdf_metadata_header(fnames, dpath)
-        outfile_dir, symlink_dir = get_outfile_dir_symlink_dir(dpath)
-
-        if len(fnames) > 1:
-            raise AssertionError(
-                "more than one file to wrangle?"
-            )  # pragma: no cover # emergency valve
-
-        out_file = os.path.join(outfile_dir, fnames[0])
-        out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
-
-        if _skip_file(out_file, force, symlink_dir):
-            return
-
-        writer = MAGICCData(openscmdf)
-        writer["todo"] = "SET"
-        time_steps = writer.timeseries().columns[1:] - writer.timeseries().columns[:-1]
-        step_upper = np.timedelta64(32, "D")  # pylint:disable=too-many-function-args
-        step_lower = np.timedelta64(28, "D")  # pylint:disable=too-many-function-args
-        if any((time_steps > step_upper) | (time_steps < step_lower)):
-            raise ValueError(
-                "Please raise an issue at "
-                "github.com/znicholls/netcdf-scm/issues "
-                "to discuss how to handle non-monthly data wrangling"
-            )
-
-        writer.metadata = metadata
-        writer.metadata["timeseriestype"] = "MONTHLY"
-        writer.metadata["header"] = header
-
-        logger.info("Writing file to %s", out_file)
-        writer.write(out_file, magicc_version=7)
-
-        symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
-        logger.info("Making symlink to %s", symlink_file)
-        os.symlink(out_file, symlink_file)
-
-    return wrangle_func
 
 
 def _write_mag_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force):
@@ -994,60 +911,52 @@ def _write_mag_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fname
     os.symlink(out_file, symlink_file)
 
 
-def _get_wrangle_to_mag_files_with_operation_func(
-    force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir, out_format
-):
-    def wrangle_func(fnames, dpath):  # pylint:disable=too-many-locals
-        openscmdf, metadata, header = get_openscmdf_metadata_header(fnames, dpath)
-        outfile_dir, symlink_dir = get_outfile_dir_symlink_dir(dpath)
+def _write_mag_file_with_operation(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format):  # pylint:disable=too-many-locals
+    if len(fnames) > 1:
+        raise AssertionError(
+            "more than one file to wrangle?"
+        )  # pragma: no cover # emergency valve
 
-        if len(fnames) > 1:
-            raise AssertionError(
-                "more than one file to wrangle?"
-            )  # pragma: no cover # emergency valve
+    ts = openscmdf.timeseries()
 
-        ts = openscmdf.timeseries()
+    src_time_points = ts.columns
+    original_years = ts.columns.map(lambda x: x.year).unique()
 
-        src_time_points = ts.columns
-        original_years = ts.columns.map(lambda x: x.year).unique()
+    time_id = "{}-{}".format(src_time_points[0].year, src_time_points[-1].year)
+    regex_search = r"{}\d*-{}\d*".format(
+        src_time_points[0].year, src_time_points[-1].year
+    )
+    old_time_id = re.search(regex_search, fnames[0]).group(0)
 
-        time_id = "{}-{}".format(src_time_points[0].year, src_time_points[-1].year)
-        regex_search = r"{}\d*-{}\d*".format(
-            src_time_points[0].year, src_time_points[-1].year
-        )
-        old_time_id = re.search(regex_search, fnames[0]).group(0)
+    out_file = os.path.join(outfile_dir, fnames[0].replace(old_time_id, time_id))
+    out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
 
-        out_file = os.path.join(outfile_dir, fnames[0].replace(old_time_id, time_id))
-        out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
+    if _skip_file(out_file, force, symlink_dir):
+        return
 
-        if _skip_file(out_file, force, symlink_dir):
-            return
+    try:
+        writer = MAGICCData(
+            _do_timeseriestype_operation(openscmdf, out_format)
+        ).filter(year=original_years)
+    # emergency valve
+    except Exception as e:  # pylint:disable=broad-except # pragma: no cover
+        logger.exception("Not happy %s, exception %s", fnames, e)
+        return
 
-        try:
-            writer = MAGICCData(
-                _do_timeseriestype_operation(openscmdf, out_format)
-            ).filter(year=original_years)
-        # emergency valve
-        except Exception as e:  # pylint:disable=broad-except # pragma: no cover
-            logger.exception("Not happy %s, exception %s", fnames, e)
-            return
+    writer["todo"] = "SET"
+    writer.metadata = metadata
+    writer.metadata["timeseriestype"] = (
+        out_format.replace("mag-files-", "").replace("-", "_").upper()
+    )
 
-        writer["todo"] = "SET"
-        writer.metadata = metadata
-        writer.metadata["timeseriestype"] = (
-            out_format.replace("mag-files-", "").replace("-", "_").upper()
-        )
+    writer.metadata["header"] = header
 
-        writer.metadata["header"] = header
+    logger.info("Writing file to %s", out_file)
+    writer.write(out_file, magicc_version=7)
 
-        logger.info("Writing file to %s", out_file)
-        writer.write(out_file, magicc_version=7)
-
-        symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
-        logger.info("Making symlink to %s", symlink_file)
-        os.symlink(out_file, symlink_file)
-
-    return wrangle_func
+    symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
+    logger.info("Making symlink to %s", symlink_file)
+    os.symlink(out_file, symlink_file)
 
 
 def _do_timeseriestype_operation(openscmdf, out_format):
@@ -1078,70 +987,54 @@ def _do_timeseriestype_operation(openscmdf, out_format):
     raise AssertionError("shouldn't get here")  # pragma: no cover # emergency valve
 
 
-def _get_wrangle_to_magicc_input_files_func(
-    force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
-):
-    def wrangle_func(fnames, dpath):
-        openscmdf, metadata, header = get_openscmdf_metadata_header(fnames, dpath)
-        outfile_dir, symlink_dir = get_outfile_dir_symlink_dir(dpath)
+def _write_magicc_input_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force):
+    src_time_points = openscmdf.timeseries().columns
+    time_id = "{:d}{:02d}-{:d}{:02d}".format(
+        src_time_points[0].year,
+        src_time_points[0].month,
+        src_time_points[-1].year,
+        src_time_points[-1].month,
+    )
 
-        src_time_points = openscmdf.timeseries().columns
-        time_id = "{:d}{:02d}-{:d}{:02d}".format(
-            src_time_points[0].year,
-            src_time_points[0].month,
-            src_time_points[-1].year,
-            src_time_points[-1].month,
+    _write_magicc_input_files(
+        openscmdf,
+        time_id,
+        outfile_dir,
+        symlink_dir,
+        force,
+        metadata,
+        header,
+        "MONTHLY",
+    )
+
+
+def _write_magicc_input_file_with_operation(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format):
+    ts = openscmdf.timeseries()
+
+    original_years = ts.columns.map(lambda x: x.year).unique()
+
+    try:
+        openscmdf = _do_timeseriestype_operation(openscmdf, out_format).filter(
+            year=original_years
         )
+    # emergency valve
+    except Exception as e:  # pylint:disable=broad-except # pragma: no cover
+        logger.exception("Not happy %s, exception %s", fnames, e)
+        return
 
-        _write_magicc_input_files(
-            openscmdf,
-            time_id,
-            outfile_dir,
-            symlink_dir,
-            force,
-            metadata,
-            header,
-            "MONTHLY",
-        )
-
-    return wrangle_func
-
-
-def _get_wrangle_to_magicc_input_files_with_operation_func(
-    force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir, out_format
-):
-    def wrangle_func(fnames, dpath):
-        openscmdf, metadata, header = get_openscmdf_metadata_header(fnames, dpath)
-        outfile_dir, symlink_dir = get_outfile_dir_symlink_dir(dpath)
-
-        ts = openscmdf.timeseries()
-
-        original_years = ts.columns.map(lambda x: x.year).unique()
-
-        try:
-            openscmdf = _do_timeseriestype_operation(openscmdf, out_format).filter(
-                year=original_years
-            )
-        # emergency valve
-        except Exception as e:  # pylint:disable=broad-except # pragma: no cover
-            logger.exception("Not happy %s, exception %s", fnames, e)
-            return
-
-        time_id = "{}-{}".format(
-            openscmdf["time"].min().year, openscmdf["time"].max().year
-        )
-        _write_magicc_input_files(
-            openscmdf,
-            time_id,
-            outfile_dir,
-            symlink_dir,
-            force,
-            metadata,
-            header,
-            out_format.replace("magicc-input-files-", "").replace("-", "_").upper(),
-        )
-
-    return wrangle_func
+    time_id = "{}-{}".format(
+        openscmdf["time"].min().year, openscmdf["time"].max().year
+    )
+    _write_magicc_input_files(
+        openscmdf,
+        time_id,
+        outfile_dir,
+        symlink_dir,
+        force,
+        metadata,
+        header,
+        out_format.replace("magicc-input-files-", "").replace("-", "_").upper(),
+    )
 
 
 def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-locals
@@ -1205,6 +1098,7 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
         writer.metadata["header"] = header
         writer.metadata["timeseriestype"] = timeseriestype
         try:
+            logger.info("Writing file to %s", out_file)
             writer.write(out_file, magicc_version=7)
             logger.info("Making symlink to %s", symlink_file)
             os.symlink(out_file, symlink_file)
@@ -1231,7 +1125,30 @@ def _wrangle_magicc_files(
 
     outfile_dir, symlink_dir = get_outfile_dir_symlink_dir(dpath, drs, dst)
 
-    _write_mag_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force)
+    if out_format in ("mag-files",):
+        _write_mag_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force)
+    elif out_format in (
+        "mag-files-average-year-start-year",
+        "mag-files-average-year-mid-year",
+        "mag-files-average-year-end-year",
+        "mag-files-point-start-year",
+        "mag-files-point-mid-year",
+        "mag-files-point-end-year",
+    ):
+        _write_mag_file_with_operation(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format)
+    elif out_format in ("magicc-input-files",):
+        _write_magicc_input_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force)
+    elif out_format in (
+        "magicc-input-files-average-year-start-year",
+        "magicc-input-files-average-year-mid-year",
+        "magicc-input-files-average-year-end-year",
+        "magicc-input-files-point-start-year",
+        "magicc-input-files-point-mid-year",
+        "magicc-input-files-point-end-year",
+    ):
+        _write_magicc_input_file_with_operation(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format)
+    else:
+        raise AssertionError("how did we get here?")  # pragma: no cover
 
 
 def get_openscmdf_metadata_header(

@@ -44,12 +44,14 @@ SRC_DIR_ENORMOUS_TIME=$( { time netcdf-scm-crunch "${SRC_DIR_ENORMOUS}" "${CRUNC
 exec 3>&- 4>&-
 echo "Multiple enormous files (14 000 million data points) crunch time: $SRC_DIR_ENORMOUS_TIME"
 
+echo ""
+echo ""
 
 exec 3>&1 4>&2
 VERSION=$( { python -c "import netcdf_scm; import click; click.echo('NetCDF-SCM version: {}'.format(netcdf_scm.__version__))" 1>&3 2>&4; } 2>&1 )
 exec 3>&- 4>&-
 
-echo "NetCDF-SCM version: $VERSION"
+echo "$VERSION"
 echo "Multiple small file (2.4 million data points) time: $SRC_DIR_TIME"
 echo "Multiple medium file (100 million data points) crunch time: $SRC_DIR_MEDIUM_TIME"
 echo "Multiple big file (300 million data points) crunch time: $SRC_DIR_BIG_TIME"
