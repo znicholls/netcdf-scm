@@ -1,14 +1,16 @@
-import pdb
+import os.path
 
-from netcdf_scm.iris_cube_wrappers import CMIP6OutputCube
+from netcdf_scm.cli import _do_wrangling
 
-test = CMIP6OutputCube()
-
-
-pdb.set_trace()
-test.load_data_in_directory(
-    "/data/marble/cmip6/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/tos/gn/v20190313/"
-)
-test.load_data_in_directory(
-    "tests/test-data/cmip6output/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/tos/gn/v20190313"
+_do_wrangling(
+    os.path.join("./tests/test-data/expected-crunching-output/cmip6output/CMIP6/"),
+    os.path.join("output-examples/wrangling-scratch"),
+    "^(?!.*(fx)).*$",
+    "mag-files",
+    # "mag-files-average-year-mid-year",
+    True,
+    "Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>",
+    "CMIP6Output",
+    1,
+    None,
 )
