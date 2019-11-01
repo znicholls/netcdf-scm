@@ -195,6 +195,37 @@ def crunch_data(
     ``crunch_contact`` is written into the output ``.nc`` files' ``crunch_contact``
     attribute.
     """
+    _crunch_data(
+        src,
+        dst,
+        crunch_contact,
+        drs,
+        regexp,
+        regions,
+        data_sub_dir,
+        force,
+        small_number_workers,
+        small_threshold,
+        medium_number_workers,
+        medium_threshold,
+        force_lazy_threshold,
+    )
+
+def _crunch_data(
+    src,
+    dst,
+    crunch_contact,
+    drs,
+    regexp,
+    regions,
+    data_sub_dir,
+    force,
+    small_number_workers,
+    small_threshold,
+    medium_number_workers,
+    medium_threshold,
+    force_lazy_threshold,
+):
     output_prefix = "netcdf-scm"
     separator = "_"
     out_dir = os.path.join(dst, data_sub_dir)
