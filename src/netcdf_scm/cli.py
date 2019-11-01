@@ -838,46 +838,20 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
         src, regexp_compiled.match
     )
 
-    def get_openscmdf_metadata_header(fnames, dpath):
-        openscmdf = df_append(
-            [load_scmdataframe(os.path.join(dpath, f)) for f in fnames]
-        )
-        if target_units_specs is not None:
-            openscmdf = _convert_units(openscmdf, target_units_specs)
-
-        metadata = openscmdf.metadata
-        header = (
-            "Date: {}\n"
-            "Contact: {}\n"
-            "Source data crunched with: NetCDF-SCM v{}\n"
-            "File written with: pymagicc v{} (more info at "
-            "github.com/openclimatedata/pymagicc)\n".format(
-                dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                wrangle_contact,
-                metadata["crunch_netcdf_scm_version"],
-                pymagicc.__version__,
-            )
-        )
-
-        return openscmdf, metadata, header
-
-    def get_outfile_dir_symlink_dir(dpath):
-        outfile_dir = dpath.replace(scmcube.process_path(dpath)["root_dir"], dst)
-        _make_path_if_not_exists(outfile_dir)
-        symlink_dir = os.path.join(dst, "flat")
-        _make_path_if_not_exists(symlink_dir)
-
-        return outfile_dir, symlink_dir
-
     if out_format in ("mag-files",):
-        wrangle_to_mag_files = _get_wrangle_to_mag_files_func(
-            force, get_openscmdf_metadata_header, get_outfile_dir_symlink_dir
-        )
         failures_wrangling = _apply_func(
-            wrangle_to_mag_files,
+            _wrangle_magicc_files,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
+            common_kwarglist={
+                "dst": dst,
+                "force": force,
+                "out_format": out_format,
+                "target_units_specs": target_units_specs,
+                "wrangle_contact": wrangle_contact,
+                "drs": drs,
+            },
             n_workers=number_workers,
-            style="threads",
+            style="processes",
         )
 
     elif out_format in (
@@ -898,7 +872,7 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
             wrangle_to_mag_files,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
             n_workers=number_workers,
-            style="threads",
+            style="processes",
         )
 
     elif out_format in ("magicc-input-files",):
@@ -909,7 +883,7 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
             wrangle_to_magicc_input_files,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
             n_workers=number_workers,
-            style="threads",
+            style="processes",
         )
 
     elif out_format in (
@@ -930,7 +904,7 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
             wrangle_to_magicc_input_files,
             [{"fnames": f, "dpath": d} for d, f in crunch_list],
             n_workers=number_workers,
-            style="threads",
+            style="processes",
         )
 
     else:  # pragma: no cover # emergency valve
@@ -987,6 +961,37 @@ def _get_wrangle_to_mag_files_func(
         os.symlink(out_file, symlink_file)
 
     return wrangle_func
+
+
+def _write_mag_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force):
+    out_file = os.path.join(outfile_dir, fnames[0])
+    out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
+
+    if _skip_file(out_file, force, symlink_dir):
+        return
+
+    writer = MAGICCData(openscmdf)
+    writer["todo"] = "SET"
+    time_steps = writer.timeseries().columns[1:] - writer.timeseries().columns[:-1]
+    step_upper = np.timedelta64(32, "D")  # pylint:disable=too-many-function-args
+    step_lower = np.timedelta64(28, "D")  # pylint:disable=too-many-function-args
+    if any((time_steps > step_upper) | (time_steps < step_lower)):
+        raise ValueError(
+            "Please raise an issue at "
+            "github.com/znicholls/netcdf-scm/issues "
+            "to discuss how to handle non-monthly data wrangling"
+        )
+
+    writer.metadata = metadata
+    writer.metadata["timeseriestype"] = "MONTHLY"
+    writer.metadata["header"] = header
+
+    logger.info("Writing file to %s", out_file)
+    writer.write(out_file, magicc_version=7)
+
+    symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
+    logger.info("Making symlink to %s", symlink_file)
+    os.symlink(out_file, symlink_file)
 
 
 def _get_wrangle_to_mag_files_with_operation_func(
@@ -1205,6 +1210,72 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
             os.symlink(out_file, symlink_file)
         except (ValueError, AttributeError):
             logger.exception("Not happy %s", out_file)
+
+
+def _wrangle_magicc_files(
+    fnames,
+    dpath,
+    dst,
+    force,
+    out_format,
+    target_units_specs,
+    wrangle_contact,
+    drs,
+):
+    openscmdf, metadata, header = get_openscmdf_metadata_header(
+        fnames,
+        dpath,
+        target_units_specs,
+        wrangle_contact,
+    )
+
+    outfile_dir, symlink_dir = get_outfile_dir_symlink_dir(dpath, drs, dst)
+
+    _write_mag_file(openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force)
+
+
+def get_openscmdf_metadata_header(
+    fnames,
+    dpath,
+    target_units_specs,
+    wrangle_contact,
+):
+    if len(fnames) > 1:
+        raise AssertionError(
+            "more than one file to wrangle?"
+        )  # pragma: no cover # emergency valve
+
+    openscmdf = df_append(
+        [load_scmdataframe(os.path.join(dpath, f)) for f in fnames]
+    )
+    if target_units_specs is not None:
+        openscmdf = _convert_units(openscmdf, target_units_specs)
+
+    metadata = openscmdf.metadata
+    header = (
+        "Date: {}\n"
+        "Contact: {}\n"
+        "Source data crunched with: NetCDF-SCM v{}\n"
+        "File written with: pymagicc v{} (more info at "
+        "github.com/openclimatedata/pymagicc)\n".format(
+            dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            wrangle_contact,
+            metadata["crunch_netcdf_scm_version"],
+            pymagicc.__version__,
+        )
+    )
+
+    return openscmdf, metadata, header
+
+
+def get_outfile_dir_symlink_dir(dpath, drs, dst):
+    scmcube = _get_scmcube_helper(drs)
+    outfile_dir = dpath.replace(scmcube.process_path(dpath)["root_dir"], dst)
+    _make_path_if_not_exists(outfile_dir)
+    symlink_dir = os.path.join(dst, "flat")
+    _make_path_if_not_exists(symlink_dir)
+
+    return outfile_dir, symlink_dir
 
 
 def _convert_units(openscmdf, target_units_specs):
