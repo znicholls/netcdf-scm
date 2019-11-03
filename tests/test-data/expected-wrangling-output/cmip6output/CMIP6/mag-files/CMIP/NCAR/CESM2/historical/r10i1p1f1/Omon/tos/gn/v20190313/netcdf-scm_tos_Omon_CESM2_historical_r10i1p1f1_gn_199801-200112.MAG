@@ -1,0 +1,139 @@
+---- HEADER ----
+
+Date: 2019-11-03 14:23:27
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+Conventions: CF-1.5
+area_world (m**2): 360511652086415.4
+area_world_el_nino_n3.4 (m**2): 6351282466560.0
+area_world_north_atlantic_ocean (m**2): 39396579077888.0
+area_world_northern_hemisphere (m**2): 154121785760928.0
+area_world_northern_hemisphere_ocean (m**2): 154121785760928.0
+area_world_ocean (m**2): 360511652086415.4
+area_world_southern_hemisphere (m**2): 206389887012864.0
+area_world_southern_hemisphere_ocean (m**2): 206389887012864.0
+branch_method: standard
+branch_time_in_child: 674885.0
+branch_time_in_parent: 306600.0
+calendar: 365_day
+case_id: 24
+cesm_casename: b.e21.BHIST.f09_g17.CMIP6-historical.010
+comment: This may differ from "surface temperature" in regions of sea ice or floating ice shelves. For models using conservative temperature as the prognostic field, they should report the top ocean layer as surface potential temperature, which is the same as surface in situ temperature.
+contact: cesm_cmip6@ucar.edu
+crunch_contact: cmip6output crunching regression test
+crunch_netcdf_scm_version: 2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
+crunch_source_files: Files: ['/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/tos/gn/v20190313/tos_Omon_CESM2_historical_r10i1p1f1_gn_199801-199912.nc', '/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/tos/gn/v20190313/tos_Omon_CESM2_historical_r10i1p1f1_gn_200001-200112.nc']; areacello: ['/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Ofx/areacello/gn/v20190313/areacello_Ofx_CESM2_historical_r10i1p1f1_gn.nc']; sftof: ['/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Ofx/sftof/gn/v20190313/sftof_Ofx_CESM2_historical_r10i1p1f1_gn.nc']
+data_specs_version: 01.00.29
+description: This may differ from "surface temperature" in regions of sea ice or floating ice shelves. For models using conservative temperature as the prognostic field, they should report the top ocean layer as surface potential temperature, which is the same as surface in situ temperature.
+experiment: Simulation of recent past (1850 to 2014). Impose changing conditions (consistent with observations). Should be initialised from a point early enough in the pre-industrial control run to ensure that the end of all the perturbed runs branching from the end of this historical run end before the end of the control. Only one ensemble member is requested but modelling groups are strongly encouraged to submit at least three ensemble members of their CMIP historical simulation. 
+experiment_id: historical
+external_variables: areacello
+frequency: mon
+further_info_url: https://furtherinfo.es-doc.org/CMIP6.NCAR.CESM2.historical.none.r10i1p1f1
+grid: native gx1v7 displaced pole grid (384x320 latxlon)
+grid_label: gn
+id: tos
+institution: National Center for Atmospheric Research
+institution_id: NCAR
+license: CMIP6 model data produced by <The National Center for Atmospheric Research> is licensed under a Creative Commons Attribution-[]ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file)[]. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+mipTable: Omon
+model_doi_url: https://doi.org/10.5065/D67H1H0V
+nominal_resolution: 100 km
+out_name: tos
+parent_activity_id: CMIP
+parent_experiment_id: piControl
+parent_mip_era: CMIP6
+parent_source_id: CESM2
+parent_time_units: days since 0001-01-01 00:00:00
+parent_variant_label: r1i1p1f1
+product: model-output
+prov: Omon ((isd.003))
+realm: ocean
+source: CESM2 (2017): atmosphere: CAM6 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); ocean: POP2 (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m); sea_ice: CICE5.1 (same grid as ocean); land: CLM5 0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); aerosol: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); atmoschem: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); landIce: CISM2.1; ocnBgchem: MARBL (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m)
+source_id: CESM2
+source_type: AOGCM BGC
+sub_experiment: none
+sub_experiment_id: none
+table_id: Omon
+time: time
+time_label: time-mean
+time_title: Temporal mean
+title: Sea Surface Temperature
+tracking_id: hdl:21.14100/5ac93391-d2b6-410a-8c32-27ac884c2d8d
+type: real
+variable_id: tos
+variant_info: CMIP6 20th century experiments (1850-2014) with CAM6, interactive land (CLM5), coupled ocean (POP2) with biogeochemistry (MARBL), interactive sea ice (CICE5.1), and non-evolving land ice (CISM2.1)
+
+variant_label: r10i1p1f1
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 8
+    THISFILE_DATAROWS = 48
+    THISFILE_FIRSTYEAR = 1998
+    THISFILE_LASTYEAR = 2001
+    THISFILE_ANNUALSTEPS = 12
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'MONTHLY'
+    THISFILE_FIRSTDATAROW = 92
+/
+
+   VARIABLE                 tos                 tos                 tos                 tos                 tos                 tos                 tos                 tos
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS                degC                degC                degC                degC                degC                degC                degC                degC
+      YEARS               WORLD                 N34                 AMV                  NH             NHOCEAN               OCEAN                  SH             SHOCEAN
+1998.042000         1.87271e+01         2.61228e+01         2.02002e+01         1.92262e+01         1.92262e+01         1.87271e+01         1.83544e+01         1.83544e+01
+1998.125000         1.88431e+01         2.62890e+01         1.97791e+01         1.88114e+01         1.88114e+01         1.88431e+01         1.88667e+01         1.88667e+01
+1998.208000         1.88293e+01         2.68176e+01         1.97881e+01         1.88893e+01         1.88893e+01         1.88293e+01         1.87845e+01         1.87845e+01
+1998.292000         1.87376e+01         2.74688e+01         2.03285e+01         1.93925e+01         1.93925e+01         1.87376e+01         1.82485e+01         1.82485e+01
+1998.375000         1.86928e+01         2.75464e+01         2.13995e+01         2.03896e+01         2.03896e+01         1.86928e+01         1.74258e+01         1.74258e+01
+1998.458000         1.86209e+01         2.73028e+01         2.24718e+01         2.14415e+01         2.14415e+01         1.86209e+01         1.65146e+01         1.65146e+01
+1998.542000         1.85403e+01         2.65994e+01         2.34891e+01         2.23178e+01         2.23178e+01         1.85403e+01         1.57196e+01         1.57196e+01
+1998.625000         1.84810e+01         2.52915e+01         2.40492e+01         2.28330e+01         2.28330e+01         1.84810e+01         1.52311e+01         1.52311e+01
+1998.708000         1.83588e+01         2.42904e+01         2.40481e+01         2.26774e+01         2.26774e+01         1.83588e+01         1.51338e+01         1.51338e+01
+1998.792000         1.82316e+01         2.39229e+01         2.33751e+01         2.19654e+01         2.19654e+01         1.82316e+01         1.54434e+01         1.54434e+01
+1998.875000         1.82704e+01         2.38501e+01         2.21820e+01         2.09534e+01         2.09534e+01         1.82704e+01         1.62669e+01         1.62669e+01
+1998.958000         1.84425e+01         2.40670e+01         2.10735e+01         1.99290e+01         1.99290e+01         1.84425e+01         1.73325e+01         1.73325e+01
+1999.042000         1.86702e+01         2.43290e+01         2.00283e+01         1.90952e+01         1.90952e+01         1.86702e+01         1.83529e+01         1.83529e+01
+1999.125000         1.87891e+01         2.47149e+01         1.96328e+01         1.86763e+01         1.86763e+01         1.87891e+01         1.88734e+01         1.88734e+01
+1999.208000         1.87891e+01         2.53634e+01         1.96457e+01         1.87444e+01         1.87444e+01         1.87891e+01         1.88225e+01         1.88225e+01
+1999.292000         1.87031e+01         2.63618e+01         1.99234e+01         1.92553e+01         1.92553e+01         1.87031e+01         1.82906e+01         1.82906e+01
+1999.375000         1.86382e+01         2.69374e+01         2.08418e+01         2.02182e+01         2.02182e+01         1.86382e+01         1.74583e+01         1.74583e+01
+1999.458000         1.86094e+01         2.70554e+01         2.21984e+01         2.13029e+01         2.13029e+01         1.86094e+01         1.65980e+01         1.65980e+01
+1999.542000         1.85770e+01         2.68793e+01         2.32443e+01         2.22442e+01         2.22442e+01         1.85770e+01         1.58385e+01         1.58385e+01
+1999.625000         1.85870e+01         2.64786e+01         2.39116e+01         2.28842e+01         2.28842e+01         1.85870e+01         1.53781e+01         1.53781e+01
+1999.708000         1.85285e+01         2.59848e+01         2.40757e+01         2.28916e+01         2.28916e+01         1.85285e+01         1.52703e+01         1.52703e+01
+1999.792000         1.84274e+01         2.57242e+01         2.32334e+01         2.21905e+01         2.21905e+01         1.84274e+01         1.56173e+01         1.56173e+01
+1999.875000         1.84440e+01         2.60101e+01         2.22105e+01         2.11670e+01         2.11670e+01         1.84440e+01         1.64106e+01         1.64106e+01
+1999.958000         1.85974e+01         2.61678e+01         2.11178e+01         2.01057e+01         2.01057e+01         1.85974e+01         1.74711e+01         1.74711e+01
+2000.042000         1.87333e+01         2.62806e+01         2.02733e+01         1.92109e+01         1.92109e+01         1.87333e+01         1.83766e+01         1.83766e+01
+2000.125000         1.88309e+01         2.66688e+01         1.96579e+01         1.87891e+01         1.87891e+01         1.88309e+01         1.88621e+01         1.88621e+01
+2000.208000         1.88292e+01         2.71094e+01         1.96194e+01         1.88511e+01         1.88511e+01         1.88292e+01         1.88129e+01         1.88129e+01
+2000.292000         1.87635e+01         2.78108e+01         2.01191e+01         1.93573e+01         1.93573e+01         1.87635e+01         1.83200e+01         1.83200e+01
+2000.375000         1.86973e+01         2.80411e+01         2.09445e+01         2.02535e+01         2.02535e+01         1.86973e+01         1.75353e+01         1.75353e+01
+2000.458000         1.86845e+01         2.81207e+01         2.22108e+01         2.14071e+01         2.14071e+01         1.86845e+01         1.66514e+01         1.66514e+01
+2000.542000         1.86468e+01         2.77266e+01         2.33496e+01         2.23296e+01         2.23296e+01         1.86468e+01         1.58968e+01         1.58968e+01
+2000.625000         1.86360e+01         2.68221e+01         2.39870e+01         2.29469e+01         2.29469e+01         1.86360e+01         1.54169e+01         1.54169e+01
+2000.708000         1.85592e+01         2.59179e+01         2.39055e+01         2.28767e+01         2.28767e+01         1.85592e+01         1.53350e+01         1.53350e+01
+2000.792000         1.84994e+01         2.58699e+01         2.32973e+01         2.22339e+01         2.22339e+01         1.84994e+01         1.57107e+01         1.57107e+01
+2000.875000         1.85027e+01         2.59842e+01         2.23743e+01         2.12038e+01         2.12038e+01         1.85027e+01         1.64857e+01         1.64857e+01
+2000.958000         1.86102e+01         2.63334e+01         2.12499e+01         2.01182e+01         2.01182e+01         1.86102e+01         1.74841e+01         1.74841e+01
+2001.042000         1.87965e+01         2.66079e+01         2.02986e+01         1.92452e+01         1.92452e+01         1.87965e+01         1.84614e+01         1.84614e+01
+2001.125000         1.89312e+01         2.71191e+01         1.98113e+01         1.88768e+01         1.88768e+01         1.89312e+01         1.89718e+01         1.89718e+01
+2001.208000         1.89199e+01         2.78835e+01         1.97827e+01         1.89455e+01         1.89455e+01         1.89199e+01         1.89009e+01         1.89009e+01
+2001.292000         1.88794e+01         2.87890e+01         2.02817e+01         1.95167e+01         1.95167e+01         1.88794e+01         1.84034e+01         1.84034e+01
+2001.375000         1.88475e+01         2.93344e+01         2.12636e+01         2.04915e+01         2.04915e+01         1.88475e+01         1.76199e+01         1.76199e+01
+2001.458000         1.88135e+01         2.92005e+01         2.23594e+01         2.16181e+01         2.16181e+01         1.88135e+01         1.67191e+01         1.67191e+01
+2001.542000         1.87862e+01         2.86176e+01         2.34680e+01         2.25758e+01         2.25758e+01         1.87862e+01         1.59564e+01         1.59564e+01
+2001.625000         1.87904e+01         2.77609e+01         2.41512e+01         2.32268e+01         2.32268e+01         1.87904e+01         1.54774e+01         1.54774e+01
+2001.708000         1.86697e+01         2.69337e+01         2.41862e+01         2.31056e+01         2.31056e+01         1.86697e+01         1.53572e+01         1.53572e+01
+2001.792000         1.86354e+01         2.74354e+01         2.34163e+01         2.24802e+01         2.24802e+01         1.86354e+01         1.57643e+01         1.57643e+01
+2001.875000         1.86695e+01         2.80214e+01         2.22504e+01         2.14294e+01         2.14294e+01         1.86695e+01         1.66085e+01         1.66085e+01
+2001.958000         1.88097e+01         2.86207e+01         2.11683e+01         2.03534e+01         2.03534e+01         1.88097e+01         1.76570e+01         1.76570e+01
