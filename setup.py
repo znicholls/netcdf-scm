@@ -44,8 +44,7 @@ REQUIREMENTS_INSTALL = [
     "numpy",
     "python-dateutil",
     "progressbar2",
-    # "pymagicc>=2.0.0b7",
-    "pymagicc @ git+https://github.com/openclimatedata/pymagicc.git@mag-timeseries-types",
+    "pymagicc>=2.0.0b8",
     "click",
     "tqdm",
 ]
