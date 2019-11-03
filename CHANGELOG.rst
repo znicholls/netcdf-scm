@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#108 <https://github.com/znicholls/netcdf-scm/pull/108>`_) Optimise wranglers and add regression tests
 - (`#107 <https://github.com/znicholls/netcdf-scm/pull/107>`_) Add wrangling options for average/point start/mid/end year time manipulations for ``.MAG`` and ``.IN`` files
 - (`#106 <https://github.com/znicholls/netcdf-scm/pull/106>`_) Upgrade to new Pymagicc release
 - (`#105 <https://github.com/znicholls/netcdf-scm/pull/105>`_) Upgrade to new Pylint release
