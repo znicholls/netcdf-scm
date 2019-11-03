@@ -1,0 +1,108 @@
+---- HEADER ----
+
+Date: 2019-11-03 14:23:47
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+Conventions: CF-1.5
+area_world (m**2): 509499402446956.25
+area_world_el_nino_n3.4 (m**2): 6167472062465.617
+area_world_land (m**2): 146330592528441.94
+area_world_north_atlantic_ocean (m**2): 39435433306116.086
+area_world_northern_hemisphere (m**2): 254749701223478.1
+area_world_northern_hemisphere_land (m**2): 98528541531558.33
+area_world_northern_hemisphere_ocean (m**2): 156221159677306.1
+area_world_ocean (m**2): 363168809909158.25
+area_world_southern_hemisphere (m**2): 254749701223478.12
+area_world_southern_hemisphere_land (m**2): 47802050996883.62
+area_world_southern_hemisphere_ocean (m**2): 206947650231852.12
+branch_method: standard
+branch_time_in_child: 0.0
+branch_time_in_parent: 36500.0
+calendar: 365_day
+comment: <null ref>
+contact: gfdl.climate.model.info@noaa.gov
+creation_date: 2019-03-09T21:12:20Z
+crunch_contact: cmip6output crunching regression test
+crunch_netcdf_scm_version: 2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
+crunch_source_files: Files: ['/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/abrupt-4xCO2/r1i1p1f1/Amon/tas/gr1/v20180701/tas_Amon_GFDL-CM4_abrupt-4xCO2_r1i1p1f1_gr1_000101-000512.nc']
+data_specs_version: 01.00.27
+experiment: abrupt quadrupling of CO2
+experiment_id: abrupt-4xCO2
+external_variables: areacella
+forcing_index: 1
+frequency: monC
+further_info_url: https://furtherinfo.es-doc.org/CMIP6.NOAA-GFDL.GFDL-CM4.abrupt-4xCO2.none.r1i1p1f1
+grid: atmos data regridded from Cubed-sphere (c96) to 180,288; interpolation method: conserve_order2
+grid_label: gr1
+history: Fri Jun 21 16:49:19 2019: cdo seltimestep,1/60 tas_Amon_GFDL-CM4_abrupt-4xCO2_r1i1p1f1_gr1_000101-010012.nc tas_Amon_GFDL-CM4_abrupt-4xCO2_r1i1p1f1_gr1_000101-000512.nc
+File was processed by fremetar (GFDL analog of CMOR). TripleID: [exper_id_qVYgCix5ML,realiz_id_c2oVUWxeGl,run_id_aUlk27asiH]
+initialization_index: 1
+institution: National Oceanic and Atmospheric Administration, Geophysical Fluid Dynamics Laboratory, Princeton, NJ 08540, USA
+institution_id: NOAA-GFDL
+interp_method: conserve_order2
+land_fraction: 0.2872046401343451
+land_fraction_northern_hemisphere: 0.38676607296636073
+land_fraction_southern_hemisphere: 0.18764320730232953
+license: CMIP6 model data produced by NOAA-GFDL is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file). The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+nominal_resolution: 100 km
+original_name: tas
+parent_activity_id: CMIP
+parent_experiment_id: piControl
+parent_mip_era: CMIP6
+parent_source_id: GFDL-CM4
+parent_time_units: days since 0001-1-1
+parent_variant_label: r1i1p1f1
+physics_index: 1
+product: model-output
+realization_index: 1
+realm: atmos
+references: see further_info_url attribute
+source: GFDL-CM4 (2018): 
+aerosol: interactive
+atmos: GFDL-AM4.0.1 (Cubed-sphere (c96) - 1 degree nominal horizontal resolution; 360 x 180 longitude/latitude; 33 levels; top level 1 hPa)
+atmosChem: fast chemistry, aerosol only
+land: GFDL-LM4.0.1 (1 degree nominal horizontal resolution; 360 x 180 longitude/latitude; 20 levels; bot level 10m); land:Veg:unnamed (dynamic vegetation, dynamic land use); land:Hydro:unnamed (soil water and ice, multi-layer snow, rivers and lakes)
+landIce: GFDL-LM4.0.1
+ocean: GFDL-OM4p25 (GFDL-MOM6, tripolar - nominal 0.25 deg; 1440 x 1080 longitude/latitude; 75 levels; top grid cell 0-2 m)
+ocnBgchem: GFDL-BLINGv2
+seaIce: GFDL-SIM4p25 (GFDL-SIS2.0, tripolar - nominal 0.25 deg; 1440 x 1080 longitude/latitude; 5 layers; 5 thickness categories)
+(GFDL ID: 2019_0193)
+source_id: GFDL-CM4
+source_type: AOGCM
+sub_experiment: none
+sub_experiment_id: none
+table_id: Amon
+title: NOAA GFDL GFDL-CM4 model output prepared for CMIP6 abrupt quadrupling of CO2
+tracking_id: hdl:21.14100/e6624ca2-59b3-4ecf-ae6d-2ed8003bde82
+variable_id: tas
+variant_info: N/A
+variant_label: r1i1p1f1
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 11
+    THISFILE_DATAROWS = 5
+    THISFILE_FIRSTYEAR = 1
+    THISFILE_LASTYEAR = 5
+    THISFILE_ANNUALSTEPS = 1
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'AVERAGE_YEAR_MID_YEAR'
+    THISFILE_FIRSTDATAROW = 104
+/
+
+   VARIABLE                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K
+      YEARS               WORLD                 N34                LAND                 AMV                  NH              NHLAND             NHOCEAN               OCEAN                  SH              SHLAND             SHOCEAN
+          1         2.86968e+02         2.97688e+02         2.81782e+02         2.92257e+02         2.87931e+02         2.83504e+02         2.90722e+02         2.89058e+02         2.86005e+02         2.78232e+02         2.87801e+02
+          2         2.87998e+02         3.00254e+02         2.83130e+02         2.93044e+02         2.89152e+02         2.84930e+02         2.91814e+02         2.89960e+02         2.86844e+02         2.79418e+02         2.88560e+02
+          3         2.88542e+02         3.00112e+02         2.83832e+02         2.93901e+02         2.89853e+02         2.85763e+02         2.92433e+02         2.90440e+02         2.87232e+02         2.79853e+02         2.88936e+02
+          4         2.88645e+02         2.98858e+02         2.83984e+02         2.93789e+02         2.90096e+02         2.86057e+02         2.92643e+02         2.90523e+02         2.87193e+02         2.79709e+02         2.88922e+02
+          5         2.88723e+02         2.98999e+02         2.84060e+02         2.93757e+02         2.90308e+02         2.86371e+02         2.92791e+02         2.90602e+02         2.87139e+02         2.79298e+02         2.88950e+02

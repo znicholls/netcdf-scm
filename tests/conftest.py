@@ -8,6 +8,7 @@ import iris
 import numpy as np
 import pandas as pd
 import pytest
+from pymagicc.io import MAGICCData
 
 from netcdf_scm.io import load_scmdataframe
 from netcdf_scm.iris_cube_wrappers import (
@@ -338,6 +339,11 @@ def test_cmip6_crunch_output(test_data_root_dir):
 
 
 @pytest.fixture
+def test_cmip6_wrangle_output(test_data_root_dir):
+    return join(test_data_root_dir, "expected-wrangling-output", "cmip6output", "CMIP6")
+
+
+@pytest.fixture
 def test_marble_cmip5_crunch_output(test_data_root_dir):
     return join(
         test_data_root_dir, "expected-crunching-output", "marble-cmip5", "cmip5"
@@ -594,6 +600,55 @@ def run_crunching_comparison(assert_scmdata_frames_allclose):
 
 
 @pytest.fixture
+def run_wrangling_comparison(assert_scmdata_frames_allclose):
+    def _do_comparison(res, expected, update=False):
+        """Run test that crunched files are unchanged
+
+        Parameters
+        ----------
+        res : str
+            Directory written as part of the test
+        expected : str
+            Directory against which the comparison should be done
+        update : bool
+            If True, don't perform the test and instead simply
+            overwrite the ``expected`` with ``res``
+
+        Raises
+        ------
+        AssertionError
+            If ``update`` is ``False`` and ``res`` and ``expected``
+            are not identical.
+        """
+        paths_to_walk = [expected, res] if not update else [res]
+        for p in paths_to_walk:
+            for dirpath, _, filenames in walk(p):
+                if filenames:
+                    if update:
+                        path_to_check = dirpath.replace(res, expected)
+                        if not path.exists(path_to_check):
+                            makedirs(path_to_check)
+
+                    for f in filenames:
+                        base_f = join(dirpath, f)
+                        comparison_p = expected if p == res else res
+                        comparison_f = base_f.replace(p, comparison_p)
+                        assert base_f != comparison_f
+                        if update:
+                            print("Updating {}".format(comparison_f))
+                            shutil.copy(base_f, comparison_f)
+                        else:
+                            base_scmdf = MAGICCData(base_f)
+                            comparison_scmdf = MAGICCData(comparison_f)
+                            assert_scmdata_frames_allclose(base_scmdf, comparison_scmdf)
+
+        if update:
+            pytest.skip("Updated {}".format(expected))
+
+    return _do_comparison
+
+
+@pytest.fixture
 def assert_scmdata_frames_allclose():
     def _do_assertion(res_scmdf, exp_scmdf):
         res_df = res_scmdf.timeseries().sort_index()
@@ -606,8 +661,8 @@ def assert_scmdata_frames_allclose():
         pd.testing.assert_frame_equal(res_df, exp_df, check_like=True)
         for base, check in [(exp_scmdf, res_scmdf), (res_scmdf, exp_scmdf)]:
             for k, v in base.metadata.items():
-                if k == "crunch_netcdf_scm_version":
-                    continue  # will change with version
+                if k in ("crunch_netcdf_scm_version", "date"):
+                    continue  # will change with version and test run time
                 if k == "crunch_source_files":
                     assert sorted([w.strip() for w in v.split(";")]) == sorted(
                         [w.strip() for w in check.metadata[k].split(";")]

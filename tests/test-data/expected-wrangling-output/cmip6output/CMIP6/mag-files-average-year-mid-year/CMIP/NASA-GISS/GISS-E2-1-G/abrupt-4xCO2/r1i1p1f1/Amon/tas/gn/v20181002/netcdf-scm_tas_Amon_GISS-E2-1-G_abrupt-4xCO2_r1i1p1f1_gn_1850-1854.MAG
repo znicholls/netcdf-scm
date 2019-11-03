@@ -1,0 +1,107 @@
+---- HEADER ----
+
+Date: 2019-11-03 14:23:59
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+Conventions: CF-1.5
+area_world (m**2): 509499402446956.25
+area_world_el_nino_n3.4 (m**2): 7396831885217.78
+area_world_land (m**2): 146406001767335.12
+area_world_north_atlantic_ocean (m**2): 39659751344075.11
+area_world_northern_hemisphere (m**2): 254749701223478.12
+area_world_northern_hemisphere_land (m**2): 98588705990809.72
+area_world_northern_hemisphere_ocean (m**2): 156160995225729.12
+area_world_ocean (m**2): 363093400684925.3
+area_world_southern_hemisphere (m**2): 254749701223478.1
+area_world_southern_hemisphere_land (m**2): 47817295776525.4
+area_world_southern_hemisphere_ocean (m**2): 206932405459196.22
+branch_method: standard
+branch_time_in_child: 0.0
+branch_time_in_parent: 0.0
+calendar: 365_day
+cmor_version: 3.3.2
+comment: near-surface (usually, 2 meter) air temperature
+contact: Kenneth Lo (cdkkl@giss.nasa.gov)
+creation_date: 2018-10-03T00:27:54Z
+crunch_contact: cmip6output crunching regression test
+crunch_netcdf_scm_version: 2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
+crunch_source_files: Files: ['/CMIP6/CMIP/NASA-GISS/GISS-E2-1-G/abrupt-4xCO2/r1i1p1f1/Amon/tas/gn/v20181002/tas_Amon_GISS-E2-1-G_abrupt-4xCO2_r1i1p1f1_gn_185001-185412.nc']
+data_specs_version: 01.00.23
+experiment: abrupt quadrupling of CO2
+experiment_id: abrupt-4xCO2
+external_variables: areacella
+forcing_index: 1
+frequency: mon
+further_info_url: https://furtherinfo.es-doc.org/CMIP6.NASA-GISS.GISS-E2-1-G.abrupt-4xCO2.none.r1i1p1f1
+grid: atmospheric grid: 144x90, ocean grid: 288x180
+grid_label: gn
+history: 2018-10-03T00:27:54Z altered by CMOR: Treated scalar dimension: 'height'. 2018-10-03T00:27:54Z altered by CMOR: replaced missing value flag (-1e+30) with standard missing value (1e+20).
+initialization_index: 1
+institution: Goddard Institute for Space Studies, New York, NY 10025, USA
+institution_id: NASA-GISS
+land_fraction: 0.2873526466649338
+land_fraction_northern_hemisphere: 0.3870022438390347
+land_fraction_southern_hemisphere: 0.18770304949083289
+license: CMIP6 model data produced by NASA Goddard Institute for Space Studies is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at https:///pcmdi.llnl.gov/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+model_id: E200_4xCO2aF40oQ40_2.json
+nominal_resolution: 250 km
+parent_activity_id: CMIP
+parent_experiment_id: piControl
+parent_experiment_rip: r1i1p1
+parent_mip_era: CMIP6
+parent_source_id: GISS-E2-1-G
+parent_time_units: days since 4150-1-1
+parent_variant_label: r1i1p1f1
+physics_index: 1
+product: model-output
+realization_index: 1
+realm: atmos
+references: https://data.giss.nasa.gov/modelE/cmip6
+source: GISS-E2.1G (2016): 
+aerosol: Varies with physics-version (p==1 none, p==3 OMA, p==4 TOMAS, p==5 MATRIX)
+atmos: GISS-E2.1 (2.5x2 degree; 144 x 90 longitude/latitude; 40 levels; top level 0.1 hPa)
+atmosChem: Varies with physics-version (p==1 Non-interactive, p>1 GPUCCINI)
+land: GISS LSM
+landIce: none
+ocean: GISS Ocean (1.25x1 degree; 288 x 180 longitude/latitude; 32 levels; top grid cell 0-10 m)
+ocnBgchem: none
+seaIce: GISS SI
+source_id: GISS-E2-1-G
+source_type: AOGCM
+sub_experiment: none
+sub_experiment_id: none
+table_id: Amon
+table_info: Creation Date:(21 March 2018) MD5:f76dbc1e8bf6b7e4aee30573a09e5454
+title: GISS-E2-1-G output prepared for CMIP6
+tracking_id: hdl:21.14100/5a56a8c4-c09a-4e5c-ae53-fd66055789fa
+variable_id: tas
+variant_label: r1i1p1f1
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 11
+    THISFILE_DATAROWS = 5
+    THISFILE_FIRSTYEAR = 1850
+    THISFILE_LASTYEAR = 1854
+    THISFILE_ANNUALSTEPS = 1
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'AVERAGE_YEAR_MID_YEAR'
+    THISFILE_FIRSTDATAROW = 103
+/
+
+   VARIABLE                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K
+      YEARS               WORLD                 N34                LAND                 AMV                  NH              NHLAND             NHOCEAN               OCEAN                  SH              SHLAND             SHOCEAN
+       1850         2.88034e+02         3.01008e+02         2.83009e+02         2.92313e+02         2.88445e+02         2.84558e+02         2.90898e+02         2.90061e+02         2.87624e+02         2.79815e+02         2.89429e+02
+       1851         2.88947e+02         3.01816e+02         2.84234e+02         2.93089e+02         2.89444e+02         2.85713e+02         2.91799e+02         2.90848e+02         2.88451e+02         2.81186e+02         2.90130e+02
+       1852         2.89332e+02         3.02226e+02         2.84754e+02         2.93668e+02         2.89982e+02         2.86396e+02         2.92246e+02         2.91178e+02         2.88682e+02         2.81367e+02         2.90372e+02
+       1853         2.89515e+02         3.00560e+02         2.85137e+02         2.93577e+02         2.90250e+02         2.86858e+02         2.92391e+02         2.91280e+02         2.88779e+02         2.81588e+02         2.90441e+02
+       1854         2.89504e+02         3.00071e+02         2.84975e+02         2.93639e+02         2.90265e+02         2.86748e+02         2.92485e+02         2.91331e+02         2.88744e+02         2.81319e+02         2.90459e+02

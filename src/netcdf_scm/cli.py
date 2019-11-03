@@ -929,7 +929,7 @@ def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
     original_years = ts.columns.map(lambda x: x.year).unique()
 
     time_id = "{}-{}".format(src_time_points[0].year, src_time_points[-1].year)
-    regex_search = r"{}\d*-{}\d*".format(
+    regex_search = r"{:04d}\d*-{:04d}\d*".format(
         src_time_points[0].year, src_time_points[-1].year
     )
     old_time_id = re.search(regex_search, fnames[0]).group(0)
@@ -940,14 +940,9 @@ def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
     if _skip_file(out_file, force, symlink_dir):
         return
 
-    try:
-        writer = MAGICCData(_do_timeseriestype_operation(openscmdf, out_format)).filter(
-            year=original_years
-        )
-    # emergency valve
-    except Exception as e:  # pylint:disable=broad-except # pragma: no cover
-        logger.exception("Not happy %s, exception %s", fnames, e)
-        return
+    writer = MAGICCData(_do_timeseriestype_operation(openscmdf, out_format)).filter(
+        year=original_years
+    )
 
     writer["todo"] = "SET"
     writer.metadata = metadata
@@ -967,16 +962,16 @@ def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
 
 def _do_timeseriestype_operation(openscmdf, out_format):
     if out_format.endswith("average-year-start-year"):
-        return openscmdf.time_mean("AS")
+        out = openscmdf.time_mean("AS")
 
     if out_format.endswith("average-year-mid-year"):
-        return openscmdf.time_mean("AC")
+        out = openscmdf.time_mean("AC")
 
     if out_format.endswith("average-year-end-year"):
-        return openscmdf.time_mean("A")
+        out = openscmdf.time_mean("A")
 
     if out_format.endswith("point-start-year"):
-        return openscmdf.resample("AS")
+        out = openscmdf.resample("AS")
 
     if out_format.endswith("point-mid-year"):
         out_time_points = [
@@ -985,12 +980,23 @@ def _do_timeseriestype_operation(openscmdf, out_format):
                 openscmdf["time"].min().year, openscmdf["time"].max().year + 1
             )
         ]
-        return openscmdf.interpolate(target_times=out_time_points)
+        out = openscmdf.interpolate(target_times=out_time_points)
 
     if out_format.endswith("point-end-year"):
-        return openscmdf.resample("A")
+        out = openscmdf.resample("A")
 
-    raise AssertionError("shouldn't get here")  # pragma: no cover # emergency valve
+    try:
+        if out.timeseries().shape[1] == 1:
+            error_msg = "We cannot yet write `{}` if the output data will have only one timestep".format(
+                out_format
+            )
+            raise ValueError(error_msg)
+        return out
+
+    except NameError:
+        raise NameError(  # pragma: no cover # emergency valve
+            "didn't hit any of the if blocks"
+        )
 
 
 def _write_magicc_input_file(  # pylint:disable=too-many-arguments
@@ -1033,14 +1039,9 @@ def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-argument
 
     original_years = ts.columns.map(lambda x: x.year).unique()
 
-    try:
-        openscmdf = _do_timeseriestype_operation(openscmdf, out_format).filter(
-            year=original_years
-        )
-    # emergency valve
-    except Exception as e:  # pylint:disable=broad-except # pragma: no cover
-        logger.exception("Not happy %s, exception %s", fnames, e)
-        return
+    openscmdf = _do_timeseriestype_operation(openscmdf, out_format).filter(
+        year=original_years
+    )
 
     time_id = "{}-{}".format(openscmdf["time"].min().year, openscmdf["time"].max().year)
     _write_magicc_input_files(
@@ -1073,10 +1074,11 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
             "magicc_internal_name": _MAGICC_VARIABLE_MAP[var_to_write][1],
         }
     except KeyError:
-        logger.exception(
-            "I don't know which MAGICC variable to use for input `%s`", var_to_write
+        raise KeyError(
+            "I don't know which MAGICC variable to use for input `{}`".format(
+                var_to_write
+            )
         )
-        return
 
     region_filters = {
         "FOURBOX": [
@@ -1115,20 +1117,18 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
         writer.metadata = metadata
         writer.metadata["header"] = header
         writer.metadata["timeseriestype"] = timeseriestype
-        try:
-            logger.info("Writing file to %s", out_file)
-            writer.write(out_file, magicc_version=7)
-            logger.info("Making symlink to %s", symlink_file)
-            os.symlink(out_file, symlink_file)
-        except (ValueError, AttributeError):
-            logger.exception("Not happy %s", out_file)
+
+        logger.info("Writing file to %s", out_file)
+        writer.write(out_file, magicc_version=7)
+        logger.info("Making symlink to %s", symlink_file)
+        os.symlink(out_file, symlink_file)
 
 
 def _wrangle_magicc_files(  # pylint:disable=too-many-arguments
     fnames, dpath, dst, force, out_format, target_units_specs, wrangle_contact, drs,
 ):
     openscmdf, metadata, header = _get_openscmdf_metadata_header(
-        fnames, dpath, target_units_specs, wrangle_contact,
+        fnames, dpath, target_units_specs, wrangle_contact, out_format
     )
 
     outfile_dir, symlink_dir = _get_outfile_dir_symlink_dir(dpath, drs, dst)
@@ -1182,7 +1182,7 @@ def _wrangle_magicc_files(  # pylint:disable=too-many-arguments
 
 
 def _get_openscmdf_metadata_header(
-    fnames, dpath, target_units_specs, wrangle_contact,
+    fnames, dpath, target_units_specs, wrangle_contact, out_format
 ):
     if len(fnames) > 1:
         raise AssertionError(
@@ -1190,6 +1190,12 @@ def _get_openscmdf_metadata_header(
         )  # pragma: no cover # emergency valve
 
     openscmdf = df_append([load_scmdataframe(os.path.join(dpath, f)) for f in fnames])
+    if openscmdf.timeseries().shape[1] == 1:
+        error_msg = "We cannot yet write `{}` if the output data has only one timestep".format(
+            out_format
+        )
+        raise ValueError(error_msg)
+
     if target_units_specs is not None:
         openscmdf = _convert_units(openscmdf, target_units_specs)
 

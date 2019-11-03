@@ -15,14 +15,14 @@ from netcdf_scm.iris_cube_wrappers import SCMCube
 
 
 def test_wrangling_unsupported_format(tmpdir, caplog, test_cmip6_crunch_output):
-    INPUT_DIR = test_cmip6_crunch_output
-    OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
+    input_dir = test_cmip6_crunch_output
+    output_dir = str(join(tmpdir, "new-sub-dir"))
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
-            [INPUT_DIR, OUTPUT_DIR, "test-invalid-format", "--out-format", "junk"],
+            [input_dir, output_dir, "test-invalid-format", "--out-format", "junk"],
         )
     assert result.exit_code != 0
     assert "invalid choice: junk" in result.output
@@ -30,8 +30,8 @@ def test_wrangling_unsupported_format(tmpdir, caplog, test_cmip6_crunch_output):
 
 
 def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
-    INPUT_DIR = test_cmip6_crunch_output
-    OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
+    input_dir = test_cmip6_crunch_output
+    output_dir = str(join(tmpdir, "new-sub-dir"))
     test_wrangler = "test-defaults"
 
     runner = CliRunner()
@@ -39,8 +39,8 @@ def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 test_wrangler,
                 "--drs",
                 "CMIP6Output",
@@ -54,7 +54,7 @@ def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
     assert result.exit_code == 0
 
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
-    assert "Making output directory: {}".format(OUTPUT_DIR) in result.output
+    assert "Making output directory: {}".format(output_dir) in result.output
 
     assert "rlut" in result.output
     assert "lai" in result.output
@@ -62,21 +62,21 @@ def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
 
     assert isdir(
         join(
-            OUTPUT_DIR,
+            output_dir,
             "CMIP6/CMIP/BCC/BCC-CSM2-MR/1pctCO2/r1i1p1f1/Amon/rlut/gn/v20181015",
         )
     )
     assert isdir(
         join(
-            OUTPUT_DIR,
+            output_dir,
             "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121",
         )
     )
-    assert isdir(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS"))
+    assert isdir(join(output_dir, "CMIP6/CMIP/CNRM-CERFACS"))
 
     with open(
         join(
-            OUTPUT_DIR,
+            output_dir,
             "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200201-200512.MAG",
         )
     ) as f:
@@ -86,27 +86,27 @@ def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
 
     with open(
         join(
-            OUTPUT_DIR,
+            output_dir,
             "flat/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200201-200512.MAG",
         )
     ) as f:
         content = f.read()
 
-    assert "Making symlink to {}".format(join(OUTPUT_DIR, "flat")) in result.output
+    assert "Making symlink to {}".format(join(output_dir, "flat")) in result.output
     assert "Contact: {}".format(test_wrangler) in content
 
 
 def test_wrangling_magicc_input_files(tmpdir, caplog, test_marble_cmip5_crunch_output):
-    INPUT_DIR = test_marble_cmip5_crunch_output
-    OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
+    input_dir = test_marble_cmip5_crunch_output
+    output_dir = str(join(tmpdir, "new-sub-dir"))
     test_wrangler = "test wrangling magicc input point end of year files <email>"
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 test_wrangler,
                 "--out-format",
                 "magicc-input-files-point-end-year",
@@ -121,17 +121,17 @@ def test_wrangling_magicc_input_files(tmpdir, caplog, test_marble_cmip5_crunch_o
     assert result.exit_code == 0
 
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in result.output
-    assert "Making output directory: {}".format(OUTPUT_DIR) in result.output
+    assert "Making output directory: {}".format(output_dir) in result.output
 
-    assert isdir(join(OUTPUT_DIR, "cmip5/1pctCO2/Amon/tas/CanESM2/r1i1p1"))
-    assert isdir(join(OUTPUT_DIR, "cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1"))
-    assert isdir(join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1"))
-    assert isdir(join(OUTPUT_DIR, "cmip5/rcp45/Amon/tas/ACCESS1-0/r1i1p1"))
-    assert isdir(join(OUTPUT_DIR, "cmip5/rcp85/Amon/tas/NorESM1-ME/r1i1p1"))
+    assert isdir(join(output_dir, "cmip5/1pctCO2/Amon/tas/CanESM2/r1i1p1"))
+    assert isdir(join(output_dir, "cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1"))
+    assert isdir(join(output_dir, "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1"))
+    assert isdir(join(output_dir, "cmip5/rcp45/Amon/tas/ACCESS1-0/r1i1p1"))
+    assert isdir(join(output_dir, "cmip5/rcp85/Amon/tas/NorESM1-ME/r1i1p1"))
 
     with open(
         join(
-            OUTPUT_DIR,
+            output_dir,
             "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1/TAS_RCP45_HADCM3_R1I1P1_2006-2035_GLOBAL_SURFACE_TEMP.IN",
         )
     ) as f:
@@ -150,16 +150,16 @@ def test_wrangling_magicc_input_files(tmpdir, caplog, test_marble_cmip5_crunch_o
 
 
 def test_wrangling_magicc_input_files_error(tmpdir, caplog, test_cmip6_crunch_output):
-    INPUT_DIR = test_cmip6_crunch_output
-    OUTPUT_DIR = str(join(tmpdir, "new-sub-dir"))
+    input_dir = test_cmip6_crunch_output
+    output_dir = str(join(tmpdir, "new-sub-dir"))
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test-defaults",
                 "--out-format",
                 "magicc-input-files-point-end-year",
@@ -171,25 +171,30 @@ def test_wrangling_magicc_input_files_error(tmpdir, caplog, test_cmip6_crunch_ou
                 1,
             ],
         )
-    assert result.exit_code == 0
+    assert result.exit_code != 0
 
     assert (
-        "ERROR:netcdf_scm:I don't know which MAGICC variable to use for input `lai`"
+        str(
+            "KeyError: "
+            + '"'
+            + "I don't know which MAGICC variable to use for input `lai`"
+            + '"'
+        )
         in result.output
     )
 
 
 def test_wrangling_blend_models(tmpdir, caplog, test_cmip6_crunch_output):
-    INPUT_DIR = test_cmip6_crunch_output
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = test_cmip6_crunch_output
+    output_dir = str(tmpdir)
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -208,20 +213,20 @@ def test_wrangling_blend_models(tmpdir, caplog, test_cmip6_crunch_output):
     assert ".*" in result.output
     assert ".mat" in result.output
 
-    assert len(glob(join(OUTPUT_DIR, "*.mat"))) == 123
+    assert len(glob(join(output_dir, "*.mat"))) == 123
 
 
 def test_wrangling_handles_integer_units(tmpdir, caplog, test_cmip6_crunch_output):
-    INPUT_DIR = test_cmip6_crunch_output
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = test_cmip6_crunch_output
+    output_dir = str(tmpdir)
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--regexp",
                 ".*lai.*",
@@ -240,15 +245,15 @@ def test_wrangling_handles_integer_units(tmpdir, caplog, test_cmip6_crunch_outpu
 
 @pytest.mark.parametrize("out_format", ["mag-files", "tuningstrucs-blend-model"])
 def test_wrangling_force(tmpdir, caplog, out_format, test_cmip6_crunch_output):
-    INPUT_DIR = test_cmip6_crunch_output
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = test_cmip6_crunch_output
+    output_dir = str(tmpdir)
 
     runner = CliRunner()
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
         [
-            INPUT_DIR,
-            OUTPUT_DIR,
+            input_dir,
+            output_dir,
             "test",
             "--regexp",
             ".*lai.*",
@@ -270,8 +275,8 @@ def test_wrangling_force(tmpdir, caplog, out_format, test_cmip6_crunch_output):
         result_skip = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--regexp",
                 ".*lai.*",
@@ -289,12 +294,12 @@ def test_wrangling_force(tmpdir, caplog, out_format, test_cmip6_crunch_output):
 
     if out_format == "mag-files":
         expected_file = join(
-            OUTPUT_DIR,
+            output_dir,
             "CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/netcdf-scm_lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200201-200512.MAG",
         )
     else:
         expected_file = join(
-            OUTPUT_DIR,
+            output_dir,
             "test-prefix_LAI_HISTORICAL_R1I1P1F2_WORLD_SOUTHERN_HEMISPHERE_LAND.mat",
         )
     skip_str_file = "Skipped (already exists, not overwriting) {}".format(expected_file)
@@ -305,8 +310,8 @@ def test_wrangling_force(tmpdir, caplog, out_format, test_cmip6_crunch_output):
         result_force = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--regexp",
                 ".*lai.*",
@@ -326,13 +331,13 @@ def test_wrangling_force(tmpdir, caplog, out_format, test_cmip6_crunch_output):
 
 
 def test_wrangling_blended_models_default_drs_error(tmpdir, test_cmip6_crunch_output):
-    INPUT_DIR = test_cmip6_crunch_output
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = test_cmip6_crunch_output
+    output_dir = str(tmpdir)
 
     runner = CliRunner()
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [INPUT_DIR, OUTPUT_DIR, "test", "--out-format", "tuningstrucs-blend-model"],
+        [input_dir, output_dir, "test", "--out-format", "tuningstrucs-blend-model"],
     )
     assert result.exit_code != 0
     assert isinstance(result.exception, NotImplementedError)
@@ -343,15 +348,15 @@ def test_wrangling_blended_models_default_drs_error(tmpdir, test_cmip6_crunch_ou
 
 
 def test_wrangling_drs_replication(tmpdir, test_cmip6_crunch_output):
-    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/CNRM-CERFACS")
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = join(test_cmip6_crunch_output, "CMIP/CNRM-CERFACS")
+    output_dir = str(tmpdir)
 
     runner = CliRunner()
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
         [
-            INPUT_DIR,
-            OUTPUT_DIR,
+            input_dir,
+            output_dir,
             "test",
             "--regexp",
             ".*lai.*",
@@ -362,20 +367,20 @@ def test_wrangling_drs_replication(tmpdir, test_cmip6_crunch_output):
         ],
     )
     assert result.exit_code == 0
-    assert isdir(join(OUTPUT_DIR, "CMIP6/CMIP/CNRM-CERFACS"))
+    assert isdir(join(output_dir, "CMIP6/CMIP/CNRM-CERFACS"))
 
 
 def test_wrangling_annual_mean_file(tmpdir, test_data_root_dir):
-    INPUT_DIR = join(
+    input_dir = join(
         test_data_root_dir,
         "marble-cmip5-annual-output/cmip5/rcp26/Amon/tas/bcc-csm1-1/r1i1p1",
     )
-    OUTPUT_DIR = str(tmpdir)
+    output_dir = str(tmpdir)
 
     runner = CliRunner()
     result = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "MarbleCMIP5", "--number-workers", 1],
+        [input_dir, output_dir, "test", "--drs", "MarbleCMIP5", "--number-workers", 1],
     )
 
     assert result.exit_code != 0
@@ -401,16 +406,16 @@ def test_wrangling_units_specs(
 
     runner = CliRunner()
 
-    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/CCCma")
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = join(test_cmip6_crunch_output, "CMIP/CCCma")
+    output_dir = str(tmpdir)
 
     caplog.clear()
     with caplog.at_level("INFO"):
         result_raw = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -422,7 +427,7 @@ def test_wrangling_units_specs(
     assert "Converting units" not in caplog.messages
 
     expected_file = join(
-        OUTPUT_DIR,
+        output_dir,
         "CMIP6/CMIP/CCCma/CanESM5/piControl/r1i1p1f1/Omon/fgco2/gn/v20190429/netcdf-scm_fgco2_Omon_CanESM5_piControl_r1i1p1f1_gn_600101-600103.MAG",
     )
 
@@ -432,8 +437,8 @@ def test_wrangling_units_specs(
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -467,16 +472,16 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output, caplog
 
     runner = CliRunner()
 
-    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/CCCma")
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = join(test_cmip6_crunch_output, "CMIP/CCCma")
+    output_dir = str(tmpdir)
 
     result_raw = runner.invoke(
         wrangle_netcdf_scm_ncs,
-        [INPUT_DIR, OUTPUT_DIR, "test", "--drs", "CMIP6Output", "--number-workers", 1],
+        [input_dir, output_dir, "test", "--drs", "CMIP6Output", "--number-workers", 1],
     )
 
     expected_file = join(
-        OUTPUT_DIR,
+        output_dir,
         "CMIP6/CMIP/CCCma/CanESM5/piControl/r1i1p1f1/Omon/fgco2/gn/v20190429/netcdf-scm_fgco2_Omon_CanESM5_piControl_r1i1p1f1_gn_600101-600103.MAG",
     )
     assert result_raw.exit_code == 0
@@ -487,8 +492,8 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output, caplog
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -526,16 +531,16 @@ def test_wrangling_units_specs_area_sum(tmpdir, test_cmip6_crunch_output, caplog
 def test_wrangling_mag_file(tmpdir, test_cmip6_crunch_output, caplog):
     runner = CliRunner()
 
-    INPUT_DIR = join(test_cmip6_crunch_output, "ScenarioMIP/IPSL/IPSL-CM6A-LR")
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = join(test_cmip6_crunch_output, "ScenarioMIP/IPSL/IPSL-CM6A-LR")
+    output_dir = str(tmpdir)
 
     caplog.clear()
     with caplog.at_level("INFO"):
         result_raw = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -546,7 +551,7 @@ def test_wrangling_mag_file(tmpdir, test_cmip6_crunch_output, caplog):
     assert result_raw.exit_code == 0
 
     expected_file = join(
-        OUTPUT_DIR,
+        output_dir,
         "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121/netcdf-scm_cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_202501-204012.MAG",
     )
 
@@ -610,16 +615,16 @@ def test_wrangling_mag_file_operations(
 ):
     runner = CliRunner()
 
-    INPUT_DIR = join(test_cmip6_crunch_output, "ScenarioMIP/IPSL/IPSL-CM6A-LR")
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = join(test_cmip6_crunch_output, "ScenarioMIP/IPSL/IPSL-CM6A-LR")
+    output_dir = str(tmpdir)
 
     caplog.clear()
     with caplog.at_level("INFO"):
         result_raw = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -630,7 +635,7 @@ def test_wrangling_mag_file_operations(
     assert result_raw.exit_code == 0
 
     expected_file_raw = join(
-        OUTPUT_DIR,
+        output_dir,
         "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121/netcdf-scm_cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_202501-204012.MAG",
     )
 
@@ -642,8 +647,8 @@ def test_wrangling_mag_file_operations(
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -656,7 +661,7 @@ def test_wrangling_mag_file_operations(
     assert result.exit_code == 0
 
     expected_file = join(
-        OUTPUT_DIR,
+        output_dir,
         "CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Lmon/cSoilFast/gr/v20190121/netcdf-scm_cSoilFast_Lmon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_2025-2040.MAG",
     )
 
@@ -677,16 +682,16 @@ def test_wrangling_mag_file_operations(
 def test_wrangling_in_file(tmpdir, test_cmip6_crunch_output, caplog):
     runner = CliRunner()
 
-    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/IPSL/IPSL-CM6A-LR/historical")
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = join(test_cmip6_crunch_output, "CMIP/IPSL/IPSL-CM6A-LR/historical")
+    output_dir = str(tmpdir)
 
     caplog.clear()
     with caplog.at_level("INFO"):
         result_raw = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -702,7 +707,7 @@ def test_wrangling_in_file(tmpdir, test_cmip6_crunch_output, caplog):
 
     # also a global file but don't worry about that
     expected_file = join(
-        OUTPUT_DIR,
+        output_dir,
         "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20180803/TAS_HISTORICAL_IPSL-CM6A-LR_R1I1P1F1_191001-191003_FOURBOX_SURFACE_TEMP.IN",
     )
 
@@ -728,16 +733,16 @@ def test_wrangling_in_file_operations(
 ):
     runner = CliRunner()
 
-    INPUT_DIR = join(test_cmip6_crunch_output, "CMIP/IPSL/IPSL-CM6A-LR/piControl")
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = join(test_cmip6_crunch_output, "CMIP/IPSL/IPSL-CM6A-LR/piControl")
+    output_dir = str(tmpdir)
 
     caplog.clear()
     with caplog.at_level("INFO"):
         result_raw = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -753,7 +758,7 @@ def test_wrangling_in_file_operations(
 
     # also a global file but don't worry about that
     expected_file_raw = join(
-        OUTPUT_DIR,
+        output_dir,
         "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/TAS_PICONTROL_IPSL-CM6A-LR_R1I1P1F1_284001-285912_FOURBOX_SURFACE_TEMP.IN",
     )
 
@@ -765,8 +770,8 @@ def test_wrangling_in_file_operations(
         result = runner.invoke(
             wrangle_netcdf_scm_ncs,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "CMIP6Output",
@@ -782,12 +787,12 @@ def test_wrangling_in_file_operations(
 
     os.listdir(
         join(
-            OUTPUT_DIR,
+            output_dir,
             "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/",
         )
     )
     expected_file = join(
-        OUTPUT_DIR,
+        output_dir,
         "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/TAS_PICONTROL_IPSL-CM6A-LR_R1I1P1F1_2840-2859_FOURBOX_SURFACE_TEMP.IN",
     )
 
@@ -804,4 +809,59 @@ def test_wrangling_in_file_operations(
             .upper()
         )
         in content
+    )
+
+
+@pytest.mark.xfail(
+    message="Some of these errors are still cryptic because scmdata isn't inteprolating as intended"
+)
+@pytest.mark.parametrize(
+    "out_format",
+    (
+        "mag-files-average-year-start-year",
+        "mag-files-average-year-mid-year",
+        "mag-files-average-year-end-year",
+        "mag-files-point-start-year",
+        "mag-files-point-mid-year",
+        "mag-files-point-end-year",
+        "magicc-input-files-average-year-start-year",
+        "magicc-input-files-average-year-mid-year",
+        "magicc-input-files-average-year-end-year",
+        "magicc-input-files-point-start-year",
+        "magicc-input-files-point-mid-year",
+        "magicc-input-files-point-end-year",
+    ),
+)
+def test_wrangling_with_operation_single_timepoint(
+    tmpdir, test_cmip6_crunch_output, caplog, out_format
+):
+    runner = CliRunner()
+
+    input_dir = join(
+        test_cmip6_crunch_output, "CMIP/NCAR/CESM2/historical/r7i1p1f1/Amon/tas"
+    )
+    output_dir = str(tmpdir)
+
+    caplog.clear()
+    with caplog.at_level("INFO"):
+        result = runner.invoke(
+            wrangle_netcdf_scm_ncs,
+            [
+                input_dir,
+                output_dir,
+                "test",
+                "--drs",
+                "CMIP6Output",
+                "--number-workers",
+                1,
+                "--out-format",
+                out_format,
+            ],
+        )
+    assert result.exit_code != 0
+    assert (
+        "ValueError: We cannot yet write `{}` if the output data will have only one timestep".format(
+            out_format
+        )
+        in result.stdout
     )
