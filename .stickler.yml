@@ -1,7 +1,15 @@
 linters:
   flake8:
-    fixer: true
+    max-line-length: 88
+    # E203 - whitespace before ':'. Opposite convention enforced by black so ignore here
+    # E501 - line too long. Handled by black, we have longer lines
+    # W503 - line break before binary operator. Dumb rule, ignore
+    ignore: 'E203,E501,W503'
+    python: 3
+  black:
+    py36: true
   shellcheck:
     shell: bash
 fixers:
-  enable: true
+  enable: false
+
