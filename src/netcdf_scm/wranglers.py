@@ -171,8 +171,11 @@ def convert_scmdf_to_tuningstruc(scmdf, outdir, prefix=None, force=False):
                 )
             )
             dataset["tuningdata"]["model"][m]["data"] = [
-                [float(t.year) for t in cmdf.columns],
-                list(cmdf.values.squeeze()),
+                list(e)
+                for e in zip(
+                    [float(t.year) for t in cmdf.columns],
+                    list(cmdf.values.squeeze()),
+                )
             ]
             dataset["tuningdata"]["model"][m]["col_code"] = ["YEARS", ids["variable"]]
 
