@@ -156,7 +156,7 @@ class SCMCube:  # pylint:disable=too-many-public-methods
         'atmosphere' realm.
         """
         try:
-            if self.cube.attributes[self._realm_key] in ("ocean", "ocnBgchem"):
+            if self.cube.attributes[self._realm_key] in ("ocean", "ocnBgchem", "ocnBgChem"):
                 return "ocean"
             if self.cube.attributes[self._realm_key] in ("land"):
                 return "land"
