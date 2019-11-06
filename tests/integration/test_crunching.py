@@ -16,9 +16,9 @@ from netcdf_scm.io import load_scmdataframe
 
 
 def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_dir):
-    INPUT_DIR = test_data_marble_cmip5_dir
-    OUTPUT_DIR = str(tmpdir)
-    VAR_TO_CRUNCH = ".*tas.*"
+    input_dir = test_data_marble_cmip5_dir
+    output_dir = str(tmpdir)
+    var_to_crunch = ".*tas.*"
     crunch_contact = "knmi-verification"
 
     runner = CliRunner(mix_stderr=False)
@@ -26,13 +26,13 @@ def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_di
         result = runner.invoke(
             crunch_data,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 crunch_contact,
                 "--drs",
                 "MarbleCMIP5",
                 "--regexp",
-                VAR_TO_CRUNCH,
+                var_to_crunch,
                 "-f",
                 "--small-number-workers",
                 1,
@@ -41,12 +41,12 @@ def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_di
     assert result.exit_code == 0
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
     assert (
-        "Making output directory: {}/netcdf-scm-crunched".format(OUTPUT_DIR)
+        "Making output directory: {}/netcdf-scm-crunched".format(output_dir)
         in caplog.messages
     )
 
     # Check that there is a log file  which contains 'INFO' log messages
-    log_fnames = glob(join(OUTPUT_DIR, "netcdf-scm-crunched", "*.log"))
+    log_fnames = glob(join(output_dir, "netcdf-scm-crunched", "*.log"))
     assert len(log_fnames) == 1
 
     with open(log_fnames[0]) as fh:
@@ -58,7 +58,7 @@ def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_di
 
     # Check the output_tracker file
     with open(
-        join(OUTPUT_DIR, "netcdf-scm-crunched", "netcdf-scm_crunched.jsonl")
+        join(output_dir, "netcdf-scm-crunched", "netcdf-scm_crunched.jsonl")
     ) as fh:
         lines = fh.readlines()
         assert len(lines) == 6
@@ -75,7 +75,7 @@ def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_di
 
     THRESHOLD_PERCENTAGE_DIFF = 10 ** -1
     files_found = 0
-    for dirpath, dirnames, filenames in walk(OUTPUT_DIR):
+    for dirpath, dirnames, filenames in walk(output_dir):
         if not dirnames:
             assert len(filenames) == 1
             filename = filenames[0]
@@ -140,7 +140,7 @@ def test_crunching(tmpdir, caplog, test_data_knmi_dir, test_data_marble_cmip5_di
 
 
 def test_crunching_join_files(tmpdir, caplog, test_data_cmip6output_dir):
-    INPUT_DIR = join(
+    input_dir = join(
         test_data_cmip6output_dir,
         "CMIP6",
         "CMIP",
@@ -153,7 +153,7 @@ def test_crunching_join_files(tmpdir, caplog, test_data_cmip6output_dir):
         "gr",
         "v20181123",
     )
-    OUTPUT_DIR = str(tmpdir)
+    output_dir = str(tmpdir)
     crunch_contact = "join-files-test"
 
     runner = CliRunner(mix_stderr=False)
@@ -161,8 +161,8 @@ def test_crunching_join_files(tmpdir, caplog, test_data_cmip6output_dir):
         result = runner.invoke(
             crunch_data,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 crunch_contact,
                 "--drs",
                 "CMIP6Output",
@@ -177,7 +177,7 @@ def test_crunching_join_files(tmpdir, caplog, test_data_cmip6output_dir):
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.messages
 
     expected_file = join(
-        OUTPUT_DIR,
+        output_dir,
         "netcdf-scm-crunched",
         "CMIP6",
         "CMIP",
@@ -200,9 +200,9 @@ def test_crunching_join_files(tmpdir, caplog, test_data_cmip6output_dir):
 
 
 def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
-    INPUT_DIR = test_data_marble_cmip5_dir
-    OUTPUT_DIR = str(tmpdir)
-    VAR_TO_CRUNCH = ".*fco2antt.*"
+    input_dir = test_data_marble_cmip5_dir
+    output_dir = str(tmpdir)
+    var_to_crunch = ".*fco2antt.*"
     DATA_SUB_DIR = "custom-name"
     CRUNCH_CONTACT = "test crunch contact info <email>"
 
@@ -211,13 +211,13 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
         result = runner.invoke(
             crunch_data,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 CRUNCH_CONTACT,
                 "--drs",
                 "MarbleCMIP5",
                 "--regexp",
-                VAR_TO_CRUNCH,
+                var_to_crunch,
                 "--data-sub-dir",
                 DATA_SUB_DIR,
                 "-f",
@@ -231,10 +231,10 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
 
     assert "netcdf-scm: {}".format(netcdf_scm.__version__) in caplog.text
     assert "crunch-contact: {}".format(CRUNCH_CONTACT) in caplog.text
-    assert "source: {}".format(INPUT_DIR) in caplog.text
-    assert "destination: {}".format(OUTPUT_DIR) in caplog.text
+    assert "source: {}".format(input_dir) in caplog.text
+    assert "destination: {}".format(output_dir) in caplog.text
     assert "drs: MarbleCMIP5" in caplog.text
-    assert "regexp: {}".format(VAR_TO_CRUNCH) in caplog.text
+    assert "regexp: {}".format(var_to_crunch) in caplog.text
     assert "regions: World,World|Northern Hemisphere" in caplog.text
     assert "force: True" in caplog.text
     assert "small_number_workers: 10" in caplog.text
@@ -248,16 +248,16 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
     )
 
     assert (
-        "Making output directory: {}/custom-name".format(OUTPUT_DIR) in caplog.messages
+        "Making output directory: {}/custom-name".format(output_dir) in caplog.messages
     )
 
     assert "Attempting to process: ['fco2antt" in caplog.text
     assert "Attempting to process: ['tas" not in caplog.text
 
-    assert isdir(join(OUTPUT_DIR, DATA_SUB_DIR, "cmip5"))
+    assert isdir(join(output_dir, DATA_SUB_DIR, "cmip5"))
 
     out_file = join(
-        OUTPUT_DIR,
+        output_dir,
         DATA_SUB_DIR,
         "cmip5",
         "1pctCO2",
@@ -303,13 +303,13 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
         result_skip = runner.invoke(
             crunch_data,
             [
-                INPUT_DIR,
-                OUTPUT_DIR,
+                input_dir,
+                output_dir,
                 "test",
                 "--drs",
                 "MarbleCMIP5",
                 "--regexp",
-                VAR_TO_CRUNCH,
+                var_to_crunch,
                 "--data-sub-dir",
                 DATA_SUB_DIR,
                 "--small-number-workers",
@@ -323,14 +323,14 @@ def test_crunching_arguments(tmpdir, caplog, test_data_marble_cmip5_dir):
 
 
 def test_crunching_wrong_cube(tmpdir, caplog, test_data_marble_cmip5_dir):
-    INPUT_DIR = test_data_marble_cmip5_dir
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = test_data_marble_cmip5_dir
+    output_dir = str(tmpdir)
     CUBE = "CMIP6Output"
 
     runner = CliRunner()
     with caplog.at_level("INFO"):
         result = runner.invoke(
-            crunch_data, [INPUT_DIR, OUTPUT_DIR, "test", "--drs", CUBE]
+            crunch_data, [input_dir, output_dir, "test", "--drs", CUBE]
         )
     assert result.exit_code  # non-zero exit code
 
@@ -344,12 +344,12 @@ def test_crunching_broken_dir(
     mock_add_time_period, tmpdir, caplog, test_data_marble_cmip5_dir
 ):
     mock_add_time_period.side_effect = ValueError
-    INPUT_DIR = test_data_marble_cmip5_dir
-    OUTPUT_DIR = str(tmpdir)
+    input_dir = test_data_marble_cmip5_dir
+    output_dir = str(tmpdir)
     CUBE = "CMIP6Output"
 
     runner = CliRunner()
-    result = runner.invoke(crunch_data, [INPUT_DIR, OUTPUT_DIR, "test", "--drs", CUBE])
+    result = runner.invoke(crunch_data, [input_dir, output_dir, "test", "--drs", CUBE])
 
     assert result.exit_code  # assert failure raised
     assert "Could not calculate size of data in" in result.output, result.output
@@ -365,7 +365,7 @@ def test_crunching_broken_dir(
 def test_auto_drop_land_regions(
     in_regions, safe, out_regions, tmpdir, caplog, test_data_cmip6output_dir
 ):
-    OUTPUT_DIR = str(tmpdir)
+    output_dir = str(tmpdir)
     crunch_contact = "join-files-test"
 
     runner = CliRunner(mix_stderr=False)
@@ -374,7 +374,7 @@ def test_auto_drop_land_regions(
             crunch_data,
             [
                 test_data_cmip6output_dir,
-                OUTPUT_DIR,
+                output_dir,
                 crunch_contact,
                 "--regexp",
                 ".*hfds.*",
@@ -395,7 +395,7 @@ def test_auto_drop_land_regions(
     else:
         assert key_phrase not in result.stderr, result.stderr
 
-    for out_file in glob(join(OUTPUT_DIR, "**", "*.nc"), recursive=True):
+    for out_file in glob(join(output_dir, "**", "*.nc"), recursive=True):
         res = load_scmdataframe(out_file)
         assert sorted(res["region"].unique()) == sorted(out_regions)
 
@@ -415,7 +415,7 @@ def test_auto_drop_land_regions(
 def test_auto_drop_ocean_regions(
     in_regions, safe, out_regions, tmpdir, caplog, test_data_cmip6output_dir
 ):
-    OUTPUT_DIR = str(tmpdir)
+    output_dir = str(tmpdir)
     crunch_contact = "join-files-test"
 
     runner = CliRunner(mix_stderr=False)
@@ -424,7 +424,7 @@ def test_auto_drop_ocean_regions(
             crunch_data,
             [
                 test_data_cmip6output_dir,
-                OUTPUT_DIR,
+                output_dir,
                 crunch_contact,
                 "--regexp",
                 ".*gpp.*",
@@ -445,6 +445,6 @@ def test_auto_drop_ocean_regions(
     else:
         assert key_phrase not in result.stderr, result.stderr
 
-    for out_file in glob(join(OUTPUT_DIR, "**", "*.nc"), recursive=True):
+    for out_file in glob(join(output_dir, "**", "*.nc"), recursive=True):
         res = load_scmdataframe(out_file)
         assert sorted(res["region"].unique()) == sorted(out_regions)

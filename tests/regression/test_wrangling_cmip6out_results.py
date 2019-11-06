@@ -7,7 +7,11 @@ from netcdf_scm.cli import wrangle_netcdf_scm_ncs
 
 
 @pytest.mark.parametrize(
-    "out_format", (["mag-files", "mag-files-average-year-mid-year"])
+    "out_format", ([
+        "mag-files",
+        "mag-files-average-year-mid-year",
+        "magicc-input-files-average-year-start-year",
+    ])
 )
 def test_wrangling_results(
     tmpdir,
