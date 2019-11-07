@@ -8,12 +8,14 @@ from pymagicc.io import MAGICCData
 from netcdf_scm.cli import stitch_data
 
 # TODO:
-# - test data (timeseries which can be stitched, one ssp plus hist, one hist plus piControl, one 1pctCO2 plus piControl, one BCC-CSM2-MR hist plus BCC-CSM2-MR piControl)
-# - tests of errors when parent isn't there
-# - tests of errors when branch time isn't in data
-# - tests of errors when not enough years in piControl are there
-# - tests of log messages when doing the BCC-CSM2-MR fix
-# - tests of normalisation or not
+# - create small (i.e. regridded using cdo remapbil,n4 <infile> <outfile>) test files which don't clash with existing data and match all the tests
+    # - test data (timeseries which can be stitched, one ssp plus hist, one hist plus piControl, one 1pctCO2 plus piControl, one BCC-CSM2-MR hist plus BCC-CSM2-MR piControl)
+# - start passing tests
+    # - tests of errors when parent isn't there
+    # - tests of errors when branch time isn't in data
+    # - tests of errors when not enough years in piControl are there
+    # - tests of log messages when doing the BCC-CSM2-MR fix
+    # - tests of normalisation or not
 
 
 def test_stitching_default(tmpdir, caplog, test_cmip6_crunch_output):
@@ -171,18 +173,7 @@ def test_stitching_with_normalisation(tmpdir, caplog, test_cmip6_crunch_output):
 
     res = MAGICCData(out_files[0])
 
-    find /data/marble/cmip6/ -name 'tas_*IPSL*ssp126*r1i1p1f1*gr_*'
-
-    /data/marble/cmip6/CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Amon/tas/gr/v20190121/tas_Amon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_201501-210012.nc
-
-    find /data/marble/cmip6/ -name 'tas_*IPSL*historical*r1i1p1f1*gr_*'
-
-    /data/marble/cmip6/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20180803/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
-
-    find /data/marble/cmip6/ -name 'tas_*IPSL*piControl*r1i1p1f1*gr_*'
-
-    # still need to copy this
-    /data/marble/cmip6/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/tas_Amon_IPSL-CM6A-LR_piControl_r1i1p1f1_gr_185001-234912.nc
+    # don't use IPSL here
 
     assert False, "do data tests here, normalised hist"
     assert False, "do metadata tests here, parent and grandparent"
