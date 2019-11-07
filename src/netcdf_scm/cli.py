@@ -1576,7 +1576,6 @@ def _get_stitched_openscmdf_metadata_header(
     return openscmdf, metadata, header
 
 
-
 def _get_continuous_timeseries_with_meta(infile, drs, normalise):
     loaded = load_scmdataframe(infile)
     loaded.metadata["netcdf-scm crunched file"] = infile.replace(
@@ -1597,68 +1596,17 @@ def _get_continuous_timeseries_with_meta(infile, drs, normalise):
 
     parent_file_path_base = _get_parent_path_base(infile, parent_replacements, drs)
     parent_file_path = glob.glob(parent_file_path_base)
-    assert len(parent_file_path) == 1
+    if len(parent_file_path) == 0:
+        raise IOError("No parent data ({}) available for {}, we looked in {}".format(parent_replacements["parent_experiment_id"], infile, parent_file_path_base))
+    elif len(parent_file_path) > 1:
+        raise AssertionError(  # pragma: no cover # emergency valve
+            "More than one parent file?"
+        )
+
     parent_file_path = parent_file_path[0]
     parent = _get_continuous_timeseries_with_meta(parent_file_path, drs, normalise)
 
-    if "BCC" in infile:
-        # think the metadata here is wrong as historical has a branch_time_in_parent
-        # of 2015 so assuming this means the year of the branch not the actual time
-        # in days (like it's meant to)
-        warn_str = (
-            "assuming BCC metadata is wrong and branch time units are actually years, "
-            "not days"
-        )
-        logger.warning(warn_str)
-        branch_time = dt.datetime(int(loaded.metadata["branch_time_in_parent"]), 1, 1)
-    else:
-        branch_time = netCDF4.num2date(
-            loaded.metadata["branch_time_in_parent"],
-            loaded.metadata["parent_time_units"],
-            loaded.metadata["calendar"],
-        )
-
-    # drop branch time precision down
-    branch_time = dt.datetime(branch_time.year, branch_time.month, branch_time.day)
-
-    # any hacks can go here
-    skip_time_shift = False
-    #     skip_time_shift = (
-    #         loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile
-    #     ) or (loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile)
-
-    if not skip_time_shift and (branch_time.year != loaded["time"].min().year):
-        logger.info("shifting time to match branch time %s for %s", branch_time, infile)
-
-        # shift the times so they actually match
-        time_base = parent.filter(year=branch_time.year, month=branch_time.month)[
-            "time"
-        ]
-        assert len(time_base) == 1
-        time_base = time_base[0]
-
-        year_shift = time_base.year - loaded["time"].min().year
-        parent = parent.timeseries()
-        parent.columns = parent.columns.map(
-            lambda x: dt.datetime(
-                x.year - year_shift, x.month, x.day, x.hour, x.minute, x.second
-            )
-        )
-        parent = ScmDataFrame(parent)
-
-    out = df_append([loaded, parent])
-    if "child" in loaded.metadata:
-        import pdb
-        pdb.set_trace()
-        raise AssertionError("normalise has to think about this")
-
-    out = _make_metadata_uniform(out, _get_meta(loaded, "scenario"))
-    out.metadata = {
-        **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
-        **{"(parent) {}".format(k): v for k, v in parent.metadata.items()},
-    }
-
-    return out
+    return _do_stitching_and_normalisation(infile, loaded, parent, normalise)
 
 
 def _get_id_in_path(path_id, fullpath, drs):
@@ -1733,3 +1681,107 @@ def _make_metadata_uniform(inscmdf, base_scen):
         outscmdf.append(scendf.timeseries())
 
     return ScmDataFrame(pd.concat(outscmdf, sort=True, axis=1))
+
+def _do_stitching_and_normalisation(infile, loaded, parent, normalise):
+    if "BCC" in infile:
+        # think the metadata here is wrong as historical has a branch_time_in_parent
+        # of 2015 so assuming this means the year of the branch not the actual time
+        # in days (like it's meant to)
+        warn_str = (
+            "assuming BCC metadata is wrong and branch time units are actually years, "
+            "not days"
+        )
+        logger.warning(warn_str)
+        branch_time = dt.datetime(int(loaded.metadata["branch_time_in_parent"]), 1, 1)
+    else:
+        branch_time = netCDF4.num2date(
+            loaded.metadata["branch_time_in_parent"],
+            loaded.metadata["parent_time_units"],
+            loaded.metadata["calendar"],
+        )
+
+    # drop branch time precision down
+    branch_time = dt.datetime(branch_time.year, branch_time.month, branch_time.day)
+
+    # any hacks can go here
+    skip_time_shift = False
+    #     skip_time_shift = (
+    #         loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile
+    #     ) or (loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile)
+
+
+    if not skip_time_shift and (branch_time.year != loaded["time"].min().year):
+        logger.info("shifting time to match branch time %s for %s", branch_time, infile)
+
+        # shift the times so they actually match
+        time_base = parent.filter(year=branch_time.year, month=branch_time.month)[
+            "time"
+        ]
+        assert len(time_base) == 1
+        time_base = time_base[0]
+
+        year_shift = time_base.year - loaded["time"].min().year
+        parent_metadata = parent.metadata
+        parent = parent.timeseries()
+        parent.columns = parent.columns.map(
+            lambda x: dt.datetime(
+                x.year - year_shift, x.month, x.day, x.hour, x.minute, x.second
+            )
+        )
+        parent = ScmDataFrame(parent)
+        parent.metadata = parent_metadata
+
+    norm_method_key = "normalisation method"
+    if normalise is not None and norm_method_key not in parent.metadata:
+
+        if normalise not in ("31-yr-mean-after-branch-time"):  # pragma: no cover
+            raise NotImplementedError  # emergency valve
+
+        if parent.metadata["experiment_id"] != "piControl":  # pragma: no cover
+            # emergency valve, can't think of how this path should work
+            raise NotImplementedError
+
+        # have shifted so that branch year lines up already
+        branch_year_after_shifting = loaded["time"].min().year
+        # assuming we're at the bottom here
+        normalise_series = parent.filter(year=range(branch_year_after_shifting, branch_year_after_shifting + 31))
+        normalise_mean = normalise_series.timeseries().mean(axis=1)
+
+        out_meta = {
+            **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
+            **{"(normalisation) {}".format(k): v for k, v in parent.metadata.items()},
+        }
+        out_meta[norm_method_key] = normalise
+        out = _take_anomaly_from(loaded, normalise_mean)
+        out.metadata = out_meta
+
+    else:
+        # just join together
+        out = df_append([loaded, parent])
+        out = _make_metadata_uniform(out, _get_meta(loaded, "scenario"))
+
+        if any(["child" in k for k in loaded.metadata]):
+            import pdb
+            pdb.set_trace()
+            raise AssertionError("normalise has to think about this")
+        else:
+            out.metadata = {
+                **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
+                **{"(parent) {}".format(k): v for k, v in parent.metadata.items()},
+            }
+
+    return out
+
+
+def _take_anomaly_from(inscmdf, ref_series):
+    ref_df = ref_series.to_frame()
+    # put the time as a value that isn't in inscmdf
+    ref_df.columns = [dt.datetime(inscmdf["time"].min().year - 1, 1, 1)]
+    anomalies = _make_metadata_uniform(
+        df_append([inscmdf, ref_df]), _get_meta(inscmdf, "scenario")
+    ).timeseries()
+
+    anomalies = ScmDataFrame(anomalies.subtract(anomalies.iloc[:, 0], axis=0))
+
+    # return without the anomaly year
+    return anomalies.filter(time=anomalies["time"].min(), keep=False)
