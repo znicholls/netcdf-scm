@@ -49,7 +49,8 @@ REQUIREMENTS_INSTALL = [
     "click",
     "tqdm",
 ]
-REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0,<5.0"]
+REQUIREMENTS_TESTS = ["codecov", "pytest-cov", "pytest>=4.0,<5.0",
+    "pytest-console-scripts",]
 REQUIREMENTS_NOTEBOOKS = [
     "notebook",
     "nbval",
