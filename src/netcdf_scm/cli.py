@@ -1,5 +1,7 @@
 """Command line interface"""
+import copy
 import datetime as dt
+import glob
 import logging
 import os
 import os.path
@@ -10,6 +12,7 @@ from os import makedirs, walk
 from time import gmtime, strftime
 
 import click
+import netCDF4
 import numpy as np
 import pandas as pd
 import pymagicc
@@ -1200,6 +1203,14 @@ def _get_openscmdf_metadata_header(
         openscmdf = _convert_units(openscmdf, target_units_specs)
 
     metadata = openscmdf.metadata
+    header = _get_openscmdf_header(
+        wrangle_contact, metadata["crunch_netcdf_scm_version"]
+    )
+
+    return openscmdf, metadata, header
+
+
+def _get_openscmdf_header(contact, netcdf_scm_version):
     header = (
         "Date: {}\n"
         "Contact: {}\n"
@@ -1207,13 +1218,13 @@ def _get_openscmdf_metadata_header(
         "File written with: pymagicc v{} (more info at "
         "github.com/openclimatedata/pymagicc)\n".format(
             dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            wrangle_contact,
-            metadata["crunch_netcdf_scm_version"],
+            contact,
+            netcdf_scm_version,
             pymagicc.__version__,
         )
     )
 
-    return openscmdf, metadata, header
+    return header
 
 
 def _get_outfile_dir_symlink_dir(dpath, drs, dst):
@@ -1309,3 +1320,406 @@ def _get_scmcube_helper(drs):
         )
 
     return _CUBES[drs]()
+
+
+@click.command(context_settings={"help_option_names": ["-h", "--help"]})
+@click.argument("src", type=click.Path(exists=True, readable=True, resolve_path=True))
+@click.argument(
+    "dst", type=click.Path(file_okay=False, writable=True, resolve_path=True)
+)
+@click.argument("stitch_contact")
+@click.option(
+    "--regexp",
+    default="^(?!.*(fx)).*$",
+    show_default=True,
+    help="Regular expression to apply to file directory (only stitches matches).",
+)
+@click.option(
+    "--prefix", default=None, help="Prefix to apply to output file names (not paths)."
+)
+@click.option(
+    "--out-format",
+    default="mag-files",
+    type=click.Choice(
+        [
+            "mag-files",
+            "mag-files-average-year-start-year",
+            "mag-files-average-year-mid-year",
+            "mag-files-average-year-end-year",
+            "mag-files-point-start-year",
+            "mag-files-point-mid-year",
+            "mag-files-point-end-year",
+            "magicc-input-files",
+            "magicc-input-files-average-year-start-year",
+            "magicc-input-files-average-year-mid-year",
+            "magicc-input-files-average-year-end-year",
+            "magicc-input-files-point-start-year",
+            "magicc-input-files-point-mid-year",
+            "magicc-input-files-point-end-year",
+            "tuningstrucs-blend-model",
+        ]
+    ),
+    show_default=True,
+    help=(
+        "Format to re-write crunched data into. The time operation conventions follow "
+        "those in `Pymagicc <https://github.com/openclimatedata/pymagicc/pull/272>`_ "
+        "(link to be updated when PR is merged)"
+    ),
+)
+@click.option(
+    "--drs",
+    default="None",
+    type=click.Choice(["None", "MarbleCMIP5", "CMIP6Input4MIPs", "CMIP6Output"]),
+    show_default=True,
+    help="Data reference syntax to use to decipher paths. This is required to ensure the output folders match the input data reference syntax.",
+)
+@click.option(
+    "--force/--do-not-force",
+    "-f",
+    help="Overwrite any existing files.",
+    default=False,
+    show_default=True,
+)  # pylint:disable=too-many-arguments
+@click.option(
+    "--number-workers",  # pylint:disable=too-many-arguments
+    help="Number of worker (threads) to use when stitching.",
+    default=4,
+    show_default=True,
+)
+@click.option(
+    "--target-units-specs",  # pylint:disable=too-many-arguments
+    help="csv containing target units for stitched variables.",
+    default=None,
+    show_default=False,
+    type=click.Path(exists=True, readable=True, resolve_path=True),
+)
+@click.option(
+    "--normalise",
+    default=None,
+    type=click.Choice(["31-yr-mean-after-branch-time"]),
+    show_default=False,
+    help="How to normalise the data relative to piControl (if not provided, no normalisation is performed).",
+)
+def stitch_netcdf_scm_ncs(
+    src,
+    dst,
+    stitch_contact,
+    regexp,
+    prefix,
+    out_format,
+    drs,
+    force,
+    number_workers,
+    target_units_specs,
+    normalise,
+):
+    """
+    Stitch NetCDF-SCM ``.nc`` files together and write out in the specified format.
+
+    ``SRC`` is searched recursively and netcdf-scm will attempt to stitch all the
+    files found. Output is written in ``DST``.
+
+    ``STITCH_CONTACT`` is written into the header of the output files.
+    """
+    log_file = os.path.join(
+        dst,
+        "{}-stitch.log".format(_get_timestamp().replace(" ", "_").replace(":", "")),
+    )
+    _make_path_if_not_exists(dst)
+    init_logging(
+        [
+            ("stitch-contact", stitch_contact),
+            ("source", src),
+            ("destination", dst),
+            ("regexp", regexp),
+            ("prefix", prefix),
+            ("out-format", out_format),
+            ("drs", drs),
+            ("force", force),
+            ("number-workers", number_workers),
+            ("target-units-specs", target_units_specs),
+            ("normalise", normalise),
+        ],
+        out_filename=log_file,
+    )
+
+    _stitch_netdf_scm_ncs(
+        src,
+        dst,
+        stitch_contact,
+        regexp,
+        prefix,
+        out_format,
+        drs,
+        force,
+        number_workers,
+        target_units_specs,
+        normalise,
+    )
+
+
+def _stitch_netdf_scm_ncs(
+    src,
+    dst,
+    stitch_contact,
+    regexp,
+    prefix,
+    out_format,
+    drs,
+    force,
+    number_workers,
+    target_units_specs,
+    normalise,
+):
+    regexp_compiled = re.compile(regexp)
+    if target_units_specs is not None:
+        target_units_specs = pd.read_csv(target_units_specs)
+
+    crunch_list, failures_dir_finding = _find_dirs_meeting_func(
+        src, regexp_compiled.match
+    )
+
+    failures_wrangling = _apply_func(
+        _stitch_magicc_files,
+        [{"fnames": f, "dpath": d} for d, f in crunch_list],
+        common_kwarglist={
+            "dst": dst,
+            "force": force,
+            "out_format": out_format,
+            "target_units_specs": target_units_specs,
+            "stitch_contact": stitch_contact,
+            "drs": drs,
+            "prefix": prefix,
+            "normalise": normalise,
+        },
+        n_workers=number_workers,
+        style="processes",
+    )
+
+    if failures_dir_finding or failures_wrangling:
+        raise click.ClickException(
+            "Some files failed to process. See the logs for more details"
+        )
+
+
+def _stitch_magicc_files(fnames, dpath, dst, force, out_format, target_units_specs, stitch_contact, drs, prefix, normalise):
+    openscmdf, metadata, header = _get_stitched_openscmdf_metadata_header(
+        fnames, dpath, target_units_specs, stitch_contact, drs, out_format, normalise
+    )
+
+    outfile_dir, symlink_dir = _get_outfile_dir_symlink_dir(dpath, drs, dst)
+
+    # TODO: remove duplication from _wrangle_magicc_files
+    if out_format in ("mag-files",):
+        _write_mag_file(
+            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
+        )
+    elif out_format in (
+        "mag-files-average-year-start-year",
+        "mag-files-average-year-mid-year",
+        "mag-files-average-year-end-year",
+        "mag-files-point-start-year",
+        "mag-files-point-mid-year",
+        "mag-files-point-end-year",
+    ):
+        _write_mag_file_with_operation(
+            openscmdf,
+            metadata,
+            header,
+            outfile_dir,
+            symlink_dir,
+            fnames,
+            force,
+            out_format,
+        )
+    elif out_format in ("magicc-input-files",):
+        _write_magicc_input_file(
+            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
+        )
+    elif out_format in (
+        "magicc-input-files-average-year-start-year",
+        "magicc-input-files-average-year-mid-year",
+        "magicc-input-files-average-year-end-year",
+        "magicc-input-files-point-start-year",
+        "magicc-input-files-point-mid-year",
+        "magicc-input-files-point-end-year",
+    ):
+        _write_magicc_input_file_with_operation(
+            openscmdf,
+            metadata,
+            header,
+            outfile_dir,
+            symlink_dir,
+            fnames,
+            force,
+            out_format,
+        )
+    else:
+        raise AssertionError("how did we get here?")  # pragma: no cover
+
+
+def _get_stitched_openscmdf_metadata_header(
+    fnames, dpath, target_units_specs, stitch_contact, drs, out_format, normalise
+):
+    if len(fnames) > 1:
+        raise AssertionError(
+            "more than one file to wrangle?"
+        )  # pragma: no cover # emergency valve
+
+    fullpath = os.path.join(dpath, fnames[0])
+    openscmdf = _get_continuous_timeseries_with_meta(fullpath, drs, normalise)
+
+    metadata = openscmdf.metadata
+    header = _get_openscmdf_header(
+        stitch_contact, metadata["(child) crunch_netcdf_scm_version"]
+    )
+
+    return openscmdf, metadata, header
+
+
+
+def _get_continuous_timeseries_with_meta(infile, drs, normalise):
+    loaded = load_scmdataframe(infile)
+    loaded.metadata["netcdf-scm crunched file"] = infile.replace(
+        os.path.join("{}/".format((_get_id_in_path("root_dir", infile, drs)))), ""
+    )
+
+    parent_replacements = _get_parent_replacements(loaded)
+    if not parent_replacements:
+        return loaded
+
+    if parent_replacements["parent_experiment_id"] == "piControl" and normalise is None:
+        # don't need to look any further
+        return loaded
+
+    if parent_replacements["parent_experiment_id"] == "piControl-spinup":
+        # hard-code return at piControl-spinup for now, we don't care about spinup
+        return loaded
+
+    parent_file_path_base = _get_parent_path_base(infile, parent_replacements, drs)
+    parent_file_path = glob.glob(parent_file_path_base)
+    assert len(parent_file_path) == 1
+    parent_file_path = parent_file_path[0]
+    parent = _get_continuous_timeseries_with_meta(parent_file_path, drs, normalise)
+
+    if "BCC" in infile:
+        # think the metadata here is wrong as historical has a branch_time_in_parent
+        # of 2015 so assuming this means the year of the branch not the actual time
+        # in days (like it's meant to)
+        logger.warning(
+            "Assuming BCC metadata is wrong and branch time units are actually years, "
+            "not days"
+        )
+        branch_time = dt.datetime(int(loaded.metadata["branch_time_in_parent"]), 1, 1)
+    else:
+        branch_time = netCDF4.num2date(
+            loaded.metadata["branch_time_in_parent"],
+            loaded.metadata["parent_time_units"],
+            loaded.metadata["calendar"],
+        )
+
+    # drop branch time precision down
+    branch_time = dt.datetime(branch_time.year, branch_time.month, branch_time.day)
+
+    # any hacks can go here
+    skip_time_shift = False
+    #     skip_time_shift = (
+    #         loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile
+    #     ) or (loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile)
+
+    if not skip_time_shift and (branch_time.year != loaded["time"].min().year):
+        logger.info("shifting time to match branch time %s for %s", branch_time, infile)
+
+        # shift the times so they actually match
+        time_base = parent.filter(year=branch_time.year, month=branch_time.month)[
+            "time"
+        ]
+        assert len(time_base) == 1
+        time_base = time_base[0]
+
+        year_shift = time_base.year - loaded["time"].min().year
+        parent = parent.timeseries()
+        parent.columns = parent.columns.map(
+            lambda x: dt.datetime(
+                x.year - year_shift, x.month, x.day, x.hour, x.minute, x.second
+            )
+        )
+        parent = ScmDataFrame(parent)
+
+    out = df_append([loaded, parent])
+    if "child" in loaded.metadata:
+        import pdb
+        pdb.set_trace()
+        raise AssertionError("normalise has to think about this")
+
+    out = _make_metadata_uniform(out, _get_meta(loaded, "scenario"))
+    out.metadata = {
+        **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
+        **{"(parent) {}".format(k): v for k, v in parent.metadata.items()},
+    }
+
+    return out
+
+
+def _get_id_in_path(path_id, fullpath, drs):
+    helper = _get_scmcube_helper(drs)
+    return helper.process_path(os.path.dirname(fullpath))[path_id]
+
+
+def _get_parent_replacements(scmdf):
+    replacements = {k: v for k, v in scmdf.metadata.items() if k.startswith("parent")}
+    replacements.pop("parent_time_units")
+    # change in language since I wrote netcdf-scm, this is why using
+    # ESMValTool instead would be helpful, we would have extra helpers to
+    # know when this sort of stuff changes...
+    replacements["parent_member_id"] = replacements.pop("parent_variant_label")
+
+    return replacements
+
+
+def _get_parent_path_base(child_path, replacements, drs):
+    parent_path = copy.copy(child_path)
+    for k, v in replacements.items():
+        pid = k.replace("parent_", "")
+
+        parent_path = parent_path.replace(_get_id_in_path(pid, child_path, drs), v)
+
+    helper = _get_scmcube_helper(drs)
+    timestamp_str = helper._get_timestamp_bits_from_filename(os.path.basename(child_path))["timestamp_str"]
+
+    parent_path_base = "{}*.nc".format(parent_path.split(timestamp_str)[0])
+
+    path_bits = helper.process_path(os.path.dirname(child_path))
+    if "version" in path_bits:
+        parent_path_base = parent_path_base.replace(path_bits["version"], "*")
+
+    return parent_path_base
+
+
+# TODO: put this in scmdata
+def _get_meta(inscmdf, meta_col, expected_unique=True):
+    vals = inscmdf[meta_col].unique()
+    if expected_unique:
+        assert len(vals) == 1
+        return vals[0]
+
+    return vals
+
+
+def _make_metadata_uniform(inscmdf, base_scen):
+    """Make metadata uniform for ease of plotting etc."""
+    base_scmdf = inscmdf.filter(scenario=base_scen)
+    meta_cols = [
+        c for c in base_scmdf.meta.columns if c not in ["region", "variable", "unit"]
+    ]
+
+    outscmdf = []
+    for scenario in inscmdf["scenario"].unique():
+        scendf = inscmdf.filter(scenario=scenario)
+        for meta_col in meta_cols:
+            new_meta = _get_meta(base_scmdf, meta_col)
+            scendf.set_meta(new_meta, meta_col)
+
+        outscmdf.append(scendf.timeseries())
+
+    return ScmDataFrame(pd.concat(outscmdf, sort=True, axis=1))

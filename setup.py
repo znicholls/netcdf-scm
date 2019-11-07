@@ -36,6 +36,7 @@ ENTRY_POINTS = {
     "console_scripts": [
         "netcdf-scm-crunch = netcdf_scm.cli:crunch_data",
         "netcdf-scm-wrangle = netcdf_scm.cli:wrangle_netcdf_scm_ncs",
+        "netcdf-scm-stitch = netcdf_scm.cli:stitch_netcdf_scm_ncs",
     ]
 }
 
