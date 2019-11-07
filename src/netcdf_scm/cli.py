@@ -1,4 +1,7 @@
 """Command line interface"""
+# TODO in a future PR:
+#   - split out crunching, wrangling and stitching into their own modules
+#   - address all the pylint disable statements
 import copy
 import datetime as dt
 import glob
@@ -1511,7 +1514,7 @@ def stitch_netcdf_scm_ncs(
     )
 
 
-def _stitch_netdf_scm_ncs(
+def _stitch_netdf_scm_ncs(  # pylint:disable=too-many-arguments
     src,
     dst,
     stitch_contact,
@@ -1555,7 +1558,7 @@ def _stitch_netdf_scm_ncs(
         )
 
 
-def _stitch_magicc_files(
+def _stitch_magicc_files(  # pylint:disable=too-many-arguments
     fnames,
     dpath,
     dst,
@@ -1587,7 +1590,7 @@ def _stitch_magicc_files(
     )
 
 
-def _get_stitched_openscmdf_metadata_header(
+def _get_stitched_openscmdf_metadata_header(  # pylint:disable=too-many-arguments
     fnames, dpath, target_units_specs, stitch_contact, drs, normalise
 ):
     if len(fnames) > 1:
@@ -1633,7 +1636,7 @@ def _get_continuous_timeseries_with_meta(infile, drs, normalise, normalise_mean=
 
     parent_file_path_base = _get_parent_path_base(infile, parent_replacements, drs)
     parent_file_path = glob.glob(parent_file_path_base)
-    if len(parent_file_path) == 0:
+    if np.equal(len(parent_file_path), 0):
         raise IOError(
             "No parent data ({}) available for {}, we looked in {}".format(
                 parent_replacements["parent_experiment_id"],
@@ -1641,7 +1644,8 @@ def _get_continuous_timeseries_with_meta(infile, drs, normalise, normalise_mean=
                 parent_file_path_base,
             )
         )
-    elif len(parent_file_path) > 1:
+
+    if len(parent_file_path) > 1:
         raise AssertionError(  # pragma: no cover # emergency valve
             "More than one parent file?"
         )
@@ -1697,16 +1701,18 @@ def _get_path_bits(inpath, drs):
 
 def _get_timestamp_str(fullpath, drs):
     helper = _get_scmcube_helper(drs)
-    return helper._get_timestamp_bits_from_filename(os.path.basename(fullpath))[
-        "timestamp_str"
-    ]
+    filename_bits = helper._get_timestamp_bits_from_filename(  # pylint:disable=protected-access
+        os.path.basename(fullpath)
+    )
+    return filename_bits["timestamp_str"]
 
 
 # TODO: put this in scmdata
 def _get_meta(inscmdf, meta_col, expected_unique=True):
     vals = inscmdf[meta_col].unique()
     if expected_unique:
-        assert len(vals) == 1
+        if len(vals) != 1:
+            raise AssertionError("{} is not unique: {}".format(meta_col, vals))
         return vals[0]
 
     return vals
@@ -1731,7 +1737,9 @@ def _make_metadata_uniform(inscmdf, base_scen):
     return ScmDataFrame(pd.concat(outscmdf, sort=True, axis=1))
 
 
-def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise_mean):
+def _do_stitching_and_normalisation(  # pylint:disable=too-many-locals,too-many-branches,too-many-statements
+    infile, loaded, parent, normalise, normalise_mean
+):
     if "BCC" in infile and not np.equal(loaded.metadata["branch_time_in_parent"], 0):
         # think the metadata here is wrong as historical has a branch_time_in_parent
         # of 2015 so assuming this means the year of the branch not the actual time
@@ -1743,7 +1751,7 @@ def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise
         logger.warning(warn_str)
         branch_time = dt.datetime(int(loaded.metadata["branch_time_in_parent"]), 1, 1)
     else:
-        branch_time = netCDF4.num2date(
+        branch_time = netCDF4.num2date(  # pylint:disable=no-member
             loaded.metadata["branch_time_in_parent"],
             loaded.metadata["parent_time_units"],
             loaded.metadata["calendar"],
