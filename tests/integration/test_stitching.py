@@ -14,29 +14,29 @@ from netcdf_scm.io import load_scmdataframe
 
 # TODO:
 # - create small (i.e. regridded using cdo remapbil,n4 <infile> <outfile>) test files which don't clash with existing data and match all the tests
-    # - test data (timeseries which can be stitched, one ssp plus hist, one hist plus piControl, one 1pctCO2 plus piControl, one BCC-CSM2-MR hist plus BCC-CSM2-MR piControl)
+# - test data (timeseries which can be stitched, one ssp plus hist, one hist plus piControl, one 1pctCO2 plus piControl, one BCC-CSM2-MR hist plus BCC-CSM2-MR piControl)
 # - start passing tests
-    # - tests of errors when parent isn't there
-    # - tests of errors when branch time isn't in data
-    # - tests of errors when not enough years in piControl are there
-    # - tests of log messages when doing the BCC-CSM2-MR fix
-    # - tests of normalisation or not
+# - tests of errors when parent isn't there
+# - tests of errors when branch time isn't in data
+# - tests of errors when not enough years in piControl are there
+# - tests of log messages when doing the BCC-CSM2-MR fix
+# - tests of normalisation or not
 
 
 def _do_generic_stitched_data_tests(stiched_scmdf):
     assert stiched_scmdf["scenario"].nunique() == 1
-    assert "(child) branch_time_in_parent"  in stiched_scmdf.metadata
-    assert "(child) parent_experiment_id"  in stiched_scmdf.metadata
-    assert "(parent) source_id"  in stiched_scmdf.metadata
-    assert "(parent) experiment_id"  in stiched_scmdf.metadata
+    assert "(child) branch_time_in_parent" in stiched_scmdf.metadata
+    assert "(child) parent_experiment_id" in stiched_scmdf.metadata
+    assert "(parent) source_id" in stiched_scmdf.metadata
+    assert "(parent) experiment_id" in stiched_scmdf.metadata
 
 
 def _do_generic_normalised_data_tests(normalised_scmdf):
     assert normalised_scmdf["scenario"].nunique() == 1
-    assert "(child) branch_time_in_parent"  in normalised_scmdf.metadata
-    assert "(child) parent_experiment_id"  in normalised_scmdf.metadata
-    assert "(normalisation) source_id"  in normalised_scmdf.metadata
-    assert "(normalisation) experiment_id"  in normalised_scmdf.metadata
+    assert "(child) branch_time_in_parent" in normalised_scmdf.metadata
+    assert "(child) parent_experiment_id" in normalised_scmdf.metadata
+    assert "(normalisation) source_id" in normalised_scmdf.metadata
+    assert "(normalisation) experiment_id" in normalised_scmdf.metadata
     assert "normalisation method" in normalised_scmdf.metadata
 
 
@@ -77,7 +77,9 @@ def test_stitching_default(tmpdir, caplog, test_cmip6_crunch_output):
     assert "EC-Earth3-Veg" in child_path
     assert "hfds" in child_path
 
-    child = load_scmdataframe(os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", "")))
+    child = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", ""))
+    )
 
     for region in ["World", "World|North Atlantic Ocean"]:
         for y in range(2015, 2017):
@@ -93,7 +95,9 @@ def test_stitching_default(tmpdir, caplog, test_cmip6_crunch_output):
     assert "EC-Earth3-Veg" in parent_path
     assert "hfds" in parent_path
 
-    parent = load_scmdataframe(os.path.join(test_cmip6_crunch_output, parent_path.replace("CMIP6/", "")))
+    parent = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, parent_path.replace("CMIP6/", ""))
+    )
 
     for region in ["World", "World|North Atlantic Ocean"]:
         for y in range(2013, 2015):
@@ -143,7 +147,9 @@ def test_stitching_in_file_BCC_CSM2_MR(tmpdir, caplog, test_cmip6_crunch_output)
     assert "BCC-CSM2-MR" in child_path
     assert "tas" in child_path
 
-    child = load_scmdataframe(os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", "")))
+    child = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", ""))
+    )
 
     for region in ["World", "World|North Atlantic Ocean"]:
         for y in range(2015, 2017):
@@ -159,7 +165,9 @@ def test_stitching_in_file_BCC_CSM2_MR(tmpdir, caplog, test_cmip6_crunch_output)
     assert "BCC-CSM2-MR" in parent_path
     assert "tas" in parent_path
 
-    parent = load_scmdataframe(os.path.join(test_cmip6_crunch_output, parent_path.replace("CMIP6/", "")))
+    parent = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, parent_path.replace("CMIP6/", ""))
+    )
 
     for region in ["World", "World|North Atlantic Ocean"]:
         for y in range(2013, 2015):
@@ -234,7 +242,7 @@ def test_stitching_with_normalisation(tmpdir, caplog, test_cmip6_crunch_output):
                 "--regexp",
                 ".*CESM2.*r10i1p1f1.*tas.*",
                 "--normalise",
-                norm_method
+                norm_method,
             ],
         )
 
@@ -254,7 +262,9 @@ def test_stitching_with_normalisation(tmpdir, caplog, test_cmip6_crunch_output):
     assert "CESM2" in child_path
     assert "tas" in child_path
 
-    child = load_scmdataframe(os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", "")))
+    child = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", ""))
+    )
 
     normalisation_path = res.metadata["(normalisation) netcdf-scm crunched file"]
     assert "piControl" in normalisation_path
@@ -262,24 +272,37 @@ def test_stitching_with_normalisation(tmpdir, caplog, test_cmip6_crunch_output):
     assert "CESM2" in normalisation_path
     assert "tas" in normalisation_path
 
-    normalisation = load_scmdataframe(os.path.join(test_cmip6_crunch_output, normalisation_path.replace("CMIP6/", "")))
+    normalisation = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, normalisation_path.replace("CMIP6/", ""))
+    )
 
     assert child.metadata["branch_time_in_parent"] == 306600.0
     assert child.metadata["parent_time_units"] == "days since 0001-01-01 00:00:00"
     expected_norm_year_raw = int(1 + (306600 / 365))
 
-    norm_shift = normalisation.filter(year=range(expected_norm_year_raw, expected_norm_year_raw+31)).timeseries().mean(axis=1)
+    norm_shift = (
+        normalisation.filter(
+            year=range(expected_norm_year_raw, expected_norm_year_raw + 31)
+        )
+        .timeseries()
+        .mean(axis=1)
+    )
 
     for region in ["World", "World|North Atlantic Ocean"]:
         for y in range(1850, 2015):
             np.testing.assert_allclose(
                 res.filter(region=region, year=y).values,
-                child.filter(region=region, year=y).values - norm_shift[norm_shift.index.get_level_values("region") == region].values.squeeze(),
+                child.filter(region=region, year=y).values
+                - norm_shift[
+                    norm_shift.index.get_level_values("region") == region
+                ].values.squeeze(),
                 rtol=1e-5,
             )
 
 
-def test_stitching_with_normalisation_two_levels(tmpdir, caplog, test_cmip6_crunch_output):
+def test_stitching_with_normalisation_two_levels(
+    tmpdir, caplog, test_cmip6_crunch_output
+):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_with_normalisation"
     norm_method = "31-yr-mean-after-branch-time"
@@ -300,7 +323,7 @@ def test_stitching_with_normalisation_two_levels(tmpdir, caplog, test_cmip6_crun
                 "--regexp",
                 ".*BCC-CSM2-MR.*ssp126.*tas.*",
                 "--normalise",
-                norm_method
+                norm_method,
             ],
         )
 
@@ -321,7 +344,9 @@ def test_stitching_with_normalisation_two_levels(tmpdir, caplog, test_cmip6_crun
     assert "BCC-CSM2-MR" in child_path
     assert "tas" in child_path
 
-    child = load_scmdataframe(os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", "")))
+    child = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", ""))
+    )
 
     parent_path = res.metadata["(parent) netcdf-scm crunched file"]
     assert "historical" in parent_path
@@ -329,7 +354,9 @@ def test_stitching_with_normalisation_two_levels(tmpdir, caplog, test_cmip6_crun
     assert "BCC-CSM2-MR" in child_path
     assert "tas" in child_path
 
-    parent = load_scmdataframe(os.path.join(test_cmip6_crunch_output, parent_path.replace("CMIP6/", "")))
+    parent = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, parent_path.replace("CMIP6/", ""))
+    )
 
     normalisation_path = res.metadata["(normalisation) netcdf-scm crunched file"]
     assert "piControl" in normalisation_path
@@ -337,20 +364,31 @@ def test_stitching_with_normalisation_two_levels(tmpdir, caplog, test_cmip6_crun
     assert "BCC-CSM2-MR" in normalisation_path
     assert "tas" in normalisation_path
 
-    normalisation = load_scmdataframe(os.path.join(test_cmip6_crunch_output, normalisation_path.replace("CMIP6/", "")))
+    normalisation = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, normalisation_path.replace("CMIP6/", ""))
+    )
 
     assert parent.metadata["branch_time_in_parent"] == 2289.0
     assert parent.metadata["parent_time_units"] == "days since 1850-01-01"
     # assuming mislabelling of years as days
     expected_norm_year_raw = 2289
 
-    norm_shift = normalisation.filter(year=range(expected_norm_year_raw, expected_norm_year_raw+31)).timeseries().mean(axis=1)
+    norm_shift = (
+        normalisation.filter(
+            year=range(expected_norm_year_raw, expected_norm_year_raw + 31)
+        )
+        .timeseries()
+        .mean(axis=1)
+    )
 
     for region in ["World", "World|North Atlantic Ocean"]:
         for y in range(2015, 2101):
             np.testing.assert_allclose(
                 res.filter(region=region, year=y).values,
-                child.filter(region=region, year=y).values - norm_shift[norm_shift.index.get_level_values("region") == region].values.squeeze(),
+                child.filter(region=region, year=y).values
+                - norm_shift[
+                    norm_shift.index.get_level_values("region") == region
+                ].values.squeeze(),
                 rtol=1e-5,
             )
 
@@ -358,7 +396,10 @@ def test_stitching_with_normalisation_two_levels(tmpdir, caplog, test_cmip6_crun
         for y in range(1850, 2015):
             np.testing.assert_allclose(
                 res.filter(region=region, year=y).values,
-                parent.filter(region=region, year=y).values - norm_shift[norm_shift.index.get_level_values("region") == region].values.squeeze(),
+                parent.filter(region=region, year=y).values
+                - norm_shift[
+                    norm_shift.index.get_level_values("region") == region
+                ].values.squeeze(),
                 rtol=1e-5,
             )
 
@@ -371,7 +412,9 @@ def test_stitching_with_normalisation_two_levels(tmpdir, caplog, test_cmip6_crun
     assert bcc_warning[0][1] == logging.WARNING
 
 
-def test_stitching_with_normalisation_in_file_BCC_CSM2_MR(tmpdir, caplog, test_cmip6_crunch_output):
+def test_stitching_with_normalisation_in_file_BCC_CSM2_MR(
+    tmpdir, caplog, test_cmip6_crunch_output
+):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_with_normalisation_in_file_BCC_CSM2_MR"
     norm_method = "31-yr-mean-after-branch-time"
@@ -394,7 +437,7 @@ def test_stitching_with_normalisation_in_file_BCC_CSM2_MR(tmpdir, caplog, test_c
                 "--out-format",
                 "mag-files-average-year-mid-year",
                 "--normalise",
-                norm_method
+                norm_method,
             ],
         )
 
@@ -414,7 +457,9 @@ def test_stitching_with_normalisation_in_file_BCC_CSM2_MR(tmpdir, caplog, test_c
     assert "BCC-CSM2-MR" in child_path
     assert "tas" in child_path
 
-    child = load_scmdataframe(os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", "")))
+    child = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", ""))
+    )
 
     normalisation_path = res.metadata["(normalisation) netcdf-scm crunched file"]
     assert "piControl" in normalisation_path
@@ -422,19 +467,30 @@ def test_stitching_with_normalisation_in_file_BCC_CSM2_MR(tmpdir, caplog, test_c
     assert "BCC-CSM2-MR" in normalisation_path
     assert "tas" in normalisation_path
 
-    normalisation = load_scmdataframe(os.path.join(test_cmip6_crunch_output, normalisation_path.replace("CMIP6/", "")))
+    normalisation = load_scmdataframe(
+        os.path.join(test_cmip6_crunch_output, normalisation_path.replace("CMIP6/", ""))
+    )
 
     assert child.metadata["branch_time_in_parent"] == 0.0
     assert child.metadata["parent_time_units"] == "days since 1850-01-01"
     expected_norm_year_raw = 1850
 
-    norm_shift = normalisation.filter(year=range(expected_norm_year_raw, expected_norm_year_raw+31)).timeseries().mean(axis=1)
+    norm_shift = (
+        normalisation.filter(
+            year=range(expected_norm_year_raw, expected_norm_year_raw + 31)
+        )
+        .timeseries()
+        .mean(axis=1)
+    )
 
     for region in ["World", "World|North Atlantic Ocean"]:
         for y in range(1850, 2015):
             np.testing.assert_allclose(
                 res.filter(region=region, year=y).values,
-                child.time_mean("AC").filter(region=region, year=y).values - norm_shift[norm_shift.index.get_level_values("region") == region].values.squeeze(),
+                child.time_mean("AC").filter(region=region, year=y).values
+                - norm_shift[
+                    norm_shift.index.get_level_values("region") == region
+                ].values.squeeze(),
                 rtol=1e-5,
             )
 
@@ -447,7 +503,9 @@ def test_stitching_with_normalisation_in_file_BCC_CSM2_MR(tmpdir, caplog, test_c
     assert not bcc_warning
 
 
-def test_stitching_with_normalisation_no_picontrol(tmpdir, caplog, test_cmip6_crunch_output):
+def test_stitching_with_normalisation_no_picontrol(
+    tmpdir, caplog, test_cmip6_crunch_output
+):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_with_normalisation_no_picontrol"
 
@@ -467,7 +525,7 @@ def test_stitching_with_normalisation_no_picontrol(tmpdir, caplog, test_cmip6_cr
                 "--regexp",
                 ".*GFDL-CM4.*1pctCO2.*r1i1p1f1.*",
                 "--normalise",
-                "31-yr-mean-after-branch-time"
+                "31-yr-mean-after-branch-time",
             ],
         )
 
@@ -483,7 +541,9 @@ def test_stitching_with_normalisation_no_picontrol(tmpdir, caplog, test_cmip6_cr
     assert no_parent_error[0][1] == logging.ERROR
 
 
-def test_stitching_with_normalisation_no_branching_time(tmpdir, caplog, test_cmip6_crunch_output):
+def test_stitching_with_normalisation_no_branching_time(
+    tmpdir, caplog, test_cmip6_crunch_output
+):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_with_normalisation_no_branching_time"
 
@@ -503,7 +563,7 @@ def test_stitching_with_normalisation_no_branching_time(tmpdir, caplog, test_cmi
                 "--regexp",
                 ".*CNRM-CM6-1.*hist-aer.*tas.*",
                 "--normalise",
-                "31-yr-mean-after-branch-time"
+                "31-yr-mean-after-branch-time",
             ],
         )
 
@@ -517,7 +577,9 @@ def test_stitching_with_normalisation_no_branching_time(tmpdir, caplog, test_cmi
     assert no_branch_time_error[0][1] == logging.ERROR
 
 
-def test_stitching_with_normalisation_not_enough_branching_time(tmpdir, caplog, test_cmip6_crunch_output):
+def test_stitching_with_normalisation_not_enough_branching_time(
+    tmpdir, caplog, test_cmip6_crunch_output
+):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_with_normalisation_no_branching_time"
 
@@ -537,7 +599,7 @@ def test_stitching_with_normalisation_not_enough_branching_time(tmpdir, caplog, 
                 "--regexp",
                 ".*MIROC6.*r1i1p1f1.*rlut.*",
                 "--normalise",
-                "31-yr-mean-after-branch-time"
+                "31-yr-mean-after-branch-time",
             ],
         )
 
@@ -547,7 +609,9 @@ def test_stitching_with_normalisation_not_enough_branching_time(tmpdir, caplog, 
         "data in "
         "CMIP6/CMIP/MIROC/MIROC6/piControl/r1i1p1f1/Amon/rlut/gn/v20181212/netcdf-scm_rlut_Amon_MIROC6_piControl_r1i1p1f1_gn_320001-320212.nc"
     )
-    not_enough_norm_data_error = [r for r in caplog.record_tuples if error_msg.match(r[2])]
+    not_enough_norm_data_error = [
+        r for r in caplog.record_tuples if error_msg.match(r[2])
+    ]
     assert len(not_enough_norm_data_error) == 1
     assert not_enough_norm_data_error[0][1] == logging.ERROR
 
@@ -593,13 +657,17 @@ def test_stitching_file_types(tmpdir, caplog, test_cmip6_crunch_output, out_form
                 "--regexp",
                 ".*BCC-CSM2-MR.*(ssp126|historical).*tas.*",
                 "--normalise",
-                "31-yr-mean-after-branch-time"
+                "31-yr-mean-after-branch-time",
             ],
         )
 
     assert result.exit_code == 0
 
-    out_files = glob.glob(os.path.join(output_dir, "flat", "*.IN" if out_format.startswith("magicc") else "*.MAG"))
+    out_files = glob.glob(
+        os.path.join(
+            output_dir, "flat", "*.IN" if out_format.startswith("magicc") else "*.MAG"
+        )
+    )
     assert len(out_files) == 4 if out_format.startswith("magicc") else 2
 
     for p in out_files:
@@ -657,7 +725,11 @@ def test_prefix(tmpdir, caplog, test_cmip6_crunch_output, out_format):
 
     assert result.exit_code == 0, result.stderr
 
-    out_files = glob.glob(os.path.join(output_dir, "flat", "*.IN" if out_format.startswith("magicc") else "*.MAG"))
+    out_files = glob.glob(
+        os.path.join(
+            output_dir, "flat", "*.IN" if out_format.startswith("magicc") else "*.MAG"
+        )
+    )
     assert len(out_files) == 2 if out_format.startswith("magicc") else 1
     assert [os.path.basename(p).startswith("{}_".format(prefix)) for p in out_files]
 

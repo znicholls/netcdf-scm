@@ -919,7 +919,7 @@ def _write_ascii_file(  # pylint:disable=too-many-arguments
             force,
             out_format,
             drs,
-            prefix
+            prefix,
         )
     elif out_format in ("magicc-input-files",):
         _write_magicc_input_file(
@@ -986,7 +986,16 @@ def _write_mag_file(  # pylint:disable=too-many-arguments
 
 
 def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
-    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format, drs, prefix
+    openscmdf,
+    metadata,
+    header,
+    outfile_dir,
+    symlink_dir,
+    fnames,
+    force,
+    out_format,
+    drs,
+    prefix,
 ):  # pylint:disable=too-many-locals
     if len(fnames) > 1:
         raise AssertionError(
@@ -1099,7 +1108,15 @@ def _write_magicc_input_file(  # pylint:disable=too-many-arguments
 
 
 def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-arguments
-    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format, prefix
+    openscmdf,
+    metadata,
+    header,
+    outfile_dir,
+    symlink_dir,
+    fnames,
+    force,
+    out_format,
+    prefix,
 ):
     if len(fnames) > 1:
         raise AssertionError(
@@ -1124,7 +1141,7 @@ def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-argument
         metadata,
         header,
         out_format.replace("magicc-input-files-", "").replace("-", "_").upper(),
-        prefix
+        prefix,
     )
 
 
@@ -1137,7 +1154,7 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
     metadata,
     header,
     timeseriestype,
-    prefix
+    prefix,
 ):
     try:
         var_to_write = openscmdf["variable"].unique()[0]
@@ -1164,26 +1181,22 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
     }
     for region_key, regions_to_keep in region_filters.items():
         out_file_base = (
-                ("{}_{}_{}_{}_{}_{}_{}.IN")
-                .format(
-                    variable_abbreviations["filename"],
-                    openscmdf["scenario"].unique()[0],
-                    openscmdf["climate_model"].unique()[0],
-                    openscmdf["member_id"].unique()[0],
-                    time_id,
-                    region_key,
-                    variable_abbreviations["magicc_internal_name"],
-                )
-                .upper()
+            ("{}_{}_{}_{}_{}_{}_{}.IN")
+            .format(
+                variable_abbreviations["filename"],
+                openscmdf["scenario"].unique()[0],
+                openscmdf["climate_model"].unique()[0],
+                openscmdf["member_id"].unique()[0],
+                time_id,
+                region_key,
+                variable_abbreviations["magicc_internal_name"],
             )
+            .upper()
+        )
         if prefix is not None:
             out_file_base = "{}_{}".format(prefix, out_file_base)
 
-
-        out_file = os.path.join(
-            outfile_dir,
-            out_file_base,
-        )
+        out_file = os.path.join(outfile_dir, out_file_base,)
         symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
 
         if _skip_file(out_file, force, symlink_dir):
@@ -1542,7 +1555,18 @@ def _stitch_netdf_scm_ncs(
         )
 
 
-def _stitch_magicc_files(fnames, dpath, dst, force, out_format, target_units_specs, stitch_contact, drs, prefix, normalise):
+def _stitch_magicc_files(
+    fnames,
+    dpath,
+    dst,
+    force,
+    out_format,
+    target_units_specs,
+    stitch_contact,
+    drs,
+    prefix,
+    normalise,
+):
     openscmdf, metadata, header = _get_stitched_openscmdf_metadata_header(
         fnames, dpath, target_units_specs, stitch_contact, drs, normalise
     )
@@ -1561,6 +1585,7 @@ def _stitch_magicc_files(fnames, dpath, dst, force, out_format, target_units_spe
         drs,
         prefix=prefix,
     )
+
 
 def _get_stitched_openscmdf_metadata_header(
     fnames, dpath, target_units_specs, stitch_contact, drs, normalise
@@ -1609,7 +1634,13 @@ def _get_continuous_timeseries_with_meta(infile, drs, normalise, normalise_mean=
     parent_file_path_base = _get_parent_path_base(infile, parent_replacements, drs)
     parent_file_path = glob.glob(parent_file_path_base)
     if len(parent_file_path) == 0:
-        raise IOError("No parent data ({}) available for {}, we looked in {}".format(parent_replacements["parent_experiment_id"], infile, parent_file_path_base))
+        raise IOError(
+            "No parent data ({}) available for {}, we looked in {}".format(
+                parent_replacements["parent_experiment_id"],
+                infile,
+                parent_file_path_base,
+            )
+        )
     elif len(parent_file_path) > 1:
         raise AssertionError(  # pragma: no cover # emergency valve
             "More than one parent file?"
@@ -1620,7 +1651,9 @@ def _get_continuous_timeseries_with_meta(infile, drs, normalise, normalise_mean=
         parent_file_path, drs, normalise, normalise_mean
     )
 
-    return _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise_mean)
+    return _do_stitching_and_normalisation(
+        infile, loaded, parent, normalise, normalise_mean
+    )
 
 
 def _get_id_in_path(path_id, fullpath, drs):
@@ -1661,11 +1694,12 @@ def _get_path_bits(inpath, drs):
     helper = _get_scmcube_helper(drs)
     return helper.process_path(os.path.dirname(inpath))
 
+
 def _get_timestamp_str(fullpath, drs):
     helper = _get_scmcube_helper(drs)
-    return helper._get_timestamp_bits_from_filename(
-        os.path.basename(fullpath)
-    )["timestamp_str"]
+    return helper._get_timestamp_bits_from_filename(os.path.basename(fullpath))[
+        "timestamp_str"
+    ]
 
 
 # TODO: put this in scmdata
@@ -1696,6 +1730,7 @@ def _make_metadata_uniform(inscmdf, base_scen):
 
     return ScmDataFrame(pd.concat(outscmdf, sort=True, axis=1))
 
+
 def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise_mean):
     if "BCC" in infile and not np.equal(loaded.metadata["branch_time_in_parent"], 0):
         # think the metadata here is wrong as historical has a branch_time_in_parent
@@ -1723,7 +1758,6 @@ def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise
     #         loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile
     #     ) or (loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile)
 
-
     if not skip_time_shift and (branch_time.year != loaded["time"].min().year):
         logger.info("Shifting time to match branch time %s for %s", branch_time, infile)
 
@@ -1732,7 +1766,12 @@ def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise
             "time"
         ]
         if time_base.empty:
-            error_msg = "Branching time `{:04d}{:02d}` not available in {} data in {}".format(branch_time.year, branch_time.month, parent.metadata["experiment_id"], parent.metadata["netcdf-scm crunched file"])
+            error_msg = "Branching time `{:04d}{:02d}` not available in {} data in {}".format(
+                branch_time.year,
+                branch_time.month,
+                parent.metadata["experiment_id"],
+                parent.metadata["netcdf-scm crunched file"],
+            )
             raise ValueError(error_msg)
 
         time_base = time_base[0]
@@ -1764,9 +1803,14 @@ def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise
             # assuming parent is the normalisation series in this case because any child
             # scenarios will have called this recursively before doing any of their own
             # shifting
-            normalise_series = parent.filter(year=range(branch_year_after_shifting, branch_year_after_shifting + 31))
+            normalise_series = parent.filter(
+                year=range(branch_year_after_shifting, branch_year_after_shifting + 31)
+            )
 
-            if (normalise_series["time"].max().year - normalise_series["time"].min().year) != 30:
+            if (
+                normalise_series["time"].max().year
+                - normalise_series["time"].min().year
+            ) != 30:
                 error_msg = (
                     "Only `{:04d}{:02d}` to `{:04d}{:02d}` is available after the "
                     "branching time `{:04d}{:02d}` in {} data in {}".format(
@@ -1777,7 +1821,7 @@ def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise
                         branch_time.year,
                         branch_time.month,
                         parent.metadata["experiment_id"],
-                        parent.metadata["netcdf-scm crunched file"]
+                        parent.metadata["netcdf-scm crunched file"],
                     )
                 )
                 raise ValueError(error_msg)
@@ -1786,14 +1830,19 @@ def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise
             out = _take_anomaly_from(loaded, normalise_mean)
             out_meta = {
                 **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
-                **{"(normalisation) {}".format(k): v for k, v in parent.metadata.items()},
+                **{
+                    "(normalisation) {}".format(k): v
+                    for k, v in parent.metadata.items()
+                },
             }
 
         else:
             out = df_append([_take_anomaly_from(loaded, normalise_mean), parent])
             out = _make_metadata_uniform(out, _get_meta(loaded, "scenario"))
 
-            parent_metadata = {k.replace("(child)", "(parent)"): v for k, v in parent.metadata.items()}
+            parent_metadata = {
+                k.replace("(child)", "(parent)"): v for k, v in parent.metadata.items()
+            }
             out_meta = {
                 **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
                 **parent_metadata,
@@ -1809,7 +1858,9 @@ def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise
         out = _make_metadata_uniform(out, _get_meta(loaded, "scenario"))
 
         if any(["(child)" in k for k in parent.metadata]):
-            parent_metadata = {k.replace("(child)", "(parent)"): v for k, v in parent.metadata.items()}
+            parent_metadata = {
+                k.replace("(child)", "(parent)"): v for k, v in parent.metadata.items()
+            }
             out.metadata = {
                 **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
                 **parent_metadata,
