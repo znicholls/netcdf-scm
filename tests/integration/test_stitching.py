@@ -8,11 +8,11 @@ from pymagicc.io import MAGICCData
 from netcdf_scm.cli import stitch_data
 
 # TODO:
-# - test data (timeseries which can be stitched, one ssp plus hist, one hist plus piControl, one 1pctCO2 plus piControl, one BCC hist plus BCC piControl)
+# - test data (timeseries which can be stitched, one ssp plus hist, one hist plus piControl, one 1pctCO2 plus piControl, one BCC-CSM2-MR hist plus BCC-CSM2-MR piControl)
 # - tests of errors when parent isn't there
 # - tests of errors when branch time isn't in data
 # - tests of errors when not enough years in piControl are there
-# - tests of log messages when doing the BCC fix
+# - tests of log messages when doing the BCC-CSM2-MR fix
 # - tests of normalisation or not
 
 
@@ -64,7 +64,7 @@ def test_stitching_default(tmpdir, caplog, test_cmip6_crunch_output):
     assert False, "do tests of logs here, shouldn't be any problems"
 
 
-def test_stitching_in_file_BCC(tmpdir, caplog, test_cmip6_crunch_output):
+def test_stitching_in_file_BCC_CSM2_MR(tmpdir, caplog, test_cmip6_crunch_output):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_default"
 
@@ -82,26 +82,20 @@ def test_stitching_in_file_BCC(tmpdir, caplog, test_cmip6_crunch_output):
                 "---number-workers",
                 1,
                 "--regexp",
-                ".*BCC.*historical.*tas.*r1i1p1f1.*",
+                ".*BCC-CSM2-MR.*historical.*tas.*r1i1p1f1.*",
                 "--out-format",
                 "mag-files-average-year-mid-year",
             ],
         )
 
-    find /data/marble/cmip6/ -name '*tas*BCC*historical*r1i1p1f1*'
+    find /data/marble/cmip6/ -name '*tas_*BCC-CSM2-MR*historical*r1i1p1f1*'
 
-    /data/marble/cmip6/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201701-201712.nc
-    /data/marble/cmip6/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201601-201612.nc
-    /data/marble/cmip6/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201501-201512.nc
+    /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
 
+    find /data/marble/cmip6/ -name '*tas_*BCC-CSM2-MR*ssp*r1i1p1f1*'
 
-    find /data/marble/cmip6/ -name '*hfds*EC-Earth3*historical*r1i1p1f1*'
+    /data/marble/cmip6/CMIP6/ScenarioMIP/BCC/BCC-CSM2-MR/ssp126/r1i1p1f1/Amon/tas/gn/v20190314/tas_Amon_BCC-CSM2-MR_ssp126_r1i1p1f1_gn_201501-210012.nc
 
-    /data/marble/cmip6/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201401-201412.nc
-    /data/marble/cmip6/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201301-201312.nc
-    /data/marble/cmip6/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201201-201212.nc
-
-    find /data/marble/cmip6/ -name '*areacello*EC-Earth3*historical*r1i1p1f1*'
 
     assert result.exit_code == 0
 
@@ -133,9 +127,15 @@ def test_stitching_no_parent(tmpdir, caplog, test_cmip6_crunch_output):
                 "---number-workers",
                 1,
                 "--regexp",
-                ".*IPSL.*cVeg.*r1i1p1f1.*",
+                ".*CNRM-ESM2-1.*r2i1p1f2.*/cSoil/.*",
             ],
         )
+
+    find /data/marble/cmip6/ -name 'cSoil_*CNRM*ssp534-over*r2*gr*'
+
+    /data/marble/cmip6/CMIP6/ScenarioMIP/CNRM-CERFACS/CNRM-ESM2-1/ssp534-over/r2i1p1f2/Emon/cSoil/gr/v20190410/cSoil_Emon_CNRM-ESM2-1_ssp534-over_r2i1p1f2_gr_201501-210012.nc
+
+    find /data/marble/cmip6/ -name 'areacella*CanESM5*esm-ssp*r3i1*'
 
     assert result.exit_code != 0
     assert str(result.exception) == "No parent data available for filename"
@@ -171,12 +171,25 @@ def test_stitching_with_normalisation(tmpdir, caplog, test_cmip6_crunch_output):
 
     res = MAGICCData(out_files[0])
 
+    find /data/marble/cmip6/ -name 'tas_*IPSL*ssp126*r1i1p1f1*gr_*'
+
+    /data/marble/cmip6/CMIP6/ScenarioMIP/IPSL/IPSL-CM6A-LR/ssp126/r1i1p1f1/Amon/tas/gr/v20190121/tas_Amon_IPSL-CM6A-LR_ssp126_r1i1p1f1_gr_201501-210012.nc
+
+    find /data/marble/cmip6/ -name 'tas_*IPSL*historical*r1i1p1f1*gr_*'
+
+    /data/marble/cmip6/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20180803/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
+
+    find /data/marble/cmip6/ -name 'tas_*IPSL*piControl*r1i1p1f1*gr_*'
+
+    # still need to copy this
+    /data/marble/cmip6/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/tas_Amon_IPSL-CM6A-LR_piControl_r1i1p1f1_gr_185001-234912.nc
+
     assert False, "do data tests here, normalised hist"
     assert False, "do metadata tests here, parent and grandparent"
     assert False, "do tests of logs here, shouldn't be any problems"
 
 
-def test_stitching_with_normalisation_in_file_BCC(tmpdir, caplog, test_cmip6_crunch_output):
+def test_stitching_with_normalisation_in_file_BCC_CSM2_MR(tmpdir, caplog, test_cmip6_crunch_output):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_default"
 
@@ -194,12 +207,20 @@ def test_stitching_with_normalisation_in_file_BCC(tmpdir, caplog, test_cmip6_cru
                 "---number-workers",
                 1,
                 "--regexp",
-                ".*BCC.*tas.*r3i1p1f1.*",
+                ".*BCC-CSM2-MR.*tas.*r3i1p1f1.*",
                 "--out-format",
                 "mag-files-average-year-mid-year",
                 "--normalise",
             ],
         )
+
+    find /data/marble/cmip6/ -name '*tas_*BCC-CSM2-MR*historical*r1i1p1f1*'
+
+    /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+
+    find /data/marble/cmip6/ -name '*tas_*BCC-CSM2-MR*piControl*r1i1p1f1*'
+
+    /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tas/gn/v20181016/tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
 
     assert result.exit_code == 0
 
