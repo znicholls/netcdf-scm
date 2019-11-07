@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#112 <https://github.com/znicholls/netcdf-scm/pull/112>`_) Add ``netcdf-scm-stitch`` so e.g. historical and scenario files can be joined and also normalised against e.g. piControl
 - (`#114 <https://github.com/znicholls/netcdf-scm/pull/114>`_) Ensure that default sftlf file is included in wheel
 - (`#111 <https://github.com/znicholls/netcdf-scm/pull/111>`_) Write tuningstrucs with data in columns rather than rows
 - (`#108 <https://github.com/znicholls/netcdf-scm/pull/108>`_) Optimise wranglers and add regression tests
