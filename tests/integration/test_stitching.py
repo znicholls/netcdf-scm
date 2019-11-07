@@ -39,20 +39,6 @@ def test_stitching_default(tmpdir, caplog, test_cmip6_crunch_output):
                 ".*EC-Earth3-Veg.*ssp585.*r1i1p1f1.*hfds.*",
             ],
         )
-        find /data/marble/cmip6/ -name '*hfds*EC-Earth3*ssp585*r1i1p1f1*'
-
-        /data/marble/cmip6/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201701-201712.nc
-        /data/marble/cmip6/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201601-201612.nc
-        /data/marble/cmip6/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201501-201512.nc
-
-
-        find /data/marble/cmip6/ -name '*hfds*EC-Earth3*historical*r1i1p1f1*'
-
-        /data/marble/cmip6/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201401-201412.nc
-        /data/marble/cmip6/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201301-201312.nc
-        /data/marble/cmip6/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201201-201212.nc
-
-        find /data/marble/cmip6/ -name '*areacello*EC-Earth3*historical*r1i1p1f1*'
 
     assert result.exit_code == 0
 
@@ -61,8 +47,8 @@ def test_stitching_default(tmpdir, caplog, test_cmip6_crunch_output):
 
     res = MAGICCData(out_files[0])
 
-    assert False, "do data tests here, join of SSP and hist"
-    assert False, "do metadata tests here, parent and grandparent"
+    assert False, "do data tests here, join of SSP585 and hist"
+    assert False, "do metadata tests here, parent"
     assert False, "do tests of logs here, shouldn't be any problems"
 
 
@@ -84,20 +70,11 @@ def test_stitching_in_file_BCC_CSM2_MR(tmpdir, caplog, test_cmip6_crunch_output)
                 "---number-workers",
                 1,
                 "--regexp",
-                ".*BCC-CSM2-MR.*historical.*tas.*r1i1p1f1.*",
+                ".*BCC-CSM2-MR.*ssp126.*r1i1p1f1.*tas.*",
                 "--out-format",
                 "mag-files-average-year-mid-year",
             ],
         )
-
-    find /data/marble/cmip6/ -name '*tas_*BCC-CSM2-MR*historical*r1i1p1f1*'
-
-    /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-
-    find /data/marble/cmip6/ -name '*tas_*BCC-CSM2-MR*ssp*r1i1p1f1*'
-
-    /data/marble/cmip6/CMIP6/ScenarioMIP/BCC/BCC-CSM2-MR/ssp126/r1i1p1f1/Amon/tas/gn/v20190314/tas_Amon_BCC-CSM2-MR_ssp126_r1i1p1f1_gn_201501-210012.nc
-
 
     assert result.exit_code == 0
 
@@ -107,7 +84,7 @@ def test_stitching_in_file_BCC_CSM2_MR(tmpdir, caplog, test_cmip6_crunch_output)
     res = MAGICCData(out_files[0])
 
     assert False, "do data tests here, join of SSP and hist"
-    assert False, "do metadata tests here, parent and grandparent"
+    assert False, "do metadata tests here, parent"
     assert False, "do tests of logs here, should log that we're assuming branch time means year rather than days since"
 
 
@@ -133,12 +110,6 @@ def test_stitching_no_parent(tmpdir, caplog, test_cmip6_crunch_output):
             ],
         )
 
-    find /data/marble/cmip6/ -name 'cSoil_*CNRM*ssp534-over*r2*gr*'
-
-    /data/marble/cmip6/CMIP6/ScenarioMIP/CNRM-CERFACS/CNRM-ESM2-1/ssp534-over/r2i1p1f2/Emon/cSoil/gr/v20190410/cSoil_Emon_CNRM-ESM2-1_ssp534-over_r2i1p1f2_gr_201501-210012.nc
-
-    find /data/marble/cmip6/ -name 'areacella*CanESM5*esm-ssp*r3i1*'
-
     assert result.exit_code != 0
     assert str(result.exception) == "No parent data available for filename"
 
@@ -161,8 +132,9 @@ def test_stitching_with_normalisation(tmpdir, caplog, test_cmip6_crunch_output):
                 "---number-workers",
                 1,
                 "--regexp",
-                ".*CESM.*tas.*r2i1p1f1.*",
+                ".*CESM2.*r10i1p1f1.*tas.*",
                 "--normalise",
+                "31-yr-mean-after-branch-time"
             ],
         )
 
@@ -173,10 +145,8 @@ def test_stitching_with_normalisation(tmpdir, caplog, test_cmip6_crunch_output):
 
     res = MAGICCData(out_files[0])
 
-    # don't use IPSL here
-
     assert False, "do data tests here, normalised hist"
-    assert False, "do metadata tests here, parent and grandparent"
+    assert False, "do metadata tests here, parent and normalisation experiment"
     assert False, "do tests of logs here, shouldn't be any problems"
 
 
@@ -198,20 +168,13 @@ def test_stitching_with_normalisation_in_file_BCC_CSM2_MR(tmpdir, caplog, test_c
                 "---number-workers",
                 1,
                 "--regexp",
-                ".*BCC-CSM2-MR.*tas.*r3i1p1f1.*",
+                ".*BCC-CSM2-MR.*1pctCO2-bgc.*tas.*r1i1p1f1.*",
                 "--out-format",
                 "mag-files-average-year-mid-year",
                 "--normalise",
+                "31-yr-mean-after-branch-time"
             ],
         )
-
-    find /data/marble/cmip6/ -name '*tas_*BCC-CSM2-MR*historical*r1i1p1f1*'
-
-    /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-
-    find /data/marble/cmip6/ -name '*tas_*BCC-CSM2-MR*piControl*r1i1p1f1*'
-
-    /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tas/gn/v20181016/tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
 
     assert result.exit_code == 0
 
@@ -221,7 +184,7 @@ def test_stitching_with_normalisation_in_file_BCC_CSM2_MR(tmpdir, caplog, test_c
     res = MAGICCData(out_files[0])
 
     assert False, "do data tests here, normalised hist"
-    assert False, "do metadata tests here, parent and grandparent"
+    assert False, "do metadata tests here, parent and normalisation here"
     assert False, "do tests of logs here, should log that we're assuming branch time means year rather than days since"
 
 
@@ -243,8 +206,9 @@ def test_stitching_with_normalisation_no_picontrol(tmpdir, caplog, test_cmip6_cr
                 "---number-workers",
                 1,
                 "--regexp",
-                ".*GFDL.*tas.*r1i1p1f1.*",
+                ".*GFDL-CM4.*1pctCO2.*r1i1p1f1.*",
                 "--normalise",
+                "31-yr-mean-after-branch-time"
             ],
         )
 
@@ -270,8 +234,9 @@ def test_stitching_with_normalisation_no_branching_time(tmpdir, caplog, test_cmi
                 "---number-workers",
                 1,
                 "--regexp",
-                ".*GFDL.*tas.*r1i1p1f1.*",
+                ".*UKESM1-0-LL.*historical.*hfds.*",
                 "--normalise",
+                "31-yr-mean-after-branch-time"
             ],
         )
 
@@ -297,13 +262,14 @@ def test_stitching_with_normalisation_not_enough_branching_time(tmpdir, caplog, 
                 "---number-workers",
                 1,
                 "--regexp",
-                ".*GFDL.*tas.*r1i1p1f1.*",
+                ".*MIROC6.*rlut.*r1i1p1f1.*",
                 "--normalise",
+                "31-yr-mean-after-branch-time"
             ],
         )
 
     assert result.exit_code != 0
-    assert str(result.exception) == "Only {} years of data are available around the branching time (`{}`) in piControl data".format(3, 2014)
+    assert str(result.exception) == "Only {} years of data are available after the branching time (`{}`) in the piControl data".format(3, 2014)
 
 
 @pytest.mark.parametrize(
@@ -342,8 +308,11 @@ def test_stitching_file_types(tmpdir, caplog, test_cmip6_crunch_output, out_form
                 "-f",
                 "---number-workers",
                 1,
+                # will need some regexp here to make things work
             ],
         )
 
+    assert result.exit_code == 0
+
     assert len(os.path.join(output_dir, "flat", "*.IN" if out_format.startswith("magicc") else ".MAG")) == 5
-    assert False, "do metadata tests here, parent and grandparent"
+    assert False, "do metadata tests here, parent"
