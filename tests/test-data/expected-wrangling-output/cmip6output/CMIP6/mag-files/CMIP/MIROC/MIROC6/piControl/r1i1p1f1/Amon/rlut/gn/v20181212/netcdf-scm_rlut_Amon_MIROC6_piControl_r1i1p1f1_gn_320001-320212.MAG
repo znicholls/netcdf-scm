@@ -1,0 +1,136 @@
+---- HEADER ----
+
+Date: 2019-11-07 19:40:27
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.7+16.g38df42f (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+Conventions: CF-1.5
+area_world (m**2): 509499402446956.25
+area_world_el_nino_n3.4 (m**2): 6801325787112.107
+area_world_land (m**2): 146381656298686.03
+area_world_north_atlantic_ocean (m**2): 39189897209497.734
+area_world_northern_hemisphere (m**2): 254749701223478.12
+area_world_northern_hemisphere_land (m**2): 98548384652411.92
+area_world_northern_hemisphere_ocean (m**2): 156201316559884.38
+area_world_ocean (m**2): 363117746147086.44
+area_world_southern_hemisphere (m**2): 254749701223478.12
+area_world_southern_hemisphere_land (m**2): 47833271646274.12
+area_world_southern_hemisphere_ocean (m**2): 206916429587202.0
+branch_method: standard
+branch_time_in_child: 0.0
+branch_time_in_parent: 365242.0
+calendar: gregorian
+cmor_version: 3.3.2
+comment: at the top of the atmosphere (to be compared with satellite measurements)
+creation_date: 2018-11-30T08:51:05Z
+crunch_contact: cmip6output crunching regression test
+crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+crunch_source_files: Files: ['/CMIP6/CMIP/MIROC/MIROC6/piControl/r1i1p1f1/Amon/rlut/gn/v20181212/rlut_Amon_MIROC6_piControl_r1i1p1f1_gn_320001-320212.nc']
+data_specs_version: 01.00.28
+experiment: pre-industrial control
+experiment_id: piControl
+external_variables: areacella
+forcing_index: 1
+frequency: mon
+further_info_url: https://furtherinfo.es-doc.org/CMIP6.MIROC.MIROC6.piControl.none.r1i1p1f1
+grid: native atmosphere T85 Gaussian grid
+grid_label: gn
+history: 2018-11-30T08:51:05Z altered by CMOR: Converted units from 'W/m**2' to 'W m-2'. 2018-11-30T08:51:05Z altered by CMOR: replaced missing value flag (-999) with standard missing value (1e+20). 2018-11-30T08:51:05Z altered by CMOR: Inverted axis: lat.
+initialization_index: 1
+institution: JAMSTEC (Japan Agency for Marine-Earth Science and Technology, Kanagawa 236-0001, Japan), AORI (Atmosphere and Ocean Research Institute, The University of Tokyo, Chiba 277-8564, Japan), NIES (National Institute for Environmental Studies, Ibaraki 305-8506, Japan), and R-CCS (RIKEN Center for Computational Science, Hyogo 650-0047, Japan)
+institution_id: MIROC
+land_fraction: 0.2873048635497188
+land_fraction_northern_hemisphere: 0.3868439655831461
+land_fraction_southern_hemisphere: 0.18776576151629154
+license: CMIP6 model data produced by MIROC is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file). The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+nominal_resolution: 250 km
+original_name: OLR
+original_units: W/m**2
+parent_activity_id: CMIP
+parent_experiment_id: piControl-spinup
+parent_mip_era: CMIP6
+parent_source_id: MIROC6
+parent_time_units: days since 2200-1-1
+parent_variant_label: r1i1p1f1
+physics_index: 1
+product: model-output
+realization_index: 1
+realm: atmos
+source: MIROC6 (2017): 
+aerosol: SPRINTARS6.0
+atmos: CCSR AGCM (T85; 256 x 128 longitude/latitude; 81 levels; top level 0.004 hPa)
+atmosChem: none
+land: MATSIRO6.0
+landIce: none
+ocean: COCO4.9 (tripolar primarily 1deg; 360 x 256 longitude/latitude; 63 levels; top grid cell 0-2 m)
+ocnBgchem: none
+seaIce: COCO4.9
+source_id: MIROC6
+source_type: AOGCM AER
+sub_experiment: none
+sub_experiment_id: none
+table_id: Amon
+table_info: Creation Date:(06 November 2018) MD5:0728c79344e0f262bb76e4f9ff0d9afc
+title: MIROC6 output prepared for CMIP6
+tracking_id: hdl:21.14100/5887d013-c674-415b-bfc0-c2b9856d06de
+variable_id: rlut
+variant_label: r1i1p1f1
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 11
+    THISFILE_DATAROWS = 36
+    THISFILE_FIRSTYEAR = 3200
+    THISFILE_LASTYEAR = 3202
+    THISFILE_ANNUALSTEPS = 12
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'MONTHLY'
+    THISFILE_FIRSTDATAROW = 101
+/
+
+   VARIABLE                rlut                rlut                rlut                rlut                rlut                rlut                rlut                rlut                rlut                rlut                rlut
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2
+      YEARS               WORLD                 N34                LAND                 AMV                  NH              NHLAND             NHOCEAN               OCEAN                  SH              SHLAND             SHOCEAN
+3200.042000         2.28355e+02         2.68935e+02         2.14684e+02         2.36437e+02         2.24076e+02         2.10681e+02         2.32527e+02         2.33866e+02         2.32634e+02         2.22931e+02         2.34877e+02
+3200.125000         2.27867e+02         2.67291e+02         2.14321e+02         2.33539e+02         2.24147e+02         2.13107e+02         2.31112e+02         2.33327e+02         2.31586e+02         2.16822e+02         2.35000e+02
+3200.208000         2.27871e+02         2.63124e+02         2.15736e+02         2.35796e+02         2.26364e+02         2.16227e+02         2.32760e+02         2.32763e+02         2.29378e+02         2.14726e+02         2.32766e+02
+3200.292000         2.27707e+02         2.63200e+02         2.21462e+02         2.35262e+02         2.27237e+02         2.23399e+02         2.29659e+02         2.30225e+02         2.28178e+02         2.17472e+02         2.30653e+02
+3200.375000         2.30334e+02         2.67839e+02         2.30122e+02         2.31949e+02         2.30877e+02         2.34587e+02         2.28536e+02         2.30420e+02         2.29792e+02         2.20922e+02         2.31843e+02
+3200.458000         2.32958e+02         2.61656e+02         2.39619e+02         2.31478e+02         2.36783e+02         2.46860e+02         2.30426e+02         2.30273e+02         2.29133e+02         2.24700e+02         2.30157e+02
+3200.542000         2.34611e+02         2.64603e+02         2.40121e+02         2.42903e+02         2.38630e+02         2.46680e+02         2.33551e+02         2.32390e+02         2.30592e+02         2.26608e+02         2.31513e+02
+3200.625000         2.33900e+02         2.77195e+02         2.37564e+02         2.43330e+02         2.36980e+02         2.44058e+02         2.32515e+02         2.32422e+02         2.30819e+02         2.24185e+02         2.32352e+02
+3200.708000         2.32762e+02         2.68526e+02         2.31841e+02         2.40706e+02         2.34782e+02         2.35989e+02         2.34021e+02         2.33133e+02         2.30741e+02         2.23295e+02         2.32463e+02
+3200.792000         2.30312e+02         2.79120e+02         2.25701e+02         2.36875e+02         2.30655e+02         2.29065e+02         2.31659e+02         2.32171e+02         2.29969e+02         2.18770e+02         2.32557e+02
+3200.875000         2.28017e+02         2.71070e+02         2.19498e+02         2.33954e+02         2.26178e+02         2.20716e+02         2.29624e+02         2.31451e+02         2.29856e+02         2.16988e+02         2.32831e+02
+3200.958000         2.27306e+02         2.65973e+02         2.17025e+02         2.30955e+02         2.22607e+02         2.15609e+02         2.27022e+02         2.31451e+02         2.32005e+02         2.19942e+02         2.34793e+02
+3201.042000         2.28156e+02         2.66729e+02         2.16371e+02         2.30668e+02         2.24353e+02         2.13914e+02         2.30940e+02         2.32907e+02         2.31958e+02         2.21432e+02         2.34392e+02
+3201.125000         2.27450e+02         2.64316e+02         2.13243e+02         2.33148e+02         2.24430e+02         2.13354e+02         2.31417e+02         2.33177e+02         2.30470e+02         2.13015e+02         2.34505e+02
+3201.208000         2.27745e+02         2.60261e+02         2.16818e+02         2.34038e+02         2.26069e+02         2.19300e+02         2.30340e+02         2.32149e+02         2.29420e+02         2.11705e+02         2.33515e+02
+3201.292000         2.28295e+02         2.47277e+02         2.21950e+02         2.34102e+02         2.28989e+02         2.24506e+02         2.31818e+02         2.30853e+02         2.27601e+02         2.16683e+02         2.30125e+02
+3201.375000         2.29409e+02         2.54949e+02         2.28021e+02         2.35313e+02         2.31229e+02         2.32940e+02         2.30150e+02         2.29968e+02         2.27588e+02         2.17886e+02         2.29831e+02
+3201.458000         2.33636e+02         2.56547e+02         2.38845e+02         2.37276e+02         2.36947e+02         2.46765e+02         2.30753e+02         2.31536e+02         2.30325e+02         2.22529e+02         2.32128e+02
+3201.542000         2.35056e+02         2.57287e+02         2.39745e+02         2.42143e+02         2.39586e+02         2.46262e+02         2.35374e+02         2.33166e+02         2.30525e+02         2.26317e+02         2.31498e+02
+3201.625000         2.34623e+02         2.67952e+02         2.38118e+02         2.45946e+02         2.38624e+02         2.43660e+02         2.35447e+02         2.33213e+02         2.30621e+02         2.26701e+02         2.31528e+02
+3201.708000         2.33831e+02         2.73377e+02         2.35358e+02         2.42864e+02         2.36448e+02         2.40267e+02         2.34039e+02         2.33215e+02         2.31214e+02         2.25246e+02         2.32594e+02
+3201.792000         2.30725e+02         2.72268e+02         2.26534e+02         2.35647e+02         2.30997e+02         2.29686e+02         2.31824e+02         2.32415e+02         2.30453e+02         2.20039e+02         2.32861e+02
+3201.875000         2.27297e+02         2.64781e+02         2.17530e+02         2.35376e+02         2.25465e+02         2.18624e+02         2.29781e+02         2.31235e+02         2.29130e+02         2.15277e+02         2.32332e+02
+3201.958000         2.27681e+02         2.72849e+02         2.16535e+02         2.36056e+02         2.24124e+02         2.15122e+02         2.29803e+02         2.32175e+02         2.31239e+02         2.19445e+02         2.33966e+02
+3202.042000         2.28775e+02         2.77706e+02         2.17023e+02         2.36507e+02         2.24969e+02         2.14647e+02         2.31482e+02         2.33512e+02         2.32580e+02         2.21917e+02         2.35045e+02
+3202.125000         2.28210e+02         2.69121e+02         2.16936e+02         2.32742e+02         2.26142e+02         2.17976e+02         2.31294e+02         2.32755e+02         2.30278e+02         2.14795e+02         2.33857e+02
+3202.208000         2.28662e+02         2.66115e+02         2.18110e+02         2.33150e+02         2.27111e+02         2.19100e+02         2.32165e+02         2.32915e+02         2.30213e+02         2.16071e+02         2.33482e+02
+3202.292000         2.28454e+02         2.61210e+02         2.20552e+02         2.36701e+02         2.28782e+02         2.23775e+02         2.31940e+02         2.31639e+02         2.28126e+02         2.13911e+02         2.31412e+02
+3202.375000         2.29687e+02         2.55309e+02         2.27187e+02         2.32679e+02         2.31640e+02         2.32626e+02         2.31017e+02         2.30694e+02         2.27734e+02         2.15980e+02         2.30451e+02
+3202.458000         2.33021e+02         2.61591e+02         2.37797e+02         2.36141e+02         2.35616e+02         2.44446e+02         2.30045e+02         2.31096e+02         2.30427e+02         2.24097e+02         2.31890e+02
+3202.542000         2.35050e+02         2.67482e+02         2.41716e+02         2.40449e+02         2.39530e+02         2.48494e+02         2.33875e+02         2.32362e+02         2.30570e+02         2.27754e+02         2.31221e+02
+3202.625000         2.34014e+02         2.71662e+02         2.37367e+02         2.43321e+02         2.37736e+02         2.42108e+02         2.34979e+02         2.32662e+02         2.30291e+02         2.27600e+02         2.30913e+02
+3202.708000         2.33304e+02         2.77903e+02         2.33120e+02         2.39635e+02         2.35552e+02         2.37248e+02         2.34483e+02         2.33379e+02         2.31056e+02         2.24616e+02         2.32545e+02
+3202.792000         2.29277e+02         2.77634e+02         2.24420e+02         2.37264e+02         2.29064e+02         2.28004e+02         2.29732e+02         2.31234e+02         2.29489e+02         2.17036e+02         2.32368e+02
+3202.875000         2.28229e+02         2.78656e+02         2.18884e+02         2.36501e+02         2.26666e+02         2.19177e+02         2.31390e+02         2.31995e+02         2.29792e+02         2.18281e+02         2.32453e+02
+3202.958000         2.28213e+02         2.73074e+02         2.17174e+02         2.32940e+02         2.24237e+02         2.15154e+02         2.29967e+02         2.32662e+02         2.32188e+02         2.21337e+02         2.34697e+02

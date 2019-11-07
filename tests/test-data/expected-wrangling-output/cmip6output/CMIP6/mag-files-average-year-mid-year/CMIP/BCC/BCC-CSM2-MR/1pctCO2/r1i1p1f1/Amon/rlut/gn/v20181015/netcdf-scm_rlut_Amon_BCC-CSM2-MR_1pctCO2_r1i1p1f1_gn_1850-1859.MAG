@@ -1,9 +1,9 @@
 ---- HEADER ----
 
-Date: 2019-11-03 14:23:51
+Date: 2019-11-07 19:41:38
 Contact: cmip6output wrangling regression test
-Source data crunched with: NetCDF-SCM v2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
-File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.7+16.g38df42f (more info at github.com/openclimatedata/pymagicc)
 
 
 ---- METADATA ----
@@ -29,7 +29,7 @@ comment: at the top of the atmosphere (to be compared with satellite measurement
 contact: Dr. Tongwen Wu (twwu@cma.gov.cn)
 creation_date: 2018-10-15T06:27:37Z
 crunch_contact: cmip6output crunching regression test
-crunch_netcdf_scm_version: 2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
+crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
 crunch_source_files: Files: ['/CMIP6/CMIP/BCC/BCC-CSM2-MR/1pctCO2/r1i1p1f1/Amon/rlut/gn/v20181015/rlut_Amon_BCC-CSM2-MR_1pctCO2_r1i1p1f1_gn_185001-185912.nc']
 data_specs_version: 01.00.27
 description: DECK: 1pctCO2

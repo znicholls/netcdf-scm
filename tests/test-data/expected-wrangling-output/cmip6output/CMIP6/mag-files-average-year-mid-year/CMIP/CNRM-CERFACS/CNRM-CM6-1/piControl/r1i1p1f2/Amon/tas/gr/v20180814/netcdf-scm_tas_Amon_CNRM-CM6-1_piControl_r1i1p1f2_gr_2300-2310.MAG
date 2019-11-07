@@ -1,0 +1,113 @@
+---- HEADER ----
+
+Date: 2019-11-07 19:40:59
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.7+16.g38df42f (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+CMIP6_CV_version: cv=6.2.3.0-7-g2019642
+Conventions: CF-1.5
+EXPID: CNRM-CM6-1_piControl_r1i1p1f2
+area_world (m**2): 509488329204188.1
+area_world_el_nino_n3.4 (m**2): 6801156395261.544
+area_world_land (m**2): 146378816176539.2
+area_world_north_atlantic_ocean (m**2): 39188920958557.29
+area_world_northern_hemisphere (m**2): 254744164602094.03
+area_world_northern_hemisphere_land (m**2): 98545924857845.0
+area_world_northern_hemisphere_ocean (m**2): 156198239732667.94
+area_world_ocean (m**2): 363109513026050.5
+area_world_southern_hemisphere (m**2): 254744164602094.03
+area_world_southern_hemisphere_land (m**2): 47832891318694.2
+area_world_southern_hemisphere_ocean (m**2): 206911273293382.56
+arpege_minor_version: 6.3.1
+branch_method: standard
+branch_time_in_child: 0.0
+branch_time_in_parent: 273932.0
+calendar: gregorian
+contact: contact.cmip@meteo.fr
+creation_date: 2018-03-21T09:34:21Z
+crunch_contact: cmip6output crunching regression test
+crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+crunch_source_files: Files: ['/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/piControl/r1i1p1f2/Amon/tas/gr/v20180814/tas_Amon_CNRM-CM6-1_piControl_r1i1p1f2_gr_230001-231012.nc']
+data_specs_version: 01.00.21
+description: Near-Surface Air Temperature
+dr2xml_md5sum: f996a989d4bc796959fe96cfda3db969
+dr2xml_version: 1.0
+experiment: pre-industrial control
+experiment_id: piControl
+external_variables: areacella
+forcing_index: 2
+frequency: mon
+further_info_url: https://furtherinfo.es-doc.org/CMIP6.CNRM-CERFACS.CNRM-CM6-1.piControl.none.r1i1p1f2
+grid: data regridded to a T127 gaussian grid (128x256 latlon) from a native atmosphere T127l reduced gaussian grid
+grid_label: gr
+history: none
+initialization_index: 1
+institution: CNRM (Centre National de Recherches Meteorologiques, Toulouse 31057, France), CERFACS (Centre Europeen de Recherche et de Formation Avancee en Calcul Scientifique, Toulouse 31057, France)
+institution_id: CNRM-CERFACS
+interval_operation: 900 s
+interval_write: 1 month
+land_fraction: 0.28730553338715403
+land_fraction_northern_hemisphere: 0.3868427173268994
+land_fraction_southern_hemisphere: 0.18776834944740875
+license: CMIP6 model data produced by CNRM-CERFACS is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at http://www.umr-cnrm.fr/cmip6/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+name: /scratch/utmp/ftdir/voldoire/eclis/transfers/CNRM-CM6-1_piControl_r1i1p1f2/iox/tas_Amon_CNRM-CM6-1_piControl_r1i1p1f2_gr_%start_date%-%end_date%
+nemo_gelato_commit: 49095b3accd5d4c_6524fe19b00467a
+nominal_resolution: 250 km
+online_operation: average
+parent_activity_id: CMIP
+parent_experiment_id: piControl-spinup
+parent_mip_era: CMIP6
+parent_source_id: CNRM-CM6-1
+parent_time_units: days since 1850-01-01 00:00:00
+parent_variant_label: r1i1p1f2
+physics_index: 1
+product: model-output
+realization_index: 1
+realm: atmos
+references: http://www.umr-cnrm.fr/cmip6/references
+source: CNRM-CM6-1 (2017):  aerosol: prescribed monthly fields computed by TACTIC_v2 scheme atmos: Arpege 6.3 (T127; Gaussian Reduced with 24572 grid points in total distributed over 128 latitude circles (with 256 grid points per latitude circle between 30degN and 30degS reducing to 20 grid points per latitude circle at 88.9degN and 88.9degS); 91 levels; top level 78.4 km) atmosChem: OZL_v2 land: Surfex 8.0c ocean: Nemo 3.6 (eORCA1, tripolar primarily 1deg; 362 x 294 longitude/latitude; 75 levels; top grid cell 0-1 m) seaIce: Gelato 6.1
+source_id: CNRM-CM6-1
+source_type: AOGCM
+sub_experiment: none
+sub_experiment_id: none
+table_id: Amon
+title: CNRM-CM6-1 model output prepared for CMIP6 / CMIP piControl
+tracking_id: hdl:21.14100/f471a8e2-02e2-4c2f-accd-954700b3fc1f
+variable_id: tas
+variant_info: . Information provided by this attribute may in some cases be flawed. Users can find more comprehensive and up-to-date documentation via the further_info_url global attribute.
+variant_label: r1i1p1f2
+xios_commit: 1442-shuffle
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 11
+    THISFILE_DATAROWS = 11
+    THISFILE_FIRSTYEAR = 2300
+    THISFILE_LASTYEAR = 2310
+    THISFILE_ANNUALSTEPS = 1
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'AVERAGE_YEAR_MID_YEAR'
+    THISFILE_FIRSTDATAROW = 103
+/
+
+   VARIABLE                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K
+      YEARS               WORLD                 N34                LAND                 AMV                  NH              NHLAND             NHOCEAN               OCEAN                  SH              SHLAND             SHOCEAN
+       2300         2.86233e+02         2.97432e+02         2.80463e+02         2.91407e+02         2.86812e+02         2.82076e+02         2.89799e+02         2.88558e+02         2.85653e+02         2.77140e+02         2.87621e+02
+       2301         2.86066e+02         2.97521e+02         2.80008e+02         2.91283e+02         2.86603e+02         2.81548e+02         2.89791e+02         2.88508e+02         2.85529e+02         2.76834e+02         2.87539e+02
+       2302         2.86064e+02         2.97086e+02         2.80209e+02         2.91421e+02         2.86658e+02         2.81802e+02         2.89722e+02         2.88424e+02         2.85470e+02         2.76929e+02         2.87445e+02
+       2303         2.86136e+02         2.97332e+02         2.80354e+02         2.91284e+02         2.86778e+02         2.82045e+02         2.89764e+02         2.88467e+02         2.85494e+02         2.76869e+02         2.87488e+02
+       2304         2.86072e+02         2.97536e+02         2.80139e+02         2.91368e+02         2.86735e+02         2.81831e+02         2.89830e+02         2.88464e+02         2.85409e+02         2.76653e+02         2.87433e+02
+       2305         2.86217e+02         2.97879e+02         2.80341e+02         2.91544e+02         2.86821e+02         2.81999e+02         2.89863e+02         2.88586e+02         2.85614e+02         2.76926e+02         2.87622e+02
+       2306         2.86199e+02         2.97088e+02         2.80400e+02         2.91447e+02         2.86820e+02         2.82031e+02         2.89841e+02         2.88537e+02         2.85579e+02         2.77039e+02         2.87553e+02
+       2307         2.86090e+02         2.97081e+02         2.80188e+02         2.91333e+02         2.86706e+02         2.81828e+02         2.89784e+02         2.88470e+02         2.85474e+02         2.76809e+02         2.87478e+02
+       2308         2.86224e+02         2.98370e+02         2.80360e+02         2.91583e+02         2.86793e+02         2.81914e+02         2.89871e+02         2.88588e+02         2.85655e+02         2.77159e+02         2.87619e+02
+       2309         2.86343e+02         2.96513e+02         2.80649e+02         2.91830e+02         2.86958e+02         2.82254e+02         2.89926e+02         2.88638e+02         2.85727e+02         2.77343e+02         2.87666e+02
+       2310         2.86104e+02         2.97152e+02         2.80244e+02         2.91574e+02         2.86664e+02         2.81842e+02         2.89706e+02         2.88467e+02         2.85545e+02         2.76950e+02         2.87532e+02

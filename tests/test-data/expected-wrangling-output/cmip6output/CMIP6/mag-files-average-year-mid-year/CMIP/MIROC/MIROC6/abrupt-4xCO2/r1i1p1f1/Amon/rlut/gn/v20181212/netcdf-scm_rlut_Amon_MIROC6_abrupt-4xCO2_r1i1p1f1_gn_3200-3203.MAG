@@ -1,0 +1,104 @@
+---- HEADER ----
+
+Date: 2019-11-07 19:41:50
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.7+16.g38df42f (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+Conventions: CF-1.5
+area_world (m**2): 509499402446956.25
+area_world_el_nino_n3.4 (m**2): 6801325787112.107
+area_world_land (m**2): 146381656298686.03
+area_world_north_atlantic_ocean (m**2): 39189897209497.734
+area_world_northern_hemisphere (m**2): 254749701223478.12
+area_world_northern_hemisphere_land (m**2): 98548384652411.92
+area_world_northern_hemisphere_ocean (m**2): 156201316559884.38
+area_world_ocean (m**2): 363117746147086.44
+area_world_southern_hemisphere (m**2): 254749701223478.12
+area_world_southern_hemisphere_land (m**2): 47833271646274.12
+area_world_southern_hemisphere_ocean (m**2): 206916429587202.0
+branch_method: standard
+branch_time_in_child: 0.0
+branch_time_in_parent: 0.0
+calendar: gregorian
+cmor_version: 3.3.2
+comment: at the top of the atmosphere (to be compared with satellite measurements)
+creation_date: 2018-11-30T14:09:31Z
+crunch_contact: cmip6output crunching regression test
+crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+crunch_source_files: Files: ['/CMIP6/CMIP/MIROC/MIROC6/abrupt-4xCO2/r1i1p1f1/Amon/rlut/gn/v20181212/rlut_Amon_MIROC6_abrupt-4xCO2_r1i1p1f1_gn_320001-320312.nc']
+data_specs_version: 01.00.28
+experiment: abrupt quadrupling of CO2
+experiment_id: abrupt-4xCO2
+external_variables: areacella
+forcing_index: 1
+frequency: mon
+further_info_url: https://furtherinfo.es-doc.org/CMIP6.MIROC.MIROC6.abrupt-4xCO2.none.r1i1p1f1
+grid: native atmosphere T85 Gaussian grid
+grid_label: gn
+history: 2018-11-30T14:09:31Z altered by CMOR: Converted units from 'W/m**2' to 'W m-2'. 2018-11-30T14:09:31Z altered by CMOR: replaced missing value flag (-999) with standard missing value (1e+20). 2018-11-30T14:09:31Z altered by CMOR: Inverted axis: lat.
+initialization_index: 1
+institution: JAMSTEC (Japan Agency for Marine-Earth Science and Technology, Kanagawa 236-0001, Japan), AORI (Atmosphere and Ocean Research Institute, The University of Tokyo, Chiba 277-8564, Japan), NIES (National Institute for Environmental Studies, Ibaraki 305-8506, Japan), and R-CCS (RIKEN Center for Computational Science, Hyogo 650-0047, Japan)
+institution_id: MIROC
+land_fraction: 0.2873048635497188
+land_fraction_northern_hemisphere: 0.3868439655831461
+land_fraction_southern_hemisphere: 0.18776576151629154
+license: CMIP6 model data produced by MIROC is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file). The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+nominal_resolution: 250 km
+original_name: OLR
+original_units: W/m**2
+parent_activity_id: CMIP
+parent_experiment_id: piControl
+parent_mip_era: CMIP6
+parent_source_id: MIROC6
+parent_time_units: days since 3200-1-1
+parent_variant_label: r1i1p1f1
+physics_index: 1
+product: model-output
+realization_index: 1
+realm: atmos
+source: MIROC6 (2017): 
+aerosol: SPRINTARS6.0
+atmos: CCSR AGCM (T85; 256 x 128 longitude/latitude; 81 levels; top level 0.004 hPa)
+atmosChem: none
+land: MATSIRO6.0
+landIce: none
+ocean: COCO4.9 (tripolar primarily 1deg; 360 x 256 longitude/latitude; 63 levels; top grid cell 0-2 m)
+ocnBgchem: none
+seaIce: COCO4.9
+source_id: MIROC6
+source_type: AOGCM AER
+sub_experiment: none
+sub_experiment_id: none
+table_id: Amon
+table_info: Creation Date:(06 November 2018) MD5:0728c79344e0f262bb76e4f9ff0d9afc
+title: MIROC6 output prepared for CMIP6
+tracking_id: hdl:21.14100/a022b7e1-d14a-4b10-b6fd-b656588af703
+variable_id: rlut
+variant_label: r1i1p1f1
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 11
+    THISFILE_DATAROWS = 4
+    THISFILE_FIRSTYEAR = 3200
+    THISFILE_LASTYEAR = 3203
+    THISFILE_ANNUALSTEPS = 1
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'AVERAGE_YEAR_MID_YEAR'
+    THISFILE_FIRSTDATAROW = 101
+/
+
+   VARIABLE                rlut                rlut                rlut                rlut                rlut                rlut                rlut                rlut                rlut                rlut                rlut
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2
+      YEARS               WORLD                 N34                LAND                 AMV                  NH              NHLAND             NHOCEAN               OCEAN                  SH              SHLAND             SHOCEAN
+       3200         2.25623e+02         2.60970e+02         2.21288e+02         2.33986e+02         2.25927e+02         2.24022e+02         2.27129e+02         2.27371e+02         2.25319e+02         2.15655e+02         2.27553e+02
+       3201         2.27145e+02         2.64740e+02         2.23296e+02         2.35173e+02         2.28147e+02         2.26844e+02         2.28970e+02         2.28696e+02         2.26143e+02         2.15986e+02         2.28490e+02
+       3202         2.28110e+02         2.58941e+02         2.24682e+02         2.34894e+02         2.29145e+02         2.27832e+02         2.29974e+02         2.29492e+02         2.27075e+02         2.18193e+02         2.29129e+02
+       3203         2.29044e+02         2.45682e+02         2.26412e+02         2.36809e+02         2.30085e+02         2.28989e+02         2.30777e+02         2.30106e+02         2.28004e+02         2.21101e+02         2.29599e+02

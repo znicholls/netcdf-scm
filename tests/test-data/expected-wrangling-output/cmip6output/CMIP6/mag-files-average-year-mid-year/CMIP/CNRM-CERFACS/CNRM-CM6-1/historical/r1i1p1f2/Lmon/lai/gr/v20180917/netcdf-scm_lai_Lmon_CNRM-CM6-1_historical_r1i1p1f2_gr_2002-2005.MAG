@@ -1,9 +1,9 @@
 ---- HEADER ----
 
-Date: 2019-11-03 14:23:52
+Date: 2019-11-07 19:40:55
 Contact: cmip6output wrangling regression test
-Source data crunched with: NetCDF-SCM v2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
-File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.7+16.g38df42f (more info at github.com/openclimatedata/pymagicc)
 
 
 ---- METADATA ----
@@ -28,7 +28,7 @@ calendar: gregorian
 contact: contact.cmip@meteo.fr
 creation_date: 2018-06-20T08:40:04Z
 crunch_contact: cmip6output crunching regression test
-crunch_netcdf_scm_version: 2.0.0-alpha.2+11.gdee8a41 (more info at github.com/znicholls/netcdf-scm)
+crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
 crunch_source_files: Files: ['/CMIP6/CMIP/CNRM-CERFACS/CNRM-CM6-1/historical/r1i1p1f2/Lmon/lai/gr/v20180917/lai_Lmon_CNRM-CM6-1_historical_r1i1p1f2_gr_200201-200512.nc']
 data_specs_version: 01.00.21
 description: a ratio obtained by dividing the total upper leaf surface area of vegetation by the (horizontal) surface area of the land on which it grows.

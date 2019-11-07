@@ -1,0 +1,173 @@
+---- HEADER ----
+
+Date: 2019-11-07 19:40:46
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.7+16.g38df42f (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+CMIP6_CV_version: cv=6.2.3.0-7-g2019642
+Conventions: CF-1.5
+EXPID: CNRM-CM6-1_hist-aer_r2i1p1f2
+NCO: "4.5.5"
+area_world (m**2): 509488329204188.1
+area_world_el_nino_n3.4 (m**2): 6801156395261.544
+area_world_land (m**2): 146378816176539.2
+area_world_north_atlantic_ocean (m**2): 39188920958557.29
+area_world_northern_hemisphere (m**2): 254744164602094.03
+area_world_northern_hemisphere_land (m**2): 98545924857845.0
+area_world_northern_hemisphere_ocean (m**2): 156198239732667.94
+area_world_ocean (m**2): 363109513026050.5
+area_world_southern_hemisphere (m**2): 254744164602094.03
+area_world_southern_hemisphere_land (m**2): 47832891318694.2
+area_world_southern_hemisphere_ocean (m**2): 206911273293382.56
+arpege_minor_version: 6.3.2
+branch_method: standard
+branch_time_in_child: 0.0
+branch_time_in_parent: 12053.0
+calendar: gregorian
+contact: contact.cmip@meteo.fr
+creation_date: 2018-07-23T14:07:29Z
+crunch_contact: cmip6output crunching regression test
+crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+crunch_source_files: Files: ['/CMIP6/DAMIP/CNRM-CERFACS/CNRM-CM6-1/hist-aer/r2i1p1f2/Amon/tas/gr/v20190308/tas_Amon_CNRM-CM6-1_hist-aer_r2i1p1f2_gr_185001-185512.nc']
+data_specs_version: 01.00.21
+description: Near-Surface Air Temperature
+dr2xml_md5sum: 92ddb3d0d8ce79f498d792fc8e559dcf
+dr2xml_version: 1.13
+experiment: historical anthropogenic aerosols-only run
+experiment_id: hist-aer
+external_variables: areacella
+forcing_index: 2
+frequency: mon
+further_info_url: https://furtherinfo.es-doc.org/CMIP6.CNRM-CERFACS.CNRM-CM6-1.hist-aer.none.r2i1p1f2
+grid: data regridded to a T127 gaussian grid (128x256 latlon) from a native atmosphere T127l reduced gaussian grid
+grid_label: gr
+history: none
+initialization_index: 1
+institution: CNRM (Centre National de Recherches Meteorologiques, Toulouse 31057, France), CERFACS (Centre Europeen de Recherche et de Formation Avancee en Calcul Scientifique, Toulouse 31057, France)
+institution_id: CNRM-CERFACS
+interval_operation: 900 s
+interval_write: 1 month
+land_fraction: 0.28730553338715403
+land_fraction_northern_hemisphere: 0.3868427173268994
+land_fraction_southern_hemisphere: 0.18776834944740875
+license: CMIP6 model data produced by CNRM-CERFACS is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at http://www.umr-cnrm.fr/cmip6/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+nemo_gelato_commit: 49095b3accd5d4c_6524fe19b00467a
+nominal_resolution: 250 km
+online_operation: average
+parent_activity_id: CMIP
+parent_experiment_id: piControl
+parent_mip_era: CMIP6
+parent_source_id: CNRM-CM6-1
+parent_time_units: days since 1850-01-01 00:00:00
+parent_variant_label: r1i1p1f2
+physics_index: 1
+product: model-output
+realization_index: 2
+realm: atmos
+references: http://www.umr-cnrm.fr/cmip6/references
+source: CNRM-CM6-1 (2017):  aerosol: prescribed monthly fields computed by TACTIC_v2 scheme atmos: Arpege 6.3 (T127; Gaussian Reduced with 24572 grid points in total distributed over 128 latitude circles (with 256 grid points per latitude circle between 30degN and 30degS reducing to 20 grid points per latitude circle at 88.9degN and 88.9degS); 91 levels; top level 78.4 km) atmosChem: OZL_v2 land: Surfex 8.0c ocean: Nemo 3.6 (eORCA1, tripolar primarily 1deg; 362 x 294 longitude/latitude; 75 levels; top grid cell 0-1 m) seaIce: Gelato 6.1
+source_id: CNRM-CM6-1
+source_type: AOGCM
+sub_experiment: none
+sub_experiment_id: none
+table_id: Amon
+title: CNRM-CM6-1 model output prepared for CMIP6 / DAMIP hist-aer
+tracking_id: hdl:21.14100/9c7e763f-04af-401e-b8d6-6aa6d820f14d
+variable_id: tas
+variant_label: r2i1p1f2
+xios_commit: 1442-shuffle
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 11
+    THISFILE_DATAROWS = 72
+    THISFILE_FIRSTYEAR = 1850
+    THISFILE_LASTYEAR = 1855
+    THISFILE_ANNUALSTEPS = 12
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'MONTHLY'
+    THISFILE_FIRSTDATAROW = 102
+/
+
+   VARIABLE                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K
+      YEARS               WORLD                 N34                LAND                 AMV                  NH              NHLAND             NHOCEAN               OCEAN                  SH              SHLAND             SHOCEAN
+1850.042000         2.84046e+02         2.97266e+02         2.73881e+02         2.88559e+02         2.79308e+02         2.68945e+02         2.85847e+02         2.88143e+02         2.88783e+02         2.84050e+02         2.89877e+02
+1850.125000         2.84314e+02         2.97638e+02         2.74137e+02         2.88224e+02         2.79843e+02         2.70550e+02         2.85706e+02         2.88417e+02         2.88785e+02         2.81527e+02         2.90463e+02
+1850.208000         2.85051e+02         2.98346e+02         2.76706e+02         2.88312e+02         2.82119e+02         2.75846e+02         2.86077e+02         2.88415e+02         2.87982e+02         2.78477e+02         2.90180e+02
+1850.292000         2.85935e+02         2.98586e+02         2.79616e+02         2.89342e+02         2.85224e+02         2.81529e+02         2.87555e+02         2.88482e+02         2.86646e+02         2.75675e+02         2.89183e+02
+1850.375000         2.86954e+02         2.98463e+02         2.82733e+02         2.90538e+02         2.88742e+02         2.87169e+02         2.89734e+02         2.88656e+02         2.85166e+02         2.73592e+02         2.87842e+02
+1850.458000         2.87771e+02         2.97954e+02         2.85390e+02         2.92450e+02         2.91854e+02         2.91829e+02         2.91870e+02         2.88731e+02         2.83688e+02         2.72127e+02         2.86361e+02
+1850.542000         2.88089e+02         2.97595e+02         2.86274e+02         2.94121e+02         2.93457e+02         2.93349e+02         2.93525e+02         2.88821e+02         2.82721e+02         2.71699e+02         2.85270e+02
+1850.625000         2.88066e+02         2.97079e+02         2.86107e+02         2.95100e+02         2.93633e+02         2.92718e+02         2.94210e+02         2.88855e+02         2.82499e+02         2.72488e+02         2.84813e+02
+1850.708000         2.87281e+02         2.96367e+02         2.84315e+02         2.94559e+02         2.91751e+02         2.88993e+02         2.93491e+02         2.88477e+02         2.82811e+02         2.74677e+02         2.84691e+02
+1850.792000         2.86102e+02         2.96263e+02         2.81166e+02         2.93242e+02         2.88335e+02         2.83220e+02         2.91562e+02         2.88091e+02         2.83869e+02         2.76936e+02         2.85471e+02
+1850.875000         2.85014e+02         2.96090e+02         2.77806e+02         2.91522e+02         2.84426e+02         2.76672e+02         2.89318e+02         2.87920e+02         2.85603e+02         2.80143e+02         2.86865e+02
+1850.958000         2.84216e+02         2.96174e+02         2.75252e+02         2.89461e+02         2.81070e+02         2.71595e+02         2.87048e+02         2.87829e+02         2.87361e+02         2.82787e+02         2.88419e+02
+1851.042000         2.84257e+02         2.96063e+02         2.74548e+02         2.88338e+02         2.79842e+02         2.70055e+02         2.86017e+02         2.88170e+02         2.88671e+02         2.83807e+02         2.89795e+02
+1851.125000         2.84274e+02         2.96082e+02         2.74448e+02         2.87671e+02         2.79807e+02         2.70859e+02         2.85453e+02         2.88236e+02         2.88741e+02         2.81842e+02         2.90336e+02
+1851.208000         2.84967e+02         2.96677e+02         2.76554e+02         2.88387e+02         2.81884e+02         2.75152e+02         2.86131e+02         2.88358e+02         2.88050e+02         2.79443e+02         2.90040e+02
+1851.292000         2.85822e+02         2.97325e+02         2.79376e+02         2.89188e+02         2.85187e+02         2.81241e+02         2.87677e+02         2.88420e+02         2.86456e+02         2.75532e+02         2.88981e+02
+1851.375000         2.86688e+02         2.97524e+02         2.82192e+02         2.90382e+02         2.88516e+02         2.86691e+02         2.89668e+02         2.88501e+02         2.84860e+02         2.72922e+02         2.87619e+02
+1851.458000         2.87507e+02         2.97566e+02         2.84843e+02         2.92001e+02         2.91551e+02         2.91210e+02         2.91766e+02         2.88580e+02         2.83462e+02         2.71725e+02         2.86176e+02
+1851.542000         2.87983e+02         2.97608e+02         2.86164e+02         2.93786e+02         2.93455e+02         2.93357e+02         2.93516e+02         2.88716e+02         2.82512e+02         2.71346e+02         2.85093e+02
+1851.625000         2.87857e+02         2.97492e+02         2.85704e+02         2.94863e+02         2.93572e+02         2.92399e+02         2.94313e+02         2.88725e+02         2.82142e+02         2.71912e+02         2.84507e+02
+1851.708000         2.87077e+02         2.97318e+02         2.83800e+02         2.94471e+02         2.91671e+02         2.88848e+02         2.93453e+02         2.88398e+02         2.82483e+02         2.73400e+02         2.84583e+02
+1851.792000         2.86060e+02         2.97436e+02         2.81060e+02         2.92920e+02         2.88180e+02         2.82824e+02         2.91560e+02         2.88075e+02         2.83939e+02         2.77426e+02         2.85444e+02
+1851.875000         2.84997e+02         2.97841e+02         2.77837e+02         2.91240e+02         2.84425e+02         2.76691e+02         2.89305e+02         2.87884e+02         2.85569e+02         2.80198e+02         2.86811e+02
+1851.958000         2.84160e+02         2.97914e+02         2.74958e+02         2.89566e+02         2.81089e+02         2.71433e+02         2.87181e+02         2.87869e+02         2.87230e+02         2.82221e+02         2.88388e+02
+1852.042000         2.84064e+02         2.98280e+02         2.73975e+02         2.88406e+02         2.79392e+02         2.69238e+02         2.85797e+02         2.88130e+02         2.88736e+02         2.83735e+02         2.89892e+02
+1852.125000         2.84425e+02         2.98270e+02         2.74504e+02         2.87786e+02         2.80014e+02         2.71075e+02         2.85653e+02         2.88425e+02         2.88837e+02         2.81568e+02         2.90517e+02
+1852.208000         2.84981e+02         2.98143e+02         2.76595e+02         2.88150e+02         2.81956e+02         2.75538e+02         2.86004e+02         2.88362e+02         2.88007e+02         2.78774e+02         2.90141e+02
+1852.292000         2.86010e+02         2.98552e+02         2.79824e+02         2.89103e+02         2.85254e+02         2.81603e+02         2.87557e+02         2.88504e+02         2.86767e+02         2.76159e+02         2.89219e+02
+1852.375000         2.86773e+02         2.98658e+02         2.82225e+02         2.90211e+02         2.88561e+02         2.86643e+02         2.89770e+02         2.88606e+02         2.84985e+02         2.73124e+02         2.87727e+02
+1852.458000         2.87671e+02         2.98615e+02         2.84960e+02         2.91941e+02         2.91617e+02         2.91346e+02         2.91787e+02         2.88764e+02         2.83725e+02         2.71804e+02         2.86481e+02
+1852.542000         2.88143e+02         2.98087e+02         2.86528e+02         2.93867e+02         2.93568e+02         2.93735e+02         2.93463e+02         2.88795e+02         2.82718e+02         2.71681e+02         2.85270e+02
+1852.625000         2.87846e+02         2.97970e+02         2.85642e+02         2.94634e+02         2.93532e+02         2.92525e+02         2.94167e+02         2.88735e+02         2.82161e+02         2.71462e+02         2.84634e+02
+1852.708000         2.87212e+02         2.97646e+02         2.84106e+02         2.94043e+02         2.91621e+02         2.88703e+02         2.93463e+02         2.88464e+02         2.82802e+02         2.74636e+02         2.84690e+02
+1852.792000         2.86305e+02         2.97641e+02         2.81679e+02         2.92834e+02         2.88485e+02         2.83701e+02         2.91504e+02         2.88171e+02         2.84125e+02         2.77514e+02         2.85654e+02
+1852.875000         2.85203e+02         2.97580e+02         2.78092e+02         2.91370e+02         2.84522e+02         2.76841e+02         2.89369e+02         2.88070e+02         2.85883e+02         2.80668e+02         2.87089e+02
+1852.958000         2.84304e+02         2.97603e+02         2.75044e+02         2.89836e+02         2.80869e+02         2.70910e+02         2.87152e+02         2.88037e+02         2.87739e+02         2.83560e+02         2.88706e+02
+1853.042000         2.84239e+02         2.97613e+02         2.74082e+02         2.88472e+02         2.79537e+02         2.69317e+02         2.85985e+02         2.88334e+02         2.88942e+02         2.83900e+02         2.90107e+02
+1853.125000         2.84260e+02         2.97592e+02         2.74026e+02         2.87809e+02         2.79692e+02         2.70442e+02         2.85528e+02         2.88386e+02         2.88828e+02         2.81410e+02         2.90543e+02
+1853.208000         2.84707e+02         2.97541e+02         2.75668e+02         2.88564e+02         2.81532e+02         2.74656e+02         2.85870e+02         2.88350e+02         2.87881e+02         2.77755e+02         2.90222e+02
+1853.292000         2.85849e+02         2.97503e+02         2.79368e+02         2.88803e+02         2.85019e+02         2.81129e+02         2.87474e+02         2.88461e+02         2.86678e+02         2.75741e+02         2.89207e+02
+1853.375000         2.86660e+02         2.97288e+02         2.82023e+02         2.90561e+02         2.88383e+02         2.86559e+02         2.89533e+02         2.88529e+02         2.84937e+02         2.72679e+02         2.87771e+02
+1853.458000         2.87592e+02         2.97243e+02         2.84932e+02         2.92128e+02         2.91613e+02         2.91312e+02         2.91802e+02         2.88664e+02         2.83570e+02         2.71786e+02         2.86295e+02
+1853.542000         2.88012e+02         2.97013e+02         2.86226e+02         2.93830e+02         2.93500e+02         2.93501e+02         2.93499e+02         2.88731e+02         2.82523e+02         2.71237e+02         2.85132e+02
+1853.625000         2.87975e+02         2.96440e+02         2.86336e+02         2.94666e+02         2.93452e+02         2.92514e+02         2.94044e+02         2.88635e+02         2.82497e+02         2.73608e+02         2.84552e+02
+1853.708000         2.87073e+02         2.96313e+02         2.83952e+02         2.94232e+02         2.91499e+02         2.88727e+02         2.93248e+02         2.88332e+02         2.82648e+02         2.74113e+02         2.84621e+02
+1853.792000         2.86091e+02         2.96316e+02         2.81181e+02         2.92820e+02         2.88172e+02         2.83060e+02         2.91398e+02         2.88070e+02         2.84009e+02         2.77311e+02         2.85557e+02
+1853.875000         2.84822e+02         2.96865e+02         2.77442e+02         2.91106e+02         2.84053e+02         2.76207e+02         2.89004e+02         2.87797e+02         2.85591e+02         2.79986e+02         2.86886e+02
+1853.958000         2.83915e+02         2.97192e+02         2.74231e+02         2.89282e+02         2.80328e+02         2.70033e+02         2.86823e+02         2.87819e+02         2.87502e+02         2.82880e+02         2.88571e+02
+1854.042000         2.83721e+02         2.97441e+02         2.73007e+02         2.88537e+02         2.78761e+02         2.68126e+02         2.85470e+02         2.88040e+02         2.88681e+02         2.83063e+02         2.89980e+02
+1854.125000         2.84228e+02         2.97693e+02         2.74110e+02         2.87976e+02         2.79683e+02         2.70709e+02         2.85345e+02         2.88307e+02         2.88773e+02         2.81118e+02         2.90542e+02
+1854.208000         2.84837e+02         2.98182e+02         2.75894e+02         2.88235e+02         2.81594e+02         2.74687e+02         2.85952e+02         2.88441e+02         2.88079e+02         2.78383e+02         2.90320e+02
+1854.292000         2.85956e+02         2.98452e+02         2.79571e+02         2.88823e+02         2.85113e+02         2.81387e+02         2.87464e+02         2.88530e+02         2.86799e+02         2.75831e+02         2.89335e+02
+1854.375000         2.86842e+02         2.98447e+02         2.82269e+02         2.90210e+02         2.88571e+02         2.86922e+02         2.89611e+02         2.88685e+02         2.85113e+02         2.72682e+02         2.87986e+02
+1854.458000         2.87664e+02         2.97714e+02         2.84994e+02         2.91959e+02         2.91738e+02         2.91715e+02         2.91752e+02         2.88741e+02         2.83591e+02         2.71145e+02         2.86468e+02
+1854.542000         2.88032e+02         2.97480e+02         2.86222e+02         2.94100e+02         2.93492e+02         2.93597e+02         2.93425e+02         2.88761e+02         2.82572e+02         2.71028e+02         2.85240e+02
+1854.625000         2.87847e+02         2.96621e+02         2.85908e+02         2.94940e+02         2.93477e+02         2.92576e+02         2.94045e+02         2.88628e+02         2.82217e+02         2.72171e+02         2.84539e+02
+1854.708000         2.87255e+02         2.96030e+02         2.84240e+02         2.94507e+02         2.91722e+02         2.89126e+02         2.93360e+02         2.88470e+02         2.82787e+02         2.74175e+02         2.84778e+02
+1854.792000         2.85939e+02         2.95895e+02         2.80943e+02         2.92911e+02         2.88244e+02         2.83228e+02         2.91408e+02         2.87954e+02         2.83635e+02         2.76236e+02         2.85345e+02
+1854.875000         2.84859e+02         2.96111e+02         2.77622e+02         2.91117e+02         2.84159e+02         2.76337e+02         2.89094e+02         2.87776e+02         2.85558e+02         2.80268e+02         2.86782e+02
+1854.958000         2.84021e+02         2.96219e+02         2.74459e+02         2.89411e+02         2.80779e+02         2.70628e+02         2.87183e+02         2.87876e+02         2.87264e+02         2.82352e+02         2.88399e+02
+1855.042000         2.84074e+02         2.96302e+02         2.74216e+02         2.88355e+02         2.79603e+02         2.69753e+02         2.85818e+02         2.88048e+02         2.88544e+02         2.83410e+02         2.89731e+02
+1855.125000         2.83925e+02         2.96409e+02         2.73385e+02         2.87583e+02         2.79270e+02         2.69736e+02         2.85285e+02         2.88175e+02         2.88581e+02         2.80902e+02         2.90356e+02
+1855.208000         2.84778e+02         2.96616e+02         2.76102e+02         2.87773e+02         2.81761e+02         2.75132e+02         2.85944e+02         2.88276e+02         2.87795e+02         2.78102e+02         2.90036e+02
+1855.292000         2.85837e+02         2.97301e+02         2.79626e+02         2.88820e+02         2.85175e+02         2.81560e+02         2.87455e+02         2.88341e+02         2.86499e+02         2.75640e+02         2.89009e+02
+1855.375000         2.86661e+02         2.97482e+02         2.82292e+02         2.90127e+02         2.88403e+02         2.86752e+02         2.89445e+02         2.88423e+02         2.84919e+02         2.73103e+02         2.87651e+02
+1855.458000         2.87403e+02         2.97310e+02         2.84792e+02         2.91976e+02         2.91540e+02         2.91568e+02         2.91523e+02         2.88456e+02         2.83266e+02         2.70830e+02         2.86141e+02
+1855.542000         2.87955e+02         2.96943e+02         2.86455e+02         2.93572e+02         2.93316e+02         2.93478e+02         2.93214e+02         2.88559e+02         2.82593e+02         2.71985e+02         2.85045e+02
+1855.625000         2.87851e+02         2.96211e+02         2.85838e+02         2.94423e+02         2.93434e+02         2.92594e+02         2.93964e+02         2.88662e+02         2.82267e+02         2.71918e+02         2.84660e+02
+1855.708000         2.86983e+02         2.96152e+02         2.83689e+02         2.94344e+02         2.91437e+02         2.88544e+02         2.93261e+02         2.88311e+02         2.82530e+02         2.73687e+02         2.84574e+02
+1855.792000         2.86002e+02         2.96369e+02         2.81100e+02         2.93066e+02         2.88092e+02         2.83271e+02         2.91133e+02         2.87978e+02         2.83912e+02         2.76626e+02         2.85597e+02
+1855.875000         2.84825e+02         2.96169e+02         2.77648e+02         2.91316e+02         2.84076e+02         2.76547e+02         2.88826e+02         2.87718e+02         2.85574e+02         2.79916e+02         2.86882e+02
+1855.958000         2.84022e+02         2.96293e+02         2.74711e+02         2.89774e+02         2.80842e+02         2.71097e+02         2.86990e+02         2.87776e+02         2.87203e+02         2.82158e+02         2.88369e+02
