@@ -1566,7 +1566,7 @@ def _get_stitched_openscmdf_metadata_header(
         )  # pragma: no cover # emergency valve
 
     fullpath = os.path.join(dpath, fnames[0])
-    openscmdf = _get_continuous_timeseries_with_meta(fullpath, drs, normalise)
+    openscmdf, _ = _get_continuous_timeseries_with_meta(fullpath, drs, normalise)
 
     metadata = openscmdf.metadata
     header = _get_openscmdf_header(
@@ -1576,7 +1576,7 @@ def _get_stitched_openscmdf_metadata_header(
     return openscmdf, metadata, header
 
 
-def _get_continuous_timeseries_with_meta(infile, drs, normalise):
+def _get_continuous_timeseries_with_meta(infile, drs, normalise, normalise_mean=None):
     loaded = load_scmdataframe(infile)
     loaded.metadata["netcdf-scm crunched file"] = infile.replace(
         os.path.join("{}/".format((_get_id_in_path("root_dir", infile, drs)))), ""
@@ -1584,15 +1584,15 @@ def _get_continuous_timeseries_with_meta(infile, drs, normalise):
 
     parent_replacements = _get_parent_replacements(loaded)
     if not parent_replacements:
-        return loaded
+        return loaded, normalise_mean
 
     if parent_replacements["parent_experiment_id"] == "piControl" and normalise is None:
         # don't need to look any further
-        return loaded
+        return loaded, normalise_mean
 
     if parent_replacements["parent_experiment_id"] == "piControl-spinup":
         # hard-code return at piControl-spinup for now, we don't care about spinup
-        return loaded
+        return loaded, normalise_mean
 
     parent_file_path_base = _get_parent_path_base(infile, parent_replacements, drs)
     parent_file_path = glob.glob(parent_file_path_base)
@@ -1604,9 +1604,11 @@ def _get_continuous_timeseries_with_meta(infile, drs, normalise):
         )
 
     parent_file_path = parent_file_path[0]
-    parent = _get_continuous_timeseries_with_meta(parent_file_path, drs, normalise)
+    parent, normalise_mean = _get_continuous_timeseries_with_meta(
+        parent_file_path, drs, normalise, normalise_mean
+    )
 
-    return _do_stitching_and_normalisation(infile, loaded, parent, normalise)
+    return _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise_mean)
 
 
 def _get_id_in_path(path_id, fullpath, drs):
@@ -1682,13 +1684,13 @@ def _make_metadata_uniform(inscmdf, base_scen):
 
     return ScmDataFrame(pd.concat(outscmdf, sort=True, axis=1))
 
-def _do_stitching_and_normalisation(infile, loaded, parent, normalise):
-    if "BCC" in infile:
+def _do_stitching_and_normalisation(infile, loaded, parent, normalise, normalise_mean):
+    if "BCC" in infile and not np.equal(loaded.metadata["branch_time_in_parent"], 0):
         # think the metadata here is wrong as historical has a branch_time_in_parent
         # of 2015 so assuming this means the year of the branch not the actual time
         # in days (like it's meant to)
         warn_str = (
-            "assuming BCC metadata is wrong and branch time units are actually years, "
+            "Assuming BCC metadata is wrong and branch time units are actually years, "
             "not days"
         )
         logger.warning(warn_str)
@@ -1711,13 +1713,16 @@ def _do_stitching_and_normalisation(infile, loaded, parent, normalise):
 
 
     if not skip_time_shift and (branch_time.year != loaded["time"].min().year):
-        logger.info("shifting time to match branch time %s for %s", branch_time, infile)
+        logger.info("Shifting time to match branch time %s for %s", branch_time, infile)
 
         # shift the times so they actually match
         time_base = parent.filter(year=branch_time.year, month=branch_time.month)[
             "time"
         ]
-        assert len(time_base) == 1
+        if time_base.empty:
+            error_msg = "Branching time `{:04d}{:02d}` not available in {} data in {}".format(branch_time.year, branch_time.month, parent.metadata["experiment_id"], parent.metadata["netcdf-scm crunched file"])
+            raise ValueError(error_msg)
+
         time_base = time_base[0]
 
         year_shift = time_base.year - loaded["time"].min().year
@@ -1732,45 +1737,78 @@ def _do_stitching_and_normalisation(infile, loaded, parent, normalise):
         parent.metadata = parent_metadata
 
     norm_method_key = "normalisation method"
-    if normalise is not None and norm_method_key not in parent.metadata:
+    if normalise is not None:
+        if normalise_mean is None:
+            if normalise not in ("31-yr-mean-after-branch-time"):  # pragma: no cover
+                raise NotImplementedError  # emergency valve
 
-        if normalise not in ("31-yr-mean-after-branch-time"):  # pragma: no cover
-            raise NotImplementedError  # emergency valve
+            if parent.metadata["experiment_id"] != "piControl":  # pragma: no cover
+                # emergency valve, can't think of how this path should work
+                raise NotImplementedError
 
-        if parent.metadata["experiment_id"] != "piControl":  # pragma: no cover
-            # emergency valve, can't think of how this path should work
-            raise NotImplementedError
+            # have shifted so that branch year lines up already
+            branch_year_after_shifting = loaded["time"].min().year
 
-        # have shifted so that branch year lines up already
-        branch_year_after_shifting = loaded["time"].min().year
-        # assuming we're at the bottom here
-        normalise_series = parent.filter(year=range(branch_year_after_shifting, branch_year_after_shifting + 31))
-        normalise_mean = normalise_series.timeseries().mean(axis=1)
+            # assuming parent is the normalisation series in this case because any child
+            # scenarios will have called this recursively before doing any of their own
+            # shifting
+            normalise_series = parent.filter(year=range(branch_year_after_shifting, branch_year_after_shifting + 31))
 
-        out_meta = {
-            **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
-            **{"(normalisation) {}".format(k): v for k, v in parent.metadata.items()},
-        }
+            if (normalise_series["time"].max().year - normalise_series["time"].min().year) != 30:
+                error_msg = (
+                    "Only `{:04d}{:02d}` to `{:04d}{:02d}` is available after the "
+                    "branching time `{:04d}{:02d}` in {} data in {}".format(
+                        normalise_series["time"].min().year,
+                        normalise_series["time"].min().month,
+                        normalise_series["time"].max().year,
+                        normalise_series["time"].max().month,
+                        branch_time.year,
+                        branch_time.month,
+                        parent.metadata["experiment_id"],
+                        parent.metadata["netcdf-scm crunched file"]
+                    )
+                )
+                raise ValueError(error_msg)
+
+            normalise_mean = normalise_series.timeseries().mean(axis=1)
+            out = _take_anomaly_from(loaded, normalise_mean)
+            out_meta = {
+                **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
+                **{"(normalisation) {}".format(k): v for k, v in parent.metadata.items()},
+            }
+
+        else:
+            out = df_append([_take_anomaly_from(loaded, normalise_mean), parent])
+            out = _make_metadata_uniform(out, _get_meta(loaded, "scenario"))
+
+            parent_metadata = {k.replace("(child)", "(parent)"): v for k, v in parent.metadata.items()}
+            out_meta = {
+                **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
+                **parent_metadata,
+            }
+
         out_meta[norm_method_key] = normalise
-        out = _take_anomaly_from(loaded, normalise_mean)
         out.metadata = out_meta
 
     else:
-        # just join together
+        normalise_mean = None
+
         out = df_append([loaded, parent])
         out = _make_metadata_uniform(out, _get_meta(loaded, "scenario"))
 
-        if any(["child" in k for k in loaded.metadata]):
-            import pdb
-            pdb.set_trace()
-            raise AssertionError("normalise has to think about this")
+        if any(["(child)" in k for k in parent.metadata]):
+            parent_metadata = {k.replace("(child)", "(parent)"): v for k, v in parent.metadata.items()}
+            out.metadata = {
+                **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
+                **parent_metadata,
+            }
         else:
             out.metadata = {
                 **{"(child) {}".format(k): v for k, v in loaded.metadata.items()},
                 **{"(parent) {}".format(k): v for k, v in parent.metadata.items()},
             }
 
-    return out
+    return out, normalise_mean
 
 
 def _take_anomaly_from(inscmdf, ref_series):
