@@ -885,10 +885,77 @@ def _do_magicc_wrangling(  # pylint:disable=too-many-arguments,too-many-locals
         )
 
 
-def _write_mag_file(  # pylint:disable=too-many-arguments
-    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
+def _write_ascii_file(  # pylint:disable=too-many-arguments
+    openscmdf,
+    metadata,
+    header,
+    outfile_dir,
+    symlink_dir,
+    fnames,
+    force,
+    out_format,
+    drs,
+    prefix=None,
 ):
-    out_file = os.path.join(outfile_dir, fnames[0])
+    if out_format in ("mag-files",):
+        _write_mag_file(
+            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, prefix
+        )
+    elif out_format in (
+        "mag-files-average-year-start-year",
+        "mag-files-average-year-mid-year",
+        "mag-files-average-year-end-year",
+        "mag-files-point-start-year",
+        "mag-files-point-mid-year",
+        "mag-files-point-end-year",
+    ):
+        _write_mag_file_with_operation(
+            openscmdf,
+            metadata,
+            header,
+            outfile_dir,
+            symlink_dir,
+            fnames,
+            force,
+            out_format,
+            drs,
+            prefix
+        )
+    elif out_format in ("magicc-input-files",):
+        _write_magicc_input_file(
+            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, prefix
+        )
+    elif out_format in (
+        "magicc-input-files-average-year-start-year",
+        "magicc-input-files-average-year-mid-year",
+        "magicc-input-files-average-year-end-year",
+        "magicc-input-files-point-start-year",
+        "magicc-input-files-point-mid-year",
+        "magicc-input-files-point-end-year",
+    ):
+        _write_magicc_input_file_with_operation(
+            openscmdf,
+            metadata,
+            header,
+            outfile_dir,
+            symlink_dir,
+            fnames,
+            force,
+            out_format,
+            prefix,
+        )
+    else:
+        raise AssertionError("how did we get here?")  # pragma: no cover
+
+
+def _write_mag_file(  # pylint:disable=too-many-arguments
+    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, prefix
+):
+    out_file_base = fnames[0]
+    if prefix is not None:
+        out_file_base = "{}_{}".format(prefix, out_file_base)
+
+    out_file = os.path.join(outfile_dir, out_file_base)
     out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
 
     if _skip_file(out_file, force, symlink_dir):
@@ -919,7 +986,7 @@ def _write_mag_file(  # pylint:disable=too-many-arguments
 
 
 def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
-    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format, drs
+    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format, drs, prefix
 ):  # pylint:disable=too-many-locals
     if len(fnames) > 1:
         raise AssertionError(
@@ -934,7 +1001,10 @@ def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
     time_id = "{}-{}".format(src_time_points[0].year, src_time_points[-1].year)
     old_time_id = _get_timestamp_str(fnames[0], drs)
 
-    out_file = os.path.join(outfile_dir, fnames[0].replace(old_time_id, time_id))
+    out_file_base = fnames[0].replace(old_time_id, time_id)
+    if prefix is not None:
+        out_file_base = "{}_{}".format(prefix, out_file_base)
+    out_file = os.path.join(outfile_dir, out_file_base)
     out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
 
     if _skip_file(out_file, force, symlink_dir):
@@ -1000,7 +1070,7 @@ def _do_timeseriestype_operation(openscmdf, out_format):
 
 
 def _write_magicc_input_file(  # pylint:disable=too-many-arguments
-    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
+    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, prefix
 ):
     if len(fnames) > 1:
         raise AssertionError(
@@ -1024,11 +1094,12 @@ def _write_magicc_input_file(  # pylint:disable=too-many-arguments
         metadata,
         header,
         "MONTHLY",
+        prefix,
     )
 
 
 def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-arguments
-    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format
+    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format, prefix
 ):
     if len(fnames) > 1:
         raise AssertionError(
@@ -1053,6 +1124,7 @@ def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-argument
         metadata,
         header,
         out_format.replace("magicc-input-files-", "").replace("-", "_").upper(),
+        prefix
     )
 
 
@@ -1065,6 +1137,7 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
     metadata,
     header,
     timeseriestype,
+    prefix
 ):
     try:
         var_to_write = openscmdf["variable"].unique()[0]
@@ -1090,9 +1163,7 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
         "GLOBAL": ["World"],
     }
     for region_key, regions_to_keep in region_filters.items():
-        out_file = os.path.join(
-            outfile_dir,
-            (
+        out_file_base = (
                 ("{}_{}_{}_{}_{}_{}_{}.IN")
                 .format(
                     variable_abbreviations["filename"],
@@ -1104,7 +1175,14 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
                     variable_abbreviations["magicc_internal_name"],
                 )
                 .upper()
-            ),
+            )
+        if prefix is not None:
+            out_file_base = "{}_{}".format(prefix, out_file_base)
+
+
+        out_file = os.path.join(
+            outfile_dir,
+            out_file_base,
         )
         symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
 
@@ -1133,53 +1211,17 @@ def _wrangle_magicc_files(  # pylint:disable=too-many-arguments
 
     outfile_dir, symlink_dir = _get_outfile_dir_symlink_dir(dpath, drs, dst)
 
-    if out_format in ("mag-files",):
-        _write_mag_file(
-            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
-        )
-    elif out_format in (
-        "mag-files-average-year-start-year",
-        "mag-files-average-year-mid-year",
-        "mag-files-average-year-end-year",
-        "mag-files-point-start-year",
-        "mag-files-point-mid-year",
-        "mag-files-point-end-year",
-    ):
-        _write_mag_file_with_operation(
-            openscmdf,
-            metadata,
-            header,
-            outfile_dir,
-            symlink_dir,
-            fnames,
-            force,
-            out_format,
-            drs,
-        )
-    elif out_format in ("magicc-input-files",):
-        _write_magicc_input_file(
-            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
-        )
-    elif out_format in (
-        "magicc-input-files-average-year-start-year",
-        "magicc-input-files-average-year-mid-year",
-        "magicc-input-files-average-year-end-year",
-        "magicc-input-files-point-start-year",
-        "magicc-input-files-point-mid-year",
-        "magicc-input-files-point-end-year",
-    ):
-        _write_magicc_input_file_with_operation(
-            openscmdf,
-            metadata,
-            header,
-            outfile_dir,
-            symlink_dir,
-            fnames,
-            force,
-            out_format,
-        )
-    else:
-        raise AssertionError("how did we get here?")  # pragma: no cover
+    _write_ascii_file(
+        openscmdf,
+        metadata,
+        header,
+        outfile_dir,
+        symlink_dir,
+        fnames,
+        force,
+        out_format,
+        drs,
+    )
 
 
 def _get_openscmdf_metadata_header(
@@ -1502,63 +1544,26 @@ def _stitch_netdf_scm_ncs(
 
 def _stitch_magicc_files(fnames, dpath, dst, force, out_format, target_units_specs, stitch_contact, drs, prefix, normalise):
     openscmdf, metadata, header = _get_stitched_openscmdf_metadata_header(
-        fnames, dpath, target_units_specs, stitch_contact, drs, out_format, normalise
+        fnames, dpath, target_units_specs, stitch_contact, drs, normalise
     )
 
     outfile_dir, symlink_dir = _get_outfile_dir_symlink_dir(dpath, drs, dst)
 
-    # TODO: remove duplication from _wrangle_magicc_files
-    if out_format in ("mag-files",):
-        _write_mag_file(
-            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
-        )
-    elif out_format in (
-        "mag-files-average-year-start-year",
-        "mag-files-average-year-mid-year",
-        "mag-files-average-year-end-year",
-        "mag-files-point-start-year",
-        "mag-files-point-mid-year",
-        "mag-files-point-end-year",
-    ):
-        _write_mag_file_with_operation(
-            openscmdf,
-            metadata,
-            header,
-            outfile_dir,
-            symlink_dir,
-            fnames,
-            force,
-            out_format,
-            drs,
-        )
-    elif out_format in ("magicc-input-files",):
-        _write_magicc_input_file(
-            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force
-        )
-    elif out_format in (
-        "magicc-input-files-average-year-start-year",
-        "magicc-input-files-average-year-mid-year",
-        "magicc-input-files-average-year-end-year",
-        "magicc-input-files-point-start-year",
-        "magicc-input-files-point-mid-year",
-        "magicc-input-files-point-end-year",
-    ):
-        _write_magicc_input_file_with_operation(
-            openscmdf,
-            metadata,
-            header,
-            outfile_dir,
-            symlink_dir,
-            fnames,
-            force,
-            out_format,
-        )
-    else:
-        raise AssertionError("how did we get here?")  # pragma: no cover
-
+    _write_ascii_file(
+        openscmdf,
+        metadata,
+        header,
+        outfile_dir,
+        symlink_dir,
+        fnames,
+        force,
+        out_format,
+        drs,
+        prefix=prefix,
+    )
 
 def _get_stitched_openscmdf_metadata_header(
-    fnames, dpath, target_units_specs, stitch_contact, drs, out_format, normalise
+    fnames, dpath, target_units_specs, stitch_contact, drs, normalise
 ):
     if len(fnames) > 1:
         raise AssertionError(
@@ -1568,10 +1573,17 @@ def _get_stitched_openscmdf_metadata_header(
     fullpath = os.path.join(dpath, fnames[0])
     openscmdf, _ = _get_continuous_timeseries_with_meta(fullpath, drs, normalise)
 
+    if target_units_specs is not None:
+        openscmdf = _convert_units(openscmdf, target_units_specs)
+
     metadata = openscmdf.metadata
-    header = _get_openscmdf_header(
-        stitch_contact, metadata["(child) crunch_netcdf_scm_version"]
-    )
+    try:
+        header = _get_openscmdf_header(
+            stitch_contact, metadata["(child) crunch_netcdf_scm_version"]
+        )
+    except KeyError:  # pragma: no cover # for future
+        print("guessing no stitching occurred but haven't tested...")
+        raise
 
     return openscmdf, metadata, header
 

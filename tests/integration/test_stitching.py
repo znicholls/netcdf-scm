@@ -4,6 +4,7 @@ import os.path
 import re
 
 import numpy as np
+import pandas as pd
 import pytest
 from click.testing import CliRunner
 from pymagicc.io import MAGICCData
@@ -599,7 +600,7 @@ def test_stitching_file_types(tmpdir, caplog, test_cmip6_crunch_output, out_form
     assert result.exit_code == 0
 
     out_files = glob.glob(os.path.join(output_dir, "flat", "*.IN" if out_format.startswith("magicc") else "*.MAG"))
-    assert len(out_files) == 2
+    assert len(out_files) == 4 if out_format.startswith("magicc") else 2
 
     for p in out_files:
         res = MAGICCData(p)
@@ -608,10 +609,97 @@ def test_stitching_file_types(tmpdir, caplog, test_cmip6_crunch_output, out_form
             _do_generic_stitched_data_tests(res)
 
 
-def test_prefix():
-    assert False
+@pytest.mark.parametrize(
+    "out_format",
+    (
+        "magicc-input-files",
+        "magicc-input-files-average-year-start-year",
+        "magicc-input-files-average-year-mid-year",
+        "magicc-input-files-average-year-end-year",
+        "magicc-input-files-point-start-year",
+        "magicc-input-files-point-mid-year",
+        "magicc-input-files-point-end-year",
+        "mag-files",
+        "mag-files-average-year-start-year",
+        "mag-files-average-year-mid-year",
+        "mag-files-average-year-end-year",
+        "mag-files-point-start-year",
+        "mag-files-point-mid-year",
+        "mag-files-point-end-year",
+    ),
+)
+def test_prefix(tmpdir, caplog, test_cmip6_crunch_output, out_format):
+    output_dir = str(tmpdir)
+    crunch_contact = "test_prefix"
+    prefix = "NORMED"
+
+    runner = CliRunner(mix_stderr=False)
+    with caplog.at_level(logging.WARNING):
+        result = runner.invoke(
+            stitch_netcdf_scm_ncs,
+            [
+                test_cmip6_crunch_output,
+                output_dir,
+                crunch_contact,
+                "--drs",
+                "CMIP6Output",
+                "-f",
+                "--number-workers",
+                1,
+                "--regexp",
+                ".*BCC-CSM2-MR.*ssp126.*tas.*",
+                "--out-format",
+                out_format,
+                "--prefix",
+                prefix,
+            ],
+        )
+
+    assert result.exit_code == 0, result.stderr
+
+    out_files = glob.glob(os.path.join(output_dir, "flat", "*.IN" if out_format.startswith("magicc") else "*.MAG"))
+    assert len(out_files) == 2 if out_format.startswith("magicc") else 1
+    assert [os.path.basename(p).startswith("{}_".format(prefix)) for p in out_files]
 
 
-def test_target_units():
-    assert False
+def test_target_units(tmpdir, caplog, test_cmip6_crunch_output):
+    target_unit = "J / yr / m^2"
+    target_units = pd.DataFrame(
+        [["fgco2", "g / m**2 / s"], ["hfds", target_unit]], columns=["variable", "unit"]
+    )
+    target_units_csv = os.path.join(tmpdir, "target_units.csv")
+    target_units.to_csv(target_units_csv, index=False)
 
+    output_dir = str(tmpdir)
+    crunch_contact = "test_target_units"
+
+    runner = CliRunner(mix_stderr=False)
+    with caplog.at_level(logging.WARNING):
+        result = runner.invoke(
+            stitch_netcdf_scm_ncs,
+            [
+                test_cmip6_crunch_output,
+                output_dir,
+                crunch_contact,
+                "--drs",
+                "CMIP6Output",
+                "-f",
+                "--number-workers",
+                1,
+                "--regexp",
+                ".*EC-Earth3-Veg.*ssp585.*r1i1p1f1.*hfds.*",
+                "--target-units-specs",
+                target_units_csv,
+            ],
+        )
+
+    assert result.exit_code == 0, result.stderr
+
+    out_files = glob.glob(os.path.join(output_dir, "flat", "*.MAG"))
+    assert len(out_files) == 1
+
+    res = MAGICCData(out_files[0])
+
+    _do_generic_stitched_data_tests(res)
+    assert res["unit"].unique().tolist() == ["Jperyrpermsuper2"]
+    assert "Converting units" in result.stderr

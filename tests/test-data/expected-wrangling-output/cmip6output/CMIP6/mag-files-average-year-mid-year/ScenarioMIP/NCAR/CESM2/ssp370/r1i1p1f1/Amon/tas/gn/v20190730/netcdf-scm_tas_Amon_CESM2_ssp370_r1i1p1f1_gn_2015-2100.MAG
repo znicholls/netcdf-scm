@@ -1,9 +1,9 @@
 ---- HEADER ----
 
-Date: 2019-11-07 19:42:29
+Date: 2019-11-08 10:45:41
 Contact: cmip6output wrangling regression test
 Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
-File written with: pymagicc v2.0.0-beta.7+16.g38df42f (more info at github.com/openclimatedata/pymagicc)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
 
 
 ---- METADATA ----
