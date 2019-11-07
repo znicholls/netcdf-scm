@@ -919,7 +919,7 @@ def _write_mag_file(  # pylint:disable=too-many-arguments
 
 
 def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
-    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format
+    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, out_format, drs
 ):  # pylint:disable=too-many-locals
     if len(fnames) > 1:
         raise AssertionError(
@@ -932,10 +932,7 @@ def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
     original_years = ts.columns.map(lambda x: x.year).unique()
 
     time_id = "{}-{}".format(src_time_points[0].year, src_time_points[-1].year)
-    regex_search = r"{:04d}\d*-{:04d}\d*".format(
-        src_time_points[0].year, src_time_points[-1].year
-    )
-    old_time_id = re.search(regex_search, fnames[0]).group(0)
+    old_time_id = _get_timestamp_str(fnames[0], drs)
 
     out_file = os.path.join(outfile_dir, fnames[0].replace(old_time_id, time_id))
     out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
@@ -1157,6 +1154,7 @@ def _wrangle_magicc_files(  # pylint:disable=too-many-arguments
             fnames,
             force,
             out_format,
+            drs,
         )
     elif out_format in ("magicc-input-files",):
         _write_magicc_input_file(
@@ -1531,6 +1529,7 @@ def _stitch_magicc_files(fnames, dpath, dst, force, out_format, target_units_spe
             fnames,
             force,
             out_format,
+            drs,
         )
     elif out_format in ("magicc-input-files",):
         _write_magicc_input_file(
@@ -1606,10 +1605,11 @@ def _get_continuous_timeseries_with_meta(infile, drs, normalise):
         # think the metadata here is wrong as historical has a branch_time_in_parent
         # of 2015 so assuming this means the year of the branch not the actual time
         # in days (like it's meant to)
-        logger.warning(
-            "Assuming BCC metadata is wrong and branch time units are actually years, "
+        warn_str = (
+            "assuming BCC metadata is wrong and branch time units are actually years, "
             "not days"
         )
+        logger.warning(warn_str)
         branch_time = dt.datetime(int(loaded.metadata["branch_time_in_parent"]), 1, 1)
     else:
         branch_time = netCDF4.num2date(
@@ -1684,16 +1684,26 @@ def _get_parent_path_base(child_path, replacements, drs):
 
         parent_path = parent_path.replace(_get_id_in_path(pid, child_path, drs), v)
 
-    helper = _get_scmcube_helper(drs)
-    timestamp_str = helper._get_timestamp_bits_from_filename(os.path.basename(child_path))["timestamp_str"]
+    timestamp_str = _get_timestamp_str(child_path, drs)
 
     parent_path_base = "{}*.nc".format(parent_path.split(timestamp_str)[0])
 
-    path_bits = helper.process_path(os.path.dirname(child_path))
+    path_bits = _get_path_bits(child_path, drs)
     if "version" in path_bits:
         parent_path_base = parent_path_base.replace(path_bits["version"], "*")
 
     return parent_path_base
+
+
+def _get_path_bits(inpath, drs):
+    helper = _get_scmcube_helper(drs)
+    return helper.process_path(os.path.dirname(inpath))
+
+def _get_timestamp_str(fullpath, drs):
+    helper = _get_scmcube_helper(drs)
+    return helper._get_timestamp_bits_from_filename(
+        os.path.basename(fullpath)
+    )["timestamp_str"]
 
 
 # TODO: put this in scmdata

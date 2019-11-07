@@ -81,13 +81,23 @@ def test_stitching_default(tmpdir, caplog, test_cmip6_crunch_output):
     assert "EC-Earth3-Veg" in parent_path
     assert "hfds" in parent_path
 
+    parent = load_scmdataframe(os.path.join(test_cmip6_crunch_output, parent_path.replace("CMIP6/", "")))
+
+    for region in ["World", "World|North Atlantic Ocean"]:
+        for y in range(2013, 2015):
+            np.testing.assert_allclose(
+                res.filter(region=region, year=y).values,
+                parent.filter(region=region, year=y).values,
+                rtol=1e-5,
+            )
+
 
 def test_stitching_in_file_BCC_CSM2_MR(tmpdir, caplog, test_cmip6_crunch_output):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_default"
 
     runner = CliRunner(mix_stderr=False)
-    with caplog.at_level("DEBUG"):
+    with caplog.at_level(logging.WARNING):
         result = runner.invoke(
             stitch_netcdf_scm_ncs,
             [
@@ -106,16 +116,54 @@ def test_stitching_in_file_BCC_CSM2_MR(tmpdir, caplog, test_cmip6_crunch_output)
             ],
         )
 
-    assert result.exit_code == 0
+    assert result.exit_code == 0, result.stderr
 
     out_files = glob.glob(os.path.join(output_dir, "flat", "*.MAG"))
     assert len(out_files) == 1
 
     res = MAGICCData(out_files[0])
 
-    assert False, "do data tests here, join of SSP and hist"
-    assert False, "do metadata tests here, parent"
-    assert False, "do tests of logs here, should log that we're assuming branch time means year rather than days since"
+    _do_generic_stitched_data_tests(res)
+
+    child_path = res.metadata["(child) netcdf-scm crunched file"]
+    assert "ssp126" in child_path
+    assert "r1i1p1f1" in child_path
+    assert "BCC-CSM2-MR" in child_path
+    assert "tas" in child_path
+
+    child = load_scmdataframe(os.path.join(test_cmip6_crunch_output, child_path.replace("CMIP6/", "")))
+
+    for region in ["World", "World|North Atlantic Ocean"]:
+        for y in range(2015, 2017):
+            np.testing.assert_allclose(
+                res.filter(region=region, year=y).values,
+                child.time_mean("AC").filter(region=region, year=y).values,
+                rtol=1e-5,
+            )
+
+    parent_path = res.metadata["(parent) netcdf-scm crunched file"]
+    assert "historical" in parent_path
+    assert "r1i1p1f1" in parent_path
+    assert "BCC-CSM2-MR" in parent_path
+    assert "tas" in parent_path
+
+    parent = load_scmdataframe(os.path.join(test_cmip6_crunch_output, parent_path.replace("CMIP6/", "")))
+
+    for region in ["World", "World|North Atlantic Ocean"]:
+        for y in range(2013, 2015):
+            np.testing.assert_allclose(
+                res.filter(region=region, year=y).values,
+                parent.time_mean("AC").filter(region=region, year=y).values,
+                rtol=1e-5,
+            )
+
+    warn_str = (
+        "assuming BCC metadata is wrong and branch time units are actually years, "
+        "not days"
+    )
+    bcc_warning = [r for r in caplog.record_tuples if r[2] == warn_str]
+    assert len(bcc_warning) == 1
+    assert bcc_warning[0][1] == logging.WARNING
 
 
 def test_stitching_no_parent(tmpdir, caplog, test_cmip6_crunch_output):
