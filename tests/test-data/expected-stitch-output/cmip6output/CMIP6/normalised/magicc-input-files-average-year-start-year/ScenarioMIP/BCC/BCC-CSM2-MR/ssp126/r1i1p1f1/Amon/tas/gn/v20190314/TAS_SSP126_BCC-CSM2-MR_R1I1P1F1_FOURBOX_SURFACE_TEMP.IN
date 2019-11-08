@@ -1,6 +1,6 @@
 ---- HEADER ----
 
-Date: 2019-11-08 16:16:54
+Date: 2019-11-08 18:38:27
 Contact: cmip6output stitching with normalisation regression test
 Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
 File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
@@ -24,26 +24,26 @@ File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimateda
 (child) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
 (child) branch_method: Standard
 (child) branch_time_in_child: 0.0
-(child) branch_time_in_parent: 2289.0
+(child) branch_time_in_parent: 2015.0
 (child) calendar: 365_day
 (child) cmor_version: 3.3.2
 (child) comment: near-surface (usually, 2 meter) air temperature
 (child) contact: Dr. Tongwen Wu(twwu@cma.gov.cn)
-(child) creation_date: 2018-11-26T05:08:26Z
+(child) creation_date: 2019-03-14T00:56:06Z
 (child) crunch_contact: cmip6output crunching regression test
 (child) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
-(child) crunch_source_files: Files: ['/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
+(child) crunch_source_files: Files: ['/CMIP6/ScenarioMIP/BCC/BCC-CSM2-MR/ssp126/r1i1p1f1/Amon/tas/gn/v20190314/tas_Amon_BCC-CSM2-MR_ssp126_r1i1p1f1_gn_201501-210012.nc']
 (child) data_specs_version: 01.00.27
-(child) description: DECK: historical
-(child) experiment: all-forcing simulation of the recent past
-(child) experiment_id: historical
+(child) description: SSP1-2.6
+(child) experiment: update of RCP2.6 based on SSP1
+(child) experiment_id: ssp126
 (child) external_variables: areacella
 (child) forcing_index: 1
 (child) frequency: mon
-(child) further_info_url: https://furtherinfo.es-doc.org/CMIP6.BCC.BCC-CSM2-MR.historical.none.r1i1p1f1
+(child) further_info_url: https://furtherinfo.es-doc.org/CMIP6.BCC.BCC-CSM2-MR.ssp126.none.r1i1p1f1
 (child) grid: T106
 (child) grid_label: gn
-(child) history: 2018-11-26T05:08:26Z altered by CMOR: Treated scalar dimension: 'height'.
+(child) history: 2019-03-14T00:56:06Z altered by CMOR: Treated scalar dimension: 'height'.
 (child) initialization_index: 1
 (child) institution: Beijing Climate Center, Beijing 100081, China
 (child) institution_id: BCC
@@ -51,20 +51,20 @@ File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimateda
 (child) land_fraction_northern_hemisphere: 0.3904274704045399
 (child) land_fraction_southern_hemisphere: 0.18906522547757162
 (child) license: CMIP6 model data produced by BCC is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at https:///pcmdi.llnl.gov/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
-(child) netcdf-scm crunched file: CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+(child) netcdf-scm crunched file: CMIP6/ScenarioMIP/BCC/BCC-CSM2-MR/ssp126/r1i1p1f1/Amon/tas/gn/v20190314/netcdf-scm_tas_Amon_BCC-CSM2-MR_ssp126_r1i1p1f1_gn_201501-210012.nc
 (child) nominal_resolution: 100 km
 (child) original_name: TREFHT
 (child) parent_activity_id: CMIP
-(child) parent_experiment_id: piControl
+(child) parent_experiment_id: historical
 (child) parent_mip_era: CMIP6
 (child) parent_source_id: BCC-CSM2-MR
-(child) parent_time_units: days since 1850-01-01
+(child) parent_time_units: days since 2015-01-01
 (child) parent_variant_label: r1i1p1f1
 (child) physics_index: 1
 (child) product: model-output
 (child) realization_index: 1
 (child) realm: atmos
-(child) references: Model described by Tongwen Wu et al. (JGR 2013; JMR 2014; submmitted to GMD,2018). Also see http://forecast.bcccsm.ncc-cma.net/htm
+(child) references: Model described by Tongwen Wu et al. (JGR 2013; JMR 2014; GMD 2019). Also see http://forecast.bcccsm.ncc-cma.net/htm
 (child) run_variant: forcing: greenhouse gases,solar constant,aerosol,volcano mass,land use,ozone
 (child) source: BCC-CSM 2 MR (2017):   aerosol: none  atmos: BCC_AGCM3_MR (T106; 320 x 160 longitude/latitude; 46 levels; top level 1.46 hPa)  atmosChem: none  land: BCC_AVIM2  landIce: none  ocean: MOM4 (1/3 deg 10S-10N, 1/3-1 deg 10-30 N/S, and 1 deg in high latitudes; 360 x 232 longitude/latitude; 40 levels; top grid cell 0-10 m)  ocnBgchem: none  seaIce: SIS2
 (child) source_id: BCC-CSM2-MR
@@ -74,7 +74,7 @@ File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimateda
 (child) table_id: Amon
 (child) table_info: Creation Date:(30 July 2018) MD5:e53ff52009d0b97d9d867dc12b6096c7
 (child) title: BCC-CSM2-MR output prepared for CMIP6
-(child) tracking_id: hdl:21.14100/007da5e5-12bb-4fe9-8df9-5cd473280650
+(child) tracking_id: hdl:21.14100/378373ed-a6ac-46dc-b13b-2d59c11b6391
 (child) variable_id: tas
 (child) variant_label: r1i1p1f1
 (normalisation) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
@@ -154,19 +154,88 @@ seaIce: SIS2
 (normalisation) tracking_id: hdl:21.14100/e15b4e04-13d4-4a3a-a050-33564e99d873
 (normalisation) variable_id: tas
 (normalisation) variant_label: r1i1p1f1
+(parent) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(parent) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(parent) Conventions: CF-1.5
+(parent) area_world (m**2): 509194858320979.25
+(parent) area_world_el_nino_n3.4 (m**2): 9499544514719.764
+(parent) area_world_land (m**2): 147537350588867.06
+(parent) area_world_north_atlantic_ocean (m**2): 39489819061100.75
+(parent) area_world_northern_hemisphere (m**2): 254597429160489.66
+(parent) area_world_northern_hemisphere_land (m**2): 99401830238629.02
+(parent) area_world_northern_hemisphere_ocean (m**2): 155195598909192.03
+(parent) area_world_ocean (m**2): 361657507720194.75
+(parent) area_world_southern_hemisphere (m**2): 254597429160489.62
+(parent) area_world_southern_hemisphere_land (m**2): 48135520350238.04
+(parent) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
+(parent) branch_method: Standard
+(parent) branch_time_in_child: 0.0
+(parent) branch_time_in_parent: 2289.0
+(parent) calendar: 365_day
+(parent) cmor_version: 3.3.2
+(parent) comment: near-surface (usually, 2 meter) air temperature
+(parent) contact: Dr. Tongwen Wu(twwu@cma.gov.cn)
+(parent) creation_date: 2018-11-26T05:08:26Z
+(parent) crunch_contact: cmip6output crunching regression test
+(parent) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(parent) crunch_source_files: Files: ['/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
+(parent) data_specs_version: 01.00.27
+(parent) description: DECK: historical
+(parent) experiment: all-forcing simulation of the recent past
+(parent) experiment_id: historical
+(parent) external_variables: areacella
+(parent) forcing_index: 1
+(parent) frequency: mon
+(parent) further_info_url: https://furtherinfo.es-doc.org/CMIP6.BCC.BCC-CSM2-MR.historical.none.r1i1p1f1
+(parent) grid: T106
+(parent) grid_label: gn
+(parent) history: 2018-11-26T05:08:26Z altered by CMOR: Treated scalar dimension: 'height'.
+(parent) initialization_index: 1
+(parent) institution: Beijing Climate Center, Beijing 100081, China
+(parent) institution_id: BCC
+(parent) land_fraction: 0.2897463479410558
+(parent) land_fraction_northern_hemisphere: 0.3904274704045399
+(parent) land_fraction_southern_hemisphere: 0.18906522547757162
+(parent) license: CMIP6 model data produced by BCC is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at https:///pcmdi.llnl.gov/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(parent) netcdf-scm crunched file: CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+(parent) nominal_resolution: 100 km
+(parent) original_name: TREFHT
+(parent) parent_activity_id: CMIP
+(parent) parent_experiment_id: piControl
+(parent) parent_mip_era: CMIP6
+(parent) parent_source_id: BCC-CSM2-MR
+(parent) parent_time_units: days since 1850-01-01
+(parent) parent_variant_label: r1i1p1f1
+(parent) physics_index: 1
+(parent) product: model-output
+(parent) realization_index: 1
+(parent) realm: atmos
+(parent) references: Model described by Tongwen Wu et al. (JGR 2013; JMR 2014; submmitted to GMD,2018). Also see http://forecast.bcccsm.ncc-cma.net/htm
+(parent) run_variant: forcing: greenhouse gases,solar constant,aerosol,volcano mass,land use,ozone
+(parent) source: BCC-CSM 2 MR (2017):   aerosol: none  atmos: BCC_AGCM3_MR (T106; 320 x 160 longitude/latitude; 46 levels; top level 1.46 hPa)  atmosChem: none  land: BCC_AVIM2  landIce: none  ocean: MOM4 (1/3 deg 10S-10N, 1/3-1 deg 10-30 N/S, and 1 deg in high latitudes; 360 x 232 longitude/latitude; 40 levels; top grid cell 0-10 m)  ocnBgchem: none  seaIce: SIS2
+(parent) source_id: BCC-CSM2-MR
+(parent) source_type: AOGCM
+(parent) sub_experiment: none
+(parent) sub_experiment_id: none
+(parent) table_id: Amon
+(parent) table_info: Creation Date:(30 July 2018) MD5:e53ff52009d0b97d9d867dc12b6096c7
+(parent) title: BCC-CSM2-MR output prepared for CMIP6
+(parent) tracking_id: hdl:21.14100/007da5e5-12bb-4fe9-8df9-5cd473280650
+(parent) variable_id: tas
+(parent) variant_label: r1i1p1f1
 normalisation method: 31-yr-mean-after-branch-time
 timeseriestype: AVERAGE_YEAR_START_YEAR
 
 &THISFILE_SPECIFICATIONS
     THISFILE_DATACOLUMNS = 4
-    THISFILE_DATAROWS = 165
+    THISFILE_DATAROWS = 251
     THISFILE_FIRSTYEAR = 1850
-    THISFILE_LASTYEAR = 2014
+    THISFILE_LASTYEAR = 2100
     THISFILE_ANNUALSTEPS = 1
     THISFILE_UNITS = 'K'
     THISFILE_DATTYPE = 'NOTUSED'
     THISFILE_REGIONMODE = 'FOURBOX'
-    THISFILE_FIRSTDATAROW = 176
+    THISFILE_FIRSTDATAROW = 245
 /
 
    VARIABLE        SURFACE_TEMP        SURFACE_TEMP        SURFACE_TEMP        SURFACE_TEMP
@@ -338,3 +407,89 @@ timeseriestype: AVERAGE_YEAR_START_YEAR
        2012         1.11140e+00         1.28906e+00         7.43777e-01         1.33098e+00
        2013         1.04261e+00         1.62851e+00         7.32257e-01         1.27731e+00
        2014         1.17944e+00         1.28937e+00         8.09216e-01         1.42998e+00
+       2015         9.74005e-01         1.51267e+00         8.76026e-01         1.65745e+00
+       2016         9.09966e-01         1.53134e+00         8.78539e-01         1.41377e+00
+       2017         1.20926e+00         1.81637e+00         1.08493e+00         1.87888e+00
+       2018         1.02352e+00         1.65801e+00         9.66771e-01         1.80634e+00
+       2019         1.02914e+00         1.35844e+00         9.62285e-01         1.47261e+00
+       2020         1.10062e+00         1.42073e+00         1.06959e+00         1.95930e+00
+       2021         1.12923e+00         1.62389e+00         1.09848e+00         1.73791e+00
+       2022         1.25113e+00         1.86986e+00         1.10888e+00         1.92488e+00
+       2023         1.14791e+00         1.98894e+00         1.12477e+00         1.92967e+00
+       2024         1.24217e+00         1.73136e+00         1.13452e+00         1.69061e+00
+       2025         1.27196e+00         1.96924e+00         1.27132e+00         1.95281e+00
+       2026         1.37018e+00         2.25491e+00         1.30999e+00         2.31938e+00
+       2027         1.23276e+00         1.76730e+00         1.12084e+00         1.97779e+00
+       2028         1.34425e+00         1.67995e+00         1.17260e+00         1.96302e+00
+       2029         1.45573e+00         2.12213e+00         1.29288e+00         2.27667e+00
+       2030         1.29649e+00         1.85424e+00         1.12871e+00         1.55095e+00
+       2031         1.50763e+00         2.04151e+00         1.31904e+00         2.36589e+00
+       2032         1.45152e+00         1.87282e+00         1.26175e+00         2.07451e+00
+       2033         1.56234e+00         2.15293e+00         1.22312e+00         2.08667e+00
+       2034         1.71402e+00         2.06075e+00         1.35402e+00         2.01252e+00
+       2035         1.51207e+00         2.26919e+00         1.31364e+00         1.85593e+00
+       2036         1.67257e+00         2.28828e+00         1.39114e+00         2.24927e+00
+       2037         1.51200e+00         2.06348e+00         1.38724e+00         2.38678e+00
+       2038         1.48826e+00         2.32855e+00         1.41694e+00         2.16706e+00
+       2039         1.53707e+00         2.11736e+00         1.39206e+00         2.35860e+00
+       2040         1.42360e+00         2.03981e+00         1.32386e+00         1.92446e+00
+       2041         1.58574e+00         1.86127e+00         1.53492e+00         2.63483e+00
+       2042         1.47878e+00         2.01107e+00         1.54267e+00         2.32202e+00
+       2043         1.47096e+00         2.27298e+00         1.53628e+00         2.58653e+00
+       2044         1.35815e+00         2.11939e+00         1.45122e+00         2.24312e+00
+       2045         1.51428e+00         2.10232e+00         1.52300e+00         2.26735e+00
+       2046         1.39486e+00         2.05711e+00         1.50535e+00         2.32123e+00
+       2047         1.65261e+00         2.52243e+00         1.53981e+00         2.51057e+00
+       2048         1.71507e+00         2.46315e+00         1.56710e+00         2.57079e+00
+       2049         1.68938e+00         2.20316e+00         1.55928e+00         2.56851e+00
+       2050         1.78995e+00         2.16509e+00         1.66679e+00         2.67106e+00
+       2051         1.63650e+00         2.32135e+00         1.51208e+00         2.14948e+00
+       2052         1.73192e+00         2.47894e+00         1.65056e+00         2.73618e+00
+       2053         1.87359e+00         2.85238e+00         1.66744e+00         2.79383e+00
+       2054         1.67079e+00         2.64903e+00         1.54197e+00         2.11960e+00
+       2055         1.68645e+00         2.61454e+00         1.60683e+00         2.41563e+00
+       2056         1.80083e+00         2.44664e+00         1.61115e+00         2.62141e+00
+       2057         1.79804e+00         2.69093e+00         1.60696e+00         2.63927e+00
+       2058         1.84238e+00         2.63056e+00         1.63056e+00         2.58519e+00
+       2059         1.73462e+00         2.63626e+00         1.54318e+00         2.51835e+00
+       2060         1.76004e+00         2.19663e+00         1.65428e+00         2.48826e+00
+       2061         1.62785e+00         2.39211e+00         1.59614e+00         2.72115e+00
+       2062         1.72990e+00         2.23479e+00         1.62376e+00         2.48169e+00
+       2063         1.67357e+00         2.52679e+00         1.65882e+00         2.58296e+00
+       2064         1.51170e+00         2.08470e+00         1.56747e+00         2.39604e+00
+       2065         1.59668e+00         2.16071e+00         1.66438e+00         2.90724e+00
+       2066         1.56042e+00         2.07206e+00         1.60742e+00         2.32275e+00
+       2067         1.68265e+00         2.41653e+00         1.65617e+00         2.56466e+00
+       2068         1.68445e+00         2.53805e+00         1.66079e+00         2.38926e+00
+       2069         1.81005e+00         2.48434e+00         1.64355e+00         2.49547e+00
+       2070         1.78691e+00         2.53009e+00         1.64400e+00         2.36270e+00
+       2071         1.71821e+00         2.77255e+00         1.67813e+00         2.58772e+00
+       2072         1.68199e+00         2.53432e+00         1.55289e+00         2.42889e+00
+       2073         1.84142e+00         2.63547e+00         1.58514e+00         2.57119e+00
+       2074         1.82685e+00         2.53641e+00         1.61902e+00         2.68524e+00
+       2075         1.79151e+00         2.70834e+00         1.44484e+00         2.25542e+00
+       2076         1.80844e+00         2.48235e+00         1.46205e+00         2.13067e+00
+       2077         1.91013e+00         2.81419e+00         1.58509e+00         2.49778e+00
+       2078         1.81328e+00         2.90006e+00         1.51176e+00         2.35366e+00
+       2079         1.91127e+00         2.58362e+00         1.46344e+00         2.29807e+00
+       2080         1.94159e+00         2.76248e+00         1.55715e+00         2.10640e+00
+       2081         1.78520e+00         2.36128e+00         1.48424e+00         2.09420e+00
+       2082         1.72304e+00         2.31665e+00         1.50066e+00         2.18274e+00
+       2083         1.79369e+00         2.48725e+00         1.51124e+00         2.65260e+00
+       2084         1.78634e+00         2.38711e+00         1.47028e+00         2.24023e+00
+       2085         1.78262e+00         2.97401e+00         1.46372e+00         2.33212e+00
+       2086         1.82804e+00         2.53044e+00         1.40239e+00         2.47271e+00
+       2087         1.88012e+00         2.46521e+00         1.41180e+00         2.49705e+00
+       2088         1.70817e+00         2.78610e+00         1.39032e+00         2.36977e+00
+       2089         1.62287e+00         2.53693e+00         1.30143e+00         2.10756e+00
+       2090         1.52294e+00         2.14746e+00         1.30123e+00         2.41112e+00
+       2091         1.56169e+00         2.45984e+00         1.41306e+00         2.38453e+00
+       2092         1.60307e+00         2.29375e+00         1.36084e+00         2.38008e+00
+       2093         1.60930e+00         2.52917e+00         1.32535e+00         1.89552e+00
+       2094         1.61891e+00         2.38771e+00         1.28524e+00         2.35163e+00
+       2095         1.58475e+00         2.44579e+00         1.32978e+00         2.25065e+00
+       2096         1.48661e+00         2.18190e+00         1.28402e+00         2.01975e+00
+       2097         1.53820e+00         2.56040e+00         1.29739e+00         1.91475e+00
+       2098         1.63493e+00         2.29321e+00         1.28937e+00         1.95483e+00
+       2099         1.70730e+00         2.55683e+00         1.28002e+00         2.25538e+00
+       2100         1.75699e+00         2.65340e+00         1.29626e+00         2.32755e+00

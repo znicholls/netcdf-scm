@@ -1,6 +1,6 @@
 ---- HEADER ----
 
-Date: 2019-11-08 16:17:33
+Date: 2019-11-08 18:38:35
 Contact: cmip6output stitching with normalisation regression test
 Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
 File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
@@ -22,28 +22,28 @@ File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimateda
 (child) area_world_southern_hemisphere (m**2): 254597429160489.62
 (child) area_world_southern_hemisphere_land (m**2): 48135520350238.04
 (child) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
-(child) branch_method: Standard
+(child) branch_method: branch
 (child) branch_time_in_child: 0.0
-(child) branch_time_in_parent: 2289.0
+(child) branch_time_in_parent: 0.0
 (child) calendar: 365_day
 (child) cmor_version: 3.3.2
 (child) comment: near-surface (usually, 2 meter) air temperature
-(child) contact: Dr. Tongwen Wu(twwu@cma.gov.cn)
-(child) creation_date: 2018-11-26T05:08:26Z
+(child) contact: Dr. Tongwen Wu (twwu@cma.gov.cn)
+(child) creation_date: 2019-03-21T01:38:37Z
 (child) crunch_contact: cmip6output crunching regression test
 (child) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
-(child) crunch_source_files: Files: ['/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
+(child) crunch_source_files: Files: ['/CMIP6/C4MIP/BCC/BCC-CSM2-MR/1pctCO2-bgc/r1i1p1f1/Amon/tas/gn/v20190321/tas_Amon_BCC-CSM2-MR_1pctCO2-bgc_r1i1p1f1_gn_185001-200012.nc']
 (child) data_specs_version: 01.00.27
-(child) description: DECK: historical
-(child) experiment: all-forcing simulation of the recent past
-(child) experiment_id: historical
+(child) description: C4MIP: 1pctCO2-bgc
+(child) experiment: biogeochemically-coupled version of 1 percent per year increasing CO2 experiment
+(child) experiment_id: 1pctCO2-bgc
 (child) external_variables: areacella
 (child) forcing_index: 1
 (child) frequency: mon
-(child) further_info_url: https://furtherinfo.es-doc.org/CMIP6.BCC.BCC-CSM2-MR.historical.none.r1i1p1f1
+(child) further_info_url: https://furtherinfo.es-doc.org/CMIP6.BCC.BCC-CSM2-MR.1pctCO2-bgc.none.r1i1p1f1
 (child) grid: T106
 (child) grid_label: gn
-(child) history: 2018-11-26T05:08:26Z altered by CMOR: Treated scalar dimension: 'height'.
+(child) history: 2019-03-21T01:38:37Z altered by CMOR: Treated scalar dimension: 'height'.
 (child) initialization_index: 1
 (child) institution: Beijing Climate Center, Beijing 100081, China
 (child) institution_id: BCC
@@ -51,7 +51,7 @@ File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimateda
 (child) land_fraction_northern_hemisphere: 0.3904274704045399
 (child) land_fraction_southern_hemisphere: 0.18906522547757162
 (child) license: CMIP6 model data produced by BCC is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at https:///pcmdi.llnl.gov/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
-(child) netcdf-scm crunched file: CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
+(child) netcdf-scm crunched file: CMIP6/C4MIP/BCC/BCC-CSM2-MR/1pctCO2-bgc/r1i1p1f1/Amon/tas/gn/v20190321/netcdf-scm_tas_Amon_BCC-CSM2-MR_1pctCO2-bgc_r1i1p1f1_gn_185001-200012.nc
 (child) nominal_resolution: 100 km
 (child) original_name: TREFHT
 (child) parent_activity_id: CMIP
@@ -64,17 +64,17 @@ File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimateda
 (child) product: model-output
 (child) realization_index: 1
 (child) realm: atmos
-(child) references: Model described by Tongwen Wu et al. (JGR 2013; JMR 2014; submmitted to GMD,2018). Also see http://forecast.bcccsm.ncc-cma.net/htm
-(child) run_variant: forcing: greenhouse gases,solar constant,aerosol,volcano mass,land use,ozone
+(child) references: Model described by Tongwen Wu et al. (JGR 2013; JMR 2014; GMD 2019). Also see http://forecast.bcccsm.ncc-cma.net/htm
+(child) run_variant: forcing: GHG
 (child) source: BCC-CSM 2 MR (2017):   aerosol: none  atmos: BCC_AGCM3_MR (T106; 320 x 160 longitude/latitude; 46 levels; top level 1.46 hPa)  atmosChem: none  land: BCC_AVIM2  landIce: none  ocean: MOM4 (1/3 deg 10S-10N, 1/3-1 deg 10-30 N/S, and 1 deg in high latitudes; 360 x 232 longitude/latitude; 40 levels; top grid cell 0-10 m)  ocnBgchem: none  seaIce: SIS2
 (child) source_id: BCC-CSM2-MR
-(child) source_type: AOGCM
+(child) source_type: AOGCM BGC
 (child) sub_experiment: none
 (child) sub_experiment_id: none
 (child) table_id: Amon
 (child) table_info: Creation Date:(30 July 2018) MD5:e53ff52009d0b97d9d867dc12b6096c7
 (child) title: BCC-CSM2-MR output prepared for CMIP6
-(child) tracking_id: hdl:21.14100/007da5e5-12bb-4fe9-8df9-5cd473280650
+(child) tracking_id: hdl:21.14100/171c50f6-c64d-415b-8745-0b562a177a50
 (child) variable_id: tas
 (child) variant_label: r1i1p1f1
 (normalisation) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
@@ -159,9 +159,9 @@ timeseriestype: POINT_START_YEAR
 
 &THISFILE_SPECIFICATIONS
     THISFILE_DATACOLUMNS = 1
-    THISFILE_DATAROWS = 165
+    THISFILE_DATAROWS = 151
     THISFILE_FIRSTYEAR = 1850
-    THISFILE_LASTYEAR = 2014
+    THISFILE_LASTYEAR = 2000
     THISFILE_ANNUALSTEPS = 1
     THISFILE_UNITS = 'K'
     THISFILE_DATTYPE = 'NOTUSED'
@@ -173,168 +173,154 @@ timeseriestype: POINT_START_YEAR
        TODO                 SET
       UNITS                   K
       YEARS               WORLD
-       1850        -2.20534e+00
-       1851        -2.01378e+00
-       1852        -1.92603e+00
-       1853        -1.76101e+00
-       1854        -1.86386e+00
-       1855        -2.10281e+00
-       1856        -1.91096e+00
-       1857        -1.93525e+00
-       1858        -1.79520e+00
-       1859        -1.70598e+00
-       1860        -1.75422e+00
-       1861        -1.64666e+00
-       1862        -1.68911e+00
-       1863        -2.10087e+00
-       1864        -1.91255e+00
-       1865        -1.64278e+00
-       1866        -1.79099e+00
-       1867        -1.54435e+00
-       1868        -1.59542e+00
-       1869        -1.41000e+00
-       1870        -1.79411e+00
-       1871        -1.62540e+00
-       1872        -1.65489e+00
-       1873        -1.82038e+00
-       1874        -1.59565e+00
-       1875        -1.89646e+00
-       1876        -1.60497e+00
-       1877        -1.37090e+00
-       1878        -1.60137e+00
-       1879        -1.24855e+00
-       1880        -1.54938e+00
-       1881        -1.55891e+00
-       1882        -1.65451e+00
-       1883        -1.51983e+00
-       1884        -1.63220e+00
-       1885        -2.07202e+00
-       1886        -1.89858e+00
-       1887        -1.92482e+00
-       1888        -1.63479e+00
-       1889        -1.50396e+00
-       1890        -1.83720e+00
-       1891        -1.49036e+00
-       1892        -1.86903e+00
-       1893        -1.92198e+00
-       1894        -1.43776e+00
-       1895        -1.62078e+00
-       1896        -1.33214e+00
-       1897        -1.41774e+00
-       1898        -1.63165e+00
-       1899        -1.66539e+00
-       1900        -1.64948e+00
-       1901        -1.36412e+00
-       1902        -1.53706e+00
-       1903        -1.76317e+00
-       1904        -1.53857e+00
-       1905        -1.76927e+00
-       1906        -1.87103e+00
-       1907        -1.81277e+00
-       1908        -1.82553e+00
-       1909        -1.41304e+00
-       1910        -1.73259e+00
-       1911        -1.71643e+00
-       1912        -1.73691e+00
-       1913        -1.92881e+00
-       1914        -1.69166e+00
-       1915        -1.46502e+00
-       1916        -1.89033e+00
-       1917        -1.82261e+00
-       1918        -1.55669e+00
-       1919        -1.47754e+00
-       1920        -1.61211e+00
-       1921        -1.63859e+00
-       1922        -1.38581e+00
-       1923        -1.64796e+00
-       1924        -1.68610e+00
-       1925        -1.73769e+00
-       1926        -1.64134e+00
-       1927        -1.72255e+00
-       1928        -1.35649e+00
-       1929        -1.69311e+00
-       1930        -1.60902e+00
-       1931        -1.38267e+00
-       1932        -1.71044e+00
-       1933        -1.38074e+00
-       1934        -1.84349e+00
-       1935        -1.61855e+00
-       1936        -1.88265e+00
-       1937        -1.79724e+00
-       1938        -1.70819e+00
-       1939        -1.75119e+00
-       1940        -1.32190e+00
-       1941        -1.53823e+00
-       1942        -1.25983e+00
-       1943        -1.49211e+00
-       1944        -1.31330e+00
-       1945        -1.63613e+00
-       1946        -1.78886e+00
-       1947        -1.36137e+00
-       1948        -1.46045e+00
-       1949        -1.40732e+00
-       1950        -1.57313e+00
-       1951        -1.32391e+00
-       1952        -1.34270e+00
-       1953        -1.58346e+00
-       1954        -1.46960e+00
-       1955        -1.28255e+00
-       1956        -1.60284e+00
-       1957        -1.19136e+00
-       1958        -1.39103e+00
-       1959        -1.20507e+00
-       1960        -1.34341e+00
-       1961        -1.66308e+00
-       1962        -1.44137e+00
-       1963        -1.61182e+00
-       1964        -1.76932e+00
-       1965        -1.85388e+00
-       1966        -1.51659e+00
-       1967        -1.58248e+00
-       1968        -1.45026e+00
-       1969        -1.31378e+00
-       1970        -1.42394e+00
-       1971        -1.41455e+00
-       1972        -1.63769e+00
-       1973        -1.64493e+00
-       1974        -1.36576e+00
-       1975        -1.36677e+00
-       1976        -1.73318e+00
-       1977        -1.32632e+00
-       1978        -1.45303e+00
-       1979        -1.16745e+00
-       1980        -1.63965e+00
-       1981        -1.45499e+00
-       1982        -1.04439e+00
-       1983        -1.31647e+00
-       1984        -1.30328e+00
-       1985        -1.61653e+00
-       1986        -1.44093e+00
-       1987        -1.31036e+00
-       1988        -1.20667e+00
-       1989        -1.09446e+00
-       1990        -1.10263e+00
-       1991        -1.42061e+00
-       1992        -1.36281e+00
-       1993        -1.68640e+00
-       1994        -1.47318e+00
-       1995        -1.06843e+00
-       1996        -1.42279e+00
-       1997        -1.06228e+00
-       1998        -1.12044e+00
-       1999        -1.34061e+00
-       2000        -1.07862e+00
-       2001        -7.33247e-01
-       2002        -8.90957e-01
-       2003        -8.97692e-01
-       2004        -9.06071e-01
-       2005        -8.90253e-01
-       2006        -1.07201e+00
-       2007        -7.58399e-01
-       2008        -9.66900e-01
-       2009        -9.03090e-01
-       2010        -9.35540e-01
-       2011        -8.92106e-01
-       2012        -8.37409e-01
-       2013        -9.01429e-01
-       2014        -7.32151e-01
+       1850        -1.68326e+00
+       1851        -1.73243e+00
+       1852        -1.81175e+00
+       1853        -1.87261e+00
+       1854        -1.57440e+00
+       1855        -1.75102e+00
+       1856        -1.64968e+00
+       1857        -1.74373e+00
+       1858        -1.74040e+00
+       1859        -1.39205e+00
+       1860        -1.68767e+00
+       1861        -1.63668e+00
+       1862        -1.60529e+00
+       1863        -1.61111e+00
+       1864        -1.65159e+00
+       1865        -1.35940e+00
+       1866        -1.62338e+00
+       1867        -1.45128e+00
+       1868        -1.50165e+00
+       1869        -1.76403e+00
+       1870        -1.42944e+00
+       1871        -1.72121e+00
+       1872        -1.41941e+00
+       1873        -1.47292e+00
+       1874        -1.29388e+00
+       1875        -1.21650e+00
+       1876        -1.63537e+00
+       1877        -1.34961e+00
+       1878        -1.25650e+00
+       1879        -1.64713e+00
+       1880        -1.47647e+00
+       1881        -1.65825e+00
+       1882        -1.57773e+00
+       1883        -1.42816e+00
+       1884        -1.40737e+00
+       1885        -1.37587e+00
+       1886        -1.33438e+00
+       1887        -1.50347e+00
+       1888        -1.43341e+00
+       1889        -1.50686e+00
+       1890        -1.53571e+00
+       1891        -1.27120e+00
+       1892        -1.20655e+00
+       1893        -1.01028e+00
+       1894        -1.33895e+00
+       1895        -1.26170e+00
+       1896        -9.52391e-01
+       1897        -1.36985e+00
+       1898        -1.29886e+00
+       1899        -1.46121e+00
+       1900        -1.46732e+00
+       1901        -1.49793e+00
+       1902        -1.41373e+00
+       1903        -1.40100e+00
+       1904        -1.32330e+00
+       1905        -1.25864e+00
+       1906        -1.34463e+00
+       1907        -1.37524e+00
+       1908        -1.35260e+00
+       1909        -1.20847e+00
+       1910        -1.20426e+00
+       1911        -1.15348e+00
+       1912        -9.76937e-01
+       1913        -9.23824e-01
+       1914        -9.28899e-01
+       1915        -1.38268e+00
+       1916        -1.11873e+00
+       1917        -1.29469e+00
+       1918        -1.01377e+00
+       1919        -1.43959e+00
+       1920        -1.10536e+00
+       1921        -1.18566e+00
+       1922        -1.42998e+00
+       1923        -1.15702e+00
+       1924        -1.11938e+00
+       1925        -1.56418e+00
+       1926        -1.24473e+00
+       1927        -1.43337e+00
+       1928        -1.31270e+00
+       1929        -8.91721e-01
+       1930        -1.10841e+00
+       1931        -9.04676e-01
+       1932        -1.22584e+00
+       1933        -1.29574e+00
+       1934        -9.56627e-01
+       1935        -1.14618e+00
+       1936        -1.10405e+00
+       1937        -1.19158e+00
+       1938        -1.00459e+00
+       1939        -1.42036e+00
+       1940        -1.31099e+00
+       1941        -1.19711e+00
+       1942        -1.20702e+00
+       1943        -1.34101e+00
+       1944        -8.44494e-01
+       1945        -1.25924e+00
+       1946        -1.30126e+00
+       1947        -1.29388e+00
+       1948        -1.54774e+00
+       1949        -1.30284e+00
+       1950        -1.78740e+00
+       1951        -1.56059e+00
+       1952        -1.42542e+00
+       1953        -1.54173e+00
+       1954        -1.35893e+00
+       1955        -1.41178e+00
+       1956        -1.45248e+00
+       1957        -1.33473e+00
+       1958        -1.35460e+00
+       1959        -1.54280e+00
+       1960        -1.48806e+00
+       1961        -1.16642e+00
+       1962        -1.21599e+00
+       1963        -1.29327e+00
+       1964        -1.13017e+00
+       1965        -1.31788e+00
+       1966        -1.15618e+00
+       1967        -1.26769e+00
+       1968        -1.19015e+00
+       1969        -1.30441e+00
+       1970        -1.26325e+00
+       1971        -1.27753e+00
+       1972        -1.28082e+00
+       1973        -1.12964e+00
+       1974        -1.33306e+00
+       1975        -1.25975e+00
+       1976        -1.28343e+00
+       1977        -1.37410e+00
+       1978        -1.80327e+00
+       1979        -1.41222e+00
+       1980        -1.73890e+00
+       1981        -1.22384e+00
+       1982        -1.50053e+00
+       1983        -1.60501e+00
+       1984        -1.51634e+00
+       1985        -1.32520e+00
+       1986        -1.50161e+00
+       1987        -1.25345e+00
+       1988        -1.54209e+00
+       1989        -1.48152e+00
+       1990        -1.34848e+00
+       1991        -1.48209e+00
+       1992        -1.55010e+00
+       1993        -1.37028e+00
+       1994        -1.54072e+00
+       1995        -1.35739e+00
+       1996        -1.61715e+00
+       1997        -1.57603e+00
+       1998        -1.09801e+00
+       1999        -1.48572e+00
+       2000        -1.23188e+00

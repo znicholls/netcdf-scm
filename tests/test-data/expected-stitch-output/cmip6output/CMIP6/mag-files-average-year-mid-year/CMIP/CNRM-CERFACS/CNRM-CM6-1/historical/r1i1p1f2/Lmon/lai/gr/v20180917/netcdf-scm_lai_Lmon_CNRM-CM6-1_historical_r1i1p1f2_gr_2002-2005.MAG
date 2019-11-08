@@ -1,6 +1,6 @@
 ---- HEADER ----
 
-Date: 2019-11-08 16:15:39
+Date: 2019-11-08 18:36:40
 Contact: cmip6output wrangling regression test
 Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
 File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
@@ -92,8 +92,8 @@ xios_commit: 1442-shuffle
    VARIABLE                 lai                 lai                 lai                 lai                 lai                 lai
        TODO                 SET                 SET                 SET                 SET                 SET                 SET
       UNITS       dimensionless       dimensionless       dimensionless       dimensionless       dimensionless       dimensionless
-      YEARS              NHLAND                  SH                LAND              SHLAND                  NH               WORLD
-       2002         1.42137e+00         1.77004e+00         1.53472e+00         1.77004e+00         1.42137e+00         1.53472e+00
-       2003         1.42137e+00         1.77004e+00         1.53472e+00         1.77004e+00         1.42137e+00         1.53472e+00
-       2004         1.42142e+00         1.77005e+00         1.53476e+00         1.77005e+00         1.42142e+00         1.53476e+00
-       2005         1.42137e+00         1.77004e+00         1.53472e+00         1.77004e+00         1.42137e+00         1.53472e+00
+      YEARS               WORLD              SHLAND              NHLAND                  NH                LAND                  SH
+       2002         1.53472e+00         1.77004e+00         1.42137e+00         1.42137e+00         1.53472e+00         1.77004e+00
+       2003         1.53472e+00         1.77004e+00         1.42137e+00         1.42137e+00         1.53472e+00         1.77004e+00
+       2004         1.53476e+00         1.77005e+00         1.42142e+00         1.42142e+00         1.53476e+00         1.77005e+00
+       2005         1.53472e+00         1.77004e+00         1.42137e+00         1.42137e+00         1.53472e+00         1.77004e+00
