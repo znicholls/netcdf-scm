@@ -814,7 +814,7 @@ def test_wrangling_in_file_operations(
 
 
 @pytest.mark.xfail(
-    message="Some of these errors are still cryptic because scmdata isn't inteprolating as intended"
+    message="Some of these errors are still cryptic (and they shouldn't be) because scmdata isn't interpolating as intended"
 )
 @pytest.mark.parametrize(
     "out_format",
