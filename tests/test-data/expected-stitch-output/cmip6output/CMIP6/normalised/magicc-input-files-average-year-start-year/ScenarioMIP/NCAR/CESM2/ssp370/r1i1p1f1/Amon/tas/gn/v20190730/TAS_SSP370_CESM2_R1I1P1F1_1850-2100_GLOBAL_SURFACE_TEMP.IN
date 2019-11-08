@@ -1,0 +1,491 @@
+---- HEADER ----
+
+Date: 2019-11-08 16:17:05
+Contact: cmip6output stitching with normalisation regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+(child) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(child) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(child) Conventions: CF-1.5
+(child) area_world (m**2): 509194858320979.25
+(child) area_world_el_nino_n3.4 (m**2): 9499544514719.764
+(child) area_world_land (m**2): 147537350588867.06
+(child) area_world_north_atlantic_ocean (m**2): 39489819061100.75
+(child) area_world_northern_hemisphere (m**2): 254597429160489.66
+(child) area_world_northern_hemisphere_land (m**2): 99401830238629.02
+(child) area_world_northern_hemisphere_ocean (m**2): 155195598909192.03
+(child) area_world_ocean (m**2): 361657507720194.75
+(child) area_world_southern_hemisphere (m**2): 254597429160489.62
+(child) area_world_southern_hemisphere_land (m**2): 48135520350238.04
+(child) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
+(child) branch_method: standard
+(child) branch_time_in_child: 735110.0
+(child) branch_time_in_parent: 735110.0
+(child) calendar: 365_day
+(child) case_id: 1504
+(child) cesm_casename: b.e21.BSSP370cmip6.f09_g17.CMIP6-SSP3-7.0.001
+(child) comment: TREFHT
+(child) contact: cesm_cmip6@ucar.edu
+(child) crunch_contact: cmip6output crunching regression test
+(child) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(child) crunch_source_files: Files: ['/CMIP6/ScenarioMIP/NCAR/CESM2/ssp370/r1i1p1f1/Amon/tas/gn/v20190730/tas_Amon_CESM2_ssp370_r1i1p1f1_gn_201501-206412.nc', '/CMIP6/ScenarioMIP/NCAR/CESM2/ssp370/r1i1p1f1/Amon/tas/gn/v20190730/tas_Amon_CESM2_ssp370_r1i1p1f1_gn_206501-210012.nc']
+(child) data_specs_version: 01.00.30
+(child) description: near-surface (usually, 2 meter) air temperature
+(child) experiment: Gap: Baseline scenario with a medium to high radiative forcing by the end of century. Following approximately RCP7.0 global forcing pathway with SSP3 socioeconomic conditions. Radiative forcing reaches a level of 7.0 W/m2 in 2100.  Concentration-driven.
+(child) experiment_id: ssp370
+(child) external_variables: areacella
+(child) frequency: mon
+(child) further_info_url: https://furtherinfo.es-doc.org/CMIP6.NCAR.CESM2.ssp370.none.r1i1p1f1
+(child) grid: native 0.9x1.25 finite volume grid (192x288 latxlon)
+(child) grid_label: gn
+(child) id: tas
+(child) institution: National Center for Atmospheric Research
+(child) institution_id: NCAR
+(child) land_fraction: 0.2897463479410558
+(child) land_fraction_northern_hemisphere: 0.3904274704045399
+(child) land_fraction_southern_hemisphere: 0.18906522547757162
+(child) license: CMIP6 model data produced by <The National Center for Atmospheric Research> is licensed under a Creative Commons Attribution-[]ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file)[]. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(child) mipTable: Amon
+(child) model_doi_url: https://doi.org/10.5065/D67H1H0V
+(child) netcdf-scm crunched file: CMIP6/ScenarioMIP/NCAR/CESM2/ssp370/r1i1p1f1/Amon/tas/gn/v20190730/netcdf-scm_tas_Amon_CESM2_ssp370_r1i1p1f1_gn_201501-210012.nc
+(child) nominal_resolution: 100 km
+(child) out_name: tas
+(child) parent_activity_id: CMIP
+(child) parent_experiment_id: historical
+(child) parent_mip_era: CMIP6
+(child) parent_source_id: CESM2
+(child) parent_time_units: days since 0001-01-01 00:00:00
+(child) parent_variant_label: r10i1p1f1
+(child) product: model-output
+(child) prov: Amon ((isd.003))
+(child) realm: atmos
+(child) source: CESM2 (2017): atmosphere: CAM6 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); ocean: POP2 (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m); sea_ice: CICE5.1 (same grid as ocean); land: CLM5 0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); aerosol: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); atmoschem: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); landIce: CISM2.1; ocnBgchem: MARBL (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m)
+(child) source_id: CESM2
+(child) source_type: AOGCM BGC AER
+(child) sub_experiment: none
+(child) sub_experiment_id: none
+(child) table_id: Amon
+(child) time: time
+(child) time_label: time-mean
+(child) time_title: Temporal mean
+(child) title: Near-Surface Air Temperature
+(child) tracking_id: hdl:21.14100/a613f9ae-807b-42c5-b417-8a0ab62d39ec
+(child) type: real
+(child) variable_id: tas
+(child) variant_info: CMIP6 SSP3-7.0 experiments (2015-2100) with CAM6, interactive land (CLM5), coupled ocean (POP2) with biogeochemistry (MARBL), interactive sea ice (CICE5.1), and non-evolving land ice (CISM2.1).
+(child) variant_label: r1i1p1f1
+(normalisation) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(normalisation) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(normalisation) Conventions: CF-1.5
+(normalisation) area_world (m**2): 509194858320979.25
+(normalisation) area_world_el_nino_n3.4 (m**2): 9499544514719.764
+(normalisation) area_world_land (m**2): 147537350588867.06
+(normalisation) area_world_north_atlantic_ocean (m**2): 39489819061100.75
+(normalisation) area_world_northern_hemisphere (m**2): 254597429160489.66
+(normalisation) area_world_northern_hemisphere_land (m**2): 99401830238629.02
+(normalisation) area_world_northern_hemisphere_ocean (m**2): 155195598909192.03
+(normalisation) area_world_ocean (m**2): 361657507720194.75
+(normalisation) area_world_southern_hemisphere (m**2): 254597429160489.62
+(normalisation) area_world_southern_hemisphere_land (m**2): 48135520350238.04
+(normalisation) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
+(normalisation) branch_method: standard
+(normalisation) branch_time_in_child: 0.0
+(normalisation) branch_time_in_parent: 48545.0
+(normalisation) calendar: 365_day
+(normalisation) case_id: 3
+(normalisation) cesm_casename: b.e21.B1850.f09_g17.CMIP6-piControl.001
+(normalisation) comment: near-surface (usually, 2 meter) air temperature
+(normalisation) contact: cesm_cmip6@ucar.edu
+(normalisation) crunch_contact: cmip6output crunching regression test
+(normalisation) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(normalisation) crunch_source_files: Files: ['/CMIP6/CMIP/NCAR/CESM2/piControl/r1i1p1f1/Amon/tas/gn/v20190320/tas_Amon_CESM2_piControl_r1i1p1f1_gn_080001-089912.nc', '/CMIP6/CMIP/NCAR/CESM2/piControl/r1i1p1f1/Amon/tas/gn/v20190320/tas_Amon_CESM2_piControl_r1i1p1f1_gn_090001-099912.nc']
+(normalisation) data_specs_version: 01.00.29
+(normalisation) description: near-surface (usually, 2 meter) air temperature
+(normalisation) experiment: pre-industrial control
+(normalisation) experiment_id: piControl
+(normalisation) external_variables: areacella
+(normalisation) frequency: mon
+(normalisation) further_info_url: https://furtherinfo.es-doc.org/CMIP6.NCAR.CESM2.piControl.none.r1i1p1f1
+(normalisation) grid: native 0.9x1.25 finite volume grid (192x288 latxlon)
+(normalisation) grid_label: gn
+(normalisation) id: tas
+(normalisation) institution: National Center for Atmospheric Research
+(normalisation) institution_id: NCAR
+(normalisation) land_fraction: 0.2897463479410558
+(normalisation) land_fraction_northern_hemisphere: 0.3904274704045399
+(normalisation) land_fraction_southern_hemisphere: 0.18906522547757162
+(normalisation) license: CMIP6 model data produced by <The National Center for Atmospheric Research> is licensed under a Creative Commons Attribution-[]ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file)[]. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(normalisation) mipTable: Amon
+(normalisation) model_doi_url: https://doi.org/10.5065/D67H1H0V
+(normalisation) netcdf-scm crunched file: CMIP6/CMIP/NCAR/CESM2/piControl/r1i1p1f1/Amon/tas/gn/v20190320/netcdf-scm_tas_Amon_CESM2_piControl_r1i1p1f1_gn_080001-099912.nc
+(normalisation) nominal_resolution: 100 km
+(normalisation) out_name: tas
+(normalisation) parent_activity_id: CMIP
+(normalisation) parent_experiment_id: piControl-spinup
+(normalisation) parent_mip_era: CMIP6
+(normalisation) parent_source_id: CESM2
+(normalisation) parent_time_units: days since 0001-01-01 00:00:00
+(normalisation) parent_variant_label: r1i1p1f1
+(normalisation) product: model-output
+(normalisation) prov: Amon ((isd.003))
+(normalisation) realm: atmos
+(normalisation) source: CESM2 (2017): atmosphere: CAM6 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); ocean: POP2 (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m); sea_ice: CICE5.1 (same grid as ocean); land: CLM5 0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); aerosol: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); atmoschem: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); landIce: CISM2.1; ocnBgchem: MARBL (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m)
+(normalisation) source_id: CESM2
+(normalisation) source_type: AOGCM BGC AER
+(normalisation) sub_experiment: none
+(normalisation) sub_experiment_id: none
+(normalisation) table_id: Amon
+(normalisation) time: time
+(normalisation) time_label: time-mean
+(normalisation) time_title: Temporal mean
+(normalisation) title: Near-Surface Air Temperature
+(normalisation) tracking_id: hdl:21.14100/613911cb-8d9b-44a2-9664-2eee8f522acb
+(normalisation) type: real
+(normalisation) variable_id: tas
+(normalisation) variant_info: CMIP6 CESM2 piControl experiment with CAM6, interactive land (CLM5), coupled ocean (POP2) with biogeochemistry (MARBL), interactive sea ice (CICE5.1), and non-evolving land ice (CISM2.1)
+(normalisation) variant_label: r1i1p1f1
+(parent) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(parent) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(parent) Conventions: CF-1.5
+(parent) area_world (m**2): 509194858320979.25
+(parent) area_world_el_nino_n3.4 (m**2): 9499544514719.764
+(parent) area_world_land (m**2): 147537350588867.06
+(parent) area_world_north_atlantic_ocean (m**2): 39489819061100.75
+(parent) area_world_northern_hemisphere (m**2): 254597429160489.66
+(parent) area_world_northern_hemisphere_land (m**2): 99401830238629.02
+(parent) area_world_northern_hemisphere_ocean (m**2): 155195598909192.03
+(parent) area_world_ocean (m**2): 361657507720194.75
+(parent) area_world_southern_hemisphere (m**2): 254597429160489.62
+(parent) area_world_southern_hemisphere_land (m**2): 48135520350238.04
+(parent) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
+(parent) branch_method: standard
+(parent) branch_time_in_child: 674885.0
+(parent) branch_time_in_parent: 306600.0
+(parent) calendar: 365_day
+(parent) case_id: 24
+(parent) cesm_casename: b.e21.BHIST.f09_g17.CMIP6-historical.010
+(parent) comment: near-surface (usually, 2 meter) air temperature
+(parent) contact: cesm_cmip6@ucar.edu
+(parent) crunch_contact: cmip6output crunching regression test
+(parent) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(parent) crunch_source_files: Files: ['/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/tas_Amon_CESM2_historical_r10i1p1f1_gn_185001-189912.nc', '/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/tas_Amon_CESM2_historical_r10i1p1f1_gn_190001-194912.nc', '/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/tas_Amon_CESM2_historical_r10i1p1f1_gn_195001-199912.nc', '/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/tas_Amon_CESM2_historical_r10i1p1f1_gn_200001-201412.nc']
+(parent) data_specs_version: 01.00.29
+(parent) description: near-surface (usually, 2 meter) air temperature
+(parent) experiment: Simulation of recent past (1850 to 2014). Impose changing conditions (consistent with observations). Should be initialised from a point early enough in the pre-industrial control run to ensure that the end of all the perturbed runs branching from the end of this historical run end before the end of the control. Only one ensemble member is requested but modelling groups are strongly encouraged to submit at least three ensemble members of their CMIP historical simulation. 
+(parent) experiment_id: historical
+(parent) external_variables: areacella
+(parent) frequency: mon
+(parent) further_info_url: https://furtherinfo.es-doc.org/CMIP6.NCAR.CESM2.historical.none.r10i1p1f1
+(parent) grid: native 0.9x1.25 finite volume grid (192x288 latxlon)
+(parent) grid_label: gn
+(parent) id: tas
+(parent) institution: National Center for Atmospheric Research
+(parent) institution_id: NCAR
+(parent) land_fraction: 0.2897463479410558
+(parent) land_fraction_northern_hemisphere: 0.3904274704045399
+(parent) land_fraction_southern_hemisphere: 0.18906522547757162
+(parent) license: CMIP6 model data produced by <The National Center for Atmospheric Research> is licensed under a Creative Commons Attribution-[]ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file)[]. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(parent) mipTable: Amon
+(parent) model_doi_url: https://doi.org/10.5065/D67H1H0V
+(parent) netcdf-scm crunched file: CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/netcdf-scm_tas_Amon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc
+(parent) nominal_resolution: 100 km
+(parent) out_name: tas
+(parent) parent_activity_id: CMIP
+(parent) parent_experiment_id: piControl
+(parent) parent_mip_era: CMIP6
+(parent) parent_source_id: CESM2
+(parent) parent_time_units: days since 0001-01-01 00:00:00
+(parent) parent_variant_label: r1i1p1f1
+(parent) product: model-output
+(parent) prov: Amon ((isd.003))
+(parent) realm: atmos
+(parent) source: CESM2 (2017): atmosphere: CAM6 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); ocean: POP2 (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m); sea_ice: CICE5.1 (same grid as ocean); land: CLM5 0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); aerosol: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); atmoschem: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); landIce: CISM2.1; ocnBgchem: MARBL (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m)
+(parent) source_id: CESM2
+(parent) source_type: AOGCM BGC
+(parent) sub_experiment: none
+(parent) sub_experiment_id: none
+(parent) table_id: Amon
+(parent) time: time
+(parent) time_label: time-mean
+(parent) time_title: Temporal mean
+(parent) title: Near-Surface Air Temperature
+(parent) tracking_id: hdl:21.14100/e47b79db-3925-45a7-9c0a-6799c2f1e8ae
+(parent) type: real
+(parent) variable_id: tas
+(parent) variant_info: CMIP6 20th century experiments (1850-2014) with CAM6, interactive land (CLM5), coupled ocean (POP2) with biogeochemistry (MARBL), interactive sea ice (CICE5.1), and non-evolving land ice (CISM2.1)
+
+(parent) variant_label: r10i1p1f1
+normalisation method: 31-yr-mean-after-branch-time
+timeseriestype: AVERAGE_YEAR_START_YEAR
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 1
+    THISFILE_DATAROWS = 251
+    THISFILE_FIRSTYEAR = 1850
+    THISFILE_LASTYEAR = 2100
+    THISFILE_ANNUALSTEPS = 1
+    THISFILE_UNITS = 'K'
+    THISFILE_DATTYPE = 'NOTUSED'
+    THISFILE_REGIONMODE = 'FOURBOX'
+    THISFILE_FIRSTDATAROW = 241
+/
+
+   VARIABLE        SURFACE_TEMP
+       TODO                 SET
+      UNITS                   K
+      YEARS               WORLD
+       1850        -6.03918e-01
+       1851        -2.28052e-01
+       1852        -2.15724e-01
+       1853        -3.73579e-02
+       1854        -2.41214e-01
+       1855        -2.07277e-01
+       1856        -5.91112e-02
+       1857        -1.62961e-01
+       1858        -1.12984e-01
+       1859         1.50618e-01
+       1860        -7.60554e-02
+       1861        -1.91962e-02
+       1862        -1.41247e-01
+       1863        -4.33181e-01
+       1864        -2.23077e-01
+       1865         2.08441e-02
+       1866        -2.79021e-02
+       1867        -1.87523e-01
+       1868        -6.48285e-03
+       1869         4.34165e-02
+       1870        -2.65127e-02
+       1871         1.93674e-01
+       1872        -2.73652e-02
+       1873        -4.78559e-02
+       1874         2.06998e-01
+       1875        -5.97393e-04
+       1876         9.58057e-02
+       1877         1.86300e-01
+       1878        -1.18512e-02
+       1879        -7.60047e-02
+       1880         2.60371e-01
+       1881         1.87749e-01
+       1882         2.65627e-01
+       1883         3.45109e-01
+       1884         6.69732e-02
+       1885        -1.38703e-01
+       1886        -2.23601e-01
+       1887        -7.98472e-02
+       1888        -1.35262e-01
+       1889         5.89746e-02
+       1890         4.00260e-04
+       1891         5.75641e-02
+       1892         2.09076e-01
+       1893         3.09960e-01
+       1894         2.59084e-01
+       1895         3.09888e-02
+       1896         4.59565e-03
+       1897         1.27839e-01
+       1898        -2.77043e-02
+       1899        -5.32378e-02
+       1900         9.70744e-02
+       1901         9.43153e-02
+       1902         5.04072e-02
+       1903        -2.07554e-01
+       1904        -1.51948e-01
+       1905        -5.79698e-02
+       1906        -6.53451e-02
+       1907         3.05796e-03
+       1908         5.41796e-02
+       1909         7.50117e-02
+       1910         2.24947e-02
+       1911         8.37902e-02
+       1912         6.39024e-02
+       1913        -8.95361e-02
+       1914         1.21206e-01
+       1915        -5.35380e-02
+       1916        -2.14472e-02
+       1917        -3.22307e-02
+       1918         2.49577e-01
+       1919         2.36820e-01
+       1920         2.43687e-01
+       1921         1.77781e-01
+       1922         1.76963e-01
+       1923         1.85861e-01
+       1924         1.76985e-01
+       1925         1.71085e-01
+       1926         3.69387e-01
+       1927         1.83636e-01
+       1928         1.76511e-01
+       1929         2.22944e-01
+       1930         7.60356e-02
+       1931         1.72666e-02
+       1932         8.47547e-02
+       1933         1.01256e-01
+       1934         1.62691e-02
+       1935         1.63880e-01
+       1936         1.96979e-01
+       1937         4.20923e-02
+       1938         4.05143e-02
+       1939         5.37455e-02
+       1940         7.86204e-02
+       1941         1.30579e-01
+       1942         9.72818e-02
+       1943         2.66701e-01
+       1944         2.90968e-01
+       1945         1.89149e-01
+       1946         7.38446e-02
+       1947         7.91534e-02
+       1948        -4.10324e-02
+       1949         6.93996e-02
+       1950         1.07307e-01
+       1951         9.69795e-02
+       1952         2.72864e-01
+       1953         3.32119e-01
+       1954         2.24258e-01
+       1955         2.08952e-01
+       1956         3.03961e-01
+       1957         2.02970e-01
+       1958         8.92250e-02
+       1959         1.15485e-01
+       1960         2.82193e-01
+       1961         1.76660e-01
+       1962         1.98040e-01
+       1963         3.00394e-01
+       1964         1.23624e-01
+       1965        -8.40873e-02
+       1966         1.43804e-02
+       1967        -1.90931e-01
+       1968        -1.87479e-01
+       1969         4.74754e-02
+       1970         2.47248e-01
+       1971         3.36492e-01
+       1972         3.34344e-01
+       1973         3.05284e-01
+       1974         1.56405e-01
+       1975         2.24158e-01
+       1976         4.44899e-02
+       1977         1.74566e-01
+       1978         3.97759e-01
+       1979         4.17296e-01
+       1980         2.01947e-01
+       1981         3.12672e-01
+       1982         3.62974e-01
+       1983         1.61344e-01
+       1984         3.72125e-01
+       1985         3.88889e-01
+       1986         3.38676e-01
+       1987         3.96123e-01
+       1988         4.90839e-01
+       1989         5.13480e-01
+       1990         6.11999e-01
+       1991         5.34257e-01
+       1992         2.26085e-01
+       1993         3.34013e-01
+       1994         8.02066e-01
+       1995         5.59896e-01
+       1996         4.04105e-01
+       1997         6.88654e-01
+       1998         6.60623e-01
+       1999         5.51077e-01
+       2000         6.23119e-01
+       2001         6.96060e-01
+       2002         9.42291e-01
+       2003         1.01586e+00
+       2004         9.92520e-01
+       2005         1.06017e+00
+       2006         1.05244e+00
+       2007         1.08016e+00
+       2008         1.20842e+00
+       2009         1.04568e+00
+       2010         1.10540e+00
+       2011         1.19735e+00
+       2012         1.00772e+00
+       2013         8.09704e-01
+       2014         9.70776e-01
+       2015         1.29801e+00
+       2016         1.19100e+00
+       2017         1.22385e+00
+       2018         1.13001e+00
+       2019         1.11682e+00
+       2020         1.29991e+00
+       2021         1.29726e+00
+       2022         1.41656e+00
+       2023         1.24836e+00
+       2024         1.38581e+00
+       2025         1.52385e+00
+       2026         1.64369e+00
+       2027         1.67832e+00
+       2028         1.54570e+00
+       2029         1.66928e+00
+       2030         1.77321e+00
+       2031         1.57875e+00
+       2032         1.49082e+00
+       2033         1.92053e+00
+       2034         1.95680e+00
+       2035         2.01321e+00
+       2036         1.86101e+00
+       2037         1.92964e+00
+       2038         2.21130e+00
+       2039         1.85974e+00
+       2040         1.75524e+00
+       2041         1.88742e+00
+       2042         1.88759e+00
+       2043         2.05024e+00
+       2044         2.06241e+00
+       2045         1.96766e+00
+       2046         2.28857e+00
+       2047         2.04382e+00
+       2048         1.95501e+00
+       2049         2.30620e+00
+       2050         2.28995e+00
+       2051         2.33691e+00
+       2052         2.24513e+00
+       2053         2.30521e+00
+       2054         2.56282e+00
+       2055         2.47994e+00
+       2056         2.57785e+00
+       2057         2.42641e+00
+       2058         2.48372e+00
+       2059         2.80608e+00
+       2060         2.53781e+00
+       2061         2.69054e+00
+       2062         2.90941e+00
+       2063         2.81955e+00
+       2064         2.80954e+00
+       2065         2.97390e+00
+       2066         3.14977e+00
+       2067         2.85726e+00
+       2068         3.00364e+00
+       2069         3.10499e+00
+       2070         3.25902e+00
+       2071         3.09782e+00
+       2072         3.15452e+00
+       2073         3.31330e+00
+       2074         3.42518e+00
+       2075         3.29219e+00
+       2076         3.65594e+00
+       2077         3.57454e+00
+       2078         3.47513e+00
+       2079         3.86592e+00
+       2080         3.58790e+00
+       2081         3.68582e+00
+       2082         3.98191e+00
+       2083         3.76169e+00
+       2084         4.00634e+00
+       2085         4.10482e+00
+       2086         4.13124e+00
+       2087         4.10844e+00
+       2088         4.36669e+00
+       2089         4.22529e+00
+       2090         4.43317e+00
+       2091         4.26015e+00
+       2092         4.43960e+00
+       2093         4.44319e+00
+       2094         4.33036e+00
+       2095         4.57462e+00
+       2096         4.39449e+00
+       2097         4.42348e+00
+       2098         4.71245e+00
+       2099         4.69935e+00
+       2100         4.86831e+00

@@ -344,6 +344,11 @@ def test_cmip6_wrangle_output(test_data_root_dir):
 
 
 @pytest.fixture
+def test_cmip6_stitch_output(test_data_root_dir):
+    return join(test_data_root_dir, "expected-stitch-output", "cmip6output", "CMIP6")
+
+
+@pytest.fixture
 def test_marble_cmip5_crunch_output(test_data_root_dir):
     return join(
         test_data_root_dir, "expected-crunching-output", "marble-cmip5", "cmip5"

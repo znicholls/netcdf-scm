@@ -1,0 +1,326 @@
+---- HEADER ----
+
+Date: 2019-11-08 16:17:25
+Contact: cmip6output stitching with normalisation regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+(child) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(child) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(child) Conventions: CF-1.5
+(child) area_world (m**2): 509194858320979.25
+(child) area_world_el_nino_n3.4 (m**2): 9499544514719.764
+(child) area_world_land (m**2): 147537350588867.06
+(child) area_world_north_atlantic_ocean (m**2): 39489819061100.75
+(child) area_world_northern_hemisphere (m**2): 254597429160489.66
+(child) area_world_northern_hemisphere_land (m**2): 99401830238629.02
+(child) area_world_northern_hemisphere_ocean (m**2): 155195598909192.03
+(child) area_world_ocean (m**2): 361657507720194.75
+(child) area_world_southern_hemisphere (m**2): 254597429160489.62
+(child) area_world_southern_hemisphere_land (m**2): 48135520350238.04
+(child) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
+(child) branch_method: branch
+(child) branch_time_in_child: 0.0
+(child) branch_time_in_parent: 0.0
+(child) calendar: 365_day
+(child) cmor_version: 3.3.2
+(child) comment: near-surface (usually, 2 meter) air temperature
+(child) contact: Dr. Tongwen Wu (twwu@cma.gov.cn)
+(child) creation_date: 2019-03-21T01:38:37Z
+(child) crunch_contact: cmip6output crunching regression test
+(child) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(child) crunch_source_files: Files: ['/CMIP6/C4MIP/BCC/BCC-CSM2-MR/1pctCO2-bgc/r1i1p1f1/Amon/tas/gn/v20190321/tas_Amon_BCC-CSM2-MR_1pctCO2-bgc_r1i1p1f1_gn_185001-200012.nc']
+(child) data_specs_version: 01.00.27
+(child) description: C4MIP: 1pctCO2-bgc
+(child) experiment: biogeochemically-coupled version of 1 percent per year increasing CO2 experiment
+(child) experiment_id: 1pctCO2-bgc
+(child) external_variables: areacella
+(child) forcing_index: 1
+(child) frequency: mon
+(child) further_info_url: https://furtherinfo.es-doc.org/CMIP6.BCC.BCC-CSM2-MR.1pctCO2-bgc.none.r1i1p1f1
+(child) grid: T106
+(child) grid_label: gn
+(child) history: 2019-03-21T01:38:37Z altered by CMOR: Treated scalar dimension: 'height'.
+(child) initialization_index: 1
+(child) institution: Beijing Climate Center, Beijing 100081, China
+(child) institution_id: BCC
+(child) land_fraction: 0.2897463479410558
+(child) land_fraction_northern_hemisphere: 0.3904274704045399
+(child) land_fraction_southern_hemisphere: 0.18906522547757162
+(child) license: CMIP6 model data produced by BCC is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at https:///pcmdi.llnl.gov/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(child) netcdf-scm crunched file: CMIP6/C4MIP/BCC/BCC-CSM2-MR/1pctCO2-bgc/r1i1p1f1/Amon/tas/gn/v20190321/netcdf-scm_tas_Amon_BCC-CSM2-MR_1pctCO2-bgc_r1i1p1f1_gn_185001-200012.nc
+(child) nominal_resolution: 100 km
+(child) original_name: TREFHT
+(child) parent_activity_id: CMIP
+(child) parent_experiment_id: piControl
+(child) parent_mip_era: CMIP6
+(child) parent_source_id: BCC-CSM2-MR
+(child) parent_time_units: days since 1850-01-01
+(child) parent_variant_label: r1i1p1f1
+(child) physics_index: 1
+(child) product: model-output
+(child) realization_index: 1
+(child) realm: atmos
+(child) references: Model described by Tongwen Wu et al. (JGR 2013; JMR 2014; GMD 2019). Also see http://forecast.bcccsm.ncc-cma.net/htm
+(child) run_variant: forcing: GHG
+(child) source: BCC-CSM 2 MR (2017):   aerosol: none  atmos: BCC_AGCM3_MR (T106; 320 x 160 longitude/latitude; 46 levels; top level 1.46 hPa)  atmosChem: none  land: BCC_AVIM2  landIce: none  ocean: MOM4 (1/3 deg 10S-10N, 1/3-1 deg 10-30 N/S, and 1 deg in high latitudes; 360 x 232 longitude/latitude; 40 levels; top grid cell 0-10 m)  ocnBgchem: none  seaIce: SIS2
+(child) source_id: BCC-CSM2-MR
+(child) source_type: AOGCM BGC
+(child) sub_experiment: none
+(child) sub_experiment_id: none
+(child) table_id: Amon
+(child) table_info: Creation Date:(30 July 2018) MD5:e53ff52009d0b97d9d867dc12b6096c7
+(child) title: BCC-CSM2-MR output prepared for CMIP6
+(child) tracking_id: hdl:21.14100/171c50f6-c64d-415b-8745-0b562a177a50
+(child) variable_id: tas
+(child) variant_label: r1i1p1f1
+(normalisation) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(normalisation) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(normalisation) Conventions: CF-1.5
+(normalisation) area_world (m**2): 509194858320979.25
+(normalisation) area_world_el_nino_n3.4 (m**2): 9499544514719.764
+(normalisation) area_world_land (m**2): 147537350588867.06
+(normalisation) area_world_north_atlantic_ocean (m**2): 39489819061100.75
+(normalisation) area_world_northern_hemisphere (m**2): 254597429160489.66
+(normalisation) area_world_northern_hemisphere_land (m**2): 99401830238629.02
+(normalisation) area_world_northern_hemisphere_ocean (m**2): 155195598909192.03
+(normalisation) area_world_ocean (m**2): 361657507720194.75
+(normalisation) area_world_southern_hemisphere (m**2): 254597429160489.62
+(normalisation) area_world_southern_hemisphere_land (m**2): 48135520350238.04
+(normalisation) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
+(normalisation) branch_method: standard
+(normalisation) branch_time_in_child: 0.0
+(normalisation) branch_time_in_parent: 0.0
+(normalisation) calendar: 365_day
+(normalisation) cmor_version: 3.3.2
+(normalisation) comment: near-surface (usually, 2 meter) air temperature
+(normalisation) contact: Dr. Tongwen Wu (twwu@cma.gov.cn)
+(normalisation) creation_date: 2018-10-16T02:24:49Z
+(normalisation) crunch_contact: cmip6output crunching regression test
+(normalisation) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(normalisation) crunch_source_files: Files: ['/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tas/gn/v20181016/tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
+(normalisation) data_specs_version: 01.00.27
+(normalisation) description: DECK: piControl
+(normalisation) experiment: pre-industrial control
+(normalisation) experiment_id: piControl
+(normalisation) external_variables: areacella
+(normalisation) forcing_index: 1
+(normalisation) frequency: mon
+(normalisation) further_info_url: https://furtherinfo.es-doc.org/CMIP6.BCC.BCC-CSM2-MR.piControl.none.r1i1p1f1
+(normalisation) grid: T106
+(normalisation) grid_label: gn
+(normalisation) history: 2018-10-16T02:24:49Z altered by CMOR: Treated scalar dimension: 'height'.
+(normalisation) initialization_index: 1
+(normalisation) institution: Beijing Climate Center, Beijing 100081, China
+(normalisation) institution_id: BCC
+(normalisation) land_fraction: 0.2897463479410558
+(normalisation) land_fraction_northern_hemisphere: 0.3904274704045399
+(normalisation) land_fraction_southern_hemisphere: 0.18906522547757162
+(normalisation) license: CMIP6 model data produced by BCC is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at https:///pcmdi.llnl.gov/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(normalisation) netcdf-scm crunched file: CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tas/gn/v20181016/netcdf-scm_tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
+(normalisation) nominal_resolution: 100 km
+(normalisation) original_name: TREFHT
+(normalisation) parent_activity_id: CMIP
+(normalisation) parent_experiment_id: piControl-spinup
+(normalisation) parent_mip_era: CMIP6
+(normalisation) parent_source_id: BCC-CSM2-MR
+(normalisation) parent_time_units: days since 1850-01-01
+(normalisation) parent_variant_label: r1i1p1f1
+(normalisation) physics_index: 1
+(normalisation) product: model-output
+(normalisation) realization_index: 1
+(normalisation) realm: atmos
+(normalisation) references: Model described by Tongwen Wu et al. (JGR 2013; JMR 2014; submmitted to GMD,2018). Also see http://forecast.bcccsm.ncc-cma.net/htm
+(normalisation) run_variant: forcing: N/A
+(normalisation) source: BCC-CSM 2 MR (2017): 
+aerosol: none
+atmos: BCC_AGCM3_MR (T106; 320 x 160 longitude/latitude; 46 levels; top level 1.46 hPa)
+atmosChem: none
+land: BCC_AVIM2
+landIce: none
+ocean: MOM4 (1/3 deg 30S-30N, 1/3-1 deg 30-60 N/S, and 1 deg in high latitudes; 360 x 232 longitude/latitude; 40 levels; top grid cell 0-10 m)
+ocnBgchem: none
+seaIce: SIS2
+(normalisation) source_id: BCC-CSM2-MR
+(normalisation) source_type: AOGCM
+(normalisation) sub_experiment: none
+(normalisation) sub_experiment_id: none
+(normalisation) table_id: Amon
+(normalisation) table_info: Creation Date:(30 July 2018) MD5:fa9bc503f57fb067bf398cab2c4ba77e
+(normalisation) title: BCC-CSM2-MR output prepared for CMIP6
+(normalisation) tracking_id: hdl:21.14100/e15b4e04-13d4-4a3a-a050-33564e99d873
+(normalisation) variable_id: tas
+(normalisation) variant_label: r1i1p1f1
+normalisation method: 31-yr-mean-after-branch-time
+timeseriestype: POINT_START_YEAR
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 1
+    THISFILE_DATAROWS = 151
+    THISFILE_FIRSTYEAR = 1850
+    THISFILE_LASTYEAR = 2000
+    THISFILE_ANNUALSTEPS = 1
+    THISFILE_UNITS = 'K'
+    THISFILE_DATTYPE = 'NOTUSED'
+    THISFILE_REGIONMODE = 'FOURBOX'
+    THISFILE_FIRSTDATAROW = 176
+/
+
+   VARIABLE        SURFACE_TEMP
+       TODO                 SET
+      UNITS                   K
+      YEARS               WORLD
+       1850        -1.68326e+00
+       1851        -1.73243e+00
+       1852        -1.81175e+00
+       1853        -1.87261e+00
+       1854        -1.57440e+00
+       1855        -1.75102e+00
+       1856        -1.64968e+00
+       1857        -1.74373e+00
+       1858        -1.74040e+00
+       1859        -1.39205e+00
+       1860        -1.68767e+00
+       1861        -1.63668e+00
+       1862        -1.60529e+00
+       1863        -1.61111e+00
+       1864        -1.65159e+00
+       1865        -1.35940e+00
+       1866        -1.62338e+00
+       1867        -1.45128e+00
+       1868        -1.50165e+00
+       1869        -1.76403e+00
+       1870        -1.42944e+00
+       1871        -1.72121e+00
+       1872        -1.41941e+00
+       1873        -1.47292e+00
+       1874        -1.29388e+00
+       1875        -1.21650e+00
+       1876        -1.63537e+00
+       1877        -1.34961e+00
+       1878        -1.25650e+00
+       1879        -1.64713e+00
+       1880        -1.47647e+00
+       1881        -1.65825e+00
+       1882        -1.57773e+00
+       1883        -1.42816e+00
+       1884        -1.40737e+00
+       1885        -1.37587e+00
+       1886        -1.33438e+00
+       1887        -1.50347e+00
+       1888        -1.43341e+00
+       1889        -1.50686e+00
+       1890        -1.53571e+00
+       1891        -1.27120e+00
+       1892        -1.20655e+00
+       1893        -1.01028e+00
+       1894        -1.33895e+00
+       1895        -1.26170e+00
+       1896        -9.52391e-01
+       1897        -1.36985e+00
+       1898        -1.29886e+00
+       1899        -1.46121e+00
+       1900        -1.46732e+00
+       1901        -1.49793e+00
+       1902        -1.41373e+00
+       1903        -1.40100e+00
+       1904        -1.32330e+00
+       1905        -1.25864e+00
+       1906        -1.34463e+00
+       1907        -1.37524e+00
+       1908        -1.35260e+00
+       1909        -1.20847e+00
+       1910        -1.20426e+00
+       1911        -1.15348e+00
+       1912        -9.76937e-01
+       1913        -9.23824e-01
+       1914        -9.28899e-01
+       1915        -1.38268e+00
+       1916        -1.11873e+00
+       1917        -1.29469e+00
+       1918        -1.01377e+00
+       1919        -1.43959e+00
+       1920        -1.10536e+00
+       1921        -1.18566e+00
+       1922        -1.42998e+00
+       1923        -1.15702e+00
+       1924        -1.11938e+00
+       1925        -1.56418e+00
+       1926        -1.24473e+00
+       1927        -1.43337e+00
+       1928        -1.31270e+00
+       1929        -8.91721e-01
+       1930        -1.10841e+00
+       1931        -9.04676e-01
+       1932        -1.22584e+00
+       1933        -1.29574e+00
+       1934        -9.56627e-01
+       1935        -1.14618e+00
+       1936        -1.10405e+00
+       1937        -1.19158e+00
+       1938        -1.00459e+00
+       1939        -1.42036e+00
+       1940        -1.31099e+00
+       1941        -1.19711e+00
+       1942        -1.20702e+00
+       1943        -1.34101e+00
+       1944        -8.44494e-01
+       1945        -1.25924e+00
+       1946        -1.30126e+00
+       1947        -1.29388e+00
+       1948        -1.54774e+00
+       1949        -1.30284e+00
+       1950        -1.78740e+00
+       1951        -1.56059e+00
+       1952        -1.42542e+00
+       1953        -1.54173e+00
+       1954        -1.35893e+00
+       1955        -1.41178e+00
+       1956        -1.45248e+00
+       1957        -1.33473e+00
+       1958        -1.35460e+00
+       1959        -1.54280e+00
+       1960        -1.48806e+00
+       1961        -1.16642e+00
+       1962        -1.21599e+00
+       1963        -1.29327e+00
+       1964        -1.13017e+00
+       1965        -1.31788e+00
+       1966        -1.15618e+00
+       1967        -1.26769e+00
+       1968        -1.19015e+00
+       1969        -1.30441e+00
+       1970        -1.26325e+00
+       1971        -1.27753e+00
+       1972        -1.28082e+00
+       1973        -1.12964e+00
+       1974        -1.33306e+00
+       1975        -1.25975e+00
+       1976        -1.28343e+00
+       1977        -1.37410e+00
+       1978        -1.80327e+00
+       1979        -1.41222e+00
+       1980        -1.73890e+00
+       1981        -1.22384e+00
+       1982        -1.50053e+00
+       1983        -1.60501e+00
+       1984        -1.51634e+00
+       1985        -1.32520e+00
+       1986        -1.50161e+00
+       1987        -1.25345e+00
+       1988        -1.54209e+00
+       1989        -1.48152e+00
+       1990        -1.34848e+00
+       1991        -1.48209e+00
+       1992        -1.55010e+00
+       1993        -1.37028e+00
+       1994        -1.54072e+00
+       1995        -1.35739e+00
+       1996        -1.61715e+00
+       1997        -1.57603e+00
+       1998        -1.09801e+00
+       1999        -1.48572e+00
+       2000        -1.23188e+00

@@ -1676,8 +1676,14 @@ def _get_id_in_path(path_id, fullpath, drs):
 
 
 def _get_parent_replacements(scmdf):
-    replacements = {k: v for k, v in scmdf.metadata.items() if k.startswith("parent")}
-    replacements.pop("parent_time_units")
+    parent_keys = [
+        "parent_activity_id",
+        "parent_experiment_id",
+        "parent_mip_era",
+        "parent_source_id",
+        "parent_variant_label",
+    ]
+    replacements = {k: v for k, v in scmdf.metadata.items() if k in parent_keys}
     # change in language since I wrote netcdf-scm, this is why using
     # ESMValTool instead would be helpful, we would have extra helpers to
     # know when this sort of stuff changes...
@@ -1777,20 +1783,14 @@ def _do_stitching_and_normalisation(  # pylint:disable=too-many-locals,too-many-
     #     ) or (loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile)
 
     if not skip_time_shift and (branch_time.year != loaded["time"].min().year):
-        logger.info("Shifting time to match branch time %s for %s", branch_time, infile)
+        logger.info("Shifting %s time to match branch time %s for %s", parent.metadata["experiment_id"], branch_time, infile)
 
         # shift the times so they actually match
         time_base = parent.filter(year=branch_time.year, month=branch_time.month)[
             "time"
         ]
         if time_base.empty:
-            error_msg = "Branching time `{:04d}{:02d}` not available in {} data in {}".format(
-                branch_time.year,
-                branch_time.month,
-                parent.metadata["experiment_id"],
-                parent.metadata["netcdf-scm crunched file"],
-            )
-            raise ValueError(error_msg)
+            _raise_branching_time_unavailable_error(branch_time, parent)
 
         time_base = time_base[0]
 
@@ -1824,6 +1824,8 @@ def _do_stitching_and_normalisation(  # pylint:disable=too-many-locals,too-many-
             normalise_series = parent.filter(
                 year=range(branch_year_after_shifting, branch_year_after_shifting + 31)
             )
+            if normalise_series.timeseries().empty:
+                _raise_branching_time_unavailable_error(branch_time, parent)
 
             if (
                 normalise_series["time"].max().year
@@ -1890,6 +1892,16 @@ def _do_stitching_and_normalisation(  # pylint:disable=too-many-locals,too-many-
             }
 
     return out, normalise_mean
+
+
+def _raise_branching_time_unavailable_error(branch_time, parent):
+    error_msg = "Branching time `{:04d}{:02d}` not available in {} data in {}".format(
+        branch_time.year,
+        branch_time.month,
+        parent.metadata["experiment_id"],
+        parent.metadata["netcdf-scm crunched file"],
+    )
+    raise ValueError(error_msg)
 
 
 def _take_anomaly_from(inscmdf, ref_series):

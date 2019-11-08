@@ -1,0 +1,95 @@
+---- HEADER ----
+
+Date: 2019-11-08 16:15:24
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+Conventions: CF-1.5
+area_world (m**2): 4592406696896.0
+area_world_el_nino_n3.4 (m**2): 59942346240.0
+area_world_north_atlantic_ocean (m**2): 499489548032.0
+area_world_northern_hemisphere (m**2): 2026861311360.0
+area_world_northern_hemisphere_ocean (m**2): 2026861311360.0
+area_world_ocean (m**2): 4592406696896.0
+area_world_southern_hemisphere (m**2): 2565545385536.0
+area_world_southern_hemisphere_ocean (m**2): 2565545385536.0
+branch_method: standard
+branch_time_in_child: 0.0
+branch_time_in_parent: 65744.0
+calendar: gregorian
+cmor_version: 3.4.0
+comment: This is the net flux of heat entering the liquid water column through its upper surface (excluding any 'flux adjustment') .
+contact: cmip6-data@ec-earth.org
+crunch_contact: cmip6output crunching regression test
+crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+crunch_source_files: Files: ['/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201201-201212.nc', '/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201301-201312.nc', '/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201401-201412.nc']; areacello: ['/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Ofx/areacello/gn/v20190605/areacello_Ofx_EC-Earth3-Veg_historical_r1i1p1f1_gn.nc']
+data_specs_version: 01.00.30
+experiment: all-forcing simulation of the recent past
+experiment_id: historical
+external_variables: areacello
+forcing_index: 1
+frequency: mon
+further_info_url: https://furtherinfo.es-doc.org/CMIP6.EC-Earth-Consortium.EC-Earth3-Veg.historical.none.r1i1p1f1
+grid: T255L91-ORCA1L75
+grid_label: gn
+initialization_index: 1
+institution: AEMET, Spain; BSC, Spain; CNR-ISAC, Italy; DMI, Denmark; ENEA, Italy; FMI, Finland; Geomar, Germany; ICHEC, Ireland; ICTP, Italy; IDL, Portugal; IMAU, The Netherlands; IPMA, Portugal; KIT, Karlsruhe, Germany; KNMI, The Netherlands; Lund University, Sweden; Met Eireann, Ireland; NLeSC, The Netherlands; NTNU, Norway; Oxford University, UK; surfSARA, The Netherlands; SMHI, Sweden; Stockholm University, Sweden; Unite ASTR, Belgium; University College Dublin, Ireland; University of Bergen, Norway; University of Copenhagen, Denmark; University of Helsinki, Finland; University of Santiago de Compostela, Spain; Uppsala University, Sweden; Utrecht University, The Netherlands; Vrije Universiteit Amsterdam, the Netherlands; Wageningen University, The Netherlands. Mailing address: EC-Earth consortium, Rossby Center, Swedish Meteorological and Hydrological Institute/SMHI, SE-601 76 Norrkoping, Sweden
+institution_id: EC-Earth-Consortium
+license: CMIP6 model data produced by EC-Earth-Consortium is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at http://www.ec-earth.org. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+netcdf-scm crunched file: CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/netcdf-scm_hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201201-201412.nc
+nominal_resolution: 100 km
+original_name: hfds
+parent_activity_id: CMIP
+parent_experiment_id: piControl
+parent_mip_era: CMIP6
+parent_source_id: EC-Earth3-Veg
+parent_time_units: days since 1850-01-01
+parent_variant_label: r1i1p1f1
+physics_index: 1
+product: model-output
+realization_index: 1
+realm: ocean
+source: EC-Earth3-Veg (2019): 
+aerosol: none
+atmos: IFS cy36r4 (TL255, linearly reduced Gaussian grid equivalent to 512 x 256 longitude/latitude; 91 levels; top level 0.01 hPa)
+atmosChem: none
+land: HTESSEL (land surface scheme built in IFS) and LPJ-GUESS v4
+landIce: none
+ocean: NEMO3.6 (ORCA1 tripolar primarily 1 degree with meridional refinement down to 1/3 degree in the tropics; 362 x 292 longitude/latitude; 75 levels; top grid cell 0-1 m)
+ocnBgchem: none
+seaIce: LIM3
+source_id: EC-Earth3-Veg
+source_type: AOGCM
+sub_experiment: none
+sub_experiment_id: none
+table_id: Omon
+table_info: Creation Date:(09 May 2019) MD5:cde930676e68ac6780d5e4c62d3898f6
+title: EC-Earth3-Veg output prepared for CMIP6
+variable_id: hfds
+variant_label: r1i1p1f1
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 8
+    THISFILE_DATAROWS = 3
+    THISFILE_FIRSTYEAR = 2012
+    THISFILE_LASTYEAR = 2014
+    THISFILE_ANNUALSTEPS = 1
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'AVERAGE_YEAR_MID_YEAR'
+    THISFILE_FIRSTDATAROW = 93
+/
+
+   VARIABLE                hfds                hfds                hfds                hfds                hfds                hfds                hfds                hfds
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2
+      YEARS                  NH             NHOCEAN                 AMV             SHOCEAN                 N34               OCEAN                  SH               WORLD
+       2012        -9.77485e+00        -9.77485e+00        -1.69070e+01         1.16635e+00         5.45182e+01        -3.66256e+00         1.16635e+00        -3.66256e+00
+       2013        -9.07177e+00        -9.07177e+00        -1.85980e+01         1.34821e+00         6.22005e+01        -3.25065e+00         1.34821e+00        -3.25065e+00
+       2014        -8.64370e+00        -8.64370e+00        -1.84298e+01         7.93053e-01         5.40916e+01        -3.37186e+00         7.93053e-01        -3.37186e+00

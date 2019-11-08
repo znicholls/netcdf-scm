@@ -1,0 +1,229 @@
+---- HEADER ----
+
+Date: 2019-11-08 16:15:04
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+(child) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(child) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(child) Conventions: CF-1.5
+(child) area_world (m**2): 4592406696896.0
+(child) area_world_el_nino_n3.4 (m**2): 59942346240.0
+(child) area_world_north_atlantic_ocean (m**2): 499489548032.0
+(child) area_world_northern_hemisphere (m**2): 2026861311360.0
+(child) area_world_northern_hemisphere_ocean (m**2): 2026861311360.0
+(child) area_world_ocean (m**2): 4592406696896.0
+(child) area_world_southern_hemisphere (m**2): 2565545385536.0
+(child) area_world_southern_hemisphere_ocean (m**2): 2565545385536.0
+(child) branch_method: standard
+(child) branch_time_in_child: 60265.0
+(child) branch_time_in_parent: 60265.0
+(child) calendar: proleptic_gregorian
+(child) cmor_version: 3.4.0
+(child) comment: This is the net flux of heat entering the liquid water column through its upper surface (excluding any 'flux adjustment') .
+(child) contact: cmip6-data@ec-earth.org
+(child) crunch_contact: cmip6output crunching regression test
+(child) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(child) crunch_source_files: Files: ['/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201501-201512.nc', '/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201601-201612.nc', '/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201701-201712.nc']; areacello: ['/CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Ofx/areacello/gn/v20190629/areacello_Ofx_EC-Earth3-Veg_ssp585_r1i1p1f1_gn.nc']
+(child) data_specs_version: 01.00.30
+(child) experiment: update of RCP8.5 based on SSP5
+(child) experiment_id: ssp585
+(child) external_variables: areacello
+(child) forcing_index: 1
+(child) frequency: mon
+(child) further_info_url: https://furtherinfo.es-doc.org/CMIP6.EC-Earth-Consortium.EC-Earth3-Veg.ssp585.none.r1i1p1f1
+(child) grid: T255L91-ORCA1L75
+(child) grid_label: gn
+(child) initialization_index: 1
+(child) institution: AEMET, Spain; BSC, Spain; CNR-ISAC, Italy; DMI, Denmark; ENEA, Italy; FMI, Finland; Geomar, Germany; ICHEC, Ireland; ICTP, Italy; IDL, Portugal; IMAU, The Netherlands; IPMA, Portugal; KIT, Karlsruhe, Germany; KNMI, The Netherlands; Lund University, Sweden; Met Eireann, Ireland; NLeSC, The Netherlands; NTNU, Norway; Oxford University, UK; surfSARA, The Netherlands; SMHI, Sweden; Stockholm University, Sweden; Unite ASTR, Belgium; University College Dublin, Ireland; University of Bergen, Norway; University of Copenhagen, Denmark; University of Helsinki, Finland; University of Santiago de Compostela, Spain; Uppsala University, Sweden; Utrecht University, The Netherlands; Vrije Universiteit Amsterdam, the Netherlands; Wageningen University, The Netherlands. Mailing address: EC-Earth consortium, Rossby Center, Swedish Meteorological and Hydrological Institute/SMHI, SE-601 76 Norrkoping, Sweden
+(child) institution_id: EC-Earth-Consortium
+(child) license: CMIP6 model data produced by EC-Earth-Consortium is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at http://www.ec-earth.org. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(child) netcdf-scm crunched file: CMIP6/ScenarioMIP/EC-Earth-Consortium/EC-Earth3-Veg/ssp585/r1i1p1f1/Omon/hfds/gn/v20190629/netcdf-scm_hfds_Omon_EC-Earth3-Veg_ssp585_r1i1p1f1_gn_201501-201712.nc
+(child) nominal_resolution: 100 km
+(child) original_name: hfds
+(child) parent_activity_id: CMIP
+(child) parent_experiment_id: historical
+(child) parent_mip_era: CMIP6
+(child) parent_source_id: EC-Earth3-Veg
+(child) parent_time_units: days since 1850-01-01
+(child) parent_variant_label: r1i1p1f1
+(child) physics_index: 1
+(child) product: model-output
+(child) realization_index: 1
+(child) realm: ocean
+(child) source: EC-Earth3-Veg (2019): 
+aerosol: none
+atmos: IFS cy36r4 (TL255, linearly reduced Gaussian grid equivalent to 512 x 256 longitude/latitude; 91 levels; top level 0.01 hPa)
+atmosChem: none
+land: HTESSEL (land surface scheme built in IFS) and LPJ-GUESS v4
+landIce: none
+ocean: NEMO3.6 (ORCA1 tripolar primarily 1 degree with meridional refinement down to 1/3 degree in the tropics; 362 x 292 longitude/latitude; 75 levels; top grid cell 0-1 m)
+ocnBgchem: none
+seaIce: LIM3
+(child) source_id: EC-Earth3-Veg
+(child) source_type: AOGCM
+(child) sub_experiment: none
+(child) sub_experiment_id: none
+(child) table_id: Omon
+(child) table_info: Creation Date:(09 May 2019) MD5:cde930676e68ac6780d5e4c62d3898f6
+(child) title: EC-Earth3-Veg output prepared for CMIP6
+(child) variable_id: hfds
+(child) variant_label: r1i1p1f1
+(parent) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(parent) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(parent) Conventions: CF-1.5
+(parent) area_world (m**2): 4592406696896.0
+(parent) area_world_el_nino_n3.4 (m**2): 59942346240.0
+(parent) area_world_north_atlantic_ocean (m**2): 499489548032.0
+(parent) area_world_northern_hemisphere (m**2): 2026861311360.0
+(parent) area_world_northern_hemisphere_ocean (m**2): 2026861311360.0
+(parent) area_world_ocean (m**2): 4592406696896.0
+(parent) area_world_southern_hemisphere (m**2): 2565545385536.0
+(parent) area_world_southern_hemisphere_ocean (m**2): 2565545385536.0
+(parent) branch_method: standard
+(parent) branch_time_in_child: 0.0
+(parent) branch_time_in_parent: 65744.0
+(parent) calendar: gregorian
+(parent) cmor_version: 3.4.0
+(parent) comment: This is the net flux of heat entering the liquid water column through its upper surface (excluding any 'flux adjustment') .
+(parent) contact: cmip6-data@ec-earth.org
+(parent) crunch_contact: cmip6output crunching regression test
+(parent) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(parent) crunch_source_files: Files: ['/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201201-201212.nc', '/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201301-201312.nc', '/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201401-201412.nc']; areacello: ['/CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Ofx/areacello/gn/v20190605/areacello_Ofx_EC-Earth3-Veg_historical_r1i1p1f1_gn.nc']
+(parent) data_specs_version: 01.00.30
+(parent) experiment: all-forcing simulation of the recent past
+(parent) experiment_id: historical
+(parent) external_variables: areacello
+(parent) forcing_index: 1
+(parent) frequency: mon
+(parent) further_info_url: https://furtherinfo.es-doc.org/CMIP6.EC-Earth-Consortium.EC-Earth3-Veg.historical.none.r1i1p1f1
+(parent) grid: T255L91-ORCA1L75
+(parent) grid_label: gn
+(parent) initialization_index: 1
+(parent) institution: AEMET, Spain; BSC, Spain; CNR-ISAC, Italy; DMI, Denmark; ENEA, Italy; FMI, Finland; Geomar, Germany; ICHEC, Ireland; ICTP, Italy; IDL, Portugal; IMAU, The Netherlands; IPMA, Portugal; KIT, Karlsruhe, Germany; KNMI, The Netherlands; Lund University, Sweden; Met Eireann, Ireland; NLeSC, The Netherlands; NTNU, Norway; Oxford University, UK; surfSARA, The Netherlands; SMHI, Sweden; Stockholm University, Sweden; Unite ASTR, Belgium; University College Dublin, Ireland; University of Bergen, Norway; University of Copenhagen, Denmark; University of Helsinki, Finland; University of Santiago de Compostela, Spain; Uppsala University, Sweden; Utrecht University, The Netherlands; Vrije Universiteit Amsterdam, the Netherlands; Wageningen University, The Netherlands. Mailing address: EC-Earth consortium, Rossby Center, Swedish Meteorological and Hydrological Institute/SMHI, SE-601 76 Norrkoping, Sweden
+(parent) institution_id: EC-Earth-Consortium
+(parent) license: CMIP6 model data produced by EC-Earth-Consortium is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at http://www.ec-earth.org. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(parent) netcdf-scm crunched file: CMIP6/CMIP/EC-Earth-Consortium/EC-Earth3-Veg/historical/r1i1p1f1/Omon/hfds/gn/v20190605/netcdf-scm_hfds_Omon_EC-Earth3-Veg_historical_r1i1p1f1_gn_201201-201412.nc
+(parent) nominal_resolution: 100 km
+(parent) original_name: hfds
+(parent) parent_activity_id: CMIP
+(parent) parent_experiment_id: piControl
+(parent) parent_mip_era: CMIP6
+(parent) parent_source_id: EC-Earth3-Veg
+(parent) parent_time_units: days since 1850-01-01
+(parent) parent_variant_label: r1i1p1f1
+(parent) physics_index: 1
+(parent) product: model-output
+(parent) realization_index: 1
+(parent) realm: ocean
+(parent) source: EC-Earth3-Veg (2019): 
+aerosol: none
+atmos: IFS cy36r4 (TL255, linearly reduced Gaussian grid equivalent to 512 x 256 longitude/latitude; 91 levels; top level 0.01 hPa)
+atmosChem: none
+land: HTESSEL (land surface scheme built in IFS) and LPJ-GUESS v4
+landIce: none
+ocean: NEMO3.6 (ORCA1 tripolar primarily 1 degree with meridional refinement down to 1/3 degree in the tropics; 362 x 292 longitude/latitude; 75 levels; top grid cell 0-1 m)
+ocnBgchem: none
+seaIce: LIM3
+(parent) source_id: EC-Earth3-Veg
+(parent) source_type: AOGCM
+(parent) sub_experiment: none
+(parent) sub_experiment_id: none
+(parent) table_id: Omon
+(parent) table_info: Creation Date:(09 May 2019) MD5:cde930676e68ac6780d5e4c62d3898f6
+(parent) title: EC-Earth3-Veg output prepared for CMIP6
+(parent) variable_id: hfds
+(parent) variant_label: r1i1p1f1
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 8
+    THISFILE_DATAROWS = 72
+    THISFILE_FIRSTYEAR = 2012
+    THISFILE_LASTYEAR = 2017
+    THISFILE_ANNUALSTEPS = 12
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'MONTHLY'
+    THISFILE_FIRSTDATAROW = 158
+/
+
+   VARIABLE                hfds                hfds                hfds                hfds                hfds                hfds                hfds                hfds
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2           Wmsuper-2
+      YEARS               WORLD                 N34                 AMV                  NH             NHOCEAN               OCEAN                  SH             SHOCEAN
+2012.042000         6.09994e+00         4.20667e+01        -1.31940e+02        -1.04360e+02        -1.04360e+02         6.09994e+00         9.33668e+01         9.33668e+01
+2012.125000         2.72503e+00         6.05139e+01        -7.25542e+01        -7.17850e+01        -7.17850e+01         2.72503e+00         6.15903e+01         6.15903e+01
+2012.208000        -2.48865e-01         6.42782e+01        -2.67897e+01        -1.69342e+01        -1.69342e+01        -2.48865e-01         1.29331e+01         1.29331e+01
+2012.292000        -9.44095e+00         7.12687e+01         5.30091e+00         2.48520e+01         2.48520e+01        -9.44095e+00        -3.65335e+01        -3.65335e+01
+2012.375000        -1.87506e+01         4.75103e+01         7.04493e+01         6.41233e+01         6.41233e+01        -1.87506e+01        -8.42235e+01        -8.42235e+01
+2012.458000        -2.28179e+01         4.15238e+01         9.09213e+01         7.97790e+01         7.97790e+01        -2.28179e+01        -1.03873e+02        -1.03873e+02
+2012.542000        -2.27796e+01         3.14823e+01         8.54514e+01         7.33478e+01         7.33478e+01        -2.27796e+01        -9.87233e+01        -9.87233e+01
+2012.625000        -1.22644e+01         5.87500e+01         6.21627e+01         5.35719e+01         5.35719e+01        -1.22644e+01        -6.42772e+01        -6.42772e+01
+2012.708000         1.86888e+00         6.83404e+01         1.36766e+01         1.57455e+01         1.57455e+01         1.86888e+00        -9.09406e+00        -9.09406e+00
+2012.792000         1.24186e+01         5.92635e+01        -3.41867e+01        -3.50989e+01        -3.50989e+01         1.24186e+01         4.99590e+01         4.99590e+01
+2012.875000         1.19608e+01         5.81606e+01        -1.24566e+02        -8.64984e+01        -8.64984e+01         1.19608e+01         8.97466e+01         8.97466e+01
+2012.958000         7.27828e+00         5.10606e+01        -1.40810e+02        -1.14041e+02        -1.14041e+02         7.27828e+00         1.03125e+02         1.03125e+02
+2013.042000         6.80849e+00         8.26508e+01        -1.31908e+02        -1.01460e+02        -1.01460e+02         6.80849e+00         9.23441e+01         9.23441e+01
+2013.125000         2.74800e+00         8.36906e+01        -1.10530e+02        -6.79450e+01        -6.79450e+01         2.74800e+00         5.85977e+01         5.85977e+01
+2013.208000        -8.09008e-02         9.65187e+01        -3.47373e+01        -1.63791e+01        -1.63791e+01        -8.09008e-02         1.27952e+01         1.27952e+01
+2013.292000        -7.35637e+00         9.08374e+01         1.28573e+01         2.95700e+01         2.95700e+01        -7.35637e+00        -3.65294e+01        -3.65294e+01
+2013.375000        -1.83490e+01         6.74586e+01         6.21426e+01         6.31213e+01         6.31213e+01        -1.83490e+01        -8.27131e+01        -8.27131e+01
+2013.458000        -2.43050e+01         3.10293e+01         9.30156e+01         7.97353e+01         7.97353e+01        -2.43050e+01        -1.06500e+02        -1.06500e+02
+2013.542000        -2.17348e+01         2.89935e+01         8.99808e+01         6.90994e+01         6.90994e+01        -2.17348e+01        -9.34966e+01        -9.34966e+01
+2013.625000        -8.80052e+00         4.82152e+01         6.72249e+01         5.68262e+01         5.68262e+01        -8.80052e+00        -6.06477e+01        -6.06477e+01
+2013.708000         3.13657e+00         5.17494e+01         1.58114e+01         1.65053e+01         1.65053e+01         3.13657e+00        -7.42516e+00        -7.42516e+00
+2013.792000         1.00305e+01         6.27014e+01        -4.60617e+01        -3.48397e+01        -3.48397e+01         1.00305e+01         4.54793e+01         4.54793e+01
+2013.875000         1.24935e+01         5.25808e+01        -1.01275e+02        -8.47652e+01        -8.47652e+01         1.24935e+01         8.93309e+01         8.93309e+01
+2013.958000         6.40172e+00         4.99805e+01        -1.39697e+02        -1.18330e+02        -1.18330e+02         6.40172e+00         1.04943e+02         1.04943e+02
+2014.042000         7.20451e+00         8.21138e+01        -1.44892e+02        -1.02695e+02        -1.02695e+02         7.20451e+00         9.40287e+01         9.40287e+01
+2014.125000         6.77561e+00         8.30763e+01        -8.81491e+01        -6.23369e+01        -6.23369e+01         6.77561e+00         6.13767e+01         6.13767e+01
+2014.208000         1.77161e-01         8.80797e+01        -2.66442e+01        -2.16316e+01        -2.16316e+01         1.77161e-01         1.74068e+01         1.74068e+01
+2014.292000        -7.58483e+00         7.64994e+01         2.77997e+01         3.22615e+01         3.22615e+01        -7.58483e+00        -3.90647e+01        -3.90647e+01
+2014.375000        -1.81703e+01         5.39892e+01         5.90640e+01         6.22116e+01         6.22116e+01        -1.81703e+01        -8.16745e+01        -8.16745e+01
+2014.458000        -2.57922e+01         2.37621e+01         9.26365e+01         7.62069e+01         7.62069e+01        -2.57922e+01        -1.06375e+02        -1.06375e+02
+2014.542000        -2.26372e+01         2.09597e+01         8.68546e+01         7.30773e+01         7.30773e+01        -2.26372e+01        -9.82546e+01        -9.82546e+01
+2014.625000        -1.25167e+01         2.39560e+01         6.05079e+01         5.38414e+01         5.38414e+01        -1.25167e+01        -6.49416e+01        -6.49416e+01
+2014.708000         2.37691e+00         5.86220e+01         1.57502e+01         1.96006e+01         1.96006e+01         2.37691e+00        -1.12303e+01        -1.12303e+01
+2014.792000         1.07778e+01         5.59226e+01        -4.19244e+01        -3.57985e+01        -3.57985e+01         1.07778e+01         4.75746e+01         4.75746e+01
+2014.875000         9.53376e+00         5.12396e+01        -1.04016e+02        -9.03456e+01        -9.03456e+01         9.53376e+00         8.84416e+01         8.84416e+01
+2014.958000         9.39312e+00         3.08790e+01        -1.58144e+02        -1.08116e+02        -1.08116e+02         9.39312e+00         1.02229e+02         1.02229e+02
+2015.042000         3.87502e+00         6.34892e+01        -1.38713e+02        -1.09684e+02        -1.09684e+02         3.87502e+00         9.35901e+01         9.35901e+01
+2015.125000         5.15069e+00         8.63392e+01        -1.02511e+02        -6.74120e+01        -6.74120e+01         5.15069e+00         6.24775e+01         6.24775e+01
+2015.208000        -6.51120e-01         8.86772e+01        -5.46164e+01        -1.80750e+01        -1.80750e+01        -6.51120e-01         1.31143e+01         1.31143e+01
+2015.292000        -6.67831e+00         8.03690e+01         1.47810e+01         3.05846e+01         3.05846e+01        -6.67831e+00        -3.61172e+01        -3.61172e+01
+2015.375000        -1.62491e+01         6.61220e+01         7.27511e+01         6.44813e+01         6.44813e+01        -1.62491e+01        -8.00286e+01        -8.00286e+01
+2015.458000        -2.69074e+01         3.58926e+01         8.93067e+01         7.58111e+01         7.58111e+01        -2.69074e+01        -1.08058e+02        -1.08058e+02
+2015.542000        -2.14145e+01         2.02031e+01         9.09390e+01         7.65247e+01         7.65247e+01        -2.14145e+01        -9.87896e+01        -9.87896e+01
+2015.625000        -1.31631e+01         3.12470e+01         6.68344e+01         5.52897e+01         5.52897e+01        -1.31631e+01        -6.72429e+01        -6.72429e+01
+2015.708000         1.39565e+00         6.05301e+01         2.25546e+01         1.93615e+01         1.93615e+01         1.39565e+00        -1.27979e+01        -1.27979e+01
+2015.792000         1.15496e+01         5.05038e+01        -4.51899e+01        -3.30406e+01        -3.30406e+01         1.15496e+01         4.67774e+01         4.67774e+01
+2015.875000         1.20206e+01         4.31408e+01        -8.89077e+01        -8.00764e+01        -8.00764e+01         1.20206e+01         8.47802e+01         8.47802e+01
+2015.958000         6.76975e+00         3.84727e+01        -1.42896e+02        -1.14671e+02        -1.14671e+02         6.76975e+00         1.02712e+02         1.02712e+02
+2016.042000         2.18336e+00         6.31074e+01        -1.34652e+02        -1.09633e+02        -1.09633e+02         2.18336e+00         9.05217e+01         9.05217e+01
+2016.125000         4.07398e+00         7.87985e+01        -7.86187e+01        -6.91624e+01        -6.91624e+01         4.07398e+00         6.19330e+01         6.19330e+01
+2016.208000         5.26685e-01         7.09904e+01        -3.74703e+01        -1.84825e+01        -1.84825e+01         5.26685e-01         1.55445e+01         1.55445e+01
+2016.292000        -5.01349e+00         6.86243e+01         1.96467e+01         3.58286e+01         3.58286e+01        -5.01349e+00        -3.72800e+01        -3.72800e+01
+2016.375000        -1.74442e+01         5.38559e+01         6.65958e+01         6.39749e+01         6.39749e+01        -1.74442e+01        -8.17679e+01        -8.17679e+01
+2016.458000        -2.47016e+01         2.37000e+01         9.15921e+01         8.12888e+01         8.12888e+01        -2.47016e+01        -1.08437e+02        -1.08437e+02
+2016.542000        -2.18246e+01         1.07335e+01         8.09989e+01         7.21971e+01         7.21971e+01        -2.18246e+01        -9.61048e+01        -9.61048e+01
+2016.625000        -1.02399e+01         2.84984e+01         6.32282e+01         5.30250e+01         5.30250e+01        -1.02399e+01        -6.02211e+01        -6.02211e+01
+2016.708000         7.38872e-01         4.44374e+01         2.88935e+01         1.54707e+01         1.54707e+01         7.38872e-01        -1.08997e+01        -1.08997e+01
+2016.792000         1.29496e+01         5.12970e+01        -4.36861e+01        -3.39076e+01        -3.39076e+01         1.29496e+01         4.99683e+01         4.99683e+01
+2016.875000         1.24623e+01         3.20383e+01        -9.81609e+01        -8.37096e+01        -8.37096e+01         1.24623e+01         8.84412e+01         8.84412e+01
+2016.958000         6.20011e+00         1.35447e+01        -1.25719e+02        -1.15313e+02        -1.15313e+02         6.20011e+00         1.02200e+02         1.02200e+02
+2017.042000         4.23828e+00        -9.32592e-01        -1.18004e+02        -1.03091e+02        -1.03091e+02         4.23828e+00         8.90320e+01         8.90320e+01
+2017.125000         3.66159e+00         2.23277e+00        -1.01829e+02        -7.10626e+01        -7.10626e+01         3.66159e+00         6.26960e+01         6.26960e+01
+2017.208000        -2.99801e+00         1.27822e+01        -2.76422e+01        -2.59813e+01        -2.59813e+01        -2.99801e+00         1.51595e+01         1.51595e+01
+2017.292000        -8.95005e+00         2.36641e+01         1.91439e+01         2.59427e+01         2.59427e+01        -8.95005e+00        -3.65164e+01        -3.65164e+01
+2017.375000        -1.92735e+01         2.10705e+01         8.05870e+01         6.73027e+01         6.73027e+01        -1.92735e+01        -8.76713e+01        -8.76713e+01
+2017.458000        -2.36987e+01         1.60603e+01         8.75091e+01         7.87684e+01         7.87684e+01        -2.36987e+01        -1.04651e+02        -1.04651e+02
+2017.542000        -2.05724e+01         2.43034e+01         8.38828e+01         7.32868e+01         7.32868e+01        -2.05724e+01        -9.47240e+01        -9.47240e+01
+2017.625000        -1.07912e+01         5.51825e+01         5.55308e+01         5.67929e+01         5.67929e+01        -1.07912e+01        -6.41846e+01        -6.41846e+01
+2017.708000         2.77462e-01         6.91655e+01         2.34211e+01         1.48306e+01         1.48306e+01         2.77462e-01        -1.12200e+01        -1.12200e+01
+2017.792000         9.32262e+00         7.29331e+01        -4.90717e+01        -3.57908e+01        -3.57908e+01         9.32262e+00         4.49636e+01         4.49636e+01
+2017.875000         1.24736e+01         6.88009e+01        -1.05052e+02        -8.57740e+01        -8.57740e+01         1.24736e+01         9.00923e+01         9.00923e+01
+2017.958000         4.49684e+00         4.88508e+01        -1.26402e+02        -1.15506e+02        -1.15506e+02         4.49684e+00         9.93025e+01         9.93025e+01

@@ -1,0 +1,108 @@
+---- HEADER ----
+
+Date: 2019-11-08 16:15:57
+Contact: cmip6output wrangling regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+CMIP6_CV_version: cv=6.2.3.0-7-g2019642
+Conventions: CF-1.5
+EXPID: CNRM-CM6-1_hist-aer_r2i1p1f2
+NCO: "4.5.5"
+area_world (m**2): 509488329204188.1
+area_world_el_nino_n3.4 (m**2): 6801156395261.544
+area_world_land (m**2): 146378816176539.2
+area_world_north_atlantic_ocean (m**2): 39188920958557.29
+area_world_northern_hemisphere (m**2): 254744164602094.03
+area_world_northern_hemisphere_land (m**2): 98545924857845.0
+area_world_northern_hemisphere_ocean (m**2): 156198239732667.94
+area_world_ocean (m**2): 363109513026050.5
+area_world_southern_hemisphere (m**2): 254744164602094.03
+area_world_southern_hemisphere_land (m**2): 47832891318694.2
+area_world_southern_hemisphere_ocean (m**2): 206911273293382.56
+arpege_minor_version: 6.3.2
+branch_method: standard
+branch_time_in_child: 0.0
+branch_time_in_parent: 12053.0
+calendar: gregorian
+contact: contact.cmip@meteo.fr
+creation_date: 2018-07-23T14:07:29Z
+crunch_contact: cmip6output crunching regression test
+crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+crunch_source_files: Files: ['/CMIP6/DAMIP/CNRM-CERFACS/CNRM-CM6-1/hist-aer/r2i1p1f2/Amon/tas/gr/v20190308/tas_Amon_CNRM-CM6-1_hist-aer_r2i1p1f2_gr_185001-185512.nc']
+data_specs_version: 01.00.21
+description: Near-Surface Air Temperature
+dr2xml_md5sum: 92ddb3d0d8ce79f498d792fc8e559dcf
+dr2xml_version: 1.13
+experiment: historical anthropogenic aerosols-only run
+experiment_id: hist-aer
+external_variables: areacella
+forcing_index: 2
+frequency: mon
+further_info_url: https://furtherinfo.es-doc.org/CMIP6.CNRM-CERFACS.CNRM-CM6-1.hist-aer.none.r2i1p1f2
+grid: data regridded to a T127 gaussian grid (128x256 latlon) from a native atmosphere T127l reduced gaussian grid
+grid_label: gr
+history: none
+initialization_index: 1
+institution: CNRM (Centre National de Recherches Meteorologiques, Toulouse 31057, France), CERFACS (Centre Europeen de Recherche et de Formation Avancee en Calcul Scientifique, Toulouse 31057, France)
+institution_id: CNRM-CERFACS
+interval_operation: 900 s
+interval_write: 1 month
+land_fraction: 0.28730553338715403
+land_fraction_northern_hemisphere: 0.3868427173268994
+land_fraction_southern_hemisphere: 0.18776834944740875
+license: CMIP6 model data produced by CNRM-CERFACS is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at http://www.umr-cnrm.fr/cmip6/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+nemo_gelato_commit: 49095b3accd5d4c_6524fe19b00467a
+netcdf-scm crunched file: CMIP6/DAMIP/CNRM-CERFACS/CNRM-CM6-1/hist-aer/r2i1p1f2/Amon/tas/gr/v20190308/netcdf-scm_tas_Amon_CNRM-CM6-1_hist-aer_r2i1p1f2_gr_185001-185512.nc
+nominal_resolution: 250 km
+online_operation: average
+parent_activity_id: CMIP
+parent_experiment_id: piControl
+parent_mip_era: CMIP6
+parent_source_id: CNRM-CM6-1
+parent_time_units: days since 1850-01-01 00:00:00
+parent_variant_label: r1i1p1f2
+physics_index: 1
+product: model-output
+realization_index: 2
+realm: atmos
+references: http://www.umr-cnrm.fr/cmip6/references
+source: CNRM-CM6-1 (2017):  aerosol: prescribed monthly fields computed by TACTIC_v2 scheme atmos: Arpege 6.3 (T127; Gaussian Reduced with 24572 grid points in total distributed over 128 latitude circles (with 256 grid points per latitude circle between 30degN and 30degS reducing to 20 grid points per latitude circle at 88.9degN and 88.9degS); 91 levels; top level 78.4 km) atmosChem: OZL_v2 land: Surfex 8.0c ocean: Nemo 3.6 (eORCA1, tripolar primarily 1deg; 362 x 294 longitude/latitude; 75 levels; top grid cell 0-1 m) seaIce: Gelato 6.1
+source_id: CNRM-CM6-1
+source_type: AOGCM
+sub_experiment: none
+sub_experiment_id: none
+table_id: Amon
+title: CNRM-CM6-1 model output prepared for CMIP6 / DAMIP hist-aer
+tracking_id: hdl:21.14100/9c7e763f-04af-401e-b8d6-6aa6d820f14d
+variable_id: tas
+variant_label: r2i1p1f2
+xios_commit: 1442-shuffle
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 11
+    THISFILE_DATAROWS = 6
+    THISFILE_FIRSTYEAR = 1850
+    THISFILE_LASTYEAR = 1855
+    THISFILE_ANNUALSTEPS = 1
+    THISFILE_DATTYPE = 'MAG'
+    THISFILE_REGIONMODE = 'NONE'
+    THISFILE_TIMESERIESTYPE = 'AVERAGE_YEAR_MID_YEAR'
+    THISFILE_FIRSTDATAROW = 103
+/
+
+   VARIABLE                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas                 tas
+       TODO                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET                 SET
+      UNITS                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K                   K
+      YEARS                 AMV              SHLAND             SHOCEAN             NHOCEAN                 N34                  SH                  NH                LAND               OCEAN               WORLD              NHLAND
+       1850         2.91286e+02         2.77015e+02         2.87453e+02         2.89662e+02         2.97318e+02         2.85493e+02         2.86647e+02         2.80282e+02         2.88403e+02         2.86070e+02         2.81868e+02
+       1851         2.91068e+02         2.76815e+02         2.87315e+02         2.89670e+02         2.97237e+02         2.85343e+02         2.86598e+02         2.80124e+02         2.88328e+02         2.85971e+02         2.81730e+02
+       1852         2.91015e+02         2.77057e+02         2.87502e+02         2.89641e+02         2.98087e+02         2.85540e+02         2.86616e+02         2.80265e+02         2.88422e+02         2.86078e+02         2.81822e+02
+       1853         2.91023e+02         2.76867e+02         2.87455e+02         2.89517e+02         2.97077e+02         2.85467e+02         2.86398e+02         2.79956e+02         2.88342e+02         2.85933e+02         2.81455e+02
+       1854         2.91060e+02         2.76538e+02         2.87476e+02         2.89509e+02         2.97190e+02         2.85422e+02         2.86444e+02         2.79937e+02         2.88351e+02         2.85933e+02         2.81586e+02
+       1855         2.90927e+02         2.76523e+02         2.87338e+02         2.89405e+02         2.96630e+02         2.85307e+02         2.86412e+02         2.79988e+02         2.88227e+02         2.85860e+02         2.81669e+02

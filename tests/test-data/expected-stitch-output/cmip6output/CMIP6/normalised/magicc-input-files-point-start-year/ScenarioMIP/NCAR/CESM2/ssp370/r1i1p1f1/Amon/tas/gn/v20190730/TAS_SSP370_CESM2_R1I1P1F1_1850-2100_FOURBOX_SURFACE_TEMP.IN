@@ -1,0 +1,491 @@
+---- HEADER ----
+
+Date: 2019-11-08 16:17:44
+Contact: cmip6output stitching with normalisation regression test
+Source data crunched with: NetCDF-SCM v2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+File written with: pymagicc v2.0.0-beta.8 (more info at github.com/openclimatedata/pymagicc)
+
+
+---- METADATA ----
+
+(child) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(child) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(child) Conventions: CF-1.5
+(child) area_world (m**2): 509194858320979.25
+(child) area_world_el_nino_n3.4 (m**2): 9499544514719.764
+(child) area_world_land (m**2): 147537350588867.06
+(child) area_world_north_atlantic_ocean (m**2): 39489819061100.75
+(child) area_world_northern_hemisphere (m**2): 254597429160489.66
+(child) area_world_northern_hemisphere_land (m**2): 99401830238629.02
+(child) area_world_northern_hemisphere_ocean (m**2): 155195598909192.03
+(child) area_world_ocean (m**2): 361657507720194.75
+(child) area_world_southern_hemisphere (m**2): 254597429160489.62
+(child) area_world_southern_hemisphere_land (m**2): 48135520350238.04
+(child) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
+(child) branch_method: standard
+(child) branch_time_in_child: 735110.0
+(child) branch_time_in_parent: 735110.0
+(child) calendar: 365_day
+(child) case_id: 1504
+(child) cesm_casename: b.e21.BSSP370cmip6.f09_g17.CMIP6-SSP3-7.0.001
+(child) comment: TREFHT
+(child) contact: cesm_cmip6@ucar.edu
+(child) crunch_contact: cmip6output crunching regression test
+(child) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(child) crunch_source_files: Files: ['/CMIP6/ScenarioMIP/NCAR/CESM2/ssp370/r1i1p1f1/Amon/tas/gn/v20190730/tas_Amon_CESM2_ssp370_r1i1p1f1_gn_201501-206412.nc', '/CMIP6/ScenarioMIP/NCAR/CESM2/ssp370/r1i1p1f1/Amon/tas/gn/v20190730/tas_Amon_CESM2_ssp370_r1i1p1f1_gn_206501-210012.nc']
+(child) data_specs_version: 01.00.30
+(child) description: near-surface (usually, 2 meter) air temperature
+(child) experiment: Gap: Baseline scenario with a medium to high radiative forcing by the end of century. Following approximately RCP7.0 global forcing pathway with SSP3 socioeconomic conditions. Radiative forcing reaches a level of 7.0 W/m2 in 2100.  Concentration-driven.
+(child) experiment_id: ssp370
+(child) external_variables: areacella
+(child) frequency: mon
+(child) further_info_url: https://furtherinfo.es-doc.org/CMIP6.NCAR.CESM2.ssp370.none.r1i1p1f1
+(child) grid: native 0.9x1.25 finite volume grid (192x288 latxlon)
+(child) grid_label: gn
+(child) id: tas
+(child) institution: National Center for Atmospheric Research
+(child) institution_id: NCAR
+(child) land_fraction: 0.2897463479410558
+(child) land_fraction_northern_hemisphere: 0.3904274704045399
+(child) land_fraction_southern_hemisphere: 0.18906522547757162
+(child) license: CMIP6 model data produced by <The National Center for Atmospheric Research> is licensed under a Creative Commons Attribution-[]ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file)[]. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(child) mipTable: Amon
+(child) model_doi_url: https://doi.org/10.5065/D67H1H0V
+(child) netcdf-scm crunched file: CMIP6/ScenarioMIP/NCAR/CESM2/ssp370/r1i1p1f1/Amon/tas/gn/v20190730/netcdf-scm_tas_Amon_CESM2_ssp370_r1i1p1f1_gn_201501-210012.nc
+(child) nominal_resolution: 100 km
+(child) out_name: tas
+(child) parent_activity_id: CMIP
+(child) parent_experiment_id: historical
+(child) parent_mip_era: CMIP6
+(child) parent_source_id: CESM2
+(child) parent_time_units: days since 0001-01-01 00:00:00
+(child) parent_variant_label: r10i1p1f1
+(child) product: model-output
+(child) prov: Amon ((isd.003))
+(child) realm: atmos
+(child) source: CESM2 (2017): atmosphere: CAM6 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); ocean: POP2 (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m); sea_ice: CICE5.1 (same grid as ocean); land: CLM5 0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); aerosol: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); atmoschem: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); landIce: CISM2.1; ocnBgchem: MARBL (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m)
+(child) source_id: CESM2
+(child) source_type: AOGCM BGC AER
+(child) sub_experiment: none
+(child) sub_experiment_id: none
+(child) table_id: Amon
+(child) time: time
+(child) time_label: time-mean
+(child) time_title: Temporal mean
+(child) title: Near-Surface Air Temperature
+(child) tracking_id: hdl:21.14100/a613f9ae-807b-42c5-b417-8a0ab62d39ec
+(child) type: real
+(child) variable_id: tas
+(child) variant_info: CMIP6 SSP3-7.0 experiments (2015-2100) with CAM6, interactive land (CLM5), coupled ocean (POP2) with biogeochemistry (MARBL), interactive sea ice (CICE5.1), and non-evolving land ice (CISM2.1).
+(child) variant_label: r1i1p1f1
+(normalisation) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(normalisation) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(normalisation) Conventions: CF-1.5
+(normalisation) area_world (m**2): 509194858320979.25
+(normalisation) area_world_el_nino_n3.4 (m**2): 9499544514719.764
+(normalisation) area_world_land (m**2): 147537350588867.06
+(normalisation) area_world_north_atlantic_ocean (m**2): 39489819061100.75
+(normalisation) area_world_northern_hemisphere (m**2): 254597429160489.66
+(normalisation) area_world_northern_hemisphere_land (m**2): 99401830238629.02
+(normalisation) area_world_northern_hemisphere_ocean (m**2): 155195598909192.03
+(normalisation) area_world_ocean (m**2): 361657507720194.75
+(normalisation) area_world_southern_hemisphere (m**2): 254597429160489.62
+(normalisation) area_world_southern_hemisphere_land (m**2): 48135520350238.04
+(normalisation) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
+(normalisation) branch_method: standard
+(normalisation) branch_time_in_child: 0.0
+(normalisation) branch_time_in_parent: 48545.0
+(normalisation) calendar: 365_day
+(normalisation) case_id: 3
+(normalisation) cesm_casename: b.e21.B1850.f09_g17.CMIP6-piControl.001
+(normalisation) comment: near-surface (usually, 2 meter) air temperature
+(normalisation) contact: cesm_cmip6@ucar.edu
+(normalisation) crunch_contact: cmip6output crunching regression test
+(normalisation) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(normalisation) crunch_source_files: Files: ['/CMIP6/CMIP/NCAR/CESM2/piControl/r1i1p1f1/Amon/tas/gn/v20190320/tas_Amon_CESM2_piControl_r1i1p1f1_gn_080001-089912.nc', '/CMIP6/CMIP/NCAR/CESM2/piControl/r1i1p1f1/Amon/tas/gn/v20190320/tas_Amon_CESM2_piControl_r1i1p1f1_gn_090001-099912.nc']
+(normalisation) data_specs_version: 01.00.29
+(normalisation) description: near-surface (usually, 2 meter) air temperature
+(normalisation) experiment: pre-industrial control
+(normalisation) experiment_id: piControl
+(normalisation) external_variables: areacella
+(normalisation) frequency: mon
+(normalisation) further_info_url: https://furtherinfo.es-doc.org/CMIP6.NCAR.CESM2.piControl.none.r1i1p1f1
+(normalisation) grid: native 0.9x1.25 finite volume grid (192x288 latxlon)
+(normalisation) grid_label: gn
+(normalisation) id: tas
+(normalisation) institution: National Center for Atmospheric Research
+(normalisation) institution_id: NCAR
+(normalisation) land_fraction: 0.2897463479410558
+(normalisation) land_fraction_northern_hemisphere: 0.3904274704045399
+(normalisation) land_fraction_southern_hemisphere: 0.18906522547757162
+(normalisation) license: CMIP6 model data produced by <The National Center for Atmospheric Research> is licensed under a Creative Commons Attribution-[]ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file)[]. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(normalisation) mipTable: Amon
+(normalisation) model_doi_url: https://doi.org/10.5065/D67H1H0V
+(normalisation) netcdf-scm crunched file: CMIP6/CMIP/NCAR/CESM2/piControl/r1i1p1f1/Amon/tas/gn/v20190320/netcdf-scm_tas_Amon_CESM2_piControl_r1i1p1f1_gn_080001-099912.nc
+(normalisation) nominal_resolution: 100 km
+(normalisation) out_name: tas
+(normalisation) parent_activity_id: CMIP
+(normalisation) parent_experiment_id: piControl-spinup
+(normalisation) parent_mip_era: CMIP6
+(normalisation) parent_source_id: CESM2
+(normalisation) parent_time_units: days since 0001-01-01 00:00:00
+(normalisation) parent_variant_label: r1i1p1f1
+(normalisation) product: model-output
+(normalisation) prov: Amon ((isd.003))
+(normalisation) realm: atmos
+(normalisation) source: CESM2 (2017): atmosphere: CAM6 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); ocean: POP2 (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m); sea_ice: CICE5.1 (same grid as ocean); land: CLM5 0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); aerosol: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); atmoschem: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); landIce: CISM2.1; ocnBgchem: MARBL (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m)
+(normalisation) source_id: CESM2
+(normalisation) source_type: AOGCM BGC AER
+(normalisation) sub_experiment: none
+(normalisation) sub_experiment_id: none
+(normalisation) table_id: Amon
+(normalisation) time: time
+(normalisation) time_label: time-mean
+(normalisation) time_title: Temporal mean
+(normalisation) title: Near-Surface Air Temperature
+(normalisation) tracking_id: hdl:21.14100/613911cb-8d9b-44a2-9664-2eee8f522acb
+(normalisation) type: real
+(normalisation) variable_id: tas
+(normalisation) variant_info: CMIP6 CESM2 piControl experiment with CAM6, interactive land (CLM5), coupled ocean (POP2) with biogeochemistry (MARBL), interactive sea ice (CICE5.1), and non-evolving land ice (CISM2.1)
+(normalisation) variant_label: r1i1p1f1
+(parent) CDI: Climate Data Interface version 1.8.2 (http://mpimet.mpg.de/cdi)
+(parent) CDO: Climate Data Operators version 1.8.2 (http://mpimet.mpg.de/cdo)
+(parent) Conventions: CF-1.5
+(parent) area_world (m**2): 509194858320979.25
+(parent) area_world_el_nino_n3.4 (m**2): 9499544514719.764
+(parent) area_world_land (m**2): 147537350588867.06
+(parent) area_world_north_atlantic_ocean (m**2): 39489819061100.75
+(parent) area_world_northern_hemisphere (m**2): 254597429160489.66
+(parent) area_world_northern_hemisphere_land (m**2): 99401830238629.02
+(parent) area_world_northern_hemisphere_ocean (m**2): 155195598909192.03
+(parent) area_world_ocean (m**2): 361657507720194.75
+(parent) area_world_southern_hemisphere (m**2): 254597429160489.62
+(parent) area_world_southern_hemisphere_land (m**2): 48135520350238.04
+(parent) area_world_southern_hemisphere_ocean (m**2): 206461908811002.7
+(parent) branch_method: standard
+(parent) branch_time_in_child: 674885.0
+(parent) branch_time_in_parent: 306600.0
+(parent) calendar: 365_day
+(parent) case_id: 24
+(parent) cesm_casename: b.e21.BHIST.f09_g17.CMIP6-historical.010
+(parent) comment: near-surface (usually, 2 meter) air temperature
+(parent) contact: cesm_cmip6@ucar.edu
+(parent) crunch_contact: cmip6output crunching regression test
+(parent) crunch_netcdf_scm_version: 2.0.0-beta+5.g1fd53d2.dirty (more info at github.com/znicholls/netcdf-scm)
+(parent) crunch_source_files: Files: ['/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/tas_Amon_CESM2_historical_r10i1p1f1_gn_185001-189912.nc', '/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/tas_Amon_CESM2_historical_r10i1p1f1_gn_190001-194912.nc', '/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/tas_Amon_CESM2_historical_r10i1p1f1_gn_195001-199912.nc', '/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/tas_Amon_CESM2_historical_r10i1p1f1_gn_200001-201412.nc']
+(parent) data_specs_version: 01.00.29
+(parent) description: near-surface (usually, 2 meter) air temperature
+(parent) experiment: Simulation of recent past (1850 to 2014). Impose changing conditions (consistent with observations). Should be initialised from a point early enough in the pre-industrial control run to ensure that the end of all the perturbed runs branching from the end of this historical run end before the end of the control. Only one ensemble member is requested but modelling groups are strongly encouraged to submit at least three ensemble members of their CMIP historical simulation. 
+(parent) experiment_id: historical
+(parent) external_variables: areacella
+(parent) frequency: mon
+(parent) further_info_url: https://furtherinfo.es-doc.org/CMIP6.NCAR.CESM2.historical.none.r10i1p1f1
+(parent) grid: native 0.9x1.25 finite volume grid (192x288 latxlon)
+(parent) grid_label: gn
+(parent) id: tas
+(parent) institution: National Center for Atmospheric Research
+(parent) institution_id: NCAR
+(parent) land_fraction: 0.2897463479410558
+(parent) land_fraction_northern_hemisphere: 0.3904274704045399
+(parent) land_fraction_southern_hemisphere: 0.18906522547757162
+(parent) license: CMIP6 model data produced by <The National Center for Atmospheric Research> is licensed under a Creative Commons Attribution-[]ShareAlike 4.0 International License (https://creativecommons.org/licenses/). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file)[]. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law.
+(parent) mipTable: Amon
+(parent) model_doi_url: https://doi.org/10.5065/D67H1H0V
+(parent) netcdf-scm crunched file: CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Amon/tas/gn/v20190313/netcdf-scm_tas_Amon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc
+(parent) nominal_resolution: 100 km
+(parent) out_name: tas
+(parent) parent_activity_id: CMIP
+(parent) parent_experiment_id: piControl
+(parent) parent_mip_era: CMIP6
+(parent) parent_source_id: CESM2
+(parent) parent_time_units: days since 0001-01-01 00:00:00
+(parent) parent_variant_label: r1i1p1f1
+(parent) product: model-output
+(parent) prov: Amon ((isd.003))
+(parent) realm: atmos
+(parent) source: CESM2 (2017): atmosphere: CAM6 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); ocean: POP2 (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m); sea_ice: CICE5.1 (same grid as ocean); land: CLM5 0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); aerosol: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); atmoschem: MAM4 (0.9x1.25 finite volume grid; 288 x 192 longitude/latitude; 32 levels; top level 2.25 mb); landIce: CISM2.1; ocnBgchem: MARBL (320x384 longitude/latitude; 60 levels; top grid cell 0-10 m)
+(parent) source_id: CESM2
+(parent) source_type: AOGCM BGC
+(parent) sub_experiment: none
+(parent) sub_experiment_id: none
+(parent) table_id: Amon
+(parent) time: time
+(parent) time_label: time-mean
+(parent) time_title: Temporal mean
+(parent) title: Near-Surface Air Temperature
+(parent) tracking_id: hdl:21.14100/e47b79db-3925-45a7-9c0a-6799c2f1e8ae
+(parent) type: real
+(parent) variable_id: tas
+(parent) variant_info: CMIP6 20th century experiments (1850-2014) with CAM6, interactive land (CLM5), coupled ocean (POP2) with biogeochemistry (MARBL), interactive sea ice (CICE5.1), and non-evolving land ice (CISM2.1)
+
+(parent) variant_label: r10i1p1f1
+normalisation method: 31-yr-mean-after-branch-time
+timeseriestype: POINT_START_YEAR
+
+&THISFILE_SPECIFICATIONS
+    THISFILE_DATACOLUMNS = 4
+    THISFILE_DATAROWS = 251
+    THISFILE_FIRSTYEAR = 1850
+    THISFILE_LASTYEAR = 2100
+    THISFILE_ANNUALSTEPS = 1
+    THISFILE_UNITS = 'K'
+    THISFILE_DATTYPE = 'NOTUSED'
+    THISFILE_REGIONMODE = 'FOURBOX'
+    THISFILE_FIRSTDATAROW = 241
+/
+
+   VARIABLE        SURFACE_TEMP        SURFACE_TEMP        SURFACE_TEMP        SURFACE_TEMP
+       TODO                 SET                 SET                 SET                 SET
+      UNITS                   K                   K                   K                   K
+      YEARS             NHOCEAN              NHLAND             SHOCEAN              SHLAND
+       1850        -3.32917e+00        -1.42838e+01         1.95609e+00         7.48601e+00
+       1851        -3.33277e+00        -1.17754e+01         1.57992e+00         6.39042e+00
+       1852        -3.00706e+00        -1.08773e+01         1.69013e+00         6.51319e+00
+       1853        -3.04426e+00        -1.09961e+01         1.78815e+00         6.60277e+00
+       1854        -3.01855e+00        -1.09654e+01         1.56297e+00         6.12239e+00
+       1855        -3.46247e+00        -1.24182e+01         1.84314e+00         7.07321e+00
+       1856        -3.09369e+00        -1.16600e+01         1.82678e+00         6.50443e+00
+       1857        -3.07832e+00        -1.13737e+01         1.72983e+00         6.43842e+00
+       1858        -3.14830e+00        -1.15442e+01         1.79869e+00         6.30527e+00
+       1859        -2.76630e+00        -1.06682e+01         1.99896e+00         6.26844e+00
+       1860        -3.18317e+00        -1.06355e+01         1.68521e+00         6.10798e+00
+       1861        -3.13341e+00        -1.05121e+01         1.76106e+00         6.52058e+00
+       1862        -3.03217e+00        -1.08572e+01         1.74571e+00         6.55175e+00
+       1863        -3.29313e+00        -1.24280e+01         1.54981e+00         6.15138e+00
+       1864        -3.06340e+00        -1.15703e+01         1.68513e+00         6.45752e+00
+       1865        -2.86944e+00        -1.09687e+01         1.95376e+00         6.97694e+00
+       1866        -2.78293e+00        -1.08979e+01         1.75766e+00         6.56417e+00
+       1867        -2.95369e+00        -1.15666e+01         1.60124e+00         6.27761e+00
+       1868        -2.80398e+00        -1.11121e+01         1.76159e+00         6.36850e+00
+       1869        -2.82423e+00        -1.06097e+01         1.81070e+00         6.66346e+00
+       1870        -2.75507e+00        -1.09075e+01         1.74679e+00         5.84724e+00
+       1871        -2.74371e+00        -1.00068e+01         1.88253e+00         7.41949e+00
+       1872        -2.93122e+00        -1.08907e+01         1.63626e+00         6.42071e+00
+       1873        -3.10340e+00        -1.11190e+01         1.66162e+00         6.00809e+00
+       1874        -2.52676e+00        -1.13512e+01         2.02485e+00         6.96816e+00
+       1875        -2.92940e+00        -1.04921e+01         1.64376e+00         6.29537e+00
+       1876        -2.74640e+00        -9.38124e+00         1.64755e+00         5.88651e+00
+       1877        -2.55201e+00        -1.10582e+01         1.96863e+00         6.43611e+00
+       1878        -2.98951e+00        -1.11649e+01         1.68161e+00         6.05937e+00
+       1879        -3.07326e+00        -1.09435e+01         1.67536e+00         5.91170e+00
+       1880        -2.47566e+00        -9.84303e+00         1.99997e+00         7.38021e+00
+       1881        -2.52174e+00        -1.12746e+01         1.88647e+00         6.21429e+00
+       1882        -2.44720e+00        -1.00443e+01         1.84188e+00         6.13748e+00
+       1883        -2.35900e+00        -1.12588e+01         2.03837e+00         7.17818e+00
+       1884        -2.59709e+00        -1.06885e+01         1.68798e+00         6.05794e+00
+       1885        -2.77827e+00        -1.10846e+01         1.60738e+00         5.98900e+00
+       1886        -2.92295e+00        -1.13055e+01         1.62473e+00         6.27456e+00
+       1887        -2.98937e+00        -1.12075e+01         1.66974e+00         6.46212e+00
+       1888        -2.86843e+00        -1.16127e+01         1.70685e+00         6.51875e+00
+       1889        -2.81863e+00        -1.08390e+01         1.83467e+00         6.90614e+00
+       1890        -2.45265e+00        -1.13483e+01         1.75105e+00         6.54850e+00
+       1891        -2.80246e+00        -1.08311e+01         1.72875e+00         6.57596e+00
+       1892        -2.24208e+00        -1.02575e+01         1.86592e+00         6.64387e+00
+       1893        -2.31360e+00        -1.05528e+01         2.00300e+00         6.84733e+00
+       1894        -2.51862e+00        -1.03996e+01         1.85228e+00         6.94061e+00
+       1895        -2.73017e+00        -1.11250e+01         1.61966e+00         6.25046e+00
+       1896        -2.52411e+00        -1.07869e+01         1.66004e+00         6.23897e+00
+       1897        -2.60319e+00        -1.05452e+01         1.73212e+00         6.38336e+00
+       1898        -2.68150e+00        -1.11286e+01         1.64432e+00         6.56805e+00
+       1899        -2.85470e+00        -1.10989e+01         1.74876e+00         6.41058e+00
+       1900        -2.62404e+00        -1.08360e+01         1.75012e+00         6.47577e+00
+       1901        -2.51709e+00        -1.13107e+01         1.75453e+00         6.62674e+00
+       1902        -2.67596e+00        -1.10492e+01         1.71707e+00         6.63155e+00
+       1903        -2.96287e+00        -1.11106e+01         1.47841e+00         6.27409e+00
+       1904        -2.86587e+00        -1.16151e+01         1.76578e+00         7.12059e+00
+       1905        -2.91237e+00        -1.03823e+01         1.71837e+00         6.44029e+00
+       1906        -2.82482e+00        -1.09796e+01         1.76442e+00         6.27618e+00
+       1907        -2.78393e+00        -1.08140e+01         1.76071e+00         6.46361e+00
+       1908        -2.86261e+00        -1.10951e+01         1.85197e+00         6.63253e+00
+       1909        -2.79351e+00        -1.10592e+01         1.84347e+00         6.44454e+00
+       1910        -2.72175e+00        -1.04813e+01         1.69817e+00         6.49180e+00
+       1911        -2.67869e+00        -1.12838e+01         1.76036e+00         6.55094e+00
+       1912        -2.54779e+00        -1.03600e+01         1.78008e+00         6.72611e+00
+       1913        -2.86417e+00        -1.09929e+01         1.73470e+00         6.70737e+00
+       1914        -2.69676e+00        -1.05616e+01         1.79827e+00         6.75282e+00
+       1915        -3.10796e+00        -1.06752e+01         1.67815e+00         6.67475e+00
+       1916        -2.94146e+00        -1.06997e+01         1.71560e+00         6.25748e+00
+       1917        -2.84393e+00        -1.11407e+01         1.68934e+00         6.26464e+00
+       1918        -2.73899e+00        -1.05060e+01         2.01913e+00         7.11985e+00
+       1919        -2.53727e+00        -1.06775e+01         1.94898e+00         6.78494e+00
+       1920        -2.27355e+00        -1.05331e+01         1.92161e+00         7.15923e+00
+       1921        -2.46658e+00        -1.11023e+01         1.83281e+00         6.85820e+00
+       1922        -2.50350e+00        -1.04413e+01         1.73751e+00         6.69777e+00
+       1923        -2.44571e+00        -1.12820e+01         1.88532e+00         6.70087e+00
+       1924        -2.59199e+00        -1.04930e+01         1.85501e+00         6.71131e+00
+       1925        -2.48083e+00        -1.05204e+01         1.82011e+00         6.34249e+00
+       1926        -2.43466e+00        -1.10714e+01         2.09798e+00         6.98545e+00
+       1927        -2.30970e+00        -1.13626e+01         1.87719e+00         6.43202e+00
+       1928        -2.57222e+00        -1.11269e+01         1.89481e+00         6.98944e+00
+       1929        -2.59645e+00        -1.04025e+01         1.92884e+00         6.87327e+00
+       1930        -2.75649e+00        -1.10779e+01         1.93646e+00         6.12659e+00
+       1931        -2.58752e+00        -1.13327e+01         1.68990e+00         6.68208e+00
+       1932        -2.71622e+00        -1.02472e+01         1.86917e+00         7.16793e+00
+       1933        -2.70353e+00        -1.03602e+01         1.81734e+00         6.84107e+00
+       1934        -2.80918e+00        -1.08512e+01         1.74349e+00         6.51082e+00
+       1935        -2.71780e+00        -1.07356e+01         1.94861e+00         7.23883e+00
+       1936        -2.44499e+00        -1.03494e+01         1.86036e+00         6.69133e+00
+       1937        -2.75922e+00        -1.05747e+01         1.73691e+00         6.35785e+00
+       1938        -2.73079e+00        -1.06654e+01         1.77597e+00         6.67884e+00
+       1939        -2.71616e+00        -1.17824e+01         1.84996e+00         6.66599e+00
+       1940        -2.78241e+00        -1.05943e+01         1.82712e+00         6.57168e+00
+       1941        -2.63714e+00        -9.85976e+00         1.85753e+00         6.62509e+00
+       1942        -2.75298e+00        -1.10617e+01         1.75030e+00         6.10591e+00
+       1943        -2.51360e+00        -1.01398e+01         1.88544e+00         6.46194e+00
+       1944        -2.44433e+00        -1.09944e+01         1.96912e+00         6.78843e+00
+       1945        -2.41273e+00        -1.07554e+01         1.91982e+00         6.62518e+00
+       1946        -2.59253e+00        -1.06979e+01         1.71987e+00         6.05877e+00
+       1947        -2.79840e+00        -1.08486e+01         1.77916e+00         6.41330e+00
+       1948        -2.81305e+00        -1.06765e+01         1.73901e+00         6.74435e+00
+       1949        -2.66451e+00        -1.06119e+01         1.87916e+00         6.48084e+00
+       1950        -2.59966e+00        -9.93774e+00         1.78931e+00         6.98711e+00
+       1951        -2.93043e+00        -1.09788e+01         1.84562e+00         6.12633e+00
+       1952        -2.72265e+00        -1.04608e+01         2.09905e+00         7.10551e+00
+       1953        -2.44298e+00        -1.06273e+01         2.07546e+00         6.58791e+00
+       1954        -2.74504e+00        -1.04488e+01         2.01115e+00         6.74563e+00
+       1955        -2.48977e+00        -1.03989e+01         1.93209e+00         6.65143e+00
+       1956        -2.62654e+00        -1.03911e+01         2.07843e+00         7.20521e+00
+       1957        -2.65597e+00        -1.13164e+01         2.05475e+00         6.97047e+00
+       1958        -2.76329e+00        -1.01583e+01         1.78495e+00         6.50735e+00
+       1959        -2.61221e+00        -1.10828e+01         1.89318e+00         6.78759e+00
+       1960        -2.46424e+00        -1.10296e+01         2.17296e+00         7.47117e+00
+       1961        -2.75335e+00        -1.03224e+01         1.91704e+00         6.51141e+00
+       1962        -2.57201e+00        -1.06649e+01         2.01347e+00         7.02956e+00
+       1963        -2.67079e+00        -1.04711e+01         2.12159e+00         7.61313e+00
+       1964        -2.80777e+00        -1.05593e+01         1.96535e+00         6.51465e+00
+       1965        -2.92958e+00        -1.07768e+01         1.88483e+00         6.42230e+00
+       1966        -3.09846e+00        -1.15766e+01         2.01116e+00         6.73832e+00
+       1967        -3.02903e+00        -1.12313e+01         1.71409e+00         6.57463e+00
+       1968        -3.17273e+00        -1.13498e+01         1.80219e+00         6.11692e+00
+       1969        -3.04135e+00        -1.02119e+01         1.96538e+00         6.29610e+00
+       1970        -3.03348e+00        -1.09854e+01         2.21605e+00         7.16057e+00
+       1971        -2.76936e+00        -9.76182e+00         2.15539e+00         7.11492e+00
+       1972        -2.62763e+00        -1.02491e+01         2.13927e+00         7.57841e+00
+       1973        -2.57199e+00        -1.07743e+01         2.17168e+00         7.35840e+00
+       1974        -2.75029e+00        -1.12524e+01         2.04306e+00         6.57995e+00
+       1975        -2.71562e+00        -1.09146e+01         2.20864e+00         6.80392e+00
+       1976        -2.96223e+00        -1.02668e+01         1.97182e+00         6.38808e+00
+       1977        -2.59340e+00        -1.07262e+01         2.08230e+00         6.58166e+00
+       1978        -2.42739e+00        -1.08311e+01         2.24719e+00         6.85966e+00
+       1979        -2.66362e+00        -1.06519e+01         2.28821e+00         7.46661e+00
+       1980        -2.82630e+00        -1.14830e+01         2.07650e+00         6.73981e+00
+       1981        -2.69670e+00        -1.08740e+01         2.20570e+00         6.97426e+00
+       1982        -2.56838e+00        -1.03436e+01         2.20681e+00         7.10804e+00
+       1983        -2.67650e+00        -1.04989e+01         2.21542e+00         6.91398e+00
+       1984        -2.26408e+00        -1.01806e+01         2.21015e+00         6.68268e+00
+       1985        -2.36616e+00        -1.04769e+01         2.15212e+00         6.81136e+00
+       1986        -2.45307e+00        -1.01942e+01         2.11463e+00         6.45559e+00
+       1987        -2.52697e+00        -1.04162e+01         2.20807e+00         6.62855e+00
+       1988        -2.13707e+00        -1.02623e+01         2.13683e+00         6.90138e+00
+       1989        -2.27192e+00        -1.02270e+01         2.21378e+00         6.95982e+00
+       1990        -2.07524e+00        -1.00941e+01         2.25141e+00         7.37080e+00
+       1991        -2.00743e+00        -1.04447e+01         2.20175e+00         7.04435e+00
+       1992        -2.83201e+00        -1.13309e+01         2.06208e+00         6.77212e+00
+       1993        -2.51717e+00        -9.89755e+00         2.21766e+00         6.66513e+00
+       1994        -2.14279e+00        -1.02631e+01         2.68918e+00         8.45022e+00
+       1995        -2.55994e+00        -9.29181e+00         2.14567e+00         6.55533e+00
+       1996        -2.41773e+00        -9.79845e+00         2.05806e+00         6.55811e+00
+       1997        -2.19702e+00        -9.89957e+00         2.41611e+00         7.72278e+00
+       1998        -2.14170e+00        -9.31184e+00         2.11893e+00         6.97977e+00
+       1999        -2.12451e+00        -9.79406e+00         2.11167e+00         7.18644e+00
+       2000        -2.00002e+00        -1.00443e+01         2.20642e+00         7.06386e+00
+       2001        -2.04927e+00        -9.66944e+00         2.22415e+00         6.89397e+00
+       2002        -1.63667e+00        -9.24631e+00         2.42719e+00         6.98059e+00
+       2003        -1.64551e+00        -9.03090e+00         2.46957e+00         7.60263e+00
+       2004        -1.74735e+00        -8.97441e+00         2.45349e+00         7.24742e+00
+       2005        -1.60594e+00        -9.49650e+00         2.53968e+00         7.61244e+00
+       2006        -1.73696e+00        -9.01502e+00         2.48547e+00         6.96988e+00
+       2007        -1.61545e+00        -8.95760e+00         2.49495e+00         7.75394e+00
+       2008        -1.28815e+00        -8.43223e+00         2.54759e+00         7.83973e+00
+       2009        -1.43134e+00        -8.95898e+00         2.34005e+00         7.45511e+00
+       2010        -1.26850e+00        -9.15678e+00         2.53788e+00         7.89646e+00
+       2011        -1.52013e+00        -8.32006e+00         2.60975e+00         7.70631e+00
+       2012        -1.80778e+00        -8.72439e+00         2.27652e+00         6.97141e+00
+       2013        -2.07654e+00        -9.46713e+00         2.33690e+00         7.28246e+00
+       2014        -1.78872e+00        -9.23158e+00         2.39511e+00         7.30946e+00
+       2015        -1.49146e+00        -8.49232e+00         2.69724e+00         7.89836e+00
+       2016        -1.56948e+00        -8.92966e+00         2.57278e+00         7.20734e+00
+       2017        -1.29889e+00        -9.12942e+00         2.57003e+00         7.67297e+00
+       2018        -1.52683e+00        -9.13492e+00         2.44241e+00         7.47752e+00
+       2019        -1.69666e+00        -8.69333e+00         2.46500e+00         8.03846e+00
+       2020        -1.45440e+00        -9.09000e+00         2.76096e+00         8.07597e+00
+       2021        -1.35788e+00        -8.68278e+00         2.71498e+00         7.58001e+00
+       2022        -1.15664e+00        -8.76888e+00         2.74003e+00         8.31806e+00
+       2023        -1.38332e+00        -8.18716e+00         2.52219e+00         8.25358e+00
+       2024        -1.30989e+00        -7.94110e+00         2.71083e+00         7.96887e+00
+       2025        -9.75971e-01        -7.62030e+00         2.77399e+00         8.28415e+00
+       2026        -9.10479e-01        -8.33405e+00         2.91681e+00         8.10021e+00
+       2027        -5.84650e-01        -8.51067e+00         2.92023e+00         8.42593e+00
+       2028        -1.04730e+00        -7.47882e+00         2.75691e+00         7.76697e+00
+       2029        -6.33472e-01        -7.95478e+00         2.77360e+00         8.05736e+00
+       2030        -7.10079e-01        -7.66492e+00         2.99812e+00         8.24093e+00
+       2031        -1.03091e+00        -8.00863e+00         2.82562e+00         8.16931e+00
+       2032        -1.28602e+00        -8.82508e+00         2.78878e+00         7.67085e+00
+       2033        -6.14699e-01        -7.67943e+00         3.19425e+00         8.57689e+00
+       2034        -6.95698e-01        -7.76659e+00         3.25440e+00         9.19383e+00
+       2035        -3.36870e-01        -6.78497e+00         3.09933e+00         8.98186e+00
+       2036        -4.72662e-01        -7.63921e+00         2.95769e+00         8.20309e+00
+       2037        -5.83938e-01        -7.59406e+00         3.11880e+00         8.09663e+00
+       2038        -2.43890e-01        -7.40888e+00         3.36018e+00         9.28503e+00
+       2039        -9.95370e-01        -7.82758e+00         3.02923e+00         8.35617e+00
+       2040        -8.66755e-01        -8.64595e+00         2.98532e+00         8.29310e+00
+       2041        -7.41078e-01        -8.46785e+00         3.26179e+00         8.58608e+00
+       2042        -8.50507e-01        -8.30357e+00         3.23086e+00         8.89605e+00
+       2043        -6.10781e-01        -7.79933e+00         3.24880e+00         8.61886e+00
+       2044        -3.19985e-01        -8.06464e+00         3.33858e+00         8.97487e+00
+       2045        -4.89949e-01        -8.16499e+00         3.21005e+00         8.70730e+00
+       2046        -5.78919e-01        -7.20126e+00         3.56006e+00         9.54483e+00
+       2047        -8.84438e-01        -7.67638e+00         3.24100e+00         8.51457e+00
+       2048        -6.67241e-01        -8.13859e+00         3.13640e+00         8.22901e+00
+       2049        -3.85512e-01        -7.27966e+00         3.52894e+00         9.46433e+00
+       2050        -5.78842e-02        -7.29920e+00         3.42258e+00         8.99221e+00
+       2051        -1.99820e-01        -7.56326e+00         3.51690e+00         9.27761e+00
+       2052        -3.61062e-01        -7.79295e+00         3.47097e+00         9.26389e+00
+       2053        -2.07845e-01        -7.70351e+00         3.48122e+00         9.29873e+00
+       2054         1.65553e-01        -7.06064e+00         3.67937e+00         9.14481e+00
+       2055         4.36145e-02        -6.76749e+00         3.50362e+00         9.28248e+00
+       2056        -6.49769e-02        -6.85675e+00         3.74114e+00         9.86471e+00
+       2057        -3.64522e-01        -6.66605e+00         3.48501e+00         9.32708e+00
+       2058        -5.22202e-02        -6.97441e+00         3.68153e+00         9.19684e+00
+       2059        -4.72525e-02        -6.20507e+00         3.96377e+00         1.03881e+01
+       2060         8.43163e-03        -6.87051e+00         3.64395e+00         9.05134e+00
+       2061         1.14765e-01        -6.71962e+00         3.92292e+00         9.44464e+00
+       2062         1.14015e-01        -6.42775e+00         4.18499e+00         1.04029e+01
+       2063         1.98695e-01        -6.49785e+00         3.96779e+00         9.87183e+00
+       2064         9.14022e-02        -6.40309e+00         3.99922e+00         9.93194e+00
+       2065         4.13502e-01        -6.58311e+00         4.02007e+00         1.01835e+01
+       2066         5.58297e-01        -5.57397e+00         4.23980e+00         9.87565e+00
+       2067         1.37949e-01        -5.98651e+00         3.92672e+00         9.44330e+00
+       2068         5.79924e-01        -6.48875e+00         4.13075e+00         1.00601e+01
+       2069         6.91319e-01        -6.38142e+00         4.12758e+00         1.01812e+01
+       2070         6.61275e-01        -5.80461e+00         4.25237e+00         9.81683e+00
+       2071         5.73748e-01        -6.36230e+00         4.17319e+00         1.01999e+01
+       2072         5.56852e-01        -6.08417e+00         4.27435e+00         9.58604e+00
+       2073         8.58350e-01        -6.13110e+00         4.35486e+00         1.03671e+01
+       2074         1.00486e+00        -6.24829e+00         4.40284e+00         1.06720e+01
+       2075         7.37768e-01        -5.79414e+00         4.33115e+00         9.76878e+00
+       2076         9.73130e-01        -5.32186e+00         4.68857e+00         1.10310e+01
+       2077         1.03290e+00        -6.08585e+00         4.65546e+00         1.09051e+01
+       2078         9.00054e-01        -5.76910e+00         4.46045e+00         1.01645e+01
+       2079         1.35765e+00        -4.90498e+00         4.69959e+00         1.15297e+01
+       2080         1.05314e+00        -5.48298e+00         4.48233e+00         1.03937e+01
+       2081         1.13343e+00        -5.54236e+00         4.68353e+00         1.07824e+01
+       2082         1.47525e+00        -4.38041e+00         4.91671e+00         1.10259e+01
+       2083         1.43948e+00        -5.23851e+00         4.68112e+00         1.02713e+01
+       2084         1.56710e+00        -5.19878e+00         4.76640e+00         1.17426e+01
+       2085         1.88530e+00        -4.70448e+00         4.82418e+00         1.10197e+01
+       2086         1.93907e+00        -4.18990e+00         4.76276e+00         1.13504e+01
+       2087         1.95866e+00        -5.00171e+00         4.80297e+00         1.11206e+01
+       2088         2.10820e+00        -4.64720e+00         5.08769e+00         1.21780e+01
+       2089         1.83114e+00        -4.37635e+00         4.93418e+00         1.11974e+01
+       2090         1.95062e+00        -3.75701e+00         5.22057e+00         1.19576e+01
+       2091         1.76170e+00        -4.33081e+00         5.10589e+00         1.13674e+01
+       2092         1.96925e+00        -4.50528e+00         5.24823e+00         1.18257e+01
+       2093         2.11743e+00        -4.11127e+00         5.26352e+00         1.16753e+01
+       2094         1.92393e+00        -4.66220e+00         5.09270e+00         1.11178e+01
+       2095         2.21001e+00        -3.90850e+00         5.36454e+00         1.23082e+01
+       2096         2.01707e+00        -4.85844e+00         5.32484e+00         1.12470e+01
+       2097         1.97285e+00        -4.07911e+00         5.23482e+00         1.19550e+01
+       2098         2.34697e+00        -3.60533e+00         5.44713e+00         1.24476e+01
+       2099         2.13774e+00        -3.80180e+00         5.33326e+00         1.15387e+01
+       2100         2.44877e+00        -3.53580e+00         5.60425e+00         1.24527e+01
