@@ -132,7 +132,7 @@ def test_wrangling_magicc_input_files(tmpdir, caplog, test_marble_cmip5_crunch_o
     with open(
         join(
             output_dir,
-            "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1/TAS_RCP45_HADCM3_R1I1P1_2006-2035_GLOBAL_SURFACE_TEMP.IN",
+            "cmip5/rcp45/Amon/tas/HadCM3/r1i1p1/TAS_RCP45_HADCM3_R1I1P1_GLOBAL_SURFACE_TEMP.IN",
         )
     ) as f:
         content = f.read()
@@ -708,7 +708,7 @@ def test_wrangling_in_file(tmpdir, test_cmip6_crunch_output, caplog):
     # also a global file but don't worry about that
     expected_file = join(
         output_dir,
-        "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20180803/TAS_HISTORICAL_IPSL-CM6A-LR_R1I1P1F1_191001-191003_FOURBOX_SURFACE_TEMP.IN",
+        "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20180803/TAS_HISTORICAL_IPSL-CM6A-LR_R1I1P1F1_FOURBOX_SURFACE_TEMP.IN",
     )
 
     with open(expected_file) as f:
@@ -759,7 +759,7 @@ def test_wrangling_in_file_operations(
     # also a global file but don't worry about that
     expected_file_raw = join(
         output_dir,
-        "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/TAS_PICONTROL_IPSL-CM6A-LR_R1I1P1F1_284001-285912_FOURBOX_SURFACE_TEMP.IN",
+        "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/TAS_PICONTROL_IPSL-CM6A-LR_R1I1P1F1_FOURBOX_SURFACE_TEMP.IN",
     )
 
     res_raw = MAGICCData(expected_file_raw)
@@ -781,6 +781,7 @@ def test_wrangling_in_file_operations(
                 ".*tas.*",
                 "--number-workers",
                 1,
+                "-f",
             ],
         )
     assert result.exit_code == 0, result.stdout
@@ -793,7 +794,7 @@ def test_wrangling_in_file_operations(
     )
     expected_file = join(
         output_dir,
-        "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/TAS_PICONTROL_IPSL-CM6A-LR_R1I1P1F1_2840-2859_FOURBOX_SURFACE_TEMP.IN",
+        "CMIP6/CMIP/IPSL/IPSL-CM6A-LR/piControl/r1i1p1f1/Amon/tas/gr/v20181123/TAS_PICONTROL_IPSL-CM6A-LR_R1I1P1F1_FOURBOX_SURFACE_TEMP.IN",
     )
 
     res = MAGICCData(expected_file)
