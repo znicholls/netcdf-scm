@@ -49,7 +49,14 @@ def test_stitching_results(
 
 
 @pytest.mark.parametrize(
-    "out_format", (["mag-files", "magicc-input-files-average-year-start-year", "magicc-input-files-point-start-year"])
+    "out_format",
+    (
+        [
+            "mag-files",
+            "magicc-input-files-average-year-start-year",
+            "magicc-input-files-point-start-year",
+        ]
+    ),
 )
 def test_stiching_and_normalise_results(
     tmpdir,

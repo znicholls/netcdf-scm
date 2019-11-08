@@ -221,9 +221,7 @@ def test_stitching_no_parent(tmpdir, caplog, test_cmip6_crunch_output):
     assert no_parent_error[0][1] == logging.ERROR
 
 
-def test_stitching_historical_only(
-    tmpdir, caplog, test_cmip6_crunch_output
-):
+def test_stitching_historical_only(tmpdir, caplog, test_cmip6_crunch_output):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_historical_only"
 

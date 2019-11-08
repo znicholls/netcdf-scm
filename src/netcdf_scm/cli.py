@@ -1089,24 +1089,8 @@ def _write_magicc_input_file(  # pylint:disable=too-many-arguments
             "more than one file to wrangle?"
         )  # pragma: no cover # emergency valve
 
-    src_time_points = openscmdf.timeseries().columns
-    time_id = "{:d}{:02d}-{:d}{:02d}".format(
-        src_time_points[0].year,
-        src_time_points[0].month,
-        src_time_points[-1].year,
-        src_time_points[-1].month,
-    )
-
     _write_magicc_input_files(
-        openscmdf,
-        time_id,
-        outfile_dir,
-        symlink_dir,
-        force,
-        metadata,
-        header,
-        "MONTHLY",
-        prefix,
+        openscmdf, outfile_dir, symlink_dir, force, metadata, header, "MONTHLY", prefix,
     )
 
 
@@ -1134,10 +1118,8 @@ def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-argument
         year=original_years
     )
 
-    time_id = "{}-{}".format(openscmdf["time"].min().year, openscmdf["time"].max().year)
     _write_magicc_input_files(
         openscmdf,
-        time_id,
         outfile_dir,
         symlink_dir,
         force,
@@ -1150,7 +1132,6 @@ def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-argument
 
 def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-locals
     openscmdf,
-    time_id,
     outfile_dir,
     symlink_dir,
     force,
@@ -1613,10 +1594,17 @@ def _get_stitched_openscmdf_metadata_header(  # pylint:disable=too-many-argument
     except KeyError:  # pragma: no cover # for future
         if normalise is not None:  # pragma: no cover
             raise AssertionError("Normalisation metadata should be included...")
-        if not metadata["parent_experiment_id"].startswith("piControl"):  # pragma: no cover
+        if not metadata["parent_experiment_id"].startswith(  # pragma: no cover
+            "piControl"
+        ):
             raise AssertionError("Stitching should have occured no?")
 
-        logger.info("No normalisation is being done and the parent of %s is %s for infile: %s", metadata["experiment_id"], metadata["parent_experiment_id"], os.path.join(dpath, fnames[0]))
+        logger.info(
+            "No normalisation is being done and the parent of %s is %s for infile: %s",
+            metadata["experiment_id"],
+            metadata["parent_experiment_id"],
+            os.path.join(dpath, fnames[0]),
+        )
 
         header = _get_openscmdf_header(
             stitch_contact, metadata["crunch_netcdf_scm_version"]
@@ -1782,7 +1770,12 @@ def _do_stitching_and_normalisation(  # pylint:disable=too-many-locals,too-many-
     #     ) or (loaded.metadata["branch_time_in_parent"] == 2015.0 and "BCC" in infile)
 
     if not skip_time_shift and (branch_time.year != loaded["time"].min().year):
-        logger.info("Shifting %s time to match branch time %s for %s", parent.metadata["experiment_id"], branch_time, infile)
+        logger.info(
+            "Shifting %s time to match branch time %s for %s",
+            parent.metadata["experiment_id"],
+            branch_time,
+            infile,
+        )
 
         # shift the times so they actually match
         time_base = parent.filter(year=branch_time.year, month=branch_time.month)[
