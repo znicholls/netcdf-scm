@@ -1221,6 +1221,7 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
 def _wrangle_magicc_files(  # pylint:disable=too-many-arguments
     fnames, dpath, dst, force, out_format, target_units_specs, wrangle_contact, drs,
 ):
+    logger.info("Attempting to process: %s", fnames)
     openscmdf, metadata, header = _get_openscmdf_metadata_header(
         fnames, dpath, target_units_specs, wrangle_contact, out_format
     )
@@ -1570,6 +1571,7 @@ def _stitch_magicc_files(  # pylint:disable=too-many-arguments
     prefix,
     normalise,
 ):
+    logger.info("Attempting to process: %s", fnames)
     openscmdf, metadata, header = _get_stitched_openscmdf_metadata_header(
         fnames, dpath, target_units_specs, stitch_contact, drs, normalise
     )
@@ -1610,8 +1612,16 @@ def _get_stitched_openscmdf_metadata_header(  # pylint:disable=too-many-argument
             stitch_contact, metadata["(child) crunch_netcdf_scm_version"]
         )
     except KeyError:  # pragma: no cover # for future
-        print("guessing no stitching occurred but haven't tested...")
-        raise
+        if normalise is not None:  # pragma: no cover
+            raise AssertionError("Normalisation metadata should be included...")
+        if not metadata["parent_experiment_id"].startswith("piControl"):  # pragma: no cover
+            raise AssertionError("Stitching should have occured no?")
+
+        logger.info("No normalisation is being done and the parent of %s is %s for infile: %s", metadata["experiment_id"], metadata["parent_experiment_id"], os.path.join(dpath, fnames[0]))
+
+        header = _get_openscmdf_header(
+            stitch_contact, metadata["crunch_netcdf_scm_version"]
+        )
 
     return openscmdf, metadata, header
 

@@ -252,11 +252,16 @@ def test_stitching_historical_only(
 
     res = MAGICCData(out_files[0])
 
-    import pdb
-    pdb.set_trace()
-    assert False
     # should just be same as wrangle if like this
     assert not any(["(child)" in k for k in res.metadata])
+    error_msg = re.compile(
+        ".*No normalisation is being done and the parent of 1pctCO2 is piControl for "
+        "infile: "
+        ".*CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/1pctCO2/r1i1p1f1/Amon/tas/gr1/v20180701/netcdf-scm_tas_Amon_GFDL-CM4_1pctCO2_r1i1p1f1_gr1_000101-015012.nc"
+    )
+    no_operation_info = [r for r in caplog.record_tuples if error_msg.match(r[2])]
+    assert len(no_operation_info) == 1
+    assert no_operation_info[0][1] == logging.INFO
 
 
 def test_stitching_with_normalisation(tmpdir, caplog, test_cmip6_crunch_output):
