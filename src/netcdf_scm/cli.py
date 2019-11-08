@@ -1184,13 +1184,12 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
     }
     for region_key, regions_to_keep in region_filters.items():
         out_file_base = (
-            ("{}_{}_{}_{}_{}_{}_{}.IN")
+            ("{}_{}_{}_{}_{}_{}.IN")
             .format(
                 variable_abbreviations["filename"],
                 openscmdf["scenario"].unique()[0],
                 openscmdf["climate_model"].unique()[0],
                 openscmdf["member_id"].unique()[0],
-                time_id,
                 region_key,
                 variable_abbreviations["magicc_internal_name"],
             )
