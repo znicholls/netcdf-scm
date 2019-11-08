@@ -221,6 +221,44 @@ def test_stitching_no_parent(tmpdir, caplog, test_cmip6_crunch_output):
     assert no_parent_error[0][1] == logging.ERROR
 
 
+def test_stitching_historical_only(
+    tmpdir, caplog, test_cmip6_crunch_output
+):
+    output_dir = str(tmpdir)
+    crunch_contact = "test_stitching_historical_only"
+
+    runner = CliRunner(mix_stderr=False)
+    with caplog.at_level("DEBUG"):
+        result = runner.invoke(
+            stitch_netcdf_scm_ncs,
+            [
+                test_cmip6_crunch_output,
+                output_dir,
+                crunch_contact,
+                "--drs",
+                "CMIP6Output",
+                "-f",
+                "--number-workers",
+                1,
+                "--regexp",
+                ".*GFDL-CM4.*1pctCO2.*r1i1p1f1.*",
+            ],
+        )
+
+    assert result.exit_code == 0
+
+    out_files = glob.glob(os.path.join(output_dir, "flat", "*.MAG"))
+    assert len(out_files) == 1
+
+    res = MAGICCData(out_files[0])
+
+    import pdb
+    pdb.set_trace()
+    assert False
+    # should just be same as wrangle if like this
+    assert not any(["(child)" in k for k in res.metadata])
+
+
 def test_stitching_with_normalisation(tmpdir, caplog, test_cmip6_crunch_output):
     output_dir = str(tmpdir)
     crunch_contact = "test_stitching_with_normalisation"
