@@ -13,6 +13,7 @@ import sys
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from os import makedirs, walk
 from time import gmtime, strftime
+from shutil import copyfile
 
 import click
 import netCDF4
@@ -893,7 +894,7 @@ def _write_ascii_file(  # pylint:disable=too-many-arguments
     metadata,
     header,
     outfile_dir,
-    symlink_dir,
+    duplicate_dir,
     fnames,
     force,
     out_format,
@@ -902,7 +903,7 @@ def _write_ascii_file(  # pylint:disable=too-many-arguments
 ):
     if out_format in ("mag-files",):
         _write_mag_file(
-            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, prefix
+            openscmdf, metadata, header, outfile_dir, duplicate_dir, fnames, force, prefix
         )
     elif out_format in (
         "mag-files-average-year-start-year",
@@ -917,7 +918,7 @@ def _write_ascii_file(  # pylint:disable=too-many-arguments
             metadata,
             header,
             outfile_dir,
-            symlink_dir,
+            duplicate_dir,
             fnames,
             force,
             out_format,
@@ -926,7 +927,7 @@ def _write_ascii_file(  # pylint:disable=too-many-arguments
         )
     elif out_format in ("magicc-input-files",):
         _write_magicc_input_file(
-            openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, prefix
+            openscmdf, metadata, header, outfile_dir, duplicate_dir, fnames, force, prefix
         )
     elif out_format in (
         "magicc-input-files-average-year-start-year",
@@ -941,7 +942,7 @@ def _write_ascii_file(  # pylint:disable=too-many-arguments
             metadata,
             header,
             outfile_dir,
-            symlink_dir,
+            duplicate_dir,
             fnames,
             force,
             out_format,
@@ -952,7 +953,7 @@ def _write_ascii_file(  # pylint:disable=too-many-arguments
 
 
 def _write_mag_file(  # pylint:disable=too-many-arguments
-    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, prefix
+    openscmdf, metadata, header, outfile_dir, duplicate_dir, fnames, force, prefix
 ):
     out_file_base = fnames[0]
     if prefix is not None:
@@ -961,7 +962,7 @@ def _write_mag_file(  # pylint:disable=too-many-arguments
     out_file = os.path.join(outfile_dir, out_file_base)
     out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
 
-    if _skip_file(out_file, force, symlink_dir):
+    if _skip_file(out_file, force, duplicate_dir):
         return
 
     writer = MAGICCData(openscmdf)
@@ -983,9 +984,9 @@ def _write_mag_file(  # pylint:disable=too-many-arguments
     logger.info("Writing file to %s", out_file)
     writer.write(out_file, magicc_version=7)
 
-    symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
-    logger.info("Making symlink to %s", symlink_file)
-    os.symlink(out_file, symlink_file)
+    duplicate_file = os.path.join(duplicate_dir, os.path.basename(out_file))
+    logger.info("Duplicating file as %s", duplicate_file)
+    copyfile(out_file, duplicate_file)
 
 
 def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
@@ -993,7 +994,7 @@ def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
     metadata,
     header,
     outfile_dir,
-    symlink_dir,
+    duplicate_dir,
     fnames,
     force,
     out_format,
@@ -1019,7 +1020,7 @@ def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
     out_file = os.path.join(outfile_dir, out_file_base)
     out_file = "{}.MAG".format(os.path.splitext(out_file)[0])
 
-    if _skip_file(out_file, force, symlink_dir):
+    if _skip_file(out_file, force, duplicate_dir):
         return
 
     writer = MAGICCData(_do_timeseriestype_operation(openscmdf, out_format)).filter(
@@ -1037,9 +1038,9 @@ def _write_mag_file_with_operation(  # pylint:disable=too-many-arguments
     logger.info("Writing file to %s", out_file)
     writer.write(out_file, magicc_version=7)
 
-    symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
-    logger.info("Making symlink to %s", symlink_file)
-    os.symlink(out_file, symlink_file)
+    duplicate_file = os.path.join(duplicate_dir, os.path.basename(out_file))
+    logger.info("Duplicating file as %s", duplicate_file)
+    copyfile(out_file, duplicate_file)
 
 
 def _do_timeseriestype_operation(openscmdf, out_format):
@@ -1082,7 +1083,7 @@ def _do_timeseriestype_operation(openscmdf, out_format):
 
 
 def _write_magicc_input_file(  # pylint:disable=too-many-arguments
-    openscmdf, metadata, header, outfile_dir, symlink_dir, fnames, force, prefix
+    openscmdf, metadata, header, outfile_dir, duplicate_dir, fnames, force, prefix
 ):
     if len(fnames) > 1:
         raise AssertionError(
@@ -1090,7 +1091,7 @@ def _write_magicc_input_file(  # pylint:disable=too-many-arguments
         )  # pragma: no cover # emergency valve
 
     _write_magicc_input_files(
-        openscmdf, outfile_dir, symlink_dir, force, metadata, header, "MONTHLY", prefix,
+        openscmdf, outfile_dir, duplicate_dir, force, metadata, header, "MONTHLY", prefix,
     )
 
 
@@ -1099,7 +1100,7 @@ def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-argument
     metadata,
     header,
     outfile_dir,
-    symlink_dir,
+    duplicate_dir,
     fnames,
     force,
     out_format,
@@ -1121,7 +1122,7 @@ def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-argument
     _write_magicc_input_files(
         openscmdf,
         outfile_dir,
-        symlink_dir,
+        duplicate_dir,
         force,
         metadata,
         header,
@@ -1133,7 +1134,7 @@ def _write_magicc_input_file_with_operation(  # pylint:disable=too-many-argument
 def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-locals
     openscmdf,
     outfile_dir,
-    symlink_dir,
+    duplicate_dir,
     force,
     metadata,
     header,
@@ -1180,9 +1181,9 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
             out_file_base = "{}_{}".format(prefix, out_file_base)
 
         out_file = os.path.join(outfile_dir, out_file_base,)
-        symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
+        duplicate_file = os.path.join(duplicate_dir, os.path.basename(out_file))
 
-        if _skip_file(out_file, force, symlink_dir):
+        if _skip_file(out_file, force, duplicate_dir):
             return
 
         writer = MAGICCData(openscmdf).filter(region=regions_to_keep)
@@ -1194,8 +1195,8 @@ def _write_magicc_input_files(  # pylint:disable=too-many-arguments,too-many-loc
 
         logger.info("Writing file to %s", out_file)
         writer.write(out_file, magicc_version=7)
-        logger.info("Making symlink to %s", symlink_file)
-        os.symlink(out_file, symlink_file)
+        logger.info("Duplicating file as %s", duplicate_file)
+        copyfile(out_file, duplicate_file)
 
 
 def _wrangle_magicc_files(  # pylint:disable=too-many-arguments
@@ -1206,14 +1207,14 @@ def _wrangle_magicc_files(  # pylint:disable=too-many-arguments
         fnames, dpath, target_units_specs, wrangle_contact, out_format
     )
 
-    outfile_dir, symlink_dir = _get_outfile_dir_symlink_dir(dpath, drs, dst)
+    outfile_dir, duplicate_dir = _get_outfile_dir_flat_dir(dpath, drs, dst)
 
     _write_ascii_file(
         openscmdf,
         metadata,
         header,
         outfile_dir,
-        symlink_dir,
+        duplicate_dir,
         fnames,
         force,
         out_format,
@@ -1264,14 +1265,14 @@ def _get_openscmdf_header(contact, netcdf_scm_version):
     return header
 
 
-def _get_outfile_dir_symlink_dir(dpath, drs, dst):
+def _get_outfile_dir_flat_dir(dpath, drs, dst):
     scmcube = _get_scmcube_helper(drs)
     outfile_dir = dpath.replace(scmcube.process_path(dpath)["root_dir"], dst)
     _make_path_if_not_exists(outfile_dir)
-    symlink_dir = os.path.join(dst, "flat")
-    _make_path_if_not_exists(symlink_dir)
+    duplicate_dir = os.path.join(dst, "flat")
+    _make_path_if_not_exists(duplicate_dir)
 
-    return outfile_dir, symlink_dir
+    return outfile_dir, duplicate_dir
 
 
 def _convert_units(openscmdf, target_units_specs):
@@ -1325,14 +1326,14 @@ def _take_area_sum(openscmdf, current_unit):
     return converted_ts
 
 
-def _skip_file(out_file, force, symlink_dir):
+def _skip_file(out_file, force, duplicate_dir):
     if not force and os.path.isfile(out_file):
         logger.info("Skipped (already exists, not overwriting) %s", out_file)
         return True
 
     if os.path.isfile(out_file):
-        symlink_file = os.path.join(symlink_dir, os.path.basename(out_file))
-        os.unlink(symlink_file)
+        duplicate_file = os.path.join(duplicate_dir, os.path.basename(out_file))
+        os.remove(duplicate_file)
         os.remove(out_file)
 
     return False
@@ -1556,14 +1557,14 @@ def _stitch_magicc_files(  # pylint:disable=too-many-arguments
         fnames, dpath, target_units_specs, stitch_contact, drs, normalise
     )
 
-    outfile_dir, symlink_dir = _get_outfile_dir_symlink_dir(dpath, drs, dst)
+    outfile_dir, duplicate_dir = _get_outfile_dir_flat_dir(dpath, drs, dst)
 
     _write_ascii_file(
         openscmdf,
         metadata,
         header,
         outfile_dir,
-        symlink_dir,
+        duplicate_dir,
         fnames,
         force,
         out_format,
