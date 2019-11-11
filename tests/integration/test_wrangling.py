@@ -92,7 +92,7 @@ def test_wrangling_defaults(tmpdir, caplog, test_cmip6_crunch_output):
     ) as f:
         content = f.read()
 
-    assert "Making symlink to {}".format(join(output_dir, "flat")) in result.output
+    assert "Duplicating file as {}".format(join(output_dir, "flat")) in result.output
     assert "Contact: {}".format(test_wrangler) in content
 
 
