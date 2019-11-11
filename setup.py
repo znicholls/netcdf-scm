@@ -83,7 +83,14 @@ REQUIREMENTS_EXTRAS = {
     "dev": requirements_dev,
 }
 
+
 SOURCE_DIR = "src"
+
+# no tests/docs in `src` so don't need exclude
+PACKAGES = find_packages(SOURCE_DIR)
+PACKAGE_DIR = {"": SOURCE_DIR}
+PACKAGE_DATA = {"netcdf_scm": ["weights/*.nc"]}
+
 
 README = "README.rst"
 
@@ -119,9 +126,10 @@ setup(
     license=LICENSE,
     classifiers=CLASSIFIERS,
     keywords=KEYWORDS,
-    packages=find_packages(SOURCE_DIR),  # no tests/docs in `src` so don't need exclude
-    package_dir={"": SOURCE_DIR},
-    # include_package_data=True,
+    packages=PACKAGES,
+    package_dir=PACKAGE_DIR,
+    package_data=PACKAGE_DATA,
+    include_package_data=True,
     install_requires=REQUIREMENTS_INSTALL,
     extras_require=REQUIREMENTS_EXTRAS,
     cmdclass=cmdclass,

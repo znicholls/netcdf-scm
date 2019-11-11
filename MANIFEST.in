@@ -5,4 +5,4 @@ include CHANGELOG.rst
 recursive-include tests *.py
 
 include versioneer.py
-include src/netcdf_scm/_version.py
+include _version.py
