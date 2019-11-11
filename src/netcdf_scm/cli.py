@@ -1621,7 +1621,7 @@ def _get_continuous_timeseries_with_meta(infile, drs, normalise, normalise_mean=
     )
 
     parent_replacements = _get_parent_replacements(loaded)
-    if not parent_replacements:
+    if not parent_replacements:  # pragma: no cover # emergency valve
         return loaded, normalise_mean
 
     if parent_replacements["parent_experiment_id"] == "piControl" and normalise is None:
