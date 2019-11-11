@@ -4,6 +4,7 @@ Changelog
 master
 ------
 
+- (`#114 <https://github.com/znicholls/netcdf-scm/pull/114>`_) Ensure that default sftlf file is included in wheel
 - (`#111 <https://github.com/znicholls/netcdf-scm/pull/111>`_) Write tuningstrucs with data in columns rather than rows
 - (`#108 <https://github.com/znicholls/netcdf-scm/pull/108>`_) Optimise wranglers and add regression tests
 - (`#107 <https://github.com/znicholls/netcdf-scm/pull/107>`_) Add wrangling options for average/point start/mid/end year time manipulations for ``.MAG`` and ``.IN`` files
