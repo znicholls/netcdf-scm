@@ -1,708 +1,0 @@
-2019-08-28 16:23:20,505 INFO:netcdf_scm:netcdf-scm: 1.0.0+327.g8fffd68.dirty
-2019-08-28 16:23:20,506 INFO:netcdf_scm:crunch-contact: Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>
-2019-08-28 16:23:20,506 INFO:netcdf_scm:source: /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control
-2019-08-28 16:23:20,506 INFO:netcdf_scm:destination: /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched
-2019-08-28 16:23:20,506 INFO:netcdf_scm:drs: CMIP6Output
-2019-08-28 16:23:20,507 INFO:netcdf_scm:regexp: ^(?!.*(fx|/co2/|/ta/)).*Amon.*$
-2019-08-28 16:23:20,507 INFO:netcdf_scm:regions: World,World|Northern Hemisphere,World|Southern Hemisphere,World|Land,World|Ocean,World|Northern Hemisphere|Land,World|Southern Hemisphere|Land,World|Northern Hemisphere|Ocean,World|Southern Hemisphere|Ocean
-2019-08-28 16:23:20,507 INFO:netcdf_scm:force: True
-2019-08-28 16:23:20,507 INFO:netcdf_scm:small_number_workers: 15
-2019-08-28 16:23:20,507 INFO:netcdf_scm:small_threshold: 50
-2019-08-28 16:23:20,508 INFO:netcdf_scm:medium_number_workers: 3
-2019-08-28 16:23:20,508 INFO:netcdf_scm:medium_threshold: 120
-2019-08-28 16:23:20,508 INFO:netcdf_scm:force_lazy_threshold: 1000
-2019-08-28 16:23:20,511 INFO:netcdf_scm.output:Read in 92 items from database netcdf-scm_crunched.jsonl
-2019-08-28 16:23:20,512 INFO:netcdf_scm:Finding directories with files
-2019-08-28 16:23:20,577 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r2i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,578 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r2i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,586 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r22i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,587 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r22i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,595 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r11i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,596 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r11i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,607 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r23i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,608 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r23i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,614 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r10i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,615 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r10i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,623 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r1i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,624 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r1i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,634 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r19i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,635 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r19i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,644 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r12i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,645 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r12i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,651 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r3i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,652 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r3i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,662 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r17i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,663 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r17i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,670 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r20i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,670 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r20i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,679 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r6i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,680 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r6i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,687 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r16i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,688 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r16i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,696 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r7i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,697 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r7i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,705 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r8i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,706 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r8i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,714 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r9i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,715 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r9i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,725 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r4i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,726 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r4i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,734 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r5i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,735 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r5i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,741 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r24i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,742 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r24i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,750 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r21i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,751 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r21i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,759 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r13i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,760 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r13i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,770 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r14i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,771 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r14i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,779 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r18i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,780 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r18i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,786 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r25i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,787 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r25i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,795 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r15i1p1f1/Amon/tas/gr/v20190110
-2019-08-28 16:23:20,796 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r15i1p1f1/Amon/ts/gr/v20190110
-2019-08-28 16:23:20,802 INFO:netcdf_scm:Found 50 directories with files
-Sorting directories:   0%|          | 0/50 [00:00<?, ?it/s]Sorting directories:   2%|▏         | 1/50 [00:00<00:25,  1.93it/s]Sorting directories:   4%|▍         | 2/50 [00:00<00:19,  2.51it/s]Sorting directories:   6%|▌         | 3/50 [00:00<00:14,  3.20it/s]Sorting directories:  10%|█         | 5/50 [00:00<00:11,  4.01it/s]Sorting directories:  14%|█▍        | 7/50 [00:01<00:08,  5.01it/s]Sorting directories:  18%|█▊        | 9/50 [00:01<00:07,  5.82it/s]Sorting directories:  22%|██▏       | 11/50 [00:01<00:05,  6.68it/s]Sorting directories:  26%|██▌       | 13/50 [00:01<00:04,  7.46it/s]Sorting directories:  30%|███       | 15/50 [00:01<00:04,  8.72it/s]Sorting directories:  34%|███▍      | 17/50 [00:02<00:03,  9.37it/s]Sorting directories:  38%|███▊      | 19/50 [00:02<00:03, 10.05it/s]Sorting directories:  42%|████▏     | 21/50 [00:02<00:02, 10.59it/s]Sorting directories:  46%|████▌     | 23/50 [00:02<00:02, 11.82it/s]Sorting directories:  50%|█████     | 25/50 [00:02<00:02, 11.14it/s]Sorting directories:  54%|█████▍    | 27/50 [00:02<00:01, 12.45it/s]Sorting directories:  58%|█████▊    | 29/50 [00:03<00:01, 11.74it/s]Sorting directories:  62%|██████▏   | 31/50 [00:03<00:02,  9.06it/s]Sorting directories:  66%|██████▌   | 33/50 [00:03<00:01,  9.63it/s]Sorting directories:  70%|███████   | 35/50 [00:03<00:01, 10.85it/s]Sorting directories:  74%|███████▍  | 37/50 [00:03<00:01, 11.00it/s]Sorting directories:  78%|███████▊  | 39/50 [00:03<00:00, 11.23it/s]Sorting directories:  82%|████████▏ | 41/50 [00:04<00:00, 11.39it/s]Sorting directories:  86%|████████▌ | 43/50 [00:04<00:00, 11.04it/s]Sorting directories:  90%|█████████ | 45/50 [00:04<00:00, 12.50it/s]Sorting directories:  94%|█████████▍| 47/50 [00:04<00:00, 13.65it/s]Sorting directories:  98%|█████████▊| 49/50 [00:04<00:00, 13.64it/s]Sorting directories: 100%|██████████| 50/50 [00:04<00:00, 10.43it/s]
-2019-08-28 16:23:25,600 INFO:netcdf_scm:Crunching 50 directories with less than 50 million data points
-2019-08-28 16:23:25,600 INFO:netcdf_scm:Processing in parallel with 15 workers
-2019-08-28 16:23:25,600 INFO:netcdf_scm:Forcing dask to use a single thread when reading
-2019-08-28 16:23:25,788 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r2i1p1f1_gr_185001-185912.nc']
-  0%|          | 0.00/50.0 [00:00<?, ?it/s]2019-08-28 16:23:25,791 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r2i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,796 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r22i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,799 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r22i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,801 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r11i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,804 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r11i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,804 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r23i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,805 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r23i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,807 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r10i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,809 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r10i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,812 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r1i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,813 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r1i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,815 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r19i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,817 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r19i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:25,818 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r12i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,650 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r12i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,667 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r1i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r1i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:26,668 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:26,670 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r3i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,680 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r3i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,698 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r17i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,709 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r1i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r1i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:26,736 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r17i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,758 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r20i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,772 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r20i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,785 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r6i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,795 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r6i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,804 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r16i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,813 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r16i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,822 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r7i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,826 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r7i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,830 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r8i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:26,834 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r8i1p1f1_gr_185001-185912.nc']
-  2%|▏         | 1.00/50.0 [00:01<00:54, 1.10s/it]2019-08-28 16:23:26,900 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r11i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r11i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:26,900 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:26,902 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r11i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r11i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:26,975 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r1i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r1i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:26,975 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:26,977 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r1i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r1i1p1f1_gr_185001-185912.nc
-  6%|▌         | 3.00/50.0 [00:01<00:37, 1.25it/s]2019-08-28 16:23:27,059 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r12i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r12i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,059 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:27,061 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r12i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r12i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,135 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r9i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,153 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r22i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r22i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,153 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:27,156 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r22i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r22i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,165 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r9i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,195 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r4i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,213 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r4i1p1f1_gr_185001-185912.nc']
- 10%|█         | 5.00/50.0 [00:01<00:26, 1.70it/s]2019-08-28 16:23:27,252 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r22i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r22i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,252 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:27,254 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r5i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,259 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r22i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r22i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,269 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r5i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,317 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r24i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,326 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r24i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,336 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r21i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,340 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r21i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,344 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r13i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,355 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r13i1p1f1_gr_185001-185912.nc']
- 12%|█▏        | 6.00/50.0 [00:01<00:19, 2.23it/s]2019-08-28 16:23:27,377 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r11i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r11i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,377 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:27,379 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r11i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r11i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,396 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r14i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,430 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r14i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,439 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r18i1p1f1_gr_185001-185912.nc']
- 14%|█▍        | 7.00/50.0 [00:01<00:14, 2.89it/s]2019-08-28 16:23:27,486 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r2i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r2i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,486 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:27,488 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r2i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r2i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,535 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r18i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,585 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r19i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r19i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,585 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:27,588 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r19i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r19i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,599 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r25i1p1f1_gr_185001-185912.nc']
- 18%|█▊        | 9.00/50.0 [00:01<00:11, 3.64it/s]2019-08-28 16:23:27,699 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r19i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r19i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,699 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:27,701 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r19i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r19i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,720 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r25i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,740 INFO:netcdf_scm:Attempting to process: ['tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r15i1p1f1_gr_185001-185912.nc']
-2019-08-28 16:23:27,755 INFO:netcdf_scm:Attempting to process: ['ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r15i1p1f1_gr_185001-185912.nc']
- 20%|██        | 10.0/50.0 [00:02<00:09, 4.39it/s]2019-08-28 16:23:27,823 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r2i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r2i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,824 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:27,831 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r2i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r2i1p1f1_gr_185001-185912.nc
- 22%|██▏       | 11.0/50.0 [00:02<00:07, 5.10it/s]2019-08-28 16:23:27,939 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r10i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r10i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:27,939 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:27,941 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r10i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r10i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,035 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r23i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r23i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,036 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,038 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r23i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r23i1p1f1_gr_185001-185912.nc
- 26%|██▌       | 13.0/50.0 [00:02<00:06, 6.13it/s]2019-08-28 16:23:28,112 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r10i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r10i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,113 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,115 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r10i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r10i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,190 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r23i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r23i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,190 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,192 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r23i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r23i1p1f1_gr_185001-185912.nc
- 30%|███       | 15.0/50.0 [00:02<00:04, 7.34it/s]2019-08-28 16:23:28,259 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r17i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r17i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,259 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,261 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r17i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r17i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,329 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r12i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r12i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,329 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,331 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r12i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r12i1p1f1_gr_185001-185912.nc
- 34%|███▍      | 17.0/50.0 [00:02<00:03, 8.61it/s]2019-08-28 16:23:28,398 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r20i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r20i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,398 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,400 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r20i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r20i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,465 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r8i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r8i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,465 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,467 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r8i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r8i1p1f1_gr_185001-185912.nc
- 38%|███▊      | 19.0/50.0 [00:02<00:03, 9.81it/s]2019-08-28 16:23:28,535 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r6i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r6i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,535 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,537 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r6i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r6i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,602 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r17i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r17i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,603 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,604 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r17i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r17i1p1f1_gr_185001-185912.nc
- 42%|████▏     | 21.0/50.0 [00:02<00:02, 10.9it/s]2019-08-28 16:23:28,670 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r7i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r7i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,670 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,672 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r7i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r7i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,738 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r16i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r16i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,738 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,740 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r16i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r16i1p1f1_gr_185001-185912.nc
- 46%|████▌     | 23.0/50.0 [00:03<00:02, 11.9it/s]2019-08-28 16:23:28,805 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r8i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r8i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,806 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,807 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r8i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r8i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,872 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r16i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r16i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,873 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,874 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r16i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r16i1p1f1_gr_185001-185912.nc
- 50%|█████     | 25.0/50.0 [00:03<00:01, 12.6it/s]2019-08-28 16:23:28,940 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r20i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r20i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:28,941 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:28,942 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r20i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r20i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,009 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r6i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r6i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,009 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,011 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r6i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r6i1p1f1_gr_185001-185912.nc
- 54%|█████▍    | 27.0/50.0 [00:03<00:01, 13.1it/s]2019-08-28 16:23:29,079 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r7i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r7i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,079 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,081 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r7i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r7i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,148 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r3i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r3i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,148 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,150 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r3i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r3i1p1f1_gr_185001-185912.nc
- 58%|█████▊    | 29.0/50.0 [00:03<00:01, 13.6it/s]2019-08-28 16:23:29,214 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r3i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r3i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,214 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,216 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r3i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r3i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,283 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r4i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r4i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,283 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,284 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r4i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r4i1p1f1_gr_185001-185912.nc
- 62%|██████▏   | 31.0/50.0 [00:03<00:01, 13.9it/s]2019-08-28 16:23:29,349 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r4i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r4i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,349 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,350 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r4i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r4i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,417 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r9i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r9i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,417 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,419 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r9i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r9i1p1f1_gr_185001-185912.nc
- 66%|██████▌   | 33.0/50.0 [00:03<00:01, 14.2it/s]2019-08-28 16:23:29,483 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r9i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r9i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,483 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,485 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r9i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r9i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,551 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r5i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r5i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,551 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,553 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r5i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r5i1p1f1_gr_185001-185912.nc
- 70%|███████   | 35.0/50.0 [00:03<00:01, 14.4it/s]2019-08-28 16:23:29,618 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r5i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r5i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,618 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,619 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r5i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r5i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,686 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r24i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r24i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,686 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,688 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r24i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r24i1p1f1_gr_185001-185912.nc
- 74%|███████▍  | 37.0/50.0 [00:03<00:00, 14.5it/s]2019-08-28 16:23:29,752 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r13i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r13i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,752 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,754 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r13i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r13i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,820 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r24i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r24i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,820 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,822 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r24i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r24i1p1f1_gr_185001-185912.nc
- 78%|███████▊  | 39.0/50.0 [00:04<00:00, 14.6it/s]2019-08-28 16:23:29,888 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r21i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r21i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,888 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,890 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r21i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r21i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,954 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r18i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r18i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:29,954 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:29,956 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r18i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r18i1p1f1_gr_185001-185912.nc
- 82%|████████▏ | 41.0/50.0 [00:04<00:00, 14.7it/s]2019-08-28 16:23:30,020 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r21i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r21i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,021 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:30,022 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r21i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r21i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,089 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r14i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r14i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,089 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:30,090 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r14i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r14i1p1f1_gr_185001-185912.nc
- 86%|████████▌ | 43.0/50.0 [00:04<00:00, 14.7it/s]2019-08-28 16:23:30,156 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r14i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r14i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,156 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:30,158 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r14i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r14i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,226 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r13i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r13i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,227 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:30,228 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r13i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r13i1p1f1_gr_185001-185912.nc
- 90%|█████████ | 45.0/50.0 [00:04<00:00, 14.6it/s]2019-08-28 16:23:30,295 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r25i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r25i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,295 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:30,297 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r25i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r25i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,367 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r18i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r18i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,367 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:30,369 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r18i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r18i1p1f1_gr_185001-185912.nc
- 94%|█████████▍| 47.0/50.0 [00:04<00:00, 14.4it/s]2019-08-28 16:23:30,438 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r25i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r25i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,438 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:30,440 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r25i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r25i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,522 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r15i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r15i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,522 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:30,524 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r15i1p1f1/Amon/ts/gr/v20190110/netcdf-scm_ts_Amon_IPSL-CM6A-LR_dcppC-atl-control_r15i1p1f1_gr_185001-185912.nc
- 98%|█████████▊| 49.0/50.0 [00:04<00:00, 13.9it/s]2019-08-28 16:23:30,594 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r15i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r15i1p1f1_gr_185001-185912.nc
-2019-08-28 16:23:30,594 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:23:30,596 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/DCPP/IPSL/IPSL-CM6A-LR/dcppC-atl-control/r15i1p1f1/Amon/tas/gr/v20190110/netcdf-scm_tas_Amon_IPSL-CM6A-LR_dcppC-atl-control_r15i1p1f1_gr_185001-185912.nc
-100%|██████████| 50.0/50.0 [00:04<00:00, 10.3it/s]
-2019-08-28 16:23:30,725 INFO:netcdf_scm:Crunching 0 directories with greater than or equal to 50 and less than 120 million data points
-2019-08-28 16:23:30,726 INFO:netcdf_scm:Crunching 0 directories with greater than or equal to 120 million data points
-Multiple small file (2.4 million data points) time: 
-real	0m23.830s
-user	0m38.949s
-sys	0m7.434s
-2019-08-28 16:23:34,880 INFO:netcdf_scm:netcdf-scm: 1.0.0+327.g8fffd68.dirty
-2019-08-28 16:23:34,881 INFO:netcdf_scm:crunch-contact: Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>
-2019-08-28 16:23:34,881 INFO:netcdf_scm:source: /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical
-2019-08-28 16:23:34,881 INFO:netcdf_scm:destination: /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched
-2019-08-28 16:23:34,881 INFO:netcdf_scm:drs: CMIP6Output
-2019-08-28 16:23:34,881 INFO:netcdf_scm:regexp: ^(?!.*(fx|/co2/|/ta/)).*Amon.*$
-2019-08-28 16:23:34,881 INFO:netcdf_scm:regions: World,World|Northern Hemisphere,World|Southern Hemisphere,World|Land,World|Ocean,World|Northern Hemisphere|Land,World|Southern Hemisphere|Land,World|Northern Hemisphere|Ocean,World|Southern Hemisphere|Ocean
-2019-08-28 16:23:34,881 INFO:netcdf_scm:force: True
-2019-08-28 16:23:34,881 INFO:netcdf_scm:small_number_workers: 10
-2019-08-28 16:23:34,881 INFO:netcdf_scm:small_threshold: 50
-2019-08-28 16:23:34,881 INFO:netcdf_scm:medium_number_workers: 3
-2019-08-28 16:23:34,881 INFO:netcdf_scm:medium_threshold: 120
-2019-08-28 16:23:34,881 INFO:netcdf_scm:force_lazy_threshold: 1000
-2019-08-28 16:23:34,883 INFO:netcdf_scm.output:Read in 92 items from database netcdf-scm_crunched.jsonl
-2019-08-28 16:23:34,883 INFO:netcdf_scm:Finding directories with files
-2019-08-28 16:23:34,888 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/tasmax/gn/v20181115
-2019-08-28 16:23:34,888 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/rsut/gn/v20181115
-2019-08-28 16:23:34,888 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/tas/gn/v20181115
-2019-08-28 16:23:34,889 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/ts/gn/v20181115
-2019-08-28 16:23:34,889 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/tasmin/gn/v20181115
-2019-08-28 16:23:34,889 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/prsn/gn/v20181115
-2019-08-28 16:23:34,890 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/pr/gn/v20181115
-2019-08-28 16:23:34,890 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/rlut/gn/v20181115
-2019-08-28 16:23:34,891 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/rsdt/gn/v20181115
-2019-08-28 16:23:34,892 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/fco2nat/gn/v20190226
-2019-08-28 16:23:34,898 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/rsdt/gn/v20181119
-2019-08-28 16:23:34,898 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/rsut/gn/v20181119
-2019-08-28 16:23:34,899 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/rlut/gn/v20181119
-2019-08-28 16:23:34,899 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/tasmax/gn/v20181119
-2019-08-28 16:23:34,899 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/tasmin/gn/v20181119
-2019-08-28 16:23:34,900 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/tas/gn/v20181119
-2019-08-28 16:23:34,900 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/ts/gn/v20181119
-2019-08-28 16:23:34,900 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/pr/gn/v20181119
-2019-08-28 16:23:34,901 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/prsn/gn/v20181119
-2019-08-28 16:23:34,901 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/fco2nat/gn/v20190226
-2019-08-28 16:23:34,908 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/pr/gn/v20181126
-2019-08-28 16:23:34,909 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tasmin/gn/v20181126
-2019-08-28 16:23:34,909 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tasmax/gn/v20181126
-2019-08-28 16:23:34,909 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/ts/gn/v20181126
-2019-08-28 16:23:34,910 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126
-2019-08-28 16:23:34,910 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsdt/gn/v20181126
-2019-08-28 16:23:34,910 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsut/gn/v20181126
-2019-08-28 16:23:34,911 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rlut/gn/v20181126
-2019-08-28 16:23:34,911 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/prsn/gn/v20181126
-2019-08-28 16:23:34,912 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/fco2nat/gn/v20190226
-2019-08-28 16:23:34,914 INFO:netcdf_scm:Found 30 directories with files
-Sorting directories:   0%|          | 0/30 [00:00<?, ?it/s]Sorting directories:   3%|▎         | 1/30 [00:01<00:35,  1.23s/it]Sorting directories:   7%|▋         | 2/30 [00:02<00:32,  1.15s/it]Sorting directories:  10%|█         | 3/30 [00:03<00:30,  1.11s/it]Sorting directories:  13%|█▎        | 4/30 [00:04<00:27,  1.07s/it]Sorting directories:  17%|█▋        | 5/30 [00:05<00:25,  1.02s/it]Sorting directories:  20%|██        | 6/30 [00:05<00:23,  1.02it/s]Sorting directories:  23%|██▎       | 7/30 [00:06<00:21,  1.09it/s]Sorting directories:  27%|██▋       | 8/30 [00:07<00:19,  1.10it/s]Sorting directories:  30%|███       | 9/30 [00:08<00:18,  1.14it/s]Sorting directories:  33%|███▎      | 10/30 [00:09<00:19,  1.01it/s]Sorting directories:  37%|███▋      | 11/30 [00:10<00:17,  1.06it/s]Sorting directories:  40%|████      | 12/30 [00:11<00:15,  1.13it/s]Sorting directories:  43%|████▎     | 13/30 [00:12<00:14,  1.15it/s]Sorting directories:  47%|████▋     | 14/30 [00:12<00:13,  1.20it/s]Sorting directories:  50%|█████     | 15/30 [00:13<00:12,  1.22it/s]Sorting directories:  53%|█████▎    | 16/30 [00:14<00:12,  1.08it/s]Sorting directories:  57%|█████▋    | 17/30 [00:15<00:12,  1.07it/s]Sorting directories:  60%|██████    | 18/30 [00:16<00:10,  1.11it/s]Sorting directories:  63%|██████▎   | 19/30 [00:17<00:09,  1.12it/s]Sorting directories:  67%|██████▋   | 20/30 [00:18<00:10,  1.04s/it]Sorting directories:  70%|███████   | 21/30 [00:19<00:09,  1.01s/it]Sorting directories:  73%|███████▎  | 22/30 [00:20<00:07,  1.05it/s]Sorting directories:  77%|███████▋  | 23/30 [00:21<00:06,  1.08it/s]Sorting directories:  80%|████████  | 24/30 [00:22<00:05,  1.11it/s]Sorting directories:  83%|████████▎ | 25/30 [00:23<00:04,  1.17it/s]Sorting directories:  87%|████████▋ | 26/30 [00:23<00:03,  1.21it/s]Sorting directories:  90%|█████████ | 27/30 [00:24<00:02,  1.23it/s]Sorting directories:  93%|█████████▎| 28/30 [00:25<00:01,  1.24it/s]Sorting directories:  97%|█████████▋| 29/30 [00:26<00:00,  1.22it/s]Sorting directories: 100%|██████████| 30/30 [00:27<00:00,  1.00s/it]
-2019-08-28 16:24:02,599 INFO:netcdf_scm:Crunching 0 directories with less than 50 million data points
-2019-08-28 16:24:02,600 INFO:netcdf_scm:Crunching 30 directories with greater than or equal to 50 and less than 120 million data points
-2019-08-28 16:24:02,600 INFO:netcdf_scm:Processing in parallel with 3 workers
-2019-08-28 16:24:02,600 INFO:netcdf_scm:Forcing dask to use a single thread when reading
-2019-08-28 16:24:02,648 INFO:netcdf_scm:Attempting to process: ['tasmax_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-  0%|          | 0.00/30.0 [00:00<?, ?it/s]2019-08-28 16:24:02,655 INFO:netcdf_scm:Attempting to process: ['rsut_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:24:02,657 INFO:netcdf_scm:Attempting to process: ['tas_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:24:02,729 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:24:02,733 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:24:02,736 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:24:02,765 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:24:02,766 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:24:02,766 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:24:10,395 INFO:netcdf_scm:Attempting to process: ['ts_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:24:10,400 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/tas/gn/v20181115/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:10,400 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:24:10,402 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/tas/gn/v20181115/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:10,422 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:24:10,428 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-  3%|▎         | 1.00/30.0 [00:07<03:47, 7.83s/it]2019-08-28 16:24:10,865 INFO:netcdf_scm:Attempting to process: ['tasmin_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:24:10,869 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/rsut/gn/v20181115/netcdf-scm_rsut_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:10,869 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:24:10,871 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/rsut/gn/v20181115/netcdf-scm_rsut_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:10,897 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:24:10,903 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-  7%|▋         | 2.00/30.0 [00:08<02:37, 5.62s/it]2019-08-28 16:24:11,016 INFO:netcdf_scm:Attempting to process: ['prsn_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:24:11,019 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/tasmax/gn/v20181115/netcdf-scm_tasmax_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:11,020 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:24:11,022 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/tasmax/gn/v20181115/netcdf-scm_tasmax_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:11,040 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:24:11,046 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
- 10%|█         | 3.00/30.0 [00:08<01:47, 3.98s/it]2019-08-28 16:24:34,450 INFO:netcdf_scm:Attempting to process: ['pr_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:24:34,453 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/ts/gn/v20181115/netcdf-scm_ts_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:34,454 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:24:34,456 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/ts/gn/v20181115/netcdf-scm_ts_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:34,478 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:24:34,485 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
- 13%|█▎        | 4.00/30.0 [00:31<04:15, 9.82s/it]2019-08-28 16:24:35,874 INFO:netcdf_scm:Attempting to process: ['rlut_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:24:35,878 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/prsn/gn/v20181115/netcdf-scm_prsn_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:35,878 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:24:35,880 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/prsn/gn/v20181115/netcdf-scm_prsn_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:35,902 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:24:35,908 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
- 17%|█▋        | 5.00/30.0 [00:33<03:02, 7.30s/it]2019-08-28 16:24:36,078 INFO:netcdf_scm:Attempting to process: ['rsdt_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:24:36,081 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/tasmin/gn/v20181115/netcdf-scm_tasmin_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:36,082 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:24:36,084 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/tasmin/gn/v20181115/netcdf-scm_tasmin_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:24:36,105 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:24:36,111 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
- 20%|██        | 6.00/30.0 [00:33<02:04, 5.17s/it]2019-08-28 16:25:17,019 INFO:netcdf_scm:Attempting to process: ['fco2nat_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:25:17,023 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/pr/gn/v20181115/netcdf-scm_pr_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:25:17,023 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:25:17,026 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/pr/gn/v20181115/netcdf-scm_pr_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:25:17,045 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:25:17,051 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
- 23%|██▎       | 7.00/30.0 [01:14<06:05, 15.9s/it]2019-08-28 16:25:22,234 INFO:netcdf_scm:Attempting to process: ['rsdt_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:25:22,238 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/rlut/gn/v20181115/netcdf-scm_rlut_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:25:22,238 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:25:22,243 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/rlut/gn/v20181115/netcdf-scm_rlut_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:25:22,261 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:25:22,267 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
- 27%|██▋       | 8.00/30.0 [01:19<04:39, 12.7s/it]2019-08-28 16:25:24,708 INFO:netcdf_scm:Attempting to process: ['rsut_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:25:24,711 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/rsdt/gn/v20181115/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:25:24,711 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:25:24,716 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/rsdt/gn/v20181115/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:25:24,735 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:25:24,742 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
- 30%|███       | 9.00/30.0 [01:22<03:22, 9.63s/it]2019-08-28 16:26:21,619 INFO:netcdf_scm:Attempting to process: ['rlut_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:26:21,622 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/rsut/gn/v20181119/netcdf-scm_rsut_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:26:21,622 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:26:21,625 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/rsut/gn/v20181119/netcdf-scm_rsut_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 33%|███▎      | 10.0/30.0 [02:19<07:56, 23.8s/it]2019-08-28 16:26:22,033 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:26:22,040 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:26:22,194 INFO:netcdf_scm:Attempting to process: ['tasmax_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:26:22,198 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
-2019-08-28 16:26:22,198 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:26:22,200 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r2i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_historical_r2i1p1f1_gn_185001-201412.nc
- 37%|███▋      | 11.0/30.0 [02:19<05:20, 16.8s/it]2019-08-28 16:26:22,346 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:26:22,352 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:26:22,986 INFO:netcdf_scm:Attempting to process: ['tasmin_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:26:22,989 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/rsdt/gn/v20181119/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:26:22,989 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:26:22,991 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/rsdt/gn/v20181119/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 40%|████      | 12.0/30.0 [02:20<03:36, 12.0s/it]2019-08-28 16:26:23,164 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:26:23,170 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:26:53,076 INFO:netcdf_scm:Attempting to process: ['tas_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:26:53,080 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/rlut/gn/v20181119/netcdf-scm_rlut_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:26:53,080 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:26:53,083 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/rlut/gn/v20181119/netcdf-scm_rlut_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 43%|████▎     | 13.0/30.0 [02:50<04:56, 17.4s/it]2019-08-28 16:26:53,256 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:26:53,263 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:26:55,737 INFO:netcdf_scm:Attempting to process: ['ts_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:26:55,742 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/tasmax/gn/v20181119/netcdf-scm_tasmax_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:26:55,743 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:26:55,745 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/tasmax/gn/v20181119/netcdf-scm_tasmax_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 47%|████▋     | 14.0/30.0 [02:53<03:28, 13.0s/it]2019-08-28 16:26:55,827 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:26:55,833 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:26:56,103 INFO:netcdf_scm:Attempting to process: ['pr_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:26:56,107 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/tasmin/gn/v20181119/netcdf-scm_tasmin_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:26:56,107 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:26:56,109 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/tasmin/gn/v20181119/netcdf-scm_tasmin_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 50%|█████     | 15.0/30.0 [02:53<02:18, 9.21s/it]2019-08-28 16:26:56,197 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:26:56,202 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:27:33,400 INFO:netcdf_scm:Attempting to process: ['prsn_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:27:33,403 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/tas/gn/v20181119/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:27:33,403 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:27:33,405 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/tas/gn/v20181119/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 53%|█████▎    | 16.0/30.0 [03:30<04:06, 17.6s/it]2019-08-28 16:27:33,494 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:27:33,499 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:27:39,924 INFO:netcdf_scm:Attempting to process: ['fco2nat_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:27:39,928 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/ts/gn/v20181119/netcdf-scm_ts_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:27:39,928 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:27:39,930 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/ts/gn/v20181119/netcdf-scm_ts_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 57%|█████▋    | 17.0/30.0 [03:37<03:06, 14.3s/it]2019-08-28 16:27:40,224 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:27:40,230 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:27:48,535 INFO:netcdf_scm:Attempting to process: ['pr_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:27:48,538 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/pr/gn/v20181119/netcdf-scm_pr_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:27:48,539 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:27:48,541 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/pr/gn/v20181119/netcdf-scm_pr_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 60%|██████    | 18.0/30.0 [03:45<02:31, 12.6s/it]2019-08-28 16:27:48,809 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:27:48,815 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:28:32,655 INFO:netcdf_scm:Attempting to process: ['tasmin_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:28:32,661 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/prsn/gn/v20181119/netcdf-scm_prsn_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:28:32,661 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:28:32,663 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/prsn/gn/v20181119/netcdf-scm_prsn_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 63%|██████▎   | 19.0/30.0 [04:30<04:02, 22.1s/it]2019-08-28 16:28:32,990 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:28:32,997 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:28:53,879 INFO:netcdf_scm:Attempting to process: ['tasmax_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:28:53,883 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
-2019-08-28 16:28:53,883 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:28:53,891 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r3i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_historical_r3i1p1f1_gn_185001-201412.nc
- 67%|██████▋   | 20.0/30.0 [04:51<03:38, 21.8s/it]2019-08-28 16:28:54,235 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:28:54,246 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:29:10,899 INFO:netcdf_scm:Attempting to process: ['ts_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:29:10,902 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/pr/gn/v20181126/netcdf-scm_pr_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:29:10,903 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:29:10,905 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/pr/gn/v20181126/netcdf-scm_pr_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
- 70%|███████   | 21.0/30.0 [05:08<03:03, 20.4s/it]2019-08-28 16:29:11,159 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:29:11,167 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:29:49,302 INFO:netcdf_scm:Attempting to process: ['tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:29:49,305 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tasmin/gn/v20181126/netcdf-scm_tasmin_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:29:49,305 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:29:49,307 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tasmin/gn/v20181126/netcdf-scm_tasmin_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
- 73%|███████▎  | 22.0/30.0 [05:46<03:26, 25.8s/it]2019-08-28 16:29:49,803 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:29:49,808 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:30:11,615 INFO:netcdf_scm:Attempting to process: ['rsdt_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:30:11,620 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tasmax/gn/v20181126/netcdf-scm_tasmax_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:30:11,621 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:30:11,623 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tasmax/gn/v20181126/netcdf-scm_tasmax_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
- 77%|███████▋  | 23.0/30.0 [06:09<02:53, 24.7s/it]2019-08-28 16:30:11,977 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:30:11,983 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:30:20,550 INFO:netcdf_scm:Attempting to process: ['rsut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:30:20,556 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/ts/gn/v20181126/netcdf-scm_ts_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:30:20,556 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:30:20,559 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/ts/gn/v20181126/netcdf-scm_ts_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
- 80%|████████  | 24.0/30.0 [06:17<01:59, 20.0s/it]2019-08-28 16:30:20,885 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:30:20,891 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:30:40,130 INFO:netcdf_scm:Attempting to process: ['rlut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:30:40,133 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:30:40,141 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:30:40,143 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/tas/gn/v20181126/netcdf-scm_tas_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:30:40,213 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:30:40,219 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
- 83%|████████▎ | 25.0/30.0 [06:37<01:39, 19.9s/it]2019-08-28 16:30:52,909 INFO:netcdf_scm:Attempting to process: ['prsn_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:30:52,912 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsdt/gn/v20181126/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:30:52,913 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:30:52,915 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsdt/gn/v20181126/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
- 87%|████████▋ | 26.0/30.0 [06:50<01:10, 17.7s/it]2019-08-28 16:30:52,991 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:30:52,996 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:31:13,321 INFO:netcdf_scm:Attempting to process: ['fco2nat_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc']
-2019-08-28 16:31:13,324 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsut/gn/v20181126/netcdf-scm_rsut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:31:13,324 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:31:13,327 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rsut/gn/v20181126/netcdf-scm_rsut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
- 90%|█████████ | 27.0/30.0 [07:10<00:55, 18.5s/it]2019-08-28 16:31:13,871 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:31:13,877 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:31:40,289 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rlut/gn/v20181126/netcdf-scm_rlut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:31:40,289 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:31:40,291 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/rlut/gn/v20181126/netcdf-scm_rlut_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
- 93%|█████████▎| 28.0/30.0 [07:37<00:42, 21.1s/it]2019-08-28 16:31:47,287 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/prsn/gn/v20181126/netcdf-scm_prsn_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:31:47,288 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:31:47,290 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/prsn/gn/v20181126/netcdf-scm_prsn_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
- 97%|█████████▋| 29.0/30.0 [07:44<00:16, 16.8s/it]2019-08-28 16:31:57,840 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-2019-08-28 16:31:57,840 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:31:57,847 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/historical/r1i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_historical_r1i1p1f1_gn_185001-201412.nc
-100%|██████████| 30.0/30.0 [07:55<00:00, 15.0s/it]
-2019-08-28 16:31:58,154 INFO:netcdf_scm:Crunching 0 directories with greater than or equal to 120 million data points
-Multiple medium file (100 million data points) crunch time: 
-real	8m27.722s
-user	2m8.802s
-sys	21m6.940s
-2019-08-28 16:32:05,603 INFO:netcdf_scm:netcdf-scm: 1.0.0+327.g8fffd68.dirty
-2019-08-28 16:32:05,604 INFO:netcdf_scm:crunch-contact: Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>
-2019-08-28 16:32:05,604 INFO:netcdf_scm:source: /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon
-2019-08-28 16:32:05,604 INFO:netcdf_scm:destination: /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched
-2019-08-28 16:32:05,604 INFO:netcdf_scm:drs: CMIP6Output
-2019-08-28 16:32:05,605 INFO:netcdf_scm:regexp: ^(?!.*(fx|/co2/|/ta/)).*Amon.*$
-2019-08-28 16:32:05,605 INFO:netcdf_scm:regions: World,World|Northern Hemisphere,World|Southern Hemisphere,World|Land,World|Ocean,World|Northern Hemisphere|Land,World|Southern Hemisphere|Land,World|Northern Hemisphere|Ocean,World|Southern Hemisphere|Ocean
-2019-08-28 16:32:05,605 INFO:netcdf_scm:force: True
-2019-08-28 16:32:05,605 INFO:netcdf_scm:small_number_workers: 10
-2019-08-28 16:32:05,605 INFO:netcdf_scm:small_threshold: 50
-2019-08-28 16:32:05,606 INFO:netcdf_scm:medium_number_workers: 2
-2019-08-28 16:32:05,606 INFO:netcdf_scm:medium_threshold: 120
-2019-08-28 16:32:05,606 INFO:netcdf_scm:force_lazy_threshold: 1000
-2019-08-28 16:32:05,609 INFO:netcdf_scm.output:Read in 92 items from database netcdf-scm_crunched.jsonl
-2019-08-28 16:32:05,610 INFO:netcdf_scm:Finding directories with files
-2019-08-28 16:32:05,612 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tas/gn/v20181016
-2019-08-28 16:32:05,613 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/ts/gn/v20181016
-2019-08-28 16:32:05,614 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tasmin/gn/v20181016
-2019-08-28 16:32:05,615 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/pr/gn/v20181016
-2019-08-28 16:32:05,616 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tasmax/gn/v20181016
-2019-08-28 16:32:05,617 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsut/gn/v20181016
-2019-08-28 16:32:05,618 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsdt/gn/v20181016
-2019-08-28 16:32:05,619 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/prsn/gn/v20181016
-2019-08-28 16:32:05,619 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rlut/gn/v20181016
-2019-08-28 16:32:05,620 INFO:netcdf_scm:Adding directory to queue /data/marble/cmip6/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/fco2nat/gn/v20190226
-2019-08-28 16:32:05,622 INFO:netcdf_scm:Found 10 directories with files
-Sorting directories:   0%|          | 0/10 [00:00<?, ?it/s]Sorting directories:  10%|█         | 1/10 [00:03<00:28,  3.20s/it]Sorting directories:  20%|██        | 2/10 [00:06<00:24,  3.12s/it]Sorting directories:  30%|███       | 3/10 [00:08<00:21,  3.03s/it]Sorting directories:  40%|████      | 4/10 [00:11<00:17,  2.99s/it]Sorting directories:  50%|█████     | 5/10 [00:14<00:14,  2.97s/it]Sorting directories:  60%|██████    | 6/10 [00:17<00:11,  2.95s/it]Sorting directories:  70%|███████   | 7/10 [00:20<00:08,  2.92s/it]Sorting directories:  80%|████████  | 8/10 [00:23<00:05,  2.90s/it]Sorting directories:  90%|█████████ | 9/10 [00:26<00:02,  2.86s/it]Sorting directories: 100%|██████████| 10/10 [00:29<00:00,  3.03s/it]
-2019-08-28 16:32:35,189 INFO:netcdf_scm:Crunching 0 directories with less than 50 million data points
-2019-08-28 16:32:35,189 INFO:netcdf_scm:Crunching 0 directories with greater than or equal to 50 and less than 120 million data points
-2019-08-28 16:32:35,189 INFO:netcdf_scm:Crunching 10 directories with greater than or equal to 120 million data points
-2019-08-28 16:32:35,190 INFO:netcdf_scm:Processing serially
-  0%|          | 0.00/10.0 [00:00<?, ?it/s]2019-08-28 16:32:35,191 INFO:netcdf_scm:Attempting to process: ['tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:32:35,335 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:32:35,365 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:33:47,771 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tas/gn/v20181016/netcdf-scm_tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:33:47,771 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:33:47,773 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tas/gn/v20181016/netcdf-scm_tas_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
- 10%|█         | 1.00/10.0 [01:12<10:53, 72.7s/it]2019-08-28 16:33:47,852 INFO:netcdf_scm:Attempting to process: ['ts_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:33:47,914 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:33:47,920 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:35:31,495 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/ts/gn/v20181016/netcdf-scm_ts_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:35:31,496 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:35:31,498 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/ts/gn/v20181016/netcdf-scm_ts_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
- 20%|██        | 2.00/10.0 [02:56<10:55, 82.0s/it]2019-08-28 16:35:31,560 INFO:netcdf_scm:Attempting to process: ['tasmin_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:35:31,622 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:35:31,628 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:37:20,254 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tasmin/gn/v20181016/netcdf-scm_tasmin_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:37:20,255 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:37:20,256 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tasmin/gn/v20181016/netcdf-scm_tasmin_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
- 30%|███       | 3.00/10.0 [04:45<10:30, 90.0s/it]2019-08-28 16:37:20,322 INFO:netcdf_scm:Attempting to process: ['pr_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:37:20,391 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:37:20,396 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:39:19,367 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/pr/gn/v20181016/netcdf-scm_pr_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:39:19,367 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:39:19,369 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/pr/gn/v20181016/netcdf-scm_pr_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
- 40%|████      | 4.00/10.0 [06:44<09:52, 98.7s/it]2019-08-28 16:39:19,431 INFO:netcdf_scm:Attempting to process: ['tasmax_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:39:19,490 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:39:19,496 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:40:49,367 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tasmax/gn/v20181016/netcdf-scm_tasmax_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:40:49,367 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:40:49,369 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/tasmax/gn/v20181016/netcdf-scm_tasmax_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
- 50%|█████     | 5.00/10.0 [08:14<08:00, 96.1s/it]2019-08-28 16:40:49,435 INFO:netcdf_scm:Attempting to process: ['rsut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:40:49,499 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:40:49,504 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:41:27,648 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsut/gn/v20181016/netcdf-scm_rsut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:41:27,649 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:41:27,651 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsut/gn/v20181016/netcdf-scm_rsut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
- 60%|██████    | 6.00/10.0 [08:52<05:15, 78.8s/it]2019-08-28 16:41:27,715 INFO:netcdf_scm:Attempting to process: ['rsdt_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:41:27,770 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:41:27,776 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:41:55,298 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsdt/gn/v20181016/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:41:55,299 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:41:55,301 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rsdt/gn/v20181016/netcdf-scm_rsdt_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
- 70%|███████   | 7.00/10.0 [09:20<03:10, 63.4s/it]2019-08-28 16:41:55,363 INFO:netcdf_scm:Attempting to process: ['prsn_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:41:55,417 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:41:55,422 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:42:24,686 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/prsn/gn/v20181016/netcdf-scm_prsn_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:42:24,687 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:42:24,689 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/prsn/gn/v20181016/netcdf-scm_prsn_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
- 80%|████████  | 8.00/10.0 [09:49<01:46, 53.2s/it]2019-08-28 16:42:24,752 INFO:netcdf_scm:Attempting to process: ['rlut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:42:24,818 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:42:24,824 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:42:57,363 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rlut/gn/v20181016/netcdf-scm_rlut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:42:57,363 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:42:57,365 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/rlut/gn/v20181016/netcdf-scm_rlut_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
- 90%|█████████ | 9.00/10.0 [10:22<00:47, 47.1s/it]2019-08-28 16:42:57,430 INFO:netcdf_scm:Attempting to process: ['fco2nat_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc']
-2019-08-28 16:42:57,487 WARNING:netcdf_scm.iris_cube_wrappers:Couldn't find/use areacell_cube, falling back to iris.analysis.cartography.area_weights
-2019-08-28 16:42:57,493 WARNING:netcdf_scm.weights:Land surface fraction (sftlf) data not available, using default instead
-2019-08-28 16:43:30,969 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-2019-08-28 16:43:30,969 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:43:30,971 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/BCC/BCC-CSM2-MR/piControl/r1i1p1f1/Amon/fco2nat/gn/v20190226/netcdf-scm_fco2nat_Amon_BCC-CSM2-MR_piControl_r1i1p1f1_gn_185001-244912.nc
-100%|██████████| 10.0/10.0 [10:55<00:00, 43.0s/it]
-Multiple large files (300 million data points) crunch time: 
-real	11m32.894s
-user	2m26.233s
-sys	9m17.152s
-2019-08-28 16:43:36,503 INFO:netcdf_scm:netcdf-scm: 1.0.0+327.g8fffd68.dirty
-2019-08-28 16:43:36,503 INFO:netcdf_scm:crunch-contact: Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>
-2019-08-28 16:43:36,503 INFO:netcdf_scm:source: /data/marble/sandbox/znicholls/test-cmip6output/CMIP6
-2019-08-28 16:43:36,503 INFO:netcdf_scm:destination: /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched
-2019-08-28 16:43:36,503 INFO:netcdf_scm:drs: CMIP6Output
-2019-08-28 16:43:36,503 INFO:netcdf_scm:regexp: .*zos.*
-2019-08-28 16:43:36,503 INFO:netcdf_scm:regions: World,World|Northern Hemisphere,World|Southern Hemisphere,World|Land,World|Ocean,World|Northern Hemisphere|Land,World|Southern Hemisphere|Land,World|Northern Hemisphere|Ocean,World|Southern Hemisphere|Ocean
-2019-08-28 16:43:36,503 INFO:netcdf_scm:force: True
-2019-08-28 16:43:36,503 INFO:netcdf_scm:small_number_workers: 10
-2019-08-28 16:43:36,503 INFO:netcdf_scm:small_threshold: 50
-2019-08-28 16:43:36,504 INFO:netcdf_scm:medium_number_workers: 2
-2019-08-28 16:43:36,504 INFO:netcdf_scm:medium_threshold: 120
-2019-08-28 16:43:36,504 INFO:netcdf_scm:force_lazy_threshold: 1000
-2019-08-28 16:43:36,505 INFO:netcdf_scm.output:Read in 92 items from database netcdf-scm_crunched.jsonl
-2019-08-28 16:43:36,505 INFO:netcdf_scm:Finding directories with files
-2019-08-28 16:43:36,507 INFO:netcdf_scm:Adding directory to queue /data/marble/sandbox/znicholls/test-cmip6output/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/zos/gn/v20190313
-2019-08-28 16:43:36,508 INFO:netcdf_scm:Found 1 directories with files
-Sorting directories:   0%|          | 0/1 [00:00<?, ?it/s]Sorting directories: 100%|██████████| 1/1 [00:01<00:00,  1.14s/it]
-2019-08-28 16:43:37,651 INFO:netcdf_scm:Crunching 0 directories with less than 50 million data points
-2019-08-28 16:43:37,651 INFO:netcdf_scm:Crunching 0 directories with greater than or equal to 50 and less than 120 million data points
-2019-08-28 16:43:37,652 INFO:netcdf_scm:Crunching 1 directories with greater than or equal to 120 million data points
-2019-08-28 16:43:37,652 INFO:netcdf_scm:Processing serially
-  0%|          | 0.00/1.00 [00:00<?, ?it/s]2019-08-28 16:43:37,653 INFO:netcdf_scm:Attempting to process: ['zos_Omon_CESM2_historical_r10i1p1f1_gn_200001-201412.nc', 'zos_Omon_CESM2_historical_r10i1p1f1_gn_185001-189912.nc', 'zos_Omon_CESM2_historical_r10i1p1f1_gn_190001-194912.nc', 'zos_Omon_CESM2_historical_r10i1p1f1_gn_195001-199912.nc']
-2019-08-28 16:43:38,325 WARNING:netcdf_scm:Detected ocean data, dropping land related regions so regions to crunch are now: ['World', 'World|Northern Hemisphere', 'World|Southern Hemisphere', 'World|Ocean', 'World|Northern Hemisphere|Ocean', 'World|Southern Hemisphere|Ocean']
-2019-08-28 16:44:03,459 WARNING:netcdf_scm.iris_cube_wrappers:Not calculating land fractions as all required cubes are not available
-2019-08-28 16:44:03,459 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/zos/gn/v20190313/netcdf-scm_zos_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc
-2019-08-28 16:44:03,460 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:44:03,461 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/zos/gn/v20190313/netcdf-scm_zos_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc
-100%|██████████| 1.00/1.00 [00:25<00:00, 25.9s/it]
-Multiple ocean 2D files (240 million data points) crunch time: 
-real	0m32.281s
-user	0m19.128s
-sys	0m18.269s
-2019-08-28 16:44:07,855 INFO:netcdf_scm:netcdf-scm: 1.0.0+327.g8fffd68.dirty
-2019-08-28 16:44:07,856 INFO:netcdf_scm:crunch-contact: Zebedee Nicholls <zebedee.nicholls@climate-energy-college.org>, Jared Lewis <jared.lewis@climate-energy-college.org>, Malte Meinshausen <malte.meinshausen@unimelb.edu.au>
-2019-08-28 16:44:07,856 INFO:netcdf_scm:source: /data/marble/sandbox/znicholls/test-cmip6output/CMIP6
-2019-08-28 16:44:07,856 INFO:netcdf_scm:destination: /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched
-2019-08-28 16:44:07,856 INFO:netcdf_scm:drs: CMIP6Output
-2019-08-28 16:44:07,856 INFO:netcdf_scm:regexp: .*thetao.*
-2019-08-28 16:44:07,857 INFO:netcdf_scm:regions: World,World|Northern Hemisphere,World|Southern Hemisphere,World|Land,World|Ocean,World|Northern Hemisphere|Land,World|Southern Hemisphere|Land,World|Northern Hemisphere|Ocean,World|Southern Hemisphere|Ocean
-2019-08-28 16:44:07,857 INFO:netcdf_scm:force: True
-2019-08-28 16:44:07,857 INFO:netcdf_scm:small_number_workers: 10
-2019-08-28 16:44:07,857 INFO:netcdf_scm:small_threshold: 50
-2019-08-28 16:44:07,857 INFO:netcdf_scm:medium_number_workers: 2
-2019-08-28 16:44:07,857 INFO:netcdf_scm:medium_threshold: 120
-2019-08-28 16:44:07,858 INFO:netcdf_scm:force_lazy_threshold: 1000
-2019-08-28 16:44:07,860 INFO:netcdf_scm.output:Read in 92 items from database netcdf-scm_crunched.jsonl
-2019-08-28 16:44:07,861 INFO:netcdf_scm:Finding directories with files
-2019-08-28 16:44:07,864 INFO:netcdf_scm:Adding directory to queue /data/marble/sandbox/znicholls/test-cmip6output/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/thetao/gn/v20190313
-2019-08-28 16:44:07,865 INFO:netcdf_scm:Found 1 directories with files
-Sorting directories:   0%|          | 0/1 [00:00<?, ?it/s]Sorting directories: 100%|██████████| 1/1 [00:01<00:00,  1.40s/it]
-2019-08-28 16:44:09,268 INFO:netcdf_scm:Crunching 0 directories with less than 50 million data points
-2019-08-28 16:44:09,269 INFO:netcdf_scm:Crunching 0 directories with greater than or equal to 50 and less than 120 million data points
-2019-08-28 16:44:09,269 INFO:netcdf_scm:Crunching 1 directories with greater than or equal to 120 million data points
-2019-08-28 16:44:09,269 INFO:netcdf_scm:Processing serially
-  0%|          | 0.00/1.00 [00:00<?, ?it/s]2019-08-28 16:44:09,270 INFO:netcdf_scm:Attempting to process: ['thetao_Omon_CESM2_historical_r10i1p1f1_gn_200001-201412.nc', 'thetao_Omon_CESM2_historical_r10i1p1f1_gn_185001-189912.nc', 'thetao_Omon_CESM2_historical_r10i1p1f1_gn_190001-194912.nc', 'thetao_Omon_CESM2_historical_r10i1p1f1_gn_195001-199912.nc']
-2019-08-28 16:44:09,384 WARNING:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'volcello', referenced by netCDF variable 'thetao'
-2019-08-28 16:44:09,451 WARNING:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'volcello', referenced by netCDF variable 'thetao'
-2019-08-28 16:44:09,517 WARNING:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'volcello', referenced by netCDF variable 'thetao'
-2019-08-28 16:44:09,575 WARNING:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'volcello', referenced by netCDF variable 'thetao'
-2019-08-28 16:44:09,970 WARNING:netcdf_scm:Detected ocean data, dropping land related regions so regions to crunch are now: ['World', 'World|Northern Hemisphere', 'World|Southern Hemisphere', 'World|Ocean', 'World|Northern Hemisphere|Ocean', 'World|Southern Hemisphere|Ocean']
-2019-08-28 16:44:09,971 INFO:netcdf_scm:Data in /data/marble/sandbox/znicholls/test-cmip6output/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/thetao/gn/v20190313 has 14598.144 million data points which is above force-lazy-threshold of 1000 million data points hence processing lazily
-2019-08-28 16:44:10,444 INFO:netcdf_scm.iris_cube_wrappers:Forcing lazy crunching
-2019-08-28 16:44:10,556 WARNING:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'volcello', referenced by netCDF variable 'thetao'
-2019-08-28 16:44:10,625 WARNING:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'volcello', referenced by netCDF variable 'thetao'
-2019-08-28 16:44:10,693 WARNING:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'volcello', referenced by netCDF variable 'thetao'
-2019-08-28 16:44:10,753 WARNING:netcdf_scm.iris_cube_wrappers:Missing CF-netCDF measure variable 'volcello', referenced by netCDF variable 'thetao'
-2019-08-28 16:44:12,691 WARNING:netcdf_scm.iris_cube_wrappers:Not calculating land fractions as all required cubes are not available
-2019-08-28 16:44:12,691 INFO:netcdf_scm:Registering /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/thetao/gn/v20190313/netcdf-scm_thetao_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc
-2019-08-28 16:44:12,692 INFO:netcdf_scm.output:Rewriting output file
-2019-08-28 16:44:12,693 INFO:netcdf_scm:Writing file to /data/marble/sandbox/share/cmip6-crunched-ipsl-sandbox-speed-test/netcdf-scm-crunched/CMIP6/CMIP/NCAR/CESM2/historical/r10i1p1f1/Omon/thetao/gn/v20190313/netcdf-scm_thetao_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc
-100%|██████████| 1.00/1.00 [29:47<00:00, 1.79ks/it]
-Multiple enormous files (14 000 million data points) crunch time: 
-real	29m53.996s
-user	33m49.094s
-sys	81m58.453s
-NetCDF-SCM version: 1.0.0+327.g8fffd68.dirty
-NetCDF-SCM version: 
-Multiple small file (2.4 million data points) time: 
-real	0m23.830s
-user	0m38.949s
-sys	0m7.434s
-Multiple medium file (100 million data points) crunch time: 
-real	8m27.722s
-user	2m8.802s
-sys	21m6.940s
-Multiple big file (300 million data points) crunch time: 
-real	11m32.894s
-user	2m26.233s
-sys	9m17.152s
-Multiple ocean 2D file (240 million data points) crunch time: 
-real	0m32.281s
-user	0m19.128s
-sys	0m18.269s
-Multiple enormous file (14 000 million data points) crunch time: 
-real	29m53.996s
-user	33m49.094s
-sys	81m58.453s
